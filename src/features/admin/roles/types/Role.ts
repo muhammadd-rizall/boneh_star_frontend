@@ -22,8 +22,16 @@ export interface RoleFormData {
   permissions_ids?: string[];
 }
 
+export interface RoleStatistics {
+  total_roles: number;
+  active_roles: number;
+  inactive_roles: number;
+  total_permissions: number;
+}
+
 export interface RoleApiResponse {
   success: boolean;
   message: string;
   data: Role | Role[] | Record<string, Permission[]>;
+  statistic?: RoleStatistics;
 }

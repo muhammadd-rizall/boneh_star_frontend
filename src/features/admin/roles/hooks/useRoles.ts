@@ -1,9 +1,10 @@
 import { useState, useCallback, useEffect } from "react";
 import { roleService } from "../services/RoleService";
-import type { Role, Permission } from "../types/Role";
+import type { Role, Permission, RoleStatistics } from "../types/Role";
 
 export function useRoles() {
   const [roles, setRoles] = useState<Role[]>([]);
+  const [statistics, setStatistics] = useState<RoleStatistics | null>(null);
   const [permissions, setPermissions] = useState<Record<string, Permission[]>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -12,8 +13,9 @@ export function useRoles() {
     try {
       setLoading(true);
       setError(null);
-      const data = await roleService.getAll();
-      setRoles(data);
+      const { roles, statistic } = await roleService.getAll();
+      setRoles(roles);
+      if (statistic) setStatistics(statistic);
     } catch (err: any) {
       setError(err.message || "Failed to fetch roles");
     } finally {
@@ -46,6 +48,7 @@ export function useRoles() {
 
   return {
     roles,
+    statistics,
     permissions,
     loading,
     error,

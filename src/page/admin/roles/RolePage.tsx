@@ -11,7 +11,7 @@ import Confirmation from "@/components/feedback/Confirmation"
 import { Plus, RefreshCcw, ShieldCheck, ShieldAlert, Key } from "lucide-react"
 
 export default function RolePage() {
-  const { roles, permissions, loading, error, deleteRole, refetch } = useRoles()
+  const { roles, statistics, permissions, loading, error, deleteRole, refetch } = useRoles()
   
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedRole, setSelectedRole] = useState<Role | null>(null)
@@ -52,9 +52,24 @@ export default function RolePage() {
   }
 
   const stats = [
-    { label: "Total Roles", value: roles.length, icon: ShieldCheck, note: "Semua level akses" },
-    { label: "Active Roles", value: roles.filter(r => r.is_active).length, icon: Key, note: "Role yang sedang dipakai" },
-    { label: "Total Permissions", value: Object.values(permissions).flat().length, icon: ShieldAlert, note: "Hak akses yang tersedia" },
+    { 
+      label: "Total Roles", 
+      value: statistics?.total_roles ?? roles.length, 
+      icon: ShieldCheck, 
+      note: "Semua level akses" 
+    },
+    { 
+      label: "Active Roles", 
+      value: statistics?.active_roles ?? roles.filter(r => r.is_active).length, 
+      icon: Key, 
+      note: "Role yang sedang dipakai" 
+    },
+    { 
+      label: "Total Permissions", 
+      value: statistics?.total_permissions ?? Object.values(permissions).flat().length, 
+      icon: ShieldAlert, 
+      note: "Hak akses yang tersedia" 
+    },
   ]
 
   return (

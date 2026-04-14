@@ -1,5 +1,5 @@
 import axios from '@/api/Axios';
-import type { Role, RoleFormData, RoleApiResponse, Permission } from '../types/Role';
+import type { Role, RoleFormData, RoleApiResponse, Permission, RoleStatistics } from '../types/Role';
 
 const ENDPOINTS = {
   BASE: '/admin/roles',
@@ -52,9 +52,12 @@ const normalizePermissions = (payload: unknown): Record<string, Permission[]> =>
 };
 
 export const roleService = {
-  getAll: async (): Promise<Role[]> => {
+  getAll: async (): Promise<{ roles: Role[]; statistic?: RoleStatistics }> => {
     const response = await axios.get<RoleApiResponse>(ENDPOINTS.BASE);
-    return Array.isArray(response.data.data) ? (response.data.data as Role[]) : [];
+    return {
+      roles: Array.isArray(response.data.data) ? (response.data.data as Role[]) : [],
+      statistic: response.data.statistic,
+    };
   },
 
   getById: async (id: string): Promise<Role> => {
