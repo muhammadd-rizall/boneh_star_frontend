@@ -4,7 +4,9 @@ import DahsbordLayout from "@/layouts/admin/DahsbordLayout";
 import { useAuthStore } from "@/store/useAuthStore";
 import UserPage from "@/page/admin/users/UserPage";
 import RolePage from "@/page/admin/roles/RolePage";
+import CustomerPage from "@/page/admin/customers/CustomerPage";
 import "./App.css";
+import BusPage from "./page/admin/buses/BusPage";
 
 const DashboardHome = () => (
   <div className="flex flex-col gap-8">
@@ -111,7 +113,9 @@ function App() {
       >
         <Route index element={<Navigate to="/admin/dashboard" />} />
         <Route path="dashboard" element={<DashboardHome />} />
+        <Route path="buses" element={<BusPage/>}/>
         <Route path="users" element={<UserPage />} />
+        <Route path="customers" element={<CustomerPage />} />
         <Route path="roles" element={<RolePage />} />
         <Route path="settings" element={<div className="rounded-[28px] border border-slate-200/80 bg-white/90 p-8 shadow-[0_20px_45px_-40px_rgba(15,23,42,0.45)]"><h1 className="text-2xl font-semibold text-slate-900">System Settings</h1><p className="mt-2 text-slate-500">Pengaturan sistem utama.</p></div>} />
       </Route>
