@@ -12,17 +12,28 @@ interface UserTableProps {
 }
 
 export default function UserTable({ data, onDelete, onEdit, loading }: UserTableProps) {
+  const getUserPermissions = (user: User) => {
+    const directPermissions = user.permission ?? []
+    const rolePermissions = user.roles.flatMap((role) => role.permissions ?? [])
+    const mergedPermissions = [...directPermissions, ...rolePermissions]
+
+    return mergedPermissions.filter(
+      (permission, index, permissions) =>
+        permissions.findIndex((item) => item.id === permission.id) === index
+    )
+  }
+
   const columns: Column<User>[] = [
     { 
       header: "User Information", 
       accessor: (row) => (
         <div className="flex items-center gap-4 text-left">
-          <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-500">
             <UserIcon size={20} />
           </div>
           <div className="flex flex-col">
-            <span className="font-bold text-slate-800 leading-tight">{row.name}</span>
-            <div className="flex items-center gap-1.5 text-xs text-slate-400 mt-0.5 font-medium">
+            <span className="leading-tight font-semibold text-slate-800">{row.name}</span>
+            <div className="mt-0.5 flex items-center gap-1.5 text-xs font-medium text-slate-400">
               <Mail size={12} />
               <span>{row.email}</span>
             </div>
@@ -35,25 +46,48 @@ export default function UserTable({ data, onDelete, onEdit, loading }: UserTable
       accessor: (row) => (
         <div className="flex flex-wrap gap-1">
           {row.roles.length > 0 ? row.roles.map(role => (
-            <div key={role.id} className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-600 uppercase tracking-wider border border-indigo-100">
+            <div key={role.id} className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-600">
               <Shield size={10} />
               <span>{role.name}</span>
             </div>
           )) : (
-            <span className="text-[10px] font-bold text-slate-400 italic">No Role</span>
+            <span className="text-[10px] italic text-slate-400">No Role</span>
           )}
         </div>
       )
     },
     {
+      header: "Permissions",
+      accessor: (row) => {
+        const permissions = getUserPermissions(row)
+
+        return (
+          <div className="flex flex-wrap gap-1.5">
+            {permissions.length > 0 ? (
+              permissions.map((permission) => (
+                <span
+                  key={permission.id}
+                  className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500"
+                >
+                  {permission.name}
+                </span>
+              ))
+            ) : (
+              <span className="text-[10px] italic text-slate-400">No Permission</span>
+            )}
+          </div>
+        )
+      }
+    },
+    {
       header: "Account Status",
       accessor: (row) => (
-        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+        <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] ${
           row.is_active 
-            ? "bg-emerald-50 text-emerald-600 border border-emerald-100" 
-            : "bg-rose-50 text-rose-600 border border-rose-100"
+            ? "border border-emerald-200 bg-emerald-50 text-emerald-700" 
+            : "border border-slate-200 bg-slate-100 text-slate-500"
         }`}>
-          <span className={`w-1.5 h-1.5 rounded-full ${row.is_active ? "bg-emerald-500" : "bg-rose-500"}`}></span>
+          <span className={`h-1.5 w-1.5 rounded-full ${row.is_active ? "bg-emerald-500" : "bg-slate-400"}`}></span>
           {row.is_active ? "Active" : "Inactive"}
         </span>
       )
@@ -66,7 +100,7 @@ export default function UserTable({ data, onDelete, onEdit, loading }: UserTable
             size="sm" 
             variant="outline" 
             icon={Edit} 
-            className="h-9 w-9 p-0 rounded-xl hover:border-indigo-600 hover:text-indigo-600" 
+            className="h-9 w-9 rounded-full p-0" 
             onClick={() => onEdit(row)}
             title="Edit User" 
           />
@@ -74,7 +108,7 @@ export default function UserTable({ data, onDelete, onEdit, loading }: UserTable
             size="sm" 
             variant="danger" 
             icon={Trash2} 
-            className="h-9 w-9 p-0 rounded-xl bg-rose-50 border-rose-100 text-rose-600 hover:bg-rose-600 hover:text-white" 
+            className="h-9 w-9 rounded-full p-0" 
             onClick={() => onDelete(row)}
             title="Delete User"
           />

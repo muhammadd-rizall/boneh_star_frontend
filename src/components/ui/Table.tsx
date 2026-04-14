@@ -24,20 +24,20 @@ function Table<T>({
   onSort,
 }: Props<T>) {
   return (
-    <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+    <div className="overflow-hidden rounded-[28px] border border-slate-200/70 bg-white/90 shadow-[0_24px_50px_-38px_rgba(15,23,42,0.35)] backdrop-blur">
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           
           {/* HEADER */}
-          <thead className="bg-slate-50/80 backdrop-blur-sm border-b border-slate-200">
+          <thead className="border-b border-slate-200/80 bg-slate-50/85">
             <tr>
               {columns.map((col, index) => (
                 <th
                   key={index}
                   onClick={() => col.sortable && onSort?.(index)}
                   className={`
-                    text-left px-6 py-4 font-bold text-slate-500 uppercase tracking-wider text-[10px]
-                    ${col.sortable ? "cursor-pointer select-none hover:text-indigo-600 transition-colors" : ""}
+                    px-6 py-4 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400
+                    ${col.sortable ? "cursor-pointer select-none transition-colors hover:text-slate-700" : ""}
                     ${col.className || ""}
                   `}
                 >
@@ -54,21 +54,21 @@ function Table<T>({
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={columns.length} className="text-center py-20 text-slate-400">
+                <td colSpan={columns.length} className="py-20 text-center text-slate-400">
                   <div className="flex flex-col items-center gap-2">
-                    <div className="w-8 h-8 border-4 border-slate-100 border-t-indigo-600 rounded-full animate-spin"></div>
-                    <span className="font-medium text-xs mt-2 tracking-wide">Loading data...</span>
+                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-100 border-t-slate-700"></div>
+                    <span className="mt-2 text-xs font-medium tracking-wide">Loading data...</span>
                   </div>
                 </td>
               </tr>
             ) : data.length === 0 ? (
               <tr>
-                <td colSpan={columns.length} className="text-center py-20 text-slate-400">
+                <td colSpan={columns.length} className="py-20 text-center text-slate-400">
                   <div className="flex flex-col items-center gap-2 opacity-60">
-                    <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center mb-2">
-                      <div className="w-6 h-[2px] bg-slate-200"></div>
+                    <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100">
+                      <div className="h-[2px] w-6 bg-slate-300"></div>
                     </div>
-                    <span className="font-semibold text-xs tracking-wide uppercase">{emptyMessage}</span>
+                    <span className="text-xs font-semibold uppercase tracking-[0.18em]">{emptyMessage}</span>
                   </div>
                 </td>
               </tr>
@@ -76,10 +76,10 @@ function Table<T>({
               data.map((row, rowIndex) => (
                 <tr
                   key={rowIndex}
-                  className="border-b border-slate-100 last:border-0 hover:bg-slate-50/50 transition-colors"
+                  className="border-b border-slate-100/90 transition-colors last:border-0 hover:bg-slate-50/70"
                 >
                   {columns.map((col, colIndex) => (
-                    <td key={colIndex} className="px-6 py-4 text-slate-600 font-medium">
+                    <td key={colIndex} className="px-6 py-4 font-medium text-slate-600">
                       {typeof col.accessor === "function"
                         ? col.accessor(row)
                         : (row[col.accessor] as React.ReactNode)}
