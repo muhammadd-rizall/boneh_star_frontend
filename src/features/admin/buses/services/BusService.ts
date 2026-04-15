@@ -13,11 +13,10 @@ export const busService = {
   getAll: async (): Promise<{ buses: Bus[], statistics: BusStatistics | null }> => {
     try {
       const response = await axios.get<BusApiResponse>(ENDPOINTS.BASE);
-      // Backend returns { success, statistic, data: { data: [], links, meta }, message }
       const responseData = response.data.data;
       
       let buses: Bus[] = [];
-      if (responseData && Array.isArray(responseData.data)) {
+      if (responseData && typeof responseData === 'object' && 'data' in responseData && Array.isArray(responseData.data)) {
         buses = responseData.data;
       } else if (Array.isArray(responseData)) {
         buses = responseData;
@@ -56,13 +55,32 @@ export const busService = {
 
   create: async (data: BusFormData): Promise<Bus> => {
     try {
-      // Use FormData for file upload if image is a File
       const formData = new FormData();
-      Object.entries(data).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          formData.append(key, value instanceof File ? value : String(value));
-        }
-      });
+      
+      // Basic fields
+      formData.append('bus_category_id', data.bus_category_id);
+      formData.append('plat_number', data.plat_number);
+      formData.append('name', data.name);
+      formData.append('seat_count', String(data.seat_count));
+      formData.append('production_year', String(data.production_year));
+      formData.append('status', data.status);
+      
+      if (data.brand) formData.append('brand', data.brand);
+      if (data.notes) formData.append('notes', data.notes);
+
+      // Facilities array
+      if (data.facilities && data.facilities.length > 0) {
+        data.facilities.forEach((id, index) => {
+          formData.append(`facilities[${index}]`, id);
+        });
+      }
+
+      // Images array
+      if (data.images && data.images.length > 0) {
+        data.images.forEach((file) => {
+          formData.append('images[]', file);
+        });
+      }
 
       const response = await axios.post<BusApiResponse>(ENDPOINTS.BASE, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
@@ -74,16 +92,32 @@ export const busService = {
     }
   },
 
-  update: async (id: string, data: BusFormData): Promise<Bus> => {
+  update: async (id: string, data: Partial<BusFormData>): Promise<Bus> => {
     try {
-      // Use FormData for file upload. Laravel sometimes needs _method=PUT for multipart/form-data
       const formData = new FormData();
-      Object.entries(data).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          formData.append(key, value instanceof File ? value : String(value));
-        }
-      });
-      formData.append('_method', 'PUT');
+      formData.append('_method', 'PUT'); // For Laravel multipart/form-data update
+
+      if (data.bus_category_id) formData.append('bus_category_id', data.bus_category_id);
+      if (data.plat_number) formData.append('plat_number', data.plat_number);
+      if (data.name) formData.append('name', data.name);
+      if (data.seat_count) formData.append('seat_count', String(data.seat_count));
+      if (data.production_year) formData.append('production_year', String(data.production_year));
+      if (data.status) formData.append('status', data.status);
+      
+      if (data.brand !== undefined) formData.append('brand', data.brand || '');
+      if (data.notes !== undefined) formData.append('notes', data.notes || '');
+
+      if (data.facilities) {
+        data.facilities.forEach((id, index) => {
+          formData.append(`facilities[${index}]`, id);
+        });
+      }
+
+      if (data.images) {
+        data.images.forEach((file) => {
+          formData.append('images[]', file);
+        });
+      }
 
       const response = await axios.post<BusApiResponse>(ENDPOINTS.DETAIL(id), formData, {
         headers: { 'Content-Type': 'multipart/form-data' }

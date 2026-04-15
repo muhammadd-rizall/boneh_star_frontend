@@ -1,38 +1,33 @@
-import type { TimestampedEntity, ActivableEntity } from "@/types/Database";
+import type { Bus as BaseBus } from "@/types/Database";
 
-export interface Bus extends TimestampedEntity, ActivableEntity {
-  code: string;
-  name: string;
-  capacity: string;
-  price_per_day: number | string;
-  image: string;
-  description?: string | null;
-  is_active: boolean;
-}
+export type Bus = BaseBus;
 
 export interface BusStatistics {
   cards: {
     total: number;
-    active: number;
-    inactive: number;
-    average_price: number;
+    available: number;
+    booked: number;
+    maintenance: number;
   };
-  by_capacity: Record<string, number>;
+  by_status: Record<string, number>;
 }
 
 export interface BusFormData {
-  code: string;
+  bus_category_id: string;
+  plat_number: string;
   name: string;
-  capacity: string;
-  price_per_day: number;
-  image?: File | string | null;
-  description?: string | null;
-  is_active: boolean;
+  seat_count: number;
+  production_year: number;
+  brand?: string;
+  status: 'available' | 'booked' | 'maintenance' | 'inactive';
+  notes?: string;
+  facilities?: string[]; // IDs of facilities
+  images?: File[];
 }
 
 export interface BusApiResponse {
   success: boolean;
   message: string;
   statistic?: BusStatistics;
-  data: Bus | Bus[] | any; // To handle paginated response structure
+  data: Bus | Bus[] | { data: Bus[] };
 }

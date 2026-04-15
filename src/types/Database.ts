@@ -101,14 +101,18 @@ export interface Customer extends TimestampedEntity, ActivableEntity {
 /**
  * Buses Table
  */
-export interface Bus extends TimestampedEntity, ActivableEntity {
-  code: string
-  name: string
-  capacity: string
-  price_per_day: number | string
-  image: string
-  description?: string | null
-  is_active: boolean
+export interface Bus extends TimestampedEntity {
+  bus_category_id: string;
+  plat_number: string;
+  name: string;
+  seat_count: number;
+  production_year: number;
+  brand?: string | null;
+  status: 'available' | 'booked' | 'maintenance' | 'inactive';
+  notes?: string | null;
+  category?: BusCategory;
+  facilities?: BusFacility[];
+  images?: BusImage[];
 }
 
 /**
@@ -126,4 +130,19 @@ export interface BusCategory extends TimestampedEntity {
  */
 export interface BusFacility extends TimestampedEntity {
   name: string
+}
+
+/**
+ * Bus Images Table
+ */
+export interface BusImage {
+  id: string
+  bus_id: string
+  image_path: string
+  url: string
+  caption?: string | null
+  is_primary: boolean
+  sort_order: number
+  created_at: string
+  updated_at: string
 }

@@ -8,7 +8,7 @@ import {
 import Button from "@/components/ui/Button"
 import Modal from "@/components/ui/Modal"
 import Confirmation from "@/components/feedback/Confirmation"
-import { Plus, RefreshCcw, Bus as BusIcon, ShieldCheck, ShieldAlert, Banknote, Users } from "lucide-react"
+import { Plus, RefreshCcw, Bus as BusIcon, ShieldCheck, ShieldAlert, Wrench, Layout } from "lucide-react"
 
 export default function BusPage() {
   const { buses, statistics, loading, error, deleteBus, refetch } = useBuses()
@@ -53,34 +53,29 @@ export default function BusPage() {
 
   const stats = [
     { 
-      label: "Total Buses", 
+      label: "Total Fleet", 
       value: statistics?.cards.total ?? 0, 
-      icon: BusIcon, 
-      note: "Total buses in fleet" 
+      icon: Layout, 
+      note: "Total buses registered" 
     },
     { 
-      label: "Active Buses", 
-      value: statistics?.cards.active ?? 0, 
+      label: "Available", 
+      value: statistics?.cards.available ?? 0, 
       icon: ShieldCheck, 
-      note: "Available for booking" 
+      note: "Ready for booking" 
     },
     { 
-      label: "Avg. Price", 
-      value: `Rp ${Number(statistics?.cards.average_price ?? 0).toLocaleString('id-ID')}`, 
-      icon: Banknote, 
-      note: "Average price per day" 
+      label: "Booked", 
+      value: statistics?.cards.booked ?? 0, 
+      icon: BusIcon, 
+      note: "Currently on trip" 
     },
     { 
-      label: "Capacities", 
-      value: Object.keys(statistics?.by_capacity ?? {}).length, 
-      icon: Users, 
-      note: "Different seat variations" 
+      label: "Maintenance", 
+      value: statistics?.cards.maintenance ?? 0, 
+      icon: Wrench, 
+      note: "Under repair" 
     },
-  ]
-
-  const statusStats = [
-    { label: "Ready to Use", value: statistics?.cards.active ?? 0, icon: ShieldCheck, color: "text-emerald-600" },
-    { label: "Maintenance/Inactive", value: statistics?.cards.inactive ?? 0, icon: ShieldAlert, color: "text-rose-600" },
   ]
 
   return (
@@ -91,7 +86,7 @@ export default function BusPage() {
             <p className="text-sm font-medium uppercase tracking-[0.24em] text-slate-400">Admin buses</p>
             <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900">Bus Fleet Management</h1>
             <p className="mt-2 max-w-2xl text-slate-500">
-              Manage your bus fleet, monitor availability, and set pricing.
+              Manage your bus fleet, monitor availability, and set specifications.
             </p>
           </div>
           
@@ -122,20 +117,6 @@ export default function BusPage() {
             </div>
           ))}
         </div>
-
-        <div className="flex flex-wrap gap-6 border-t border-slate-100 pt-6">
-          {statusStats.map((sStat, i) => (
-            <div key={i} className="flex items-center gap-3">
-              <div className={`flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 ${sStat.color}`}>
-                <sStat.icon size={16} />
-              </div>
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{sStat.label}</p>
-                <p className="text-sm font-semibold text-slate-700">{loading ? "..." : sStat.value}</p>
-              </div>
-            </div>
-          ))}
-        </div>
       </section>
 
       <div className="min-h-[400px]">
@@ -163,7 +144,8 @@ export default function BusPage() {
       <Modal 
         open={isModalOpen} 
         onClose={() => setIsModalOpen(false)}
-        title={selectedBus ? "Update Bus Details" : "Add New Bus to Fleet"}
+        title={selectedBus ? "Update Bus Details" : "Register New Bus to Fleet"}
+        size="lg"
       >
         <BusForm 
           bus={selectedBus} 

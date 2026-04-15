@@ -1,6 +1,6 @@
 import type { BusFacility as BaseBusFacility } from "@/types/Database";
 
-export interface BusFacility extends BaseBusFacility {}
+export type BusFacility = BaseBusFacility;
 
 export interface BusFacilityStatistics {
   total: number;

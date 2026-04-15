@@ -1,11 +1,12 @@
 import type { BusCategory as BaseBusCategory } from "@/types/Database";
 
-export interface BusCategory extends BaseBusCategory {}
+export type BusCategory = BaseBusCategory;
 
 export interface BusCategoryStatistics {
   total: number;
   active?: number;
   inactive?: number;
+  trashed?: number;
 }
 
 export interface BusCategoryFormData {
