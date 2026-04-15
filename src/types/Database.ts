@@ -120,3 +120,10 @@ export interface BusCategory extends TimestampedEntity {
   max_capacity: number
   description?: string | null
 }
+
+/**
+ * Bus Facilities Table
+ */
+export interface BusFacility extends TimestampedEntity {
+  name: string
+}
