@@ -60,6 +60,7 @@ export default function DahsbordLayout() {
   const menuItems = [
     { to: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { to: "/admin/buses", icon: Bus, label: "Bus" },
+    { to: "/admin/bus-categories", icon: LayoutDashboard, label: "Bus Categories" },
     { to: "/admin/users", icon: Users, label: "User Management" },
     { to: "/admin/customers", icon: UserCircle, label: "Customer Management" },
     { to: "/admin/roles", icon: ShieldCheck, label: "Roles & Permissions" },

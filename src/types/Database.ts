@@ -110,3 +110,13 @@ export interface Bus extends TimestampedEntity, ActivableEntity {
   description?: string | null
   is_active: boolean
 }
+
+/**
+ * Bus Categories Table
+ */
+export interface BusCategory extends TimestampedEntity {
+  name: string
+  min_capacity: number
+  max_capacity: number
+  description?: string | null
+}

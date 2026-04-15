@@ -5,6 +5,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import UserPage from "@/page/admin/users/UserPage";
 import RolePage from "@/page/admin/roles/RolePage";
 import CustomerPage from "@/page/admin/customers/CustomerPage";
+import BusCategoryPage from "@/page/admin/bus-categories/BusCategoryPage";
 import "./App.css";
 import BusPage from "./page/admin/buses/BusPage";
 
@@ -114,6 +115,7 @@ function App() {
         <Route index element={<Navigate to="/admin/dashboard" />} />
         <Route path="dashboard" element={<DashboardHome />} />
         <Route path="buses" element={<BusPage/>}/>
+        <Route path="bus-categories" element={<BusCategoryPage/>}/>
         <Route path="users" element={<UserPage />} />
         <Route path="customers" element={<CustomerPage />} />
         <Route path="roles" element={<RolePage />} />
