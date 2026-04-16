@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { 
   RoleTable, 
   RoleForm, 
@@ -7,17 +7,25 @@ import {
 } from "@/features/admin/roles"
 import Button from "@/components/ui/Button"
 import Modal from "@/components/ui/Modal"
+import Search from "@/components/ui/Search"
 import Confirmation from "@/components/feedback/Confirmation"
 import { Plus, RefreshCcw, ShieldCheck, ShieldAlert, Key } from "lucide-react"
 
 export default function RolePage() {
   const { roles, statistics, permissions, loading, error, deleteRole, refetch } = useRoles()
   
+  const [searchTerm, setSearchTerm] = useState("")
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedRole, setSelectedRole] = useState<Role | null>(null)
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
   const [roleToDelete, setRoleToDelete] = useState<Role | null>(null)
   const [deleteLoading, setDeleteLoading] = useState(false)
+
+  const filteredRoles = useMemo(() => {
+    return roles.filter(role => 
+      role.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  }, [roles, searchTerm])
 
   const handleCreate = () => {
     setSelectedRole(null)
@@ -52,24 +60,9 @@ export default function RolePage() {
   }
 
   const stats = [
-    { 
-      label: "Total Roles", 
-      value: statistics?.total_roles ?? roles.length, 
-      icon: ShieldCheck, 
-      note: "Semua level akses" 
-    },
-    { 
-      label: "Active Roles", 
-      value: statistics?.active_roles ?? roles.filter(r => r.is_active).length, 
-      icon: Key, 
-      note: "Role yang sedang dipakai" 
-    },
-    { 
-      label: "Total Permissions", 
-      value: statistics?.total_permissions ?? Object.values(permissions).flat().length, 
-      icon: ShieldAlert, 
-      note: "Hak akses yang tersedia" 
-    },
+    { label: "Total Roles", value: statistics?.total_roles ?? roles.length, icon: ShieldCheck, note: "Semua level akses" },
+    { label: "Active Roles", value: statistics?.active_roles ?? roles.filter(r => r.is_active).length, icon: Key, note: "Role yang sedang dipakai" },
+    { label: "Total Permissions", value: statistics?.total_permissions ?? Object.values(permissions).flat().length, icon: ShieldAlert, note: "Hak akses yang tersedia" },
   ]
 
   return (
@@ -79,12 +72,14 @@ export default function RolePage() {
           <div>
             <p className="text-sm font-medium uppercase tracking-[0.24em] text-slate-400">Access control</p>
             <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900">Roles & Permissions</h1>
-            <p className="mt-2 max-w-2xl text-slate-500">
-              Atur level akses dan permission sistem dengan struktur visual yang lebih bersih dan mudah dipahami.
-            </p>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <Search 
+              value={searchTerm} 
+              onChange={setSearchTerm} 
+              placeholder="Search roles..." 
+            />
             <Button variant="outline" icon={RefreshCcw} onClick={refetch} loading={loading}>
               Refresh
             </Button>
@@ -125,7 +120,7 @@ export default function RolePage() {
           </div>
         ) : (
           <RoleTable 
-            data={roles} 
+            data={filteredRoles} 
             onDelete={handleDeleteClick} 
             onEdit={handleEdit}
             loading={loading} 
@@ -133,19 +128,8 @@ export default function RolePage() {
         )}
       </div>
 
-      {/* Form Modal */}
-      <Modal 
-        open={isModalOpen} 
-        onClose={() => setIsModalOpen(false)}
-        title={selectedRole ? "Modify Role Permissions" : "Create New Access Role"}
-        size="lg"
-      >
-        <RoleForm 
-          role={selectedRole} 
-          availablePermissions={permissions}
-          onSuccess={handleSuccess} 
-          onCancel={() => setIsModalOpen(false)} 
-        />
+      <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedRole ? "Modify Role Permissions" : "Create New Access Role"} size="lg">
+        <RoleForm role={selectedRole} availablePermissions={permissions} onSuccess={handleSuccess} onCancel={() => setIsModalOpen(false)} />
       </Modal>
 
       <Confirmation

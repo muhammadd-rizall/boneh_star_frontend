@@ -4,6 +4,7 @@ import type { Driver, DriverFormData, DriverApiResponse, DriverStatistics } from
 const ENDPOINTS = {
   BASE: '/admin/drivers',
   DETAIL: (id: string) => `/admin/drivers/${id}`,
+  UPDATE: (id: string) => `/admin/drivers/${id}?_method=PUT`, // Laravel trick for multipart PUT
   TRASHED: '/admin/drivers/trashed',
   RESTORE: (id: string) => `/admin/drivers/${id}/restore`,
   FORCE_DELETE: (id: string) => `/admin/drivers/${id}/force-delete`,
@@ -53,9 +54,11 @@ export const driverService = {
     }
   },
 
-  create: async (data: DriverFormData): Promise<Driver> => {
+  create: async (data: FormData): Promise<Driver> => {
     try {
-      const response = await axios.post<DriverApiResponse>(ENDPOINTS.BASE, data);
+      const response = await axios.post<DriverApiResponse>(ENDPOINTS.BASE, data, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
       return response.data.data as Driver;
     } catch (error) {
       console.error('Error creating driver:', error);
@@ -63,9 +66,12 @@ export const driverService = {
     }
   },
 
-  update: async (id: string, data: DriverFormData): Promise<Driver> => {
+  update: async (id: string, data: FormData): Promise<Driver> => {
     try {
-      const response = await axios.put<DriverApiResponse>(ENDPOINTS.DETAIL(id), data);
+      // We use POST with _method=PUT because multipart/form-data doesn't work natively with PUT in Laravel
+      const response = await axios.post<DriverApiResponse>(ENDPOINTS.UPDATE(id), data, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
       return response.data.data as Driver;
     } catch (error) {
       console.error(`Error updating driver ${id}:`, error);

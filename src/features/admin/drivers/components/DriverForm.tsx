@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Input from "@/components/ui/Input";
 import Textarea from "@/components/ui/Textarea";
 import Select from "@/components/ui/Select";
 import Button from "@/components/ui/Button";
-import { User, Save, Phone, MapPin, Image as ImageIcon, Info } from "lucide-react";
-import type { Driver, DriverFormData } from "../types/Driver";
+import { User, Save, Phone, MapPin, Image as ImageIcon, Info, X, Camera } from "lucide-react";
+import type { Driver } from "../types/Driver";
 import { driverService } from "../services/DriverService";
 
 interface DriverFormProps {
@@ -15,17 +15,20 @@ interface DriverFormProps {
 
 export default function DriverForm({ driver, onSuccess, onCancel }: DriverFormProps) {
   const isEdit = !!driver;
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [formData, setFormData] = useState<DriverFormData>({
+  const [formData, setFormData] = useState({
     name: "",
     phone: "",
     address: "",
-    photo: "",
     status: "available",
     notes: "",
   });
+
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
 
   useEffect(() => {
     if (driver) {
@@ -33,12 +36,34 @@ export default function DriverForm({ driver, onSuccess, onCancel }: DriverFormPr
         name: driver.name,
         phone: driver.phone,
         address: driver.address,
-        photo: driver.photo || "",
         status: driver.status,
         notes: driver.notes || "",
       });
+      if (driver.photo) {
+        setPhotoPreview(driver.photo);
+      }
     }
   }, [driver]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setPhotoFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhotoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removePhoto = () => {
+    setPhotoFile(null);
+    setPhotoPreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,10 +71,21 @@ export default function DriverForm({ driver, onSuccess, onCancel }: DriverFormPr
     setError(null);
 
     try {
+      const data = new FormData();
+      data.append("name", formData.name);
+      data.append("phone", formData.phone);
+      data.append("address", formData.address);
+      data.append("status", formData.status);
+      data.append("notes", formData.notes);
+      
+      if (photoFile) {
+        data.append("photo", photoFile);
+      }
+
       if (isEdit && driver) {
-        await driverService.update(driver.id, formData);
+        await driverService.update(driver.id, data);
       } else {
-        await driverService.create(formData);
+        await driverService.create(data);
       }
       onSuccess();
     } catch (err: any) {
@@ -67,6 +103,51 @@ export default function DriverForm({ driver, onSuccess, onCancel }: DriverFormPr
           {error}
         </div>
       )}
+
+      <div className="flex flex-col items-center gap-4 mb-2">
+        <div className="relative group">
+          <div className="h-28 w-28 rounded-3xl border-2 border-dashed border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden transition-all group-hover:border-indigo-300 group-hover:bg-slate-100">
+            {photoPreview ? (
+              <img src={photoPreview} alt="Preview" className="h-full w-full object-cover" />
+            ) : (
+              <div className="flex flex-col items-center gap-1 text-slate-400">
+                <Camera size={28} />
+                <span className="text-[10px] font-bold uppercase tracking-wider">Photo</span>
+              </div>
+            )}
+          </div>
+          
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            accept="image/*"
+            className="hidden"
+          />
+
+          <div className="absolute -bottom-2 -right-2 flex gap-1">
+            {photoPreview && (
+              <button
+                type="button"
+                onClick={removePhoto}
+                className="flex h-8 w-8 items-center justify-center rounded-xl border border-rose-200 bg-rose-50 text-rose-600 shadow-sm transition-all hover:bg-rose-100"
+              >
+                <X size={16} />
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="flex h-8 w-8 items-center justify-center rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-600 shadow-sm transition-all hover:bg-indigo-100"
+            >
+              <ImageIcon size={16} />
+            </button>
+          </div>
+        </div>
+        <p className="text-xs text-slate-400 font-medium text-center">
+          Format: JPG, PNG. Max 2MB.
+        </p>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <Input
@@ -98,33 +179,27 @@ export default function DriverForm({ driver, onSuccess, onCancel }: DriverFormPr
           />
         </div>
 
-        <Input
-          label="Photo URL"
-          placeholder="https://example.com/photo.jpg"
-          icon={ImageIcon}
-          value={formData.photo || ""}
-          onChange={(e) => setFormData({ ...formData, photo: e.target.value })}
-        />
-
-        <Select
-          label="Status"
-          icon={Info}
-          value={formData.status}
-          onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
-          options={[
-            { value: "available", label: "Available" },
-            { value: "on_duty", label: "On Duty" },
-            { value: "inactive", label: "Inactive" },
-          ]}
-          required
-        />
+        <div className="md:col-span-2">
+          <Select
+            label="Status"
+            icon={Info}
+            value={formData.status}
+            onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
+            options={[
+              { value: "available", label: "Available" },
+              { value: "on_duty", label: "On Duty" },
+              { value: "inactive", label: "Inactive" },
+            ]}
+            required
+          />
+        </div>
 
         <div className="md:col-span-2">
           <Textarea
             label="Notes"
             placeholder="Additional notes about the driver..."
             icon={Info}
-            value={formData.notes || ""}
+            value={formData.notes}
             onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
             rows={3}
           />

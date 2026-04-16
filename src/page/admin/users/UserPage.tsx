@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { 
   UserTable, 
   UserForm, 
@@ -7,17 +7,26 @@ import {
 } from "@/features/admin/users"
 import Button from "@/components/ui/Button"
 import Modal from "@/components/ui/Modal"
+import Search from "@/components/ui/Search"
 import Confirmation from "@/components/feedback/Confirmation"
 import { Plus, RefreshCcw, Users, UserCheck, UserMinus, Trash2, ShieldAlert } from "lucide-react"
 
 export default function UserPage() {
   const { users, statistics, loading, error, deleteUser, refetch } = useUsers()
   
+  const [searchTerm, setSearchTerm] = useState("")
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
   const [userToDelete, setUserToDelete] = useState<User | null>(null)
   const [deleteLoading, setDeleteLoading] = useState(false)
+
+  const filteredUsers = useMemo(() => {
+    return users.filter(user => 
+      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  }, [users, searchTerm])
 
   const handleCreate = () => {
     setSelectedUser(null)
@@ -52,30 +61,10 @@ export default function UserPage() {
   }
 
   const stats = [
-    { 
-      label: "Total Users", 
-      value: statistics?.total ?? 0, 
-      icon: Users, 
-      note: "Seluruh akun terdaftar" 
-    },
-    { 
-      label: "Active Accounts", 
-      value: statistics?.active ?? 0, 
-      icon: UserCheck, 
-      note: "Akun yang masih aktif" 
-    },
-    { 
-      label: "Inactive", 
-      value: statistics?.inactive ?? 0, 
-      icon: UserMinus, 
-      note: "Butuh evaluasi akses" 
-    },
-    { 
-      label: "Recycle Bin", 
-      value: statistics?.trashed ?? 0, 
-      icon: Trash2, 
-      note: "Akun yang dihapus" 
-    },
+    { label: "Total Users", value: statistics?.total ?? 0, icon: Users, note: "Seluruh akun terdaftar" },
+    { label: "Active Accounts", value: statistics?.active ?? 0, icon: UserCheck, note: "Akun yang masih aktif" },
+    { label: "Inactive", value: statistics?.inactive ?? 0, icon: UserMinus, note: "Butuh evaluasi akses" },
+    { label: "Recycle Bin", value: statistics?.trashed ?? 0, icon: Trash2, note: "Akun yang dihapus" },
   ]
 
   return (
@@ -85,12 +74,14 @@ export default function UserPage() {
           <div>
             <p className="text-sm font-medium uppercase tracking-[0.24em] text-slate-400">Admin users</p>
             <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900">Users Management</h1>
-            <p className="mt-2 max-w-2xl text-slate-500">
-              Kelola akun administrator, status akses, dan distribusi role dengan tampilan yang lebih ringkas.
-            </p>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <Search 
+              value={searchTerm} 
+              onChange={setSearchTerm} 
+              placeholder="Search by name or email..." 
+            />
             <Button variant="outline" icon={RefreshCcw} onClick={refetch} loading={loading}>
               Refresh
             </Button>
@@ -133,7 +124,7 @@ export default function UserPage() {
           </div>
         ) : (
           <UserTable 
-            data={users} 
+            data={filteredUsers} 
             onDelete={handleDeleteClick} 
             onEdit={handleEdit}
             loading={loading} 
@@ -141,11 +132,7 @@ export default function UserPage() {
         )}
       </div>
 
-      <Modal 
-        open={isModalOpen} 
-        onClose={() => setIsModalOpen(false)}
-        title={selectedUser ? "Update User Access" : "Register New Administrator"}
-      >
+      <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedUser ? "Update User Access" : "Register New Administrator"}>
         <UserForm user={selectedUser} onSuccess={handleSuccess} onCancel={() => setIsModalOpen(false)} />
       </Modal>
 

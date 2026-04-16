@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { 
   CustomerTable, 
   CustomerForm, 
@@ -7,17 +7,26 @@ import {
 } from "@/features/admin/customers"
 import Button from "@/components/ui/Button"
 import Modal from "@/components/ui/Modal"
+import Search from "@/components/ui/Search"
 import Confirmation from "@/components/feedback/Confirmation"
 import { Plus, RefreshCcw, Users, UserCheck, UserPlus, Heart, ShieldAlert, UserMinus } from "lucide-react"
 
 export default function CustomerPage() {
   const { customers, statistics, loading, error, deleteCustomer, refetch } = useCustomers()
   
+  const [searchTerm, setSearchTerm] = useState("")
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
   const [customerToDelete, setCustomerToDelete] = useState<Customer | null>(null)
   const [deleteLoading, setDeleteLoading] = useState(false)
+
+  const filteredCustomers = useMemo(() => {
+    return customers.filter(customer => 
+      customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      customer.email.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  }, [customers, searchTerm])
 
   const handleCreate = () => {
     setSelectedCustomer(null)
@@ -52,30 +61,10 @@ export default function CustomerPage() {
   }
 
   const stats = [
-    { 
-      label: "Total Customers", 
-      value: statistics?.cards.total ?? 0, 
-      icon: Users, 
-      note: "Total registered customers" 
-    },
-    { 
-      label: "Active Customers", 
-      value: statistics?.cards.active ?? 0, 
-      icon: UserCheck, 
-      note: "Currently active accounts" 
-    },
-    { 
-      label: "New Members", 
-      value: statistics?.cards.new_members ?? 0, 
-      icon: UserPlus, 
-      note: "Joined in the last 30 days" 
-    },
-    { 
-      label: "Loyal Customers", 
-      value: statistics?.cards.loyal_customers ?? 0, 
-      icon: Heart, 
-      note: "3+ completed bookings" 
-    },
+    { label: "Total Customers", value: statistics?.cards.total ?? 0, icon: Users, note: "Total registered customers" },
+    { label: "Active Customers", value: statistics?.cards.active ?? 0, icon: UserCheck, note: "Currently active accounts" },
+    { label: "New Members", value: statistics?.cards.new_members ?? 0, icon: UserPlus, note: "Joined in the last 30 days" },
+    { label: "Loyal Customers", value: statistics?.cards.loyal_customers ?? 0, icon: Heart, note: "3+ completed bookings" },
   ]
 
   const accountStats = [
@@ -90,12 +79,14 @@ export default function CustomerPage() {
           <div>
             <p className="text-sm font-medium uppercase tracking-[0.24em] text-slate-400">Admin customers</p>
             <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900">Customer Management</h1>
-            <p className="mt-2 max-w-2xl text-slate-500">
-              Manage your customers, monitor their activities, and handle account statuses.
-            </p>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <Search 
+              value={searchTerm} 
+              onChange={setSearchTerm} 
+              placeholder="Search by name or email..." 
+            />
             <Button variant="outline" icon={RefreshCcw} onClick={refetch} loading={loading}>
               Refresh
             </Button>
@@ -115,7 +106,7 @@ export default function CustomerPage() {
                 <span className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Live</span>
               </div>
               <p className="mt-5 text-sm font-medium text-slate-500">{stat.label}</p>
-              <p className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">
+              <p className="mt-2 text-3xl font-semibold tracking-tight text-slate-900 truncate">
                 {loading ? "..." : stat.value}
               </p>
               <p className="mt-2 text-sm text-slate-400">{stat.note}</p>
@@ -152,7 +143,7 @@ export default function CustomerPage() {
           </div>
         ) : (
           <CustomerTable 
-            data={customers} 
+            data={filteredCustomers} 
             onDelete={handleDeleteClick} 
             onEdit={handleEdit}
             loading={loading} 
@@ -160,16 +151,8 @@ export default function CustomerPage() {
         )}
       </div>
 
-      <Modal 
-        open={isModalOpen} 
-        onClose={() => setIsModalOpen(false)}
-        title={selectedCustomer ? "Update Customer" : "Register New Customer"}
-      >
-        <CustomerForm 
-          customer={selectedCustomer} 
-          onSuccess={handleSuccess} 
-          onCancel={() => setIsModalOpen(false)} 
-        />
+      <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedCustomer ? "Update Customer" : "Register New Customer"}>
+        <CustomerForm customer={selectedCustomer} onSuccess={handleSuccess} onCancel={() => setIsModalOpen(false)} />
       </Modal>
 
       <Confirmation

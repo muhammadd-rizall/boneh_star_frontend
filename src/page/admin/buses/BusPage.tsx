@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { 
   BusTable, 
   BusForm, 
@@ -7,17 +7,26 @@ import {
 } from "@/features/admin/buses"
 import Button from "@/components/ui/Button"
 import Modal from "@/components/ui/Modal"
+import Search from "@/components/ui/Search"
 import Confirmation from "@/components/feedback/Confirmation"
 import { Plus, RefreshCcw, Bus as BusIcon, ShieldCheck, ShieldAlert, Wrench, Layout } from "lucide-react"
 
 export default function BusPage() {
   const { buses, statistics, loading, error, deleteBus, refetch } = useBuses()
   
+  const [searchTerm, setSearchTerm] = useState("")
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedBus, setSelectedBus] = useState<Bus | null>(null)
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
   const [busToDelete, setBusToDelete] = useState<Bus | null>(null)
   const [deleteLoading, setDeleteLoading] = useState(false)
+
+  const filteredBuses = useMemo(() => {
+    return buses.filter(bus => 
+      bus.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      bus.plat_number.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  }, [buses, searchTerm])
 
   const handleCreate = () => {
     setSelectedBus(null)
@@ -52,30 +61,10 @@ export default function BusPage() {
   }
 
   const stats = [
-    { 
-      label: "Total Fleet", 
-      value: statistics?.cards.total ?? 0, 
-      icon: Layout, 
-      note: "Total buses registered" 
-    },
-    { 
-      label: "Available", 
-      value: statistics?.cards.available ?? 0, 
-      icon: ShieldCheck, 
-      note: "Ready for booking" 
-    },
-    { 
-      label: "Booked", 
-      value: statistics?.cards.booked ?? 0, 
-      icon: BusIcon, 
-      note: "Currently on trip" 
-    },
-    { 
-      label: "Maintenance", 
-      value: statistics?.cards.maintenance ?? 0, 
-      icon: Wrench, 
-      note: "Under repair" 
-    },
+    { label: "Total Fleet", value: statistics?.cards.total ?? 0, icon: Layout, note: "Total buses registered" },
+    { label: "Available", value: statistics?.cards.available ?? 0, icon: ShieldCheck, note: "Ready for booking" },
+    { label: "Booked", value: statistics?.cards.booked ?? 0, icon: BusIcon, note: "Currently on trip" },
+    { label: "Maintenance", value: statistics?.cards.maintenance ?? 0, icon: Wrench, note: "Under repair" },
   ]
 
   return (
@@ -85,12 +74,14 @@ export default function BusPage() {
           <div>
             <p className="text-sm font-medium uppercase tracking-[0.24em] text-slate-400">Admin buses</p>
             <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900">Bus Fleet Management</h1>
-            <p className="mt-2 max-w-2xl text-slate-500">
-              Manage your bus fleet, monitor availability, and set specifications.
-            </p>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <Search 
+              value={searchTerm} 
+              onChange={setSearchTerm} 
+              placeholder="Search by name or plat..." 
+            />
             <Button variant="outline" icon={RefreshCcw} onClick={refetch} loading={loading}>
               Refresh
             </Button>
@@ -133,7 +124,7 @@ export default function BusPage() {
           </div>
         ) : (
           <BusTable 
-            data={buses} 
+            data={filteredBuses} 
             onDelete={handleDeleteClick} 
             onEdit={handleEdit}
             loading={loading} 
@@ -147,11 +138,7 @@ export default function BusPage() {
         title={selectedBus ? "Update Bus Details" : "Register New Bus to Fleet"}
         size="lg"
       >
-        <BusForm 
-          bus={selectedBus} 
-          onSuccess={handleSuccess} 
-          onCancel={() => setIsModalOpen(false)} 
-        />
+        <BusForm bus={selectedBus} onSuccess={handleSuccess} onCancel={() => setIsModalOpen(false)} />
       </Modal>
 
       <Confirmation
