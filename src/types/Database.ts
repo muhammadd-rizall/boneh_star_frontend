@@ -141,6 +141,15 @@ export interface ActivityType extends TimestampedEntity {
 }
 
 /**
+ * Route Types Table
+ */
+export interface RouteType extends TimestampedEntity {
+  name: string
+  scope: 'inside' | 'outside'
+  description: string
+}
+
+/**
  * Bus Images Table
  */
 export interface BusImage {

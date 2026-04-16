@@ -15,7 +15,8 @@ import {
   UserCircle,
   Bus,
   Shield,
-  Tag
+  Tag,
+  Map
 } from "lucide-react";
 
 interface SidebarItemProps {
@@ -65,6 +66,7 @@ export default function DahsbordLayout() {
     { to: "/admin/bus-categories", icon: LayoutDashboard, label: "Bus Categories" },
     { to: "/admin/bus-facilities", icon: Shield, label: "Bus Facilities" },
     { to: "/admin/activity-types", icon: Tag, label: "Activity Types" },
+    { to: "/admin/route-types", icon: Map, label: "Route Types" },
     { to: "/admin/users", icon: Users, label: "User Management" },
     { to: "/admin/customers", icon: UserCircle, label: "Customer Management" },
     { to: "/admin/roles", icon: ShieldCheck, label: "Roles & Permissions" },
