@@ -133,6 +133,14 @@ export interface BusFacility extends TimestampedEntity {
 }
 
 /**
+ * Activity Types Table
+ */
+export interface ActivityType extends TimestampedEntity {
+  name: string
+  description: string
+}
+
+/**
  * Bus Images Table
  */
 export interface BusImage {
