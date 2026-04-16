@@ -16,7 +16,8 @@ import {
   Bus,
   Shield,
   Tag,
-  Map
+  Map,
+  Contact
 } from "lucide-react";
 
 interface SidebarItemProps {
@@ -67,6 +68,7 @@ export default function DahsbordLayout() {
     { to: "/admin/bus-facilities", icon: Shield, label: "Bus Facilities" },
     { to: "/admin/activity-types", icon: Tag, label: "Activity Types" },
     { to: "/admin/route-types", icon: Map, label: "Route Types" },
+    { to: "/admin/drivers", icon: Contact, label: "Drivers Management" },
     { to: "/admin/users", icon: Users, label: "User Management" },
     { to: "/admin/customers", icon: UserCircle, label: "Customer Management" },
     { to: "/admin/roles", icon: ShieldCheck, label: "Roles & Permissions" },

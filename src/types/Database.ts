@@ -150,6 +150,18 @@ export interface RouteType extends TimestampedEntity {
 }
 
 /**
+ * Drivers Table
+ */
+export interface Driver extends TimestampedEntity {
+  name: string
+  phone: string
+  address: string
+  photo?: string | null
+  status: 'available' | 'on_duty' | 'inactive'
+  notes?: string | null
+}
+
+/**
  * Bus Images Table
  */
 export interface BusImage {
