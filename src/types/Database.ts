@@ -209,7 +209,7 @@ export interface Booking extends TimestampedEntity {
   cancelled_by?: CancelledBy | null;
   cancelled_reason?: string | null;
   
-  // Relations
+  // Relations (Matched with BookingResource)
   customer?: Customer;
   activity?: ActivityType;
   route_type?: RouteType;
@@ -229,4 +229,31 @@ export interface BookingBus extends TimestampedEntity {
   // Relations
   bus?: Bus;
   driver?: Driver;
+}
+
+// ========================================
+// QUOTATION MANAGEMENT
+// ========================================
+
+/**
+ * Quotation Status Types
+ */
+export type QuotationStatus = 'draft' | 'sent' | 'accepted' | 'revision' | 'expired' | 'rejected';
+
+/**
+ * Quotations Table
+ */
+export interface Quotation extends TimestampedEntity {
+  booking_id: string;
+  user_id: string;
+  proposed_price: number;
+  dp_amount: number;
+  note_to_customer: string;
+  status: QuotationStatus;
+  valid_until: string;
+  revision_note?: string | null;
+
+  // Relations
+  booking?: Booking;
+  user?: User;
 }

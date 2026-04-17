@@ -1,0 +1,96 @@
+import axios from '@/api/Axios';
+import type { Quotation, QuotationFormData, QuotationApiResponse, QuotationStatistics } from '@/features/admin/quotations/types/Quotation';
+
+const ENDPOINTS = {
+  BASE: '/admin/quotations',
+  DETAIL: (id: string) => `/admin/quotations/${id}`,
+  TRASHED: '/admin/quotations/trashed',
+  RESTORE: (id: string) => `/admin/quotations/${id}/restore`,
+  FORCE_DELETE: (id: string) => `/admin/quotations/${id}/force-delete`,
+};
+
+export const quotationService = {
+  getAll: async (): Promise<{ quotations: Quotation[], statistics: QuotationStatistics | null }> => {
+    try {
+      const response = await axios.get<QuotationApiResponse>(ENDPOINTS.BASE);
+      const data = response.data.data;
+      return {
+        quotations: Array.isArray(data) ? data : [],
+        statistics: response.data.statistics || null
+      };
+    } catch (error) {
+      console.error('Error fetching quotations:', error);
+      throw error;
+    }
+  },
+
+  getTrashed: async (): Promise<Quotation[]> => {
+    try {
+      const response = await axios.get<QuotationApiResponse>(ENDPOINTS.TRASHED);
+      const data = response.data.data;
+      return Array.isArray(data) ? data : [];
+    } catch (error) {
+      console.error('Error fetching trashed quotations:', error);
+      throw error;
+    }
+  },
+
+  getById: async (id: string): Promise<Quotation> => {
+    try {
+      const response = await axios.get<QuotationApiResponse>(ENDPOINTS.DETAIL(id));
+      return response.data.data as Quotation;
+    } catch (error) {
+      console.error(`Error fetching quotation ${id}:`, error);
+      throw error;
+    }
+  },
+
+  create: async (data: QuotationFormData): Promise<Quotation> => {
+    try {
+      const response = await axios.post<QuotationApiResponse>(ENDPOINTS.BASE, data);
+      return response.data.data as Quotation;
+    } catch (error) {
+      console.error('Error creating quotation:', error);
+      throw error;
+    }
+  },
+
+  update: async (id: string, data: QuotationFormData): Promise<Quotation> => {
+    try {
+      const response = await axios.put<QuotationApiResponse>(ENDPOINTS.DETAIL(id), data);
+      return response.data.data as Quotation;
+    } catch (error) {
+      console.error(`Error updating quotation ${id}:`, error);
+      throw error;
+    }
+  },
+
+  delete: async (id: string): Promise<void> => {
+    try {
+      await axios.delete(ENDPOINTS.DETAIL(id));
+    } catch (error) {
+      console.error(`Error deleting quotation ${id}:`, error);
+      throw error;
+    }
+  },
+
+  restore: async (id: string): Promise<void> => {
+    try {
+      await axios.post(ENDPOINTS.RESTORE(id));
+    } catch (error) {
+      console.error(`Error restoring quotation ${id}:`, error);
+      throw error;
+    }
+  },
+
+  forceDelete: async (id: string): Promise<void> => {
+    try {
+      await axios.delete(ENDPOINTS.FORCE_DELETE(id));
+    } catch (error) {
+      console.error(`Error force deleting quotation ${id}:`, error);
+      throw error;
+    }
+  },
+};
+
+export default quotationService;

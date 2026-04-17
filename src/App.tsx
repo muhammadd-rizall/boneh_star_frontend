@@ -11,6 +11,7 @@ import ActivityTypePage from "@/page/admin/activity-types/ActivityTypePage";
 import RouteTypePage from "@/page/admin/route-types/RouteTypePage";
 import DriverPage from "@/page/admin/drivers/DriverPage";
 import BookingPage from "@/page/admin/bookings/BookingPage";
+import QuotationPage from "@/page/admin/quotations/QuotationPage";
 import "./App.css";
 import BusPage from "./page/admin/buses/BusPage";
 
@@ -126,6 +127,7 @@ function App() {
         <Route path="route-types" element={<RouteTypePage/>}/>
         <Route path="drivers" element={<DriverPage/>}/>
         <Route path="bookings" element={<BookingPage/>}/>
+        <Route path="quotations" element={<QuotationPage/>}/>
         <Route path="users" element={<UserPage />} />
         <Route path="customers" element={<CustomerPage />} />
         <Route path="roles" element={<RolePage />} />

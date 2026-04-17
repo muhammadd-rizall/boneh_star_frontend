@@ -2,16 +2,27 @@ import Table from "@/components/ui/Table"
 import type { Column } from "@/components/ui/Table"
 import Button from "@/components/ui/Button"
 import type { Booking } from "@/features/admin/bookings/types/Booking"
-import { Edit, Trash2, Calendar, MapPin, Users, Bus } from "lucide-react"
+import { Edit, Trash2, Calendar, MapPin, Users, Bus, RotateCcw } from "lucide-react"
 
 interface BookingTableProps {
   data: Booking[]
   onDelete: (booking: Booking) => void
   onEdit: (booking: Booking) => void
+  onRestore?: (booking: Booking) => void
+  onForceDelete?: (booking: Booking) => void
   loading?: boolean
+  isTrashed?: boolean
 }
 
-export default function BookingTable({ data, onDelete, onEdit, loading }: BookingTableProps) {
+export default function BookingTable({ 
+  data, 
+  onDelete, 
+  onEdit, 
+  onRestore, 
+  onForceDelete, 
+  loading, 
+  isTrashed = false 
+}: BookingTableProps) {
   const formatDate = (dateString: string) => {
     try {
       const date = new Date(dateString);
@@ -94,7 +105,7 @@ export default function BookingTable({ data, onDelete, onEdit, loading }: Bookin
           <div className="flex items-center gap-1.5 text-xs font-medium text-slate-600" title="Buses (Assigned / Requested)">
             <Bus size={14} className="text-slate-400" />
             <span>
-              <span className={row.booking_buses?.length === row.bus_count_requested ? 'text-emerald-600 font-bold' : 'text-amber-600'}>
+              <span className={(row.booking_buses?.length || 0) === row.bus_count_requested ? 'text-emerald-600 font-bold' : 'text-amber-600'}>
                 {row.booking_buses?.length || 0}
               </span>
               <span className="text-slate-300 mx-1">/</span>
@@ -116,22 +127,45 @@ export default function BookingTable({ data, onDelete, onEdit, loading }: Bookin
       header: "Actions",
       accessor: (row) => (
         <div className="flex items-center gap-2">
-          <Button 
-            size="sm" 
-            variant="outline" 
-            icon={Edit} 
-            className="h-9 w-9 rounded-full p-0" 
-            onClick={() => onEdit(row)}
-            title="Edit Booking" 
-          />
-          <Button 
-            size="sm" 
-            variant="danger" 
-            icon={Trash2} 
-            className="h-9 w-9 rounded-full p-0" 
-            onClick={() => onDelete(row)}
-            title="Delete Booking"
-          />
+          {isTrashed ? (
+            <>
+              <Button 
+                size="sm" 
+                variant="outline" 
+                icon={RotateCcw} 
+                className="h-9 w-9 rounded-full p-0" 
+                onClick={() => onRestore?.(row)}
+                title="Restore Booking" 
+              />
+              <Button 
+                size="sm" 
+                variant="danger" 
+                icon={Trash2} 
+                className="h-9 w-9 rounded-full p-0" 
+                onClick={() => onForceDelete?.(row)}
+                title="Permanently Delete"
+              />
+            </>
+          ) : (
+            <>
+              <Button 
+                size="sm" 
+                variant="outline" 
+                icon={Edit} 
+                className="h-9 w-9 rounded-full p-0" 
+                onClick={() => onEdit(row)}
+                title="Edit Booking" 
+              />
+              <Button 
+                size="sm" 
+                variant="danger" 
+                icon={Trash2} 
+                className="h-9 w-9 rounded-full p-0" 
+                onClick={() => onDelete(row)}
+                title="Move to Trash"
+              />
+            </>
+          )}
         </div>
       )
     }

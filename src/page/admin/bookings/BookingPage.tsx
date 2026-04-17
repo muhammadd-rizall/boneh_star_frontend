@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { 
   BookingTable, 
   BookingForm, 
@@ -17,28 +17,53 @@ import {
   Clock, 
   XCircle, 
   ShieldAlert,
-  Calendar,
   Users,
-  Bus
+  Bus,
+  Trash2,
+  List
 } from "lucide-react"
 
 export default function BookingPage() {
-  const { bookings, statistics, loading, error, deleteBooking, refetch } = useBookings()
+  const { 
+    bookings, 
+    trashedBookings,
+    statistics, 
+    loading, 
+    error, 
+    deleteBooking, 
+    restoreBooking, 
+    forceDeleteBooking,
+    refetch,
+    fetchTrashed 
+  } = useBookings()
   
   const [searchTerm, setSearchTerm] = useState("")
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null)
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
-  const [bookingToDelete, setBookingToDelete] = useState<Booking | null>(null)
-  const [deleteLoading, setDeleteLoading] = useState(false)
+  const [isRestoreConfirmOpen, setIsRestoreConfirmOpen] = useState(false)
+  const [isForceDeleteConfirmOpen, setIsForceDeleteConfirmOpen] = useState(false)
+  const [bookingToManage, setBookingToManage] = useState<Booking | null>(null)
+  const [actionLoading, setActionLoading] = useState(false)
+  const [view, setView] = useState<'active' | 'trashed'>('active')
+
+  useEffect(() => {
+    if (view === 'trashed') {
+      fetchTrashed()
+    } else {
+      refetch()
+    }
+  }, [view, fetchTrashed, refetch])
+
+  const currentData = view === 'active' ? bookings : trashedBookings
 
   const filteredBookings = useMemo(() => {
-    return bookings.filter(booking => 
+    return currentData.filter(booking => 
       booking.booking_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
       booking.customer?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       booking.origin.toLowerCase().includes(searchTerm.toLowerCase())
     )
-  }, [bookings, searchTerm])
+  }, [currentData, searchTerm])
 
   const handleCreate = () => {
     setSelectedBooking(null)
@@ -56,19 +81,53 @@ export default function BookingPage() {
   }
 
   const handleDeleteClick = (booking: Booking) => {
-    setBookingToDelete(booking)
+    setBookingToManage(booking)
     setIsConfirmOpen(true)
   }
 
   const handleConfirmDelete = async () => {
-    if (!bookingToDelete) return
-    setDeleteLoading(true)
+    if (!bookingToManage) return
+    setActionLoading(true)
     try {
-      await deleteBooking(bookingToDelete.id)
+      await deleteBooking(bookingToManage.id)
       setIsConfirmOpen(false)
-      setBookingToDelete(null)
+      setBookingToManage(null)
     } finally {
-      setDeleteLoading(false)
+      setActionLoading(false)
+    }
+  }
+
+  const handleRestoreClick = (booking: Booking) => {
+    setBookingToManage(booking)
+    setIsRestoreConfirmOpen(true)
+  }
+
+  const handleConfirmRestore = async () => {
+    if (!bookingToManage) return
+    setActionLoading(true)
+    try {
+      await restoreBooking(bookingToManage.id)
+      setIsRestoreConfirmOpen(false)
+      setBookingToManage(null)
+    } finally {
+      setActionLoading(false)
+    }
+  }
+
+  const handleForceDeleteClick = (booking: Booking) => {
+    setBookingToManage(booking)
+    setIsForceDeleteConfirmOpen(true)
+  }
+
+  const handleConfirmForceDelete = async () => {
+    if (!bookingToManage) return
+    setActionLoading(true)
+    try {
+      await forceDeleteBooking(bookingToManage.id)
+      setIsForceDeleteConfirmOpen(false)
+      setBookingToManage(null)
+    } finally {
+      setActionLoading(false)
     }
   }
 
@@ -99,7 +158,7 @@ export default function BookingPage() {
               onChange={setSearchTerm} 
               placeholder="Search by code, customer, or origin..." 
             />
-            <Button variant="outline" icon={RefreshCcw} onClick={refetch} loading={loading}>
+            <Button variant="outline" icon={RefreshCcw} onClick={view === 'active' ? refetch : fetchTrashed} loading={loading}>
               Refresh
             </Button>
             <Button variant="primary" icon={Plus} onClick={handleCreate}>
@@ -126,18 +185,37 @@ export default function BookingPage() {
           ))}
         </div>
 
-        <div className="flex flex-wrap gap-8">
-          {overview.map((item, i) => (
-            <div key={i} className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-slate-500">
-                <item.icon size={16} />
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap gap-8">
+            {overview.map((item, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-slate-500">
+                  <item.icon size={16} />
+                </div>
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">{item.label}</p>
+                  <p className="text-lg font-bold text-slate-700">{loading ? "..." : item.value}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">{item.label}</p>
-                <p className="text-lg font-bold text-slate-700">{loading ? "..." : item.value}</p>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
+
+          <div className="flex items-center gap-1 rounded-2xl bg-slate-100 p-1">
+            <button
+              onClick={() => setView('active')}
+              className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all ${view === 'active' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+            >
+              <List size={14} />
+              Active
+            </button>
+            <button
+              onClick={() => setView('trashed')}
+              className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all ${view === 'trashed' ? 'bg-rose-500 text-white shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+            >
+              <Trash2 size={14} />
+              Trash
+            </button>
+          </div>
         </div>
       </section>
 
@@ -147,10 +225,10 @@ export default function BookingPage() {
             <div className="mx-auto inline-flex max-w-md flex-col items-center gap-3 rounded-[24px] border border-rose-200 bg-rose-50 px-6 py-6 text-left text-rose-700">
               <ShieldAlert size={36} />
               <div className="space-y-1">
-                <span className="block text-xs font-semibold uppercase tracking-[0.18em]">Authorization Required</span>
+                <span className="block text-xs font-semibold uppercase tracking-[0.18em]">Operation Error</span>
                 <p className="text-sm font-medium leading-relaxed">{error}</p>
               </div>
-              <Button size="sm" variant="danger" className="mt-2 w-full" onClick={refetch}>Try Again</Button>
+              <Button size="sm" variant="danger" className="mt-2 w-full" onClick={view === 'active' ? refetch : fetchTrashed}>Try Again</Button>
             </div>
           </div>
         ) : (
@@ -158,7 +236,10 @@ export default function BookingPage() {
             data={filteredBookings} 
             onDelete={handleDeleteClick} 
             onEdit={handleEdit}
+            onRestore={handleRestoreClick}
+            onForceDelete={handleForceDeleteClick}
             loading={loading} 
+            isTrashed={view === 'trashed'}
           />
         )}
       </div>
@@ -171,9 +252,28 @@ export default function BookingPage() {
         open={isConfirmOpen}
         onClose={() => setIsConfirmOpen(false)}
         onConfirm={handleConfirmDelete}
-        loading={deleteLoading}
-        title="Confirm Deletion"
-        message={`Are you sure you want to delete booking ${bookingToDelete?.booking_code}? This action will move it to trash.`}
+        loading={actionLoading}
+        title="Move to Trash"
+        message={`Are you sure you want to move booking ${bookingToManage?.booking_code} to trash?`}
+      />
+
+      <Confirmation
+        open={isRestoreConfirmOpen}
+        onClose={() => setIsRestoreConfirmOpen(false)}
+        onConfirm={handleConfirmRestore}
+        loading={actionLoading}
+        title="Restore Booking"
+        message={`Are you sure you want to restore booking ${bookingToManage?.booking_code}?`}
+      />
+
+      <Confirmation
+        open={isForceDeleteConfirmOpen}
+        onClose={() => setIsForceDeleteConfirmOpen(false)}
+        onConfirm={handleConfirmForceDelete}
+        loading={actionLoading}
+        variant="danger"
+        title="Permanently Delete"
+        message={`WARNING: Are you sure you want to permanently delete booking ${bookingToManage?.booking_code}? This action cannot be undone.`}
       />
     </div>
   )
