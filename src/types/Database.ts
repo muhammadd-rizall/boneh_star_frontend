@@ -175,3 +175,42 @@ export interface BusImage {
   created_at: string
   updated_at: string
 }
+
+// ========================================
+// BOOKING MANAGEMENT
+// ========================================
+
+/**
+ * Booking Status Types
+ */
+export type BookingStatus = 'pending' | 'quoted' | 'confirmed' | 'ongoing' | 'completed' | 'cancelled';
+
+/**
+ * Cancelled By Types
+ */
+export type CancelledBy = 'customer' | 'admin';
+
+/**
+ * Bookings Table
+ */
+export interface Booking extends TimestampedEntity {
+  customer_id: string;
+  activity_id: string;
+  route_type_id: string;
+  booking_code: string;
+  departure_date: string;
+  return_date?: string | null;
+  origin: string;
+  full_route?: string | null;
+  passenger_count: number;
+  bus_count_requested: number;
+  special_notes?: string | null;
+  status: BookingStatus;
+  cancelled_by?: CancelledBy | null;
+  cancelled_reason?: string | null;
+  
+  // Relations
+  customer?: Customer;
+  activity?: ActivityType;
+  route_type?: RouteType;
+}

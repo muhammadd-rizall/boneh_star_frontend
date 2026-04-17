@@ -1,0 +1,41 @@
+import type { Booking, BookingStatus, CancelledBy } from "@/types/Database";
+
+export type { Booking, BookingStatus, CancelledBy };
+
+export interface BookingStatistics {
+  total_bookings: number;
+  by_status: {
+    pending: number;
+    quoted: number;
+    confirmed: number;
+    ongoing: number;
+    completed: number;
+    cancelled: number;
+  };
+  total_passengers: number;
+  total_buses_requested: number;
+}
+
+export interface BookingFormData {
+  customer_id: string;
+  activity_id: string;
+  route_type_id: string;
+  booking_code: string;
+  departure_date: string;
+  return_date?: string | null;
+  origin: string;
+  full_route?: string | null;
+  passenger_count: number;
+  bus_count_requested: number;
+  special_notes?: string | null;
+  status: BookingStatus;
+  cancelled_by?: CancelledBy | null;
+  cancelled_reason?: string | null;
+}
+
+export interface BookingApiResponse {
+  success: boolean;
+  message: string;
+  statistics?: BookingStatistics;
+  data: Booking | Booking[];
+}

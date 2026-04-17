@@ -17,7 +17,8 @@ import {
   Shield,
   Tag,
   Map,
-  Contact
+  Contact,
+  FileText
 } from "lucide-react";
 
 interface SidebarItemProps {
@@ -63,6 +64,7 @@ export default function DahsbordLayout() {
 
   const menuItems = [
     { to: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { to: "/admin/bookings", icon: FileText, label: "Bookings" },
     { to: "/admin/buses", icon: Bus, label: "Bus" },
     { to: "/admin/bus-categories", icon: LayoutDashboard, label: "Bus Categories" },
     { to: "/admin/bus-facilities", icon: Shield, label: "Bus Facilities" },
