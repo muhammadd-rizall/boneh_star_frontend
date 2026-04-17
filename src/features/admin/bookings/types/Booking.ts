@@ -1,6 +1,6 @@
-import type { Booking, BookingStatus, CancelledBy } from "@/types/Database";
+import type { Booking, BookingStatus, CancelledBy, BookingBus } from "@/types/Database";
 
-export type { Booking, BookingStatus, CancelledBy };
+export type { Booking, BookingStatus, CancelledBy, BookingBus };
 
 export interface BookingStatistics {
   total_bookings: number;
@@ -14,6 +14,13 @@ export interface BookingStatistics {
   };
   total_passengers: number;
   total_buses_requested: number;
+}
+
+export interface BookingBusFormData {
+  bus_id: string;
+  driver_id: string;
+  seat_count: number;
+  assignment_notes?: string | null;
 }
 
 export interface BookingFormData {
@@ -31,6 +38,7 @@ export interface BookingFormData {
   status: BookingStatus;
   cancelled_by?: CancelledBy | null;
   cancelled_reason?: string | null;
+  buses?: BookingBusFormData[];
 }
 
 export interface BookingApiResponse {

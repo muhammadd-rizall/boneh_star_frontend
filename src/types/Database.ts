@@ -213,4 +213,20 @@ export interface Booking extends TimestampedEntity {
   customer?: Customer;
   activity?: ActivityType;
   route_type?: RouteType;
+  booking_buses?: BookingBus[];
+}
+
+/**
+ * Booking Buses Table (Assignments)
+ */
+export interface BookingBus extends TimestampedEntity {
+  booking_id: string;
+  bus_id: string;
+  driver_id: string;
+  seat_count: number;
+  assignment_notes?: string | null;
+
+  // Relations
+  bus?: Bus;
+  driver?: Driver;
 }

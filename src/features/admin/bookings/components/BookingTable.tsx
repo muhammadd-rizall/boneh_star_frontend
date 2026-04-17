@@ -87,13 +87,19 @@ export default function BookingTable({ data, onDelete, onEdit, loading }: Bookin
       header: "Capacity",
       accessor: (row) => (
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 text-xs font-medium text-slate-600">
+          <div className="flex items-center gap-1.5 text-xs font-medium text-slate-600" title="Passengers">
             <Users size={14} className="text-slate-400" />
             <span>{row.passenger_count}</span>
           </div>
-          <div className="flex items-center gap-1.5 text-xs font-medium text-slate-600">
+          <div className="flex items-center gap-1.5 text-xs font-medium text-slate-600" title="Buses (Assigned / Requested)">
             <Bus size={14} className="text-slate-400" />
-            <span>{row.bus_count_requested}</span>
+            <span>
+              <span className={row.booking_buses?.length === row.bus_count_requested ? 'text-emerald-600 font-bold' : 'text-amber-600'}>
+                {row.booking_buses?.length || 0}
+              </span>
+              <span className="text-slate-300 mx-1">/</span>
+              <span>{row.bus_count_requested}</span>
+            </span>
           </div>
         </div>
       )
