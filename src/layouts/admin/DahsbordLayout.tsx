@@ -19,7 +19,8 @@ import {
   Map,
   Contact,
   FileText,
-  Banknote
+  Banknote,
+  Receipt
 } from "lucide-react";
 
 interface SidebarItemProps {
@@ -67,6 +68,7 @@ export default function DahsbordLayout() {
     { to: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { to: "/admin/bookings", icon: FileText, label: "Bookings" },
     { to: "/admin/quotations", icon: Banknote, label: "Quotations" },
+    { to: "/admin/transactions", icon: Receipt, label: "Transactions" },
     { to: "/admin/buses", icon: Bus, label: "Bus" },
     { to: "/admin/bus-categories", icon: LayoutDashboard, label: "Bus Categories" },
     { to: "/admin/bus-facilities", icon: Shield, label: "Bus Facilities" },

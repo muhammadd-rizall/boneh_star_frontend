@@ -14,10 +14,7 @@ import {
   RefreshCcw, 
   FileText, 
   CheckCircle, 
-  Clock, 
-  XCircle, 
   ShieldAlert,
-  Banknote,
   Send,
   AlertCircle
 } from "lucide-react"

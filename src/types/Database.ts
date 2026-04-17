@@ -257,3 +257,29 @@ export interface Quotation extends TimestampedEntity {
   booking?: Booking;
   user?: User;
 }
+
+// ========================================
+// TRANSACTION MANAGEMENT
+// ========================================
+
+/**
+ * Transaction Status Types
+ */
+export type TransactionStatus = 'waiting' | 'dp_paid' | 'fully_paid' | 'overdue';
+
+/**
+ * Transactions Table
+ */
+export interface Transaction extends TimestampedEntity {
+  booking_id: string;
+  quotation_id: string;
+  invoice_number: string;
+  total_amount: number;
+  dp_paid: number;
+  remaining_amount: number;
+  status: TransactionStatus;
+
+  // Relations
+  booking?: Booking;
+  quotation?: Quotation;
+}
