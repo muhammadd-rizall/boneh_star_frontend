@@ -347,3 +347,24 @@ export interface Review extends TimestampedEntity {
   booking?: Booking;
   customer?: Customer;
 }
+
+// ========================================
+// NOTIFICATION MANAGEMENT
+// ========================================
+
+/**
+ * Notifications Table
+ */
+export interface Notification extends BaseEntity {
+  target_type: 'admin' | 'customer';
+  target_id: string;
+  title: string;
+  message: string;
+  type: string;
+  reference_type?: string | null;
+  reference_id?: string | null;
+  is_read: boolean;
+  read_at?: string | null;
+  created_at: string;
+  updated_at: string;
+}

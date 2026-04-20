@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
 import api from "@/api/Axios";
+import { useNotifications } from "@/features/admin/notifications/hooks/useNotifications";
 import { 
   LayoutDashboard, 
   Users, 
@@ -50,16 +51,15 @@ export default function DahsbordLayout() {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
+  const { unreadCount } = useNotifications();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
-      // Panggil API Logout backend sesuai rute admin.auth.logout
       await api.post("/admin/auth/logout");
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
-      // Tetap hapus state lokal dan arahkan ke login walaupun API gagal
       logout();
       navigate("/admin/login");
     }
@@ -67,6 +67,7 @@ export default function DahsbordLayout() {
 
   const menuItems = [
     { to: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { to: "/admin/notifications", icon: Bell, label: "Notifications" },
     { to: "/admin/bookings", icon: FileText, label: "Bookings" },
     { to: "/admin/quotations", icon: Banknote, label: "Quotations" },
     { to: "/admin/transactions", icon: Receipt, label: "Transactions" },
@@ -108,7 +109,7 @@ export default function DahsbordLayout() {
             </span>
           </Link>
 
-          <nav className="flex flex-1 flex-col gap-2">
+          <nav className="flex flex-1 flex-col gap-2 overflow-y-auto">
             <p className="mb-2 px-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">Main Menu</p>
             {menuItems.map((item) => (
               <SidebarItem key={item.to} {...item} />
@@ -148,10 +149,17 @@ export default function DahsbordLayout() {
           </div>
 
           <div className="flex items-center gap-4 lg:gap-6">
-            <button className="relative rounded-2xl border border-slate-200 bg-white p-2.5 text-slate-400 transition-colors hover:text-slate-700">
+            <Link 
+              to="/admin/notifications"
+              className="relative rounded-2xl border border-slate-200 bg-white p-2.5 text-slate-400 transition-colors hover:text-slate-700"
+            >
               <Bell size={20} />
-              <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-slate-900"></span>
-            </button>
+              {unreadCount > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-[10px] font-bold text-white shadow-sm ring-2 ring-white">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
+            </Link>
             
             <div className="mx-1 h-8 w-px bg-slate-200"></div>
 
