@@ -368,3 +368,20 @@ export interface Notification extends BaseEntity {
   created_at: string;
   updated_at: string;
 }
+
+// ========================================
+// SYSTEM SETTINGS
+// ========================================
+
+/**
+ * Company Profile Table
+ */
+export interface CompanyProfile extends TimestampedEntity {
+  company_name: string;
+  address: string;
+  phone: string[];
+  whatsapp: string[];
+  email?: string | null;
+  description?: string | null;
+  logo?: string | null;
+}
