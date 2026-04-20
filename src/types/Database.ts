@@ -328,3 +328,22 @@ export interface Payment extends TimestampedEntity {
   payment_method?: PaymentMethod;
   verified_user?: User;
 }
+
+// ========================================
+// REVIEW MANAGEMENT
+// ========================================
+
+/**
+ * Reviews Table
+ */
+export interface Review extends TimestampedEntity {
+  booking_id: string;
+  customer_id: string;
+  rating: number;
+  comment?: string | null;
+  is_publish: boolean;
+
+  // Relations
+  booking?: Booking;
+  customer?: Customer;
+}

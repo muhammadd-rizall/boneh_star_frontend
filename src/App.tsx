@@ -15,6 +15,7 @@ import QuotationPage from "@/page/admin/quotations/QuotationPage";
 import TransactionPage from "@/page/admin/transactions/TransactionPage";
 import PaymentMethodPage from "@/page/admin/payment-methods/PaymentMethodPage";
 import PaymentPage from "@/page/admin/payments/PaymentPage";
+import ReviewPage from "@/page/admin/reviews/ReviewPage";
 import "./App.css";
 import BusPage from "./page/admin/buses/BusPage";
 
@@ -134,6 +135,7 @@ function App() {
         <Route path="transactions" element={<TransactionPage/>}/>
         <Route path="payments" element={<PaymentPage/>}/>
         <Route path="payment-methods" element={<PaymentMethodPage/>}/>
+        <Route path="reviews" element={<ReviewPage/>}/>
         <Route path="users" element={<UserPage />} />
         <Route path="customers" element={<CustomerPage />} />
         <Route path="roles" element={<RolePage />} />
