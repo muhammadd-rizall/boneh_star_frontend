@@ -17,6 +17,7 @@ import PaymentMethodPage from "@/page/admin/payment-methods/PaymentMethodPage";
 import PaymentPage from "@/page/admin/payments/PaymentPage";
 import ReviewPage from "@/page/admin/reviews/ReviewPage";
 import NotificationPage from "@/page/admin/notifications/NotificationPage";
+import BookingReportPage from "@/page/admin/reports/BookingReportPage";
 import "./App.css";
 import BusPage from "./page/admin/buses/BusPage";
 
@@ -138,6 +139,7 @@ function App() {
         <Route path="payment-methods" element={<PaymentMethodPage/>}/>
         <Route path="reviews" element={<ReviewPage/>}/>
         <Route path="notifications" element={<NotificationPage/>}/>
+        <Route path="reports/bookings" element={<BookingReportPage/>}/>
         <Route path="users" element={<UserPage />} />
         <Route path="customers" element={<CustomerPage />} />
         <Route path="roles" element={<RolePage />} />

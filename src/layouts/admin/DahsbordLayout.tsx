@@ -22,7 +22,8 @@ import {
   FileText,
   Banknote,
   Receipt,
-  MessageSquare
+  MessageSquare,
+  BarChart3
 } from "lucide-react";
 
 interface SidebarItemProps {
@@ -69,6 +70,7 @@ export default function DahsbordLayout() {
     { to: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { to: "/admin/notifications", icon: Bell, label: "Notifications" },
     { to: "/admin/bookings", icon: FileText, label: "Bookings" },
+    { to: "/admin/reports/bookings", icon: BarChart3, label: "Booking Reports" },
     { to: "/admin/quotations", icon: Banknote, label: "Quotations" },
     { to: "/admin/transactions", icon: Receipt, label: "Transactions" },
     { to: "/admin/payments", icon: Banknote, label: "Payments" },
