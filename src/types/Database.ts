@@ -283,3 +283,48 @@ export interface Transaction extends TimestampedEntity {
   booking?: Booking;
   quotation?: Quotation;
 }
+
+// ========================================
+// PAYMENT MANAGEMENT
+// ========================================
+
+/**
+ * Payment Method Table
+ */
+export interface PaymentMethod extends TimestampedEntity, ActivableEntity {
+  bank_name: string;
+  account_number: string;
+  account_name: string;
+  is_active: boolean;
+}
+
+/**
+ * Payment Status Types
+ */
+export type PaymentStatus = 'pending' | 'verified' | 'rejected';
+
+/**
+ * Payment Type
+ */
+export type PaymentType = 'dp' | 'settlement';
+
+/**
+ * Payments Table
+ */
+export interface Payment extends TimestampedEntity {
+  transaction_id: string;
+  payment_method_id: string;
+  amount: number;
+  payment_type: PaymentType;
+  payment_date: string;
+  transfer_proof: string;
+  status: PaymentStatus;
+  rejection_reason?: string | null;
+  verified_by?: string | null;
+  verified_at?: string | null;
+
+  // Relations
+  transaction?: Transaction;
+  payment_method?: PaymentMethod;
+  verified_user?: User;
+}

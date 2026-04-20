@@ -13,6 +13,8 @@ import DriverPage from "@/page/admin/drivers/DriverPage";
 import BookingPage from "@/page/admin/bookings/BookingPage";
 import QuotationPage from "@/page/admin/quotations/QuotationPage";
 import TransactionPage from "@/page/admin/transactions/TransactionPage";
+import PaymentMethodPage from "@/page/admin/payment-methods/PaymentMethodPage";
+import PaymentPage from "@/page/admin/payments/PaymentPage";
 import "./App.css";
 import BusPage from "./page/admin/buses/BusPage";
 
@@ -130,6 +132,8 @@ function App() {
         <Route path="bookings" element={<BookingPage/>}/>
         <Route path="quotations" element={<QuotationPage/>}/>
         <Route path="transactions" element={<TransactionPage/>}/>
+        <Route path="payments" element={<PaymentPage/>}/>
+        <Route path="payment-methods" element={<PaymentMethodPage/>}/>
         <Route path="users" element={<UserPage />} />
         <Route path="customers" element={<CustomerPage />} />
         <Route path="roles" element={<RolePage />} />
