@@ -1,4 +1,4 @@
-import React from "react";
+
 import Card from "@/components/ui/Card";
 import { BookOpen, Users, BarChart3 } from "lucide-react";
 import type { BookingReportSummary } from "../types/BookingReport";

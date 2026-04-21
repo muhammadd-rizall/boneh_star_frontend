@@ -1,4 +1,4 @@
-import type { Quotation, QuotationStatus, Booking, User } from "@/types/Database";
+import type { Quotation, QuotationStatus } from "@/types/Database";
 
 export type { Quotation, QuotationStatus };
 

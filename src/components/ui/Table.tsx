@@ -1,5 +1,6 @@
 import React from "react"
 import { ArrowUpDown } from "lucide-react"
+import { InboxIcon } from "lucide-react"
 
 export interface Column<T> {
   header: string
@@ -20,30 +21,32 @@ function Table<T>({
   data,
   columns,
   loading = false,
-  emptyMessage = "No data available",
+  emptyMessage = "Tidak ada data tersedia",
   onSort,
 }: Props<T>) {
   return (
-    <div className="overflow-hidden rounded-[28px] border border-slate-200/70 bg-white/90 shadow-[0_24px_50px_-38px_rgba(15,23,42,0.35)] backdrop-blur">
+    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
-          
+
           {/* HEADER */}
-          <thead className="border-b border-slate-200/80 bg-slate-50/85">
-            <tr>
+          <thead>
+            <tr className="border-b border-slate-200 bg-slate-50">
               {columns.map((col, index) => (
                 <th
                   key={index}
                   onClick={() => col.sortable && onSort?.(index)}
-                  className={`
-                    px-6 py-4 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400
-                    ${col.sortable ? "cursor-pointer select-none transition-colors hover:text-slate-700" : ""}
-                    ${col.className || ""}
-                  `}
+                  className={[
+                    "px-4 py-3 text-left text-xs font-semibold text-slate-500 whitespace-nowrap",
+                    col.sortable ? "cursor-pointer select-none hover:text-slate-800 transition-colors" : "",
+                    col.className || "",
+                  ].join(" ")}
                 >
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5">
                     {col.header}
-                    {col.sortable && <ArrowUpDown size={12} className="text-slate-400" />}
+                    {col.sortable && (
+                      <ArrowUpDown size={11} className="text-slate-400" />
+                    )}
                   </div>
                 </th>
               ))}
@@ -51,24 +54,29 @@ function Table<T>({
           </thead>
 
           {/* BODY */}
-          <tbody>
+          <tbody className="divide-y divide-slate-100">
             {loading ? (
-              <tr>
-                <td colSpan={columns.length} className="py-20 text-center text-slate-400">
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-100 border-t-slate-700"></div>
-                    <span className="mt-2 text-xs font-medium tracking-wide">Loading data...</span>
-                  </div>
-                </td>
-              </tr>
+              Array.from({ length: 5 }).map((_, i) => (
+                <tr key={i} className="animate-pulse">
+                  {columns.map((_, j) => (
+                    <td key={j} className="px-4 py-3">
+                      <div
+                        className="h-4 rounded-md bg-slate-100"
+                        style={{ width: `${60 + Math.random() * 30}%` }}
+                      />
+                    </td>
+                  ))}
+                </tr>
+              ))
             ) : data.length === 0 ? (
               <tr>
-                <td colSpan={columns.length} className="py-20 text-center text-slate-400">
-                  <div className="flex flex-col items-center gap-2 opacity-60">
-                    <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100">
-                      <div className="h-[2px] w-6 bg-slate-300"></div>
+                <td colSpan={columns.length} className="py-16 text-center">
+                  <div className="flex flex-col items-center gap-3 text-slate-400">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100">
+                      <InboxIcon size={22} className="text-slate-300" />
                     </div>
-                    <span className="text-xs font-semibold uppercase tracking-[0.18em]">{emptyMessage}</span>
+                    <p className="text-sm font-medium text-slate-500">{emptyMessage}</p>
+                    <p className="text-xs text-slate-400">Data belum tersedia atau tidak ditemukan</p>
                   </div>
                 </td>
               </tr>
@@ -76,10 +84,13 @@ function Table<T>({
               data.map((row, rowIndex) => (
                 <tr
                   key={rowIndex}
-                  className="border-b border-slate-100/90 transition-colors last:border-0 hover:bg-slate-50/70"
+                  className="transition-colors hover:bg-slate-50/80 group"
                 >
                   {columns.map((col, colIndex) => (
-                    <td key={colIndex} className="px-6 py-4 font-medium text-slate-600">
+                    <td
+                      key={colIndex}
+                      className="px-4 py-3 text-slate-700 text-sm"
+                    >
                       {typeof col.accessor === "function"
                         ? col.accessor(row)
                         : (row[col.accessor] as React.ReactNode)}
@@ -96,4 +107,4 @@ function Table<T>({
   )
 }
 
-export default Table;
+export default Table

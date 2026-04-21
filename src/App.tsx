@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, Link } from "react-router-dom";
 import AdminLogin from "@/page/auth/admin/Login";
 import DahsbordLayout from "@/layouts/admin/DahsbordLayout";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -21,70 +21,253 @@ import BookingReportPage from "@/page/admin/reports/BookingReportPage";
 import IncomeReportPage from "@/page/admin/reports/IncomeReportPage";
 import BusAvailabilityReportPage from "@/page/admin/reports/BusAvailabilityReportPage";
 import CompanyProfilePage from "@/page/admin/company-profile/CompanyProfilePage";
+import {
+  CalendarCheck,
+  Users,
+  Bus,
+  TrendingUp,
+  Receipt,
+  Star,
+  ArrowUpRight,
+  Clock,
+  CheckCircle2,
+  AlertCircle,
+  UserCheck,
+  CreditCard,
+} from "lucide-react";
 import "./App.css";
 import BusPage from "./page/admin/buses/BusPage";
 
-const DashboardHome = () => (
-  <div className="flex flex-col gap-8">
-    <section className="overflow-hidden rounded-[32px] border border-slate-200/80 bg-white/90 p-8 shadow-[0_28px_60px_-42px_rgba(15,23,42,0.4)]">
-      <div className="max-w-2xl">
-        <p className="text-sm font-medium uppercase tracking-[0.24em] text-slate-400">Admin overview</p>
-        <h1 className="mt-4 text-3xl font-semibold tracking-tight text-slate-900">Dashboard yang lebih tenang, fokus, dan mudah dipindai.</h1>
-        <p className="mt-3 text-base leading-7 text-slate-500">
-          Kelola user, role, dan konfigurasi utama dari satu ruang kerja dengan tampilan yang lebih rapi dan minim distraksi.
-        </p>
-      </div>
-    </section>
+// ─── Stat Card ────────────────────────────────────────────────────────────────
+function StatCard({
+  label,
+  value,
+  sub,
+  icon: Icon,
+  trend,
+  trendLabel,
+  color = "slate",
+  href,
+}: {
+  label: string;
+  value: string | number;
+  sub: string;
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+  trend?: "up" | "down" | "neutral";
+  trendLabel?: string;
+  color?: "slate" | "emerald" | "violet" | "amber" | "rose" | "sky";
+  href?: string;
+}) {
+  const colorMap: Record<string, string> = {
+    slate:   "bg-slate-100  text-slate-600",
+    emerald: "bg-emerald-50 text-emerald-600",
+    violet:  "bg-violet-50  text-violet-600",
+    amber:   "bg-amber-50   text-amber-600",
+    rose:    "bg-rose-50    text-rose-600",
+    sky:     "bg-sky-50     text-sky-600",
+  };
+  const trendColor =
+    trend === "up" ? "text-emerald-600" : trend === "down" ? "text-rose-600" : "text-slate-400";
 
-    <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
-      {[
-        { label: "Total Users", value: "128", detail: "Akun terdaftar di sistem" },
-        { label: "Active Roles", value: "8", detail: "Role yang sedang digunakan" },
-        { label: "Pending Review", value: "12", detail: "Data yang perlu ditinjau" },
-      ].map((stat, i) => (
-        <div key={i} className="rounded-[28px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_20px_45px_-40px_rgba(15,23,42,0.45)]">
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-slate-500">{stat.label}</p>
-            <span className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Live</span>
-          </div>
-          <p className="mt-6 text-4xl font-semibold tracking-tight text-slate-900">{stat.value}</p>
-          <p className="mt-3 text-sm leading-6 text-slate-500">{stat.detail}</p>
+  const content = (
+    <div className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md">
+      <div className="flex items-start justify-between">
+        <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${colorMap[color]}`}>
+          <Icon size={18} />
         </div>
-      ))}
+        {href && (
+          <ArrowUpRight size={15} className="text-slate-300 transition-colors group-hover:text-slate-500" />
+        )}
+      </div>
+      <p className="mt-4 text-2xl font-bold tracking-tight text-slate-900">{value}</p>
+      <p className="mt-0.5 text-sm font-medium text-slate-500">{label}</p>
+      <div className="mt-3 flex items-center gap-1.5">
+        {trendLabel && <span className={`text-xs font-medium ${trendColor}`}>{trendLabel}</span>}
+        <span className="text-xs text-slate-400">{sub}</span>
+      </div>
     </div>
+  );
 
-    <section className="grid gap-5 lg:grid-cols-[1.6fr_1fr]">
-      <div className="rounded-[28px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_20px_45px_-40px_rgba(15,23,42,0.45)]">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-lg font-semibold text-slate-900">Quick management flow</h2>
-            <p className="mt-1 text-sm text-slate-500">Prioritas untuk operasional admin hari ini.</p>
-          </div>
-          <span className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Updated</span>
-        </div>
-        <div className="mt-6 grid gap-3">
-          {[
-            "Tinjau akun baru dan pastikan role sudah sesuai.",
-            "Periksa role yang punya permission terlalu luas.",
-            "Rapikan akun nonaktif agar akses tetap terkendali.",
-          ].map((item) => (
-            <div key={item} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm text-slate-600">
-              {item}
-            </div>
-          ))}
-        </div>
+  return href ? <Link to={href}>{content}</Link> : content;
+}
+
+// ─── Quick Action ──────────────────────────────────────────────────────────────
+function QuickAction({
+  to,
+  icon: Icon,
+  label,
+  desc,
+}: {
+  to: string;
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+  label: string;
+  desc: string;
+}) {
+  return (
+    <Link
+      to={to}
+      className="group flex items-center gap-3.5 rounded-xl border border-slate-200 bg-white p-4 transition-all hover:border-slate-300 hover:shadow-sm"
+    >
+      <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition-colors group-hover:bg-slate-900 group-hover:text-white">
+        <Icon size={16} />
       </div>
+      <div className="min-w-0">
+        <p className="text-sm font-semibold text-slate-800">{label}</p>
+        <p className="truncate text-xs text-slate-400">{desc}</p>
+      </div>
+      <ArrowUpRight size={14} className="ml-auto flex-shrink-0 text-slate-300 transition-colors group-hover:text-slate-600" />
+    </Link>
+  );
+}
 
-      <div className="rounded-[28px] border border-slate-200/80 bg-slate-900 p-6 text-white shadow-[0_24px_60px_-40px_rgba(15,23,42,0.7)]">
-        <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">System note</p>
-        <h2 className="mt-4 text-2xl font-semibold tracking-tight">Access control is healthy.</h2>
-        <p className="mt-3 text-sm leading-6 text-slate-300">
-          Struktur dashboard sekarang lebih ringan secara visual, sehingga fokus admin langsung ke data inti dan tindakan utama.
+// ─── Dashboard Home ────────────────────────────────────────────────────────────
+const DashboardHome = () => {
+  const now = new Date();
+  const greeting =
+    now.getHours() < 12 ? "Selamat pagi" : now.getHours() < 18 ? "Selamat siang" : "Selamat malam";
+
+  const stats = [
+    {
+      label: "Total Pemesanan",
+      value: "248",
+      sub: "bulan ini",
+      trendLabel: "+12%",
+      trend: "up" as const,
+      icon: CalendarCheck,
+      color: "emerald" as const,
+      href: "/admin/bookings",
+    },
+    {
+      label: "Total Pengguna",
+      value: "1,340",
+      sub: "terdaftar",
+      trendLabel: "+8 baru",
+      trend: "up" as const,
+      icon: Users,
+      color: "violet" as const,
+      href: "/admin/users",
+    },
+    {
+      label: "Bus Aktif",
+      value: "34",
+      sub: "dari 40 unit",
+      icon: Bus,
+      color: "sky" as const,
+      href: "/admin/buses",
+    },
+    {
+      label: "Pendapatan",
+      value: "Rp 84,5jt",
+      sub: "bulan ini",
+      trendLabel: "+5%",
+      trend: "up" as const,
+      icon: TrendingUp,
+      color: "amber" as const,
+      href: "/admin/reports/income",
+    },
+    {
+      label: "Transaksi",
+      value: "186",
+      sub: "total transaksi",
+      icon: Receipt,
+      color: "slate" as const,
+      href: "/admin/transactions",
+    },
+    {
+      label: "Rating Rata-rata",
+      value: "4.7",
+      sub: "dari semua ulasan",
+      icon: Star,
+      color: "rose" as const,
+      href: "/admin/reviews",
+    },
+  ];
+
+  const recentActivity = [
+    { icon: CheckCircle2, color: "text-emerald-500", text: "Pemesanan #BK-1024 telah dikonfirmasi", time: "2 menit lalu" },
+    { icon: CreditCard, color: "text-sky-500",     text: "Pembayaran Rp 3.200.000 diterima",       time: "15 menit lalu" },
+    { icon: AlertCircle, color: "text-amber-500",  text: "Penawaran #QT-089 menunggu persetujuan", time: "1 jam lalu" },
+    { icon: UserCheck, color: "text-violet-500",   text: "Pengemudi Ahmad Fauzan ditambahkan",     time: "2 jam lalu" },
+    { icon: Star, color: "text-rose-500",          text: "Ulasan baru diterima dari pelanggan",    time: "3 jam lalu" },
+  ];
+
+  return (
+    <div className="flex flex-col gap-6">
+      {/* Hero / Greeting */}
+      <div className="flex flex-col gap-1">
+        <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-400">
+          {now.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
         </p>
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+          {greeting}, Admin 👋
+        </h1>
+        <p className="text-sm text-slate-500">Berikut ringkasan operasional Boneh Star hari ini.</p>
       </div>
-    </section>
-  </div>
-);
+
+      {/* Stat Cards */}
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
+        {stats.map((s) => (
+          <StatCard key={s.label} {...s} />
+        ))}
+      </div>
+
+      {/* Lower Grid */}
+      <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
+        {/* Quick Actions */}
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <h2 className="text-sm font-bold text-slate-900">Aksi Cepat</h2>
+              <p className="text-xs text-slate-400">Navigasi langsung ke halaman utama</p>
+            </div>
+            <Clock size={15} className="text-slate-300" />
+          </div>
+          <div className="grid gap-2 sm:grid-cols-2">
+            <QuickAction to="/admin/bookings" icon={CalendarCheck} label="Kelola Pemesanan" desc="Lihat dan konfirmasi booking" />
+            <QuickAction to="/admin/quotations" icon={Receipt} label="Penawaran" desc="Tinjau penawaran terbaru" />
+            <QuickAction to="/admin/payments" icon={CreditCard} label="Pembayaran" desc="Verifikasi pembayaran masuk" />
+            <QuickAction to="/admin/drivers" icon={UserCheck} label="Pengemudi" desc="Manajemen data pengemudi" />
+            <QuickAction to="/admin/buses" icon={Bus} label="Data Bus" desc="Kelola armada kendaraan" />
+            <QuickAction to="/admin/reports/bookings" icon={TrendingUp} label="Laporan" desc="Lihat laporan & statistik" />
+          </div>
+        </div>
+
+        {/* Activity Feed */}
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <h2 className="text-sm font-bold text-slate-900">Aktivitas Terbaru</h2>
+              <p className="text-xs text-slate-400">Update sistem real-time</p>
+            </div>
+            <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+          </div>
+          <div className="flex flex-col gap-3">
+            {recentActivity.map((act, i) => (
+              <div key={i} className="flex items-start gap-3">
+                <act.icon size={15} className={`mt-0.5 flex-shrink-0 ${act.color}`} />
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-medium text-slate-700 leading-relaxed">{act.text}</p>
+                  <p className="mt-0.5 text-[11px] text-slate-400">{act.time}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* System Status */}
+          <div className="mt-4 rounded-xl bg-slate-900 p-4 text-white">
+            <div className="flex items-center gap-2">
+              <span className="flex h-2 w-2 rounded-full bg-emerald-400" />
+              <p className="text-xs font-semibold">Sistem Berjalan Normal</p>
+            </div>
+            <p className="mt-1.5 text-[11px] leading-relaxed text-slate-400">
+              Semua layanan aktif. Tidak ada gangguan terdeteksi.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 function Home() {
   return (

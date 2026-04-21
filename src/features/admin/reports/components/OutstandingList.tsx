@@ -1,7 +1,6 @@
-import React from "react";
+
 import Table from "@/components/ui/Table";
 import type { Column } from "@/components/ui/Table";
-import Card from "@/components/ui/Card";
 import { formatCurrency, formatDate } from "@/utils/formatter";
 import type { OutstandingItem } from "../types/IncomeReport";
 

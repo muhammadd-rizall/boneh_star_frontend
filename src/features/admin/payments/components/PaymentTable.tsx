@@ -2,7 +2,7 @@ import Table from "@/components/ui/Table"
 import type { Column } from "@/components/ui/Table"
 import Button from "@/components/ui/Button"
 import type { Payment } from "@/features/admin/payments/types/Payment"
-import { Eye, CheckCircle, XCircle, Trash2, Receipt, RotateCcw } from "lucide-react"
+import { Eye, CheckCircle, Trash2, Receipt, RotateCcw } from "lucide-react"
 
 interface PaymentTableProps {
   data: Payment[]

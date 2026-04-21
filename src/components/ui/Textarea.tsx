@@ -3,54 +3,55 @@ import React from "react"
 type Props = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
   label?: string
   error?: string
-  icon?: React.ComponentType<{ size?: number | string; className?: string }>
+  hint?: string
+  /** icon is accepted for API compatibility but not rendered */
+  icon?: React.ElementType
 }
 
-function Textarea({ 
-  label, 
-  error, 
-  icon: Icon,
+function Textarea({
+  label,
+  error,
+  hint,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  icon: _icon,
   className = "",
-  ...props 
+  id,
+  ...props
 }: Props) {
+  const textareaId = id || label?.toLowerCase().replace(/\s+/g, "-")
+
   return (
     <div className="flex flex-col gap-1.5 w-full text-left">
       {label && (
-        <label className="ml-1 text-sm font-medium text-slate-700">
+        <label htmlFor={textareaId} className="text-sm font-medium text-slate-700">
           {label}
         </label>
       )}
 
-      <div className="relative group">
-        {/* ICON KIRI */}
-        {Icon && (
-          <div className="absolute left-4 top-5 text-slate-400 group-focus-within:text-indigo-600 transition-colors">
-            <Icon size={18} />
-          </div>
-        )}
-
-        <textarea
-          className={`
-            w-full rounded-2xl border bg-white px-4 py-3 outline-none transition-all duration-200
-            ${Icon ? "pl-11" : "pl-4"}
-            ${
-              error
-                ? "border-red-300 bg-red-50/40 text-red-900 placeholder:text-red-300 focus:border-red-400 focus:ring-4 focus:ring-red-100"
-                : "border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
-            }
-            ${className}
-          `}
-          {...props}
-        />
-      </div>
+      <textarea
+        id={textareaId}
+        className={[
+          "w-full rounded-lg border bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition-all duration-150 resize-y min-h-[100px]",
+          "placeholder:text-slate-400",
+          error
+            ? "border-rose-300 bg-rose-50/30 focus:border-rose-400 focus:ring-2 focus:ring-rose-100"
+            : "border-slate-200 focus:border-slate-400 focus:ring-2 focus:ring-slate-100",
+          className,
+        ].join(" ")}
+        {...props}
+      />
 
       {error && (
-        <span className="text-red-500 text-xs font-medium ml-1 font-medium">
+        <p className="text-xs font-medium text-rose-600 flex items-center gap-1">
+          <span className="inline-block h-1 w-1 rounded-full bg-rose-500" />
           {error}
-        </span>
+        </p>
+      )}
+      {!error && hint && (
+        <p className="text-xs text-slate-400">{hint}</p>
       )}
     </div>
   )
 }
 
-export default Textarea;
+export default Textarea

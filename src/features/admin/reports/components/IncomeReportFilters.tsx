@@ -1,4 +1,4 @@
-import React from "react";
+
 import Select from "@/components/ui/Select";
 import { Calendar, Filter } from "lucide-react";
 import type { IncomeReportFilters as FiltersType } from "../types/IncomeReport";

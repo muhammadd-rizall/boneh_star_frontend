@@ -108,15 +108,11 @@ export default function CompanyProfileForm() {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-8">
       {error && (
-        <Alert variant="danger" title="Error">
-          {error}
-        </Alert>
+        <Alert variant="error" title="Error" message={error} />
       )}
 
       {successMessage && (
-        <Alert variant="success" title="Success">
-          {successMessage}
-        </Alert>
+        <Alert variant="success" title="Berhasil" message={successMessage} />
       )}
 
       {/* Logo Section */}

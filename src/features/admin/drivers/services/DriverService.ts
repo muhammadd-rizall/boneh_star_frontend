@@ -1,5 +1,5 @@
 import axios from '@/api/Axios';
-import type { Driver, DriverFormData, DriverApiResponse, DriverStatistics } from '@/features/admin/drivers/types/Driver';
+import type { Driver, DriverApiResponse, DriverStatistics } from '@/features/admin/drivers/types/Driver';
 
 const ENDPOINTS = {
   BASE: '/admin/drivers',

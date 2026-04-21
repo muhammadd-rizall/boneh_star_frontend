@@ -45,8 +45,8 @@ export default function UserForm({ user, onSuccess, onCancel }: UserFormProps) {
     const fetchRoles = async () => {
       try {
         setRolesLoading(true);
-        const roles = await roleService.getAll();
-        const activeRoles = roles.filter((role) => role.is_active);
+        const result = await roleService.getAll();
+        const activeRoles = result.roles.filter((role) => role.is_active);
         setAvailableRoles(activeRoles);
 
         if (!user && activeRoles.length > 0) {

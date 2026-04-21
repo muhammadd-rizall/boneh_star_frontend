@@ -1,4 +1,4 @@
-import React from "react";
+
 import Card from "@/components/ui/Card";
 import type { BookingReportStatistics } from "../types/BookingReport";
 

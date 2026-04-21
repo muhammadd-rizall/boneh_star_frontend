@@ -1,4 +1,4 @@
-import React from "react";
+
 import Card from "@/components/ui/Card";
 import { Wallet, Clock, TrendingUp } from "lucide-react";
 import { formatCurrency } from "@/utils/formatter";

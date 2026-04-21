@@ -1,4 +1,4 @@
-import React from "react";
+
 import Table from "@/components/ui/Table";
 import type { Column } from "@/components/ui/Table";
 import type { BusAvailability, BusSchedule } from "../types/BusAvailabilityReport";

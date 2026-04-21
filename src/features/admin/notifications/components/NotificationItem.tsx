@@ -1,6 +1,5 @@
 import type { Notification } from "@/features/admin/notifications/types/Notification"
-import { Bell, Check, Trash2, Calendar, Info, AlertTriangle, AlertCircle } from "lucide-react"
-import Button from "@/components/ui/Button"
+import { Bell, Check, Calendar, Info, AlertTriangle, AlertCircle } from "lucide-react"
 
 interface NotificationItemProps {
   notification: Notification;

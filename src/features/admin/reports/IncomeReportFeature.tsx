@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useIncomeReport } from "./hooks/useIncomeReport";
 import IncomeReportFilters from "./components/IncomeReportFilters";
 import IncomeReportSummary from "./components/IncomeReportSummary";

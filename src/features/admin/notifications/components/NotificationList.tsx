@@ -21,7 +21,7 @@ export default function NotificationList({
       <EmpetyState
         icon={Bell}
         title="No notifications"
-        message="You're all caught up! No new notifications for now."
+        description="You're all caught up! No new notifications for now."
       />
     );
   }

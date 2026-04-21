@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useBookingReport } from "./hooks/useBookingReport";
 import ReportFilters from "./components/ReportFilters";
 import ReportSummary from "./components/ReportSummary";

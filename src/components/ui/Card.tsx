@@ -1,14 +1,26 @@
+import React from "react"
+
 type Props = {
   children: React.ReactNode
   className?: string
+  padding?: "none" | "sm" | "md" | "lg"
 }
 
-function Card({ children, className }: Props) {
+const paddingMap = {
+  none: "",
+  sm: "p-4",
+  md: "p-5",
+  lg: "p-6",
+}
+
+function Card({ children, className = "", padding = "md" }: Props) {
   return (
-    <div className={`rounded-[28px] border border-slate-200/70 bg-white/90 p-6 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.35)] backdrop-blur ${className}`}>
+    <div
+      className={`rounded-xl border border-slate-200 bg-white shadow-sm ${paddingMap[padding]} ${className}`}
+    >
       {children}
     </div>
   )
 }
 
-export default Card;
+export default Card

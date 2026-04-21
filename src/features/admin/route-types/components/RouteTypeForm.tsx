@@ -76,7 +76,7 @@ export default function RouteTypeForm({ routeType, onSuccess, onCancel }: RouteT
           label="Scope"
           icon={Globe}
           value={formData.scope}
-          onChange={(e) => setFormData({ ...formData, scope: e.target.value as 'inside' | 'outside' })}
+          onChange={(value) => setFormData({ ...formData, scope: value as 'inside' | 'outside' })}
           options={[
             { value: "inside", label: "Inside City" },
             { value: "outside", label: "Outside City" },

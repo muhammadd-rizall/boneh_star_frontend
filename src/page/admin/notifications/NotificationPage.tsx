@@ -1,91 +1,83 @@
 import { useNotifications } from "@/features/admin/notifications/hooks/useNotifications"
 import NotificationList from "@/features/admin/notifications/components/NotificationList"
-import Card from "@/components/ui/Card"
 import Button from "@/components/ui/Button"
-import { Bell, CheckCheck, RefreshCw } from "lucide-react"
 import ErrorState from "@/components/feedback/ErrorState"
+import { Bell, CheckCheck, RefreshCw, ChevronLeft, ChevronRight } from "lucide-react"
 
 export default function NotificationPage() {
-  const { 
-    notifications, 
-    unreadCount, 
-    loading, 
-    error, 
-    refetch, 
-    markAsRead, 
-    markAllAsRead, 
-    deleteNotification,
-    page,
-    setPage,
-    meta
+  const {
+    notifications, unreadCount, loading, error, refetch,
+    markAsRead, markAllAsRead, deleteNotification, page, setPage, meta,
   } = useNotifications()
 
   if (error) return <ErrorState message={error} onRetry={refetch} />
 
   return (
-    <div className="mx-auto max-w-4xl flex flex-col gap-8">
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-bold text-slate-900">Notifications</h1>
-          <p className="text-sm text-slate-500 font-medium">
-            You have {unreadCount} unread messages
+    <div className="mx-auto max-w-3xl flex flex-col gap-6">
+      {/* ── Header ── */}
+      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+        <div>
+          <span className="inline-block rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-widest text-slate-500 mb-2">
+            Notifikasi
+          </span>
+          <h1 className="text-xl font-bold tracking-tight text-slate-900">Pusat Notifikasi</h1>
+          <p className="mt-0.5 text-sm text-slate-500">
+            {unreadCount > 0 ? (
+              <span className="font-medium text-slate-700">{unreadCount} pesan belum dibaca</span>
+            ) : (
+              "Semua pesan telah dibaca"
+            )}
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            icon={RefreshCw} 
-            onClick={() => refetch()}
-            loading={loading}
-          >
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm" icon={RefreshCw} onClick={() => refetch()} loading={loading}>
             Refresh
           </Button>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            icon={CheckCheck} 
+          <Button
+            variant="outline"
+            size="sm"
+            icon={CheckCheck}
             onClick={markAllAsRead}
             disabled={unreadCount === 0}
           >
-            Mark all as read
+            Tandai Semua Dibaca
           </Button>
         </div>
       </div>
 
-      <div className="flex flex-col gap-4">
+      {/* ── Unread Badge ── */}
+      {unreadCount > 0 && (
+        <div className="flex items-center gap-2 rounded-lg border border-sky-200 bg-sky-50 px-4 py-3">
+          <Bell size={15} className="text-sky-500 flex-shrink-0" />
+          <p className="text-sm font-medium text-sky-700">
+            Anda memiliki <span className="font-bold">{unreadCount}</span> notifikasi yang belum dibaca
+          </p>
+        </div>
+      )}
+
+      {/* ── List ── */}
+      <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         <NotificationList
           notifications={notifications}
           loading={loading}
           onMarkAsRead={markAsRead}
           onDelete={deleteNotification}
         />
-
-        {meta && meta.last_page > 1 && (
-          <div className="mt-4 flex items-center justify-center gap-2">
-            <Button 
-              size="sm" 
-              variant="ghost" 
-              disabled={page === 1}
-              onClick={() => setPage(page - 1)}
-            >
-              Previous
-            </Button>
-            <span className="text-sm font-medium text-slate-500">
-              Page {page} of {meta.last_page}
-            </span>
-            <Button 
-              size="sm" 
-              variant="ghost" 
-              disabled={page === meta.last_page}
-              onClick={() => setPage(page + 1)}
-            >
-              Next
-            </Button>
-          </div>
-        )}
       </div>
+
+      {/* ── Pagination ── */}
+      {meta && meta.last_page > 1 && (
+        <div className="flex items-center justify-between">
+          <p className="text-xs text-slate-400">
+            Halaman {meta.current_page} dari {meta.last_page}
+          </p>
+          <div className="flex items-center gap-1">
+            <Button size="sm" variant="outline" icon={ChevronLeft} disabled={page === 1} onClick={() => setPage(page - 1)} />
+            <Button size="sm" variant="outline" icon={ChevronRight} disabled={page === meta.last_page} onClick={() => setPage(page + 1)} />
+          </div>
+        </div>
+      )}
     </div>
   )
 }
