@@ -16,9 +16,11 @@ const ENDPOINTS = {
 };
 
 export const paymentMethodService = {
-  getAll: async (): Promise<{ paymentMethods: PaymentMethod[], statistics: PaymentMethodStatistics | null }> => {
+  getAll: async (search?: string): Promise<{ paymentMethods: PaymentMethod[], statistics: PaymentMethodStatistics | null }> => {
     try {
-      const response = await axios.get<PaymentMethodApiResponse>(ENDPOINTS.BASE);
+      const response = await axios.get<PaymentMethodApiResponse>(ENDPOINTS.BASE, {
+        params: { search }
+      });
       const data = response.data.data;
       
       const paymentMethods = Array.isArray(data) ? data : [];

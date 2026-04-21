@@ -10,9 +10,11 @@ const ENDPOINTS = {
 };
 
 export const quotationService = {
-  getAll: async (): Promise<{ quotations: Quotation[], statistics: QuotationStatistics | null }> => {
+  getAll: async (search?: string): Promise<{ quotations: Quotation[], statistics: QuotationStatistics | null }> => {
     try {
-      const response = await axios.get<QuotationApiResponse>(ENDPOINTS.BASE);
+      const response = await axios.get<QuotationApiResponse>(ENDPOINTS.BASE, {
+        params: { search }
+      });
       const data = response.data.data;
       return {
         quotations: Array.isArray(data) ? data : [],

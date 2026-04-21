@@ -1,26 +1,40 @@
-import { useState, useMemo } from "react"
-import { useActivityTypes, useTrashedActivityTypes } from "@/features/admin/activity-types/hooks/useActivityTypes"
-import ActivityTypeTable from "@/features/admin/activity-types/components/ActivityTypeTable"
-import ActivityTypeForm from "@/features/admin/activity-types/components/ActivityTypeForm"
-import Modal from "@/components/ui/Modal"
+import { useState, useEffect } from "react"
+// Explicit import trigger
+import { 
+  ActivityTypeTable, 
+  ActivityTypeForm, 
+  useActivityTypes,
+  useTrashedActivityTypes,
+  type ActivityType 
+} from "@/features/admin/activity-types"
 import Button from "@/components/ui/Button"
+import Modal from "@/components/ui/Modal"
 import Search from "@/components/ui/Search"
-import { Plus, RefreshCcw, Tag, ShieldAlert, List, History } from "lucide-react"
+import { Plus, RefreshCcw, Tag, ShieldAlert, List, History, Trash2 } from "lucide-react"
 import Confirmation from "@/components/feedback/Confirmation"
-import type { ActivityType } from "@/features/admin/activity-types/types/ActivityType"
 
 export default function ActivityTypePage() {
   const [activeTab, setActiveTab] = useState<'all' | 'trash'>('all')
-  const { activityTypes, statistics, loading, error, refetch, deleteActivityType } = useActivityTypes()
+  const [searchTerm, setSearchTerm] = useState("")
+  
+  const { 
+    activityTypes, 
+    statistics, 
+    loading: activeLoading, 
+    error: activeError, 
+    deleteActivityType,
+    refetch: refetchActive 
+  } = useActivityTypes()
+
   const { 
     activityTypes: trashedActivityTypes, 
     loading: trashLoading, 
+    error: trashError,
     refetch: refetchTrash,
     restoreActivityType,
     forceDeleteActivityType 
   } = useTrashedActivityTypes()
 
-  const [searchTerm, setSearchTerm] = useState("")
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedActivityType, setSelectedActivityType] = useState<ActivityType | null>(null)
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false)
@@ -28,13 +42,22 @@ export default function ActivityTypePage() {
   const [isForceDeleteConfirmOpen, setIsForceDeleteConfirmOpen] = useState(false)
   const [activityTypeToAction, setActivityTypeToAction] = useState<ActivityType | null>(null)
 
-  const filteredData = useMemo(() => {
-    const source = activeTab === 'all' ? activityTypes : trashedActivityTypes
-    return source.filter(item => 
-      item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.description.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  }, [activityTypes, trashedActivityTypes, activeTab, searchTerm])
+  // Server-side search with debounce for active view
+  useEffect(() => {
+    if (activeTab === 'all') {
+      const timer = setTimeout(() => {
+        refetchActive(searchTerm)
+      }, 500)
+      return () => clearTimeout(timer)
+    }
+  }, [searchTerm, activeTab, refetchActive])
+
+  // Refetch trash when entering trash view
+  useEffect(() => {
+    if (activeTab === 'trash') {
+      refetchTrash()
+    }
+  }, [activeTab, refetchTrash])
 
   const handleCreate = () => {
     setSelectedActivityType(null)
@@ -76,7 +99,7 @@ export default function ActivityTypePage() {
       await restoreActivityType(activityTypeToAction.id)
       setIsRestoreConfirmOpen(false)
       setActivityTypeToAction(null)
-      refetch()
+      refetchActive(searchTerm)
     }
   }
 
@@ -93,6 +116,14 @@ export default function ActivityTypePage() {
     { label: "Active", value: (statistics?.total ?? 0) - (statistics?.trashed ?? 0), icon: List, note: "Ready to use" },
     { label: "Trash", value: statistics?.trashed ?? 0, icon: History, note: "Deleted activity types" },
   ]
+
+  const loading = activeTab === 'all' ? activeLoading : trashLoading
+  const error = activeTab === 'all' ? activeError : trashError
+  const displayData = activeTab === 'all' 
+    ? activityTypes 
+    : trashedActivityTypes.filter(item => 
+        item.name.toLowerCase().includes(searchTerm.toLowerCase())
+      )
 
   return (
     <div className="flex flex-col gap-8">
@@ -116,18 +147,20 @@ export default function ActivityTypePage() {
                   activeTab === 'all' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
                 }`}
               >
+                <List size={14} className="mr-1.5" />
                 All
               </button>
               <button
                 onClick={() => setActiveTab('trash')}
                 className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-xl transition-all ${
-                  activeTab === 'trash' ? 'bg-white text-rose-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                  activeTab === 'trash' ? 'bg-rose-500 text-white shadow-sm' : 'text-slate-500 hover:text-slate-700'
                 }`}
               >
+                <Trash2 size={14} className="mr-1.5" />
                 Trash
               </button>
             </div>
-            <Button variant="outline" icon={RefreshCcw} onClick={refetch} loading={loading}>
+            <Button variant="outline" icon={RefreshCcw} onClick={activeTab === 'all' ? () => refetchActive(searchTerm) : refetchTrash} loading={loading}>
               Refresh
             </Button>
             <Button variant="primary" icon={Plus} onClick={handleCreate}>
@@ -147,7 +180,7 @@ export default function ActivityTypePage() {
               </div>
               <p className="mt-5 text-sm font-medium text-slate-500">{stat.label}</p>
               <p className="mt-2 text-3xl font-semibold tracking-tight text-slate-900 truncate">
-                {loading ? "..." : stat.value}
+                {activeLoading ? "..." : stat.value}
               </p>
               <p className="mt-2 text-sm text-slate-400">{stat.note}</p>
             </div>
@@ -164,13 +197,13 @@ export default function ActivityTypePage() {
                 <span className="block text-xs font-semibold uppercase tracking-[0.18em]">Error Occurred</span>
                 <p className="text-sm font-medium leading-relaxed">{error}</p>
               </div>
-              <Button size="sm" variant="danger" className="mt-2 w-full" onClick={refetch}>Try Again</Button>
+              <Button size="sm" variant="danger" className="mt-2 w-full" onClick={activeTab === 'all' ? () => refetchActive(searchTerm) : refetchTrash}>Try Again</Button>
             </div>
           </div>
         ) : (
           <ActivityTypeTable 
-            data={filteredData} 
-            loading={activeTab === 'all' ? loading : trashLoading}
+            data={displayData} 
+            loading={loading}
             isTrash={activeTab === 'trash'}
             onEdit={handleEdit}
             onDelete={activeTab === 'all' ? handleDeleteClick : handleForceDeleteClick}
@@ -180,7 +213,7 @@ export default function ActivityTypePage() {
       </div>
 
       <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedActivityType ? "Edit Activity Type" : "Create Activity Type"}>
-        <ActivityTypeForm activityType={selectedActivityType} onSuccess={() => { setIsModalOpen(false); refetch(); refetchTrash(); }} onCancel={() => setIsModalOpen(false)} />
+        <ActivityTypeForm activityType={selectedActivityType} onSuccess={() => { setIsModalOpen(false); refetchActive(searchTerm); refetchTrash(); }} onCancel={() => setIsModalOpen(false)} />
       </Modal>
 
       <Confirmation open={isDeleteConfirmOpen} onClose={() => setIsDeleteConfirmOpen(false)} onConfirm={confirmDelete} title="Delete Activity Type?" message={`Are you sure you want to delete "${activityTypeToAction?.name}"? It will be moved to the trash.`} variant="danger" confirmText="Yes, Delete" />

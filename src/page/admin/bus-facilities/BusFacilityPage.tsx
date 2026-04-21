@@ -1,26 +1,36 @@
-import { useState, useMemo } from "react"
+import { useState, useEffect } from "react"
 import { useBusFacilities, useTrashedBusFacilities } from "@/features/admin/bus-facilities/hooks/useBusFacilities"
 import BusFacilityTable from "@/features/admin/bus-facilities/components/BusFacilityTable"
 import BusFacilityForm from "@/features/admin/bus-facilities/components/BusFacilityForm"
 import Modal from "@/components/ui/Modal"
 import Button from "@/components/ui/Button"
 import Search from "@/components/ui/Search"
-import { Plus, RefreshCcw, Shield, ShieldAlert, List, History } from "lucide-react"
+import { Plus, RefreshCcw, Shield, ShieldAlert, List, History, Trash2 } from "lucide-react"
 import Confirmation from "@/components/feedback/Confirmation"
 import type { BusFacility } from "@/features/admin/bus-facilities/types/BusFacility"
 
 export default function BusFacilityPage() {
   const [activeTab, setActiveTab] = useState<'all' | 'trash'>('all')
-  const { facilities, statistics, loading, error, refetch, deleteFacility } = useBusFacilities()
+  const [searchTerm, setSearchTerm] = useState("")
+  
+  const { 
+    facilities, 
+    statistics, 
+    loading: activeLoading, 
+    error: activeError, 
+    deleteFacility,
+    refetch: refetchActive 
+  } = useBusFacilities()
+
   const { 
     facilities: trashedFacilities, 
     loading: trashLoading, 
+    error: trashError,
     refetch: refetchTrash,
     restoreFacility,
     forceDeleteFacility 
   } = useTrashedBusFacilities()
 
-  const [searchTerm, setSearchTerm] = useState("")
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedFacility, setSelectedFacility] = useState<BusFacility | null>(null)
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false)
@@ -28,12 +38,22 @@ export default function BusFacilityPage() {
   const [isForceDeleteConfirmOpen, setIsForceDeleteConfirmOpen] = useState(false)
   const [facilityToAction, setFacilityToAction] = useState<BusFacility | null>(null)
 
-  const filteredData = useMemo(() => {
-    const source = activeTab === 'all' ? facilities : trashedFacilities
-    return source.filter(item => 
-      item.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  }, [facilities, trashedFacilities, activeTab, searchTerm])
+  // Server-side search with debounce for active view
+  useEffect(() => {
+    if (activeTab === 'all') {
+      const timer = setTimeout(() => {
+        refetchActive(searchTerm)
+      }, 500)
+      return () => clearTimeout(timer)
+    }
+  }, [searchTerm, activeTab, refetchActive])
+
+  // Refetch trash when entering trash view
+  useEffect(() => {
+    if (activeTab === 'trash') {
+      refetchTrash()
+    }
+  }, [activeTab, refetchTrash])
 
   const handleCreate = () => {
     setSelectedFacility(null)
@@ -75,7 +95,7 @@ export default function BusFacilityPage() {
       await restoreFacility(facilityToAction.id)
       setIsRestoreConfirmOpen(false)
       setFacilityToAction(null)
-      refetch()
+      refetchActive(searchTerm)
     }
   }
 
@@ -92,6 +112,14 @@ export default function BusFacilityPage() {
     { label: "Active", value: (statistics?.total ?? 0) - (statistics?.trashed ?? 0), icon: List, note: "Current offerings" },
     { label: "Trash", value: statistics?.trashed ?? 0, icon: History, note: "Deleted facilities" },
   ]
+
+  const loading = activeTab === 'all' ? activeLoading : trashLoading
+  const error = activeTab === 'all' ? activeError : trashError
+  const displayData = activeTab === 'all' 
+    ? facilities 
+    : trashedFacilities.filter(item => 
+        item.name.toLowerCase().includes(searchTerm.toLowerCase())
+      )
 
   return (
     <div className="flex flex-col gap-8">
@@ -115,18 +143,20 @@ export default function BusFacilityPage() {
                   activeTab === 'all' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
                 }`}
               >
+                <List size={14} className="mr-1.5" />
                 All
               </button>
               <button
                 onClick={() => setActiveTab('trash')}
                 className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-xl transition-all ${
-                  activeTab === 'trash' ? 'bg-white text-rose-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                  activeTab === 'trash' ? 'bg-rose-500 text-white shadow-sm' : 'text-slate-500 hover:text-slate-700'
                 }`}
               >
+                <Trash2 size={14} className="mr-1.5" />
                 Trash
               </button>
             </div>
-            <Button variant="outline" icon={RefreshCcw} onClick={refetch} loading={loading}>
+            <Button variant="outline" icon={RefreshCcw} onClick={activeTab === 'all' ? () => refetchActive(searchTerm) : refetchTrash} loading={loading}>
               Refresh
             </Button>
             <Button variant="primary" icon={Plus} onClick={handleCreate}>
@@ -146,7 +176,7 @@ export default function BusFacilityPage() {
               </div>
               <p className="mt-5 text-sm font-medium text-slate-500">{stat.label}</p>
               <p className="mt-2 text-3xl font-semibold tracking-tight text-slate-900 truncate">
-                {loading ? "..." : stat.value}
+                {activeLoading ? "..." : stat.value}
               </p>
               <p className="mt-2 text-sm text-slate-400">{stat.note}</p>
             </div>
@@ -163,13 +193,13 @@ export default function BusFacilityPage() {
                 <span className="block text-xs font-semibold uppercase tracking-[0.18em]">Error Occurred</span>
                 <p className="text-sm font-medium leading-relaxed">{error}</p>
               </div>
-              <Button size="sm" variant="danger" className="mt-2 w-full" onClick={refetch}>Try Again</Button>
+              <Button size="sm" variant="danger" className="mt-2 w-full" onClick={activeTab === 'all' ? () => refetchActive(searchTerm) : refetchTrash}>Try Again</Button>
             </div>
           </div>
         ) : (
           <BusFacilityTable 
-            data={filteredData} 
-            loading={activeTab === 'all' ? loading : trashLoading}
+            data={displayData} 
+            loading={loading}
             isTrash={activeTab === 'trash'}
             onEdit={handleEdit}
             onDelete={activeTab === 'all' ? handleDeleteClick : handleForceDeleteClick}
@@ -179,7 +209,7 @@ export default function BusFacilityPage() {
       </div>
 
       <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedFacility ? "Edit Facility" : "Add New Facility"}>
-        <BusFacilityForm facility={selectedFacility} onSuccess={() => { setIsModalOpen(false); refetch(); refetchTrash(); }} onCancel={() => setIsModalOpen(false)} />
+        <BusFacilityForm facility={selectedFacility} onSuccess={() => { setIsModalOpen(false); refetchActive(searchTerm); refetchTrash(); }} onCancel={() => setIsModalOpen(false)} />
       </Modal>
 
       <Confirmation open={isDeleteConfirmOpen} onClose={() => setIsDeleteConfirmOpen(false)} onConfirm={confirmDelete} title="Delete Facility?" message={`Are you sure you want to delete "${facilityToAction?.name}"? It will be moved to the trash.`} variant="danger" confirmText="Yes, Delete" />

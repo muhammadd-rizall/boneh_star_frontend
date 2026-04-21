@@ -2,16 +2,25 @@ import Table from "@/components/ui/Table"
 import type { Column } from "@/components/ui/Table"
 import Button from "@/components/ui/Button"
 import type { Customer } from "@/features/admin/customers/types/Customer"
-import { Edit, Trash2, Mail, Phone, MapPin, User as UserIcon } from "lucide-react"
+import { Edit, Trash2, Mail, Phone, MapPin, User as UserIcon, RotateCcw } from "lucide-react"
 
 interface CustomerTableProps {
   data: Customer[]
   onDelete: (customer: Customer) => void
   onEdit: (customer: Customer) => void
+  onRestore?: (id: string) => void
   loading?: boolean
+  isTrash?: boolean
 }
 
-export default function CustomerTable({ data, onDelete, onEdit, loading }: CustomerTableProps) {
+export default function CustomerTable({ 
+  data, 
+  onDelete, 
+  onEdit, 
+  onRestore, 
+  loading, 
+  isTrash = false 
+}: CustomerTableProps) {
   const columns: Column<Customer>[] = [
     { 
       header: "Customer Information", 
@@ -74,22 +83,45 @@ export default function CustomerTable({ data, onDelete, onEdit, loading }: Custo
       header: "Actions",
       accessor: (row) => (
         <div className="flex items-center gap-2">
-          <Button 
-            size="sm" 
-            variant="outline" 
-            icon={Edit} 
-            className="h-9 w-9 rounded-full p-0" 
-            onClick={() => onEdit(row)}
-            title="Edit Customer" 
-          />
-          <Button 
-            size="sm" 
-            variant="danger" 
-            icon={Trash2} 
-            className="h-9 w-9 rounded-full p-0" 
-            onClick={() => onDelete(row)}
-            title="Delete Customer"
-          />
+          {isTrash ? (
+            <>
+              <Button 
+                size="sm" 
+                variant="outline" 
+                icon={RotateCcw} 
+                className="h-9 w-9 rounded-full p-0" 
+                onClick={() => onRestore?.(row.id)}
+                title="Restore Customer" 
+              />
+              <Button 
+                size="sm" 
+                variant="danger" 
+                icon={Trash2} 
+                className="h-9 w-9 rounded-full p-0" 
+                onClick={() => onDelete(row)}
+                title="Permanently Delete"
+              />
+            </>
+          ) : (
+            <>
+              <Button 
+                size="sm" 
+                variant="outline" 
+                icon={Edit} 
+                className="h-9 w-9 rounded-full p-0" 
+                onClick={() => onEdit(row)}
+                title="Edit Customer" 
+              />
+              <Button 
+                size="sm" 
+                variant="danger" 
+                icon={Trash2} 
+                className="h-9 w-9 rounded-full p-0" 
+                onClick={() => onDelete(row)}
+                title="Delete Customer"
+              />
+            </>
+          )}
         </div>
       )
     }

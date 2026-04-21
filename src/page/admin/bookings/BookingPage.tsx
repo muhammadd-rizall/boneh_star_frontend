@@ -51,19 +51,14 @@ export default function BookingPage() {
     if (view === 'trashed') {
       fetchTrashed()
     } else {
-      refetch()
+      const timeoutId = setTimeout(() => {
+        refetch(searchTerm)
+      }, 500)
+      return () => clearTimeout(timeoutId)
     }
-  }, [view, fetchTrashed, refetch])
+  }, [view, searchTerm, fetchTrashed, refetch])
 
   const currentData = view === 'active' ? bookings : trashedBookings
-
-  const filteredBookings = useMemo(() => {
-    return currentData.filter(booking => 
-      booking.booking_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      booking.customer?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      booking.origin.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  }, [currentData, searchTerm])
 
   const handleCreate = () => {
     setSelectedBooking(null)
@@ -233,7 +228,7 @@ export default function BookingPage() {
           </div>
         ) : (
           <BookingTable 
-            data={filteredBookings} 
+            data={currentData} 
             onDelete={handleDeleteClick} 
             onEdit={handleEdit}
             onRestore={handleRestoreClick}

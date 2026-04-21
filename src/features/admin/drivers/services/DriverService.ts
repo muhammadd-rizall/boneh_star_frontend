@@ -11,9 +11,11 @@ const ENDPOINTS = {
 };
 
 export const driverService = {
-  getAll: async (): Promise<{ drivers: Driver[], statistics: DriverStatistics | null }> => {
+  getAll: async (search?: string): Promise<{ drivers: Driver[], statistics: DriverStatistics | null }> => {
     try {
-      const response = await axios.get<DriverApiResponse>(ENDPOINTS.BASE);
+      const response = await axios.get<DriverApiResponse>(ENDPOINTS.BASE, {
+        params: { search }
+      });
       const responseData = response.data.data;
       
       let drivers: Driver[] = [];

@@ -7,12 +7,13 @@ export function usePaymentMethods() {
   const [statistics, setStatistics] = useState<PaymentMethodStatistics | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [searchTerm, setSearchTerm] = useState("")
 
   const fetchPaymentMethods = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
-      const { paymentMethods, statistics } = await paymentMethodService.getAll()
+      const { paymentMethods, statistics } = await paymentMethodService.getAll(searchTerm || undefined)
       setPaymentMethods(paymentMethods)
       setStatistics(statistics)
     } catch (err) {
@@ -21,7 +22,7 @@ export function usePaymentMethods() {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [searchTerm])
 
   const deletePaymentMethod = async (id: string) => {
     try {
@@ -36,7 +37,10 @@ export function usePaymentMethods() {
   }
 
   useEffect(() => {
-    fetchPaymentMethods()
+    const timer = setTimeout(() => {
+      fetchPaymentMethods()
+    }, 500)
+    return () => clearTimeout(timer)
   }, [fetchPaymentMethods])
 
   return {
@@ -44,6 +48,8 @@ export function usePaymentMethods() {
     statistics,
     loading,
     error,
+    searchTerm,
+    setSearchTerm,
     refetch: fetchPaymentMethods,
     deletePaymentMethod
   }

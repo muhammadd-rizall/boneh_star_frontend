@@ -4,6 +4,7 @@ import PaymentTable from "./components/PaymentTable"
 import PaymentVerifyForm from "./components/PaymentVerifyForm"
 import Modal from "@/components/ui/Modal"
 import Card from "@/components/ui/Card"
+import Search from "@/components/ui/Search"
 import { List, History, Receipt, DollarSign, Clock, CheckCircle } from "lucide-react"
 import ErrorState from "@/components/feedback/ErrorState"
 import Confirmation from "@/components/feedback/Confirmation"
@@ -20,7 +21,9 @@ export default function PaymentsFeature() {
     deletePayment,
     page,
     setPage,
-    meta
+    meta,
+    searchTerm,
+    setSearchTerm
   } = usePayments()
   
   const { 
@@ -109,13 +112,18 @@ export default function PaymentsFeature() {
     <div className="flex flex-col gap-8">
       {/* Header & Stats */}
       <div className="flex flex-col gap-6">
-        <div className="flex flex-col gap-1 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h1 className="text-2xl font-bold text-slate-900">Payments</h1>
             <p className="text-sm text-slate-500 font-medium">Verify and manage customer payment submissions</p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <Search 
+              value={searchTerm} 
+              onChange={setSearchTerm} 
+              placeholder="Search invoice or method..." 
+            />
             <div className="flex bg-slate-100 p-1 rounded-2xl border border-slate-200">
               <button
                 onClick={() => setActiveTab('all')}

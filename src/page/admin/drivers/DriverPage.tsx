@@ -1,40 +1,65 @@
-import { useState, useMemo } from "react"
-import { useDrivers, useTrashedDrivers } from "@/features/admin/drivers/hooks/useDrivers"
-import DriverTable from "@/features/admin/drivers/components/DriverTable"
-import DriverForm from "@/features/admin/drivers/components/DriverForm"
-import Modal from "@/components/ui/Modal"
+import { useState, useEffect } from "react"
+import { 
+  DriverTable, 
+  DriverForm, 
+  useDrivers,
+  useTrashedDrivers,
+  type Driver 
+} from "@/features/admin/drivers"
 import Button from "@/components/ui/Button"
+import Modal from "@/components/ui/Modal"
 import Search from "@/components/ui/Search"
-import { Plus, RefreshCcw, UserCircle, ShieldAlert, CheckCircle2, History, Clock, AlertCircle } from "lucide-react"
+import { Plus, RefreshCcw, UserCircle, ShieldAlert, CheckCircle2, History, Clock, AlertCircle, List, Trash2 } from "lucide-react"
 import Confirmation from "@/components/feedback/Confirmation"
-import type { Driver } from "@/features/admin/drivers/types/Driver"
 
 export default function DriverPage() {
-  const [activeTab, setActiveTab] = useState<'all' | 'trash'>('all')
-  const { drivers, statistics, loading, error, refetch, deleteDriver } = useDrivers()
+  const [view, setView] = useState<'active' | 'trash'>('active');
+  const [searchTerm, setSearchTerm] = useState("")
+  
   const { 
-    drivers: trashedDrivers, 
-    loading: trashLoading, 
+    drivers, 
+    statistics, 
+    loading: activeLoading, 
+    error: activeError, 
+    deleteDriver, 
+    refetch: refetchActive 
+  } = useDrivers()
+
+  const {
+    drivers: trashedDrivers,
+    loading: trashLoading,
+    error: trashError,
     refetch: refetchTrash,
     restoreDriver,
-    forceDeleteDriver 
+    forceDeleteDriver
   } = useTrashedDrivers()
 
-  const [searchTerm, setSearchTerm] = useState("")
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null)
+  
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false)
   const [isRestoreConfirmOpen, setIsRestoreConfirmOpen] = useState(false)
   const [isForceDeleteConfirmOpen, setIsForceDeleteConfirmOpen] = useState(false)
-  const [driverToAction, setDriverToAction] = useState<Driver | null>(null)
+  
+  const [driverToManage, setDriverToManage] = useState<Driver | null>(null)
+  const [actionLoading, setActionLoading] = useState(false)
 
-  const filteredData = useMemo(() => {
-    const source = activeTab === 'all' ? drivers : trashedDrivers
-    return source.filter(item => 
-      item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.address.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  }, [drivers, trashedDrivers, activeTab, searchTerm])
+  // Server-side search with debounce for active view
+  useEffect(() => {
+    if (view === 'active') {
+      const timer = setTimeout(() => {
+        refetchActive(searchTerm)
+      }, 500)
+      return () => clearTimeout(timer)
+    }
+  }, [searchTerm, view, refetchActive])
+
+  // Refetch trash when entering trash view
+  useEffect(() => {
+    if (view === 'trash') {
+      refetchTrash()
+    }
+  }, [view, refetchTrash])
 
   const handleCreate = () => {
     setSelectedDriver(null)
@@ -46,45 +71,64 @@ export default function DriverPage() {
     setIsModalOpen(true)
   }
 
+  const handleSuccess = () => {
+    setIsModalOpen(false)
+    if (view === 'active') refetchActive(searchTerm)
+    else refetchTrash()
+  }
+
   const handleDeleteClick = (driver: Driver) => {
-    setDriverToAction(driver)
+    setDriverToManage(driver)
     setIsDeleteConfirmOpen(true)
   }
 
+  const handleConfirmDelete = async () => {
+    if (!driverToManage) return
+    setActionLoading(true)
+    try {
+      await deleteDriver(driverToManage.id)
+      setIsDeleteConfirmOpen(false)
+      setDriverToManage(null)
+    } finally {
+      setActionLoading(false)
+    }
+  }
+
   const handleRestoreClick = (id: string) => {
-    const driver = trashedDrivers.find(f => f.id === id) || null
-    setDriverToAction(driver)
-    setIsRestoreConfirmOpen(true)
+    const driver = trashedDrivers.find(d => d.id === id)
+    if (driver) {
+      setDriverToManage(driver)
+      setIsRestoreConfirmOpen(true)
+    }
+  }
+
+  const handleConfirmRestore = async () => {
+    if (!driverToManage) return
+    setActionLoading(true)
+    try {
+      await restoreDriver(driverToManage.id)
+      setIsRestoreConfirmOpen(false)
+      setDriverToManage(null)
+      refetchActive(searchTerm)
+    } finally {
+      setActionLoading(false)
+    }
   }
 
   const handleForceDeleteClick = (driver: Driver) => {
-    setDriverToAction(driver)
+    setDriverToManage(driver)
     setIsForceDeleteConfirmOpen(true)
   }
 
-  const confirmDelete = async () => {
-    if (driverToAction) {
-      await deleteDriver(driverToAction.id)
-      setIsDeleteConfirmOpen(false)
-      setDriverToAction(null)
-      if (activeTab === 'trash') refetchTrash()
-    }
-  }
-
-  const confirmRestore = async () => {
-    if (driverToAction) {
-      await restoreDriver(driverToAction.id)
-      setIsRestoreConfirmOpen(false)
-      setDriverToAction(null)
-      refetch()
-    }
-  }
-
-  const confirmForceDelete = async () => {
-    if (driverToAction) {
-      await forceDeleteDriver(driverToAction.id)
+  const handleConfirmForceDelete = async () => {
+    if (!driverToManage) return
+    setActionLoading(true)
+    try {
+      await forceDeleteDriver(driverToManage.id)
       setIsForceDeleteConfirmOpen(false)
-      setDriverToAction(null)
+      setDriverToManage(null)
+    } finally {
+      setActionLoading(false)
     }
   }
 
@@ -94,6 +138,14 @@ export default function DriverPage() {
     { label: "On Duty", value: statistics?.on_duty ?? 0, icon: Clock, note: "Currently driving" },
     { label: "Inactive", value: statistics?.inactive ?? 0, icon: AlertCircle, note: "Off duty/Inactive" },
   ]
+
+  const loading = view === 'active' ? activeLoading : trashLoading
+  const error = view === 'active' ? activeError : trashError
+  const displayData = view === 'active' 
+    ? drivers 
+    : trashedDrivers.filter(d => 
+        d.name.toLowerCase().includes(searchTerm.toLowerCase())
+      )
 
   return (
     <div className="flex flex-col gap-8">
@@ -108,27 +160,9 @@ export default function DriverPage() {
             <Search 
               value={searchTerm} 
               onChange={setSearchTerm} 
-              placeholder="Search drivers by name..." 
+              placeholder="Search by name or phone..." 
             />
-            <div className="flex bg-slate-100 p-1 rounded-2xl border border-slate-200">
-              <button
-                onClick={() => setActiveTab('all')}
-                className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-xl transition-all ${
-                  activeTab === 'all' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
-                }`}
-              >
-                All
-              </button>
-              <button
-                onClick={() => setActiveTab('trash')}
-                className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-xl transition-all ${
-                  activeTab === 'trash' ? 'bg-white text-rose-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
-                }`}
-              >
-                Trash
-              </button>
-            </div>
-            <Button variant="outline" icon={RefreshCcw} onClick={refetch} loading={loading}>
+            <Button variant="outline" icon={RefreshCcw} onClick={view === 'active' ? () => refetchActive(searchTerm) : refetchTrash} loading={loading}>
               Refresh
             </Button>
             <Button variant="primary" icon={Plus} onClick={handleCreate}>
@@ -137,7 +171,7 @@ export default function DriverPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 border-b border-slate-100 pb-6">
           {stats.map((stat, i) => (
             <div key={i} className="rounded-[24px] border border-slate-200 bg-slate-50/80 p-5">
               <div className="flex items-center justify-between">
@@ -148,11 +182,28 @@ export default function DriverPage() {
               </div>
               <p className="mt-5 text-sm font-medium text-slate-500">{stat.label}</p>
               <p className="mt-2 text-3xl font-semibold tracking-tight text-slate-900 truncate">
-                {loading ? "..." : stat.value}
+                {activeLoading ? "..." : stat.value}
               </p>
               <p className="mt-2 text-sm text-slate-400">{stat.note}</p>
             </div>
           ))}
+        </div>
+
+        <div className="flex items-center gap-1 rounded-2xl bg-slate-100 p-1 w-fit">
+          <button
+            onClick={() => setView('active')}
+            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all ${view === 'active' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+          >
+            <List size={14} />
+            Active
+          </button>
+          <button
+            onClick={() => setView('trash')}
+            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all ${view === 'trash' ? 'bg-rose-500 text-white shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+          >
+            <Trash2 size={14} />
+            Trash
+          </button>
         </div>
       </section>
 
@@ -165,28 +216,52 @@ export default function DriverPage() {
                 <span className="block text-xs font-semibold uppercase tracking-[0.18em]">Error Occurred</span>
                 <p className="text-sm font-medium leading-relaxed">{error}</p>
               </div>
-              <Button size="sm" variant="danger" className="mt-2 w-full" onClick={refetch}>Try Again</Button>
+              <Button size="sm" variant="danger" className="mt-2 w-full" onClick={view === 'active' ? () => refetchActive(searchTerm) : refetchTrash}>Try Again</Button>
             </div>
           </div>
         ) : (
           <DriverTable 
-            data={filteredData} 
-            loading={activeTab === 'all' ? loading : trashLoading}
-            isTrash={activeTab === 'trash'}
+            data={displayData} 
+            onDelete={view === 'active' ? handleDeleteClick : handleForceDeleteClick} 
             onEdit={handleEdit}
-            onDelete={activeTab === 'all' ? handleDeleteClick : handleForceDeleteClick}
             onRestore={handleRestoreClick}
+            loading={loading} 
+            isTrash={view === 'trash'}
           />
         )}
       </div>
 
-      <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedDriver ? "Edit Driver" : "Register New Driver"} size="lg">
-        <DriverForm driver={selectedDriver} onSuccess={() => { setIsModalOpen(false); refetch(); refetchTrash(); }} onCancel={() => setIsModalOpen(false)} />
+      <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedDriver ? "Update Driver" : "Register New Driver"} size="lg">
+        <DriverForm driver={selectedDriver} onSuccess={handleSuccess} onCancel={() => setIsModalOpen(false)} />
       </Modal>
 
-      <Confirmation open={isDeleteConfirmOpen} onClose={() => setIsDeleteConfirmOpen(false)} onConfirm={confirmDelete} title="Delete Driver?" message={`Are you sure you want to delete "${driverToAction?.name}"? Driver will be moved to trash.`} variant="danger" confirmText="Yes, Delete" />
-      <Confirmation open={isRestoreConfirmOpen} onClose={() => setIsRestoreConfirmOpen(false)} onConfirm={confirmRestore} title="Restore Driver?" message={`Restore "${driverToAction?.name}" back to active status?`} variant="info" confirmText="Yes, Restore" />
-      <Confirmation open={isForceDeleteConfirmOpen} onClose={() => setIsForceDeleteConfirmOpen(false)} onConfirm={confirmForceDelete} title="Permanently Delete?" message={`This action cannot be undone. "${driverToAction?.name}" will be permanently removed.`} variant="danger" confirmText="Yes, Permanently Delete" />
+      <Confirmation
+        open={isDeleteConfirmOpen}
+        onClose={() => setIsDeleteConfirmOpen(false)}
+        onConfirm={handleConfirmDelete}
+        loading={actionLoading}
+        title="Move to Trash"
+        message={`Are you sure you want to move driver "${driverToManage?.name}" to trash?`}
+      />
+
+      <Confirmation
+        open={isRestoreConfirmOpen}
+        onClose={() => setIsRestoreConfirmOpen(false)}
+        onConfirm={handleConfirmRestore}
+        loading={actionLoading}
+        title="Restore Driver"
+        message={`Are you sure you want to restore driver "${driverToManage?.name}"?`}
+      />
+
+      <Confirmation
+        open={isForceDeleteConfirmOpen}
+        onClose={() => setIsForceDeleteConfirmOpen(false)}
+        onConfirm={handleConfirmForceDelete}
+        loading={actionLoading}
+        variant="danger"
+        title="Permanently Delete"
+        message={`WARNING: Are you sure you want to permanently delete driver "${driverToManage?.name}"? This action cannot be undone.`}
+      />
     </div>
   )
 }

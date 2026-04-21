@@ -8,11 +8,11 @@ export function useBuses() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchBuses = useCallback(async () => {
+  const fetchBuses = useCallback(async (search?: string) => {
     try {
       setLoading(true)
       setError(null)
-      const { buses, statistics } = await busService.getAll()
+      const { buses, statistics } = await busService.getAll(search)
       setBuses(buses)
       setStatistics(statistics)
     } catch (err: any) {

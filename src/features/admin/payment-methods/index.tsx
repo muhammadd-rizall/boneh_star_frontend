@@ -5,14 +5,25 @@ import PaymentMethodForm from "./components/PaymentMethodForm"
 import Modal from "@/components/ui/Modal"
 import Button from "@/components/ui/Button"
 import Card from "@/components/ui/Card"
-import { Plus, Trash2, CreditCard, List, History } from "lucide-react"
+import Search from "@/components/ui/Search"
+import { Plus, Trash2, List, History } from "lucide-react"
 import ErrorState from "@/components/feedback/ErrorState"
 import Confirmation from "@/components/feedback/Confirmation"
 import type { PaymentMethod } from "./types/PaymentMethod"
 
 export default function PaymentMethodsFeature() {
   const [activeTab, setActiveTab] = useState<'all' | 'trash'>('all')
-  const { paymentMethods, statistics, loading, error, refetch, deletePaymentMethod } = usePaymentMethods()
+  const { 
+    paymentMethods, 
+    statistics, 
+    loading, 
+    error, 
+    refetch, 
+    deletePaymentMethod,
+    searchTerm,
+    setSearchTerm
+  } = usePaymentMethods()
+  
   const { 
     paymentMethods: trashedPaymentMethods, 
     loading: trashLoading, 
@@ -103,7 +114,12 @@ export default function PaymentMethodsFeature() {
           <p className="text-sm text-slate-500 font-medium">Manage bank accounts for customer payments</p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <Search 
+            value={searchTerm} 
+            onChange={setSearchTerm} 
+            placeholder="Search bank or account..." 
+          />
           <div className="flex bg-slate-100 p-1 rounded-2xl border border-slate-200">
             <button
               onClick={() => setActiveTab('all')}

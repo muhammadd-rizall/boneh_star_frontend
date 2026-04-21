@@ -10,9 +10,11 @@ const ENDPOINTS = {
 };
 
 export const transactionService = {
-  getAll: async (): Promise<{ transactions: Transaction[], statistics: TransactionStatistics | null }> => {
+  getAll: async (search?: string): Promise<{ transactions: Transaction[], statistics: TransactionStatistics | null }> => {
     try {
-      const response = await axios.get<TransactionApiResponse>(ENDPOINTS.BASE);
+      const response = await axios.get<TransactionApiResponse>(ENDPOINTS.BASE, {
+        params: { search }
+      });
       const data = response.data.data;
       return {
         transactions: Array.isArray(data) ? data : [],

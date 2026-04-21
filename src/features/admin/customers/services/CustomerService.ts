@@ -1,5 +1,11 @@
 import axios from '@/api/Axios';
-import type { Customer, CustomerFormData, CustomerApiResponse, CustomerStatistics } from '@/features/admin/customers/types/Customer';
+import type { 
+  Customer, 
+  CustomerFormData, 
+  CustomerApiResponse, 
+  CustomerStatistics,
+  PaginatedData
+} from '@/features/admin/customers/types/Customer';
 
 const ENDPOINTS = {
   BASE: '/admin/customers',
@@ -10,17 +16,19 @@ const ENDPOINTS = {
 };
 
 export const customerService = {
-  getAll: async (): Promise<{ customers: Customer[], statistics: CustomerStatistics | null }> => {
+  getAll: async (search?: string): Promise<{ customers: Customer[], statistics: CustomerStatistics | null }> => {
     try {
-      const response = await axios.get<CustomerApiResponse>(ENDPOINTS.BASE);
+      const response = await axios.get<CustomerApiResponse>(ENDPOINTS.BASE, {
+        params: { search }
+      });
       // Backend returns { success, statistic, data: { data: [], links, meta }, message }
       const responseData = response.data.data;
       
       let customers: Customer[] = [];
-      if (responseData && Array.isArray(responseData.data)) {
-        customers = responseData.data;
+      if (responseData && typeof responseData === 'object' && 'data' in responseData && Array.isArray((responseData as PaginatedData<Customer>).data)) {
+        customers = (responseData as PaginatedData<Customer>).data;
       } else if (Array.isArray(responseData)) {
-        customers = responseData;
+        customers = responseData as Customer[];
       }
 
       return {

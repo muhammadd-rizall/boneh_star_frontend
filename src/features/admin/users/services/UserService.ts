@@ -10,10 +10,12 @@ const ENDPOINTS = {
 };
 
 export const userService = {
-  // Mengembalikan data dan statistik
-  getAll: async (): Promise<{ users: User[], statistics: UserStatistics | null }> => {
+  // Mengembalikan data dan statistik dengan dukungan pencarian
+  getAll: async (search?: string): Promise<{ users: User[], statistics: UserStatistics | null }> => {
     try {
-      const response = await axios.get<UserApiResponse>(ENDPOINTS.BASE);
+      const response = await axios.get<UserApiResponse>(ENDPOINTS.BASE, {
+        params: { search }
+      });
       const data = response.data.data;
       return {
         users: Array.isArray(data) ? data : [],

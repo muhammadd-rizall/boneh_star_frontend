@@ -8,11 +8,11 @@ export function useBusCategories() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchCategories = useCallback(async () => {
+  const fetchCategories = useCallback(async (search?: string) => {
     try {
       setLoading(true)
       setError(null)
-      const { categories, statistics } = await busCategoryService.getAll()
+      const { categories, statistics } = await busCategoryService.getAll(search)
       setCategories(categories)
       setStatistics(statistics)
     } catch (err) {

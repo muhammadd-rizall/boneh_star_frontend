@@ -8,11 +8,11 @@ export function useCustomers() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchCustomers = useCallback(async () => {
+  const fetchCustomers = useCallback(async (search?: string) => {
     try {
       setLoading(true)
       setError(null)
-      const { customers, statistics } = await customerService.getAll()
+      const { customers, statistics } = await customerService.getAll(search)
       setCustomers(customers)
       setStatistics(statistics)
     } catch (err: any) {
@@ -43,5 +43,54 @@ export function useCustomers() {
     error,
     refetch: fetchCustomers,
     deleteCustomer
+  }
+}
+
+export function useTrashedCustomers() {
+  const [customers, setCustomers] = useState<Customer[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchTrashed = useCallback(async () => {
+    try {
+      setLoading(true)
+      const data = await customerService.getTrashed()
+      setCustomers(data)
+    } catch (err: any) {
+      setError(err.message || "Failed to fetch trashed customers")
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  const restoreCustomer = async (id: string) => {
+    try {
+      await customerService.restore(id)
+      await fetchTrashed()
+    } catch (err: any) {
+      setError(err.message || "Failed to restore customer")
+    }
+  }
+
+  const forceDeleteCustomer = async (id: string) => {
+    try {
+      await customerService.forceDelete(id)
+      await fetchTrashed()
+    } catch (err: any) {
+      setError(err.message || "Failed to permanently delete customer")
+    }
+  }
+
+  useEffect(() => {
+    fetchTrashed()
+  }, [fetchTrashed])
+
+  return {
+    customers,
+    loading,
+    error,
+    refetch: fetchTrashed,
+    restoreCustomer,
+    forceDeleteCustomer
   }
 }

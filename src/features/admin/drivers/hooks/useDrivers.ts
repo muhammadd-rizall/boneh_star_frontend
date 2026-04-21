@@ -8,11 +8,11 @@ export function useDrivers() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchDrivers = useCallback(async () => {
+  const fetchDrivers = useCallback(async (search?: string) => {
     try {
       setLoading(true)
       setError(null)
-      const { drivers, statistics } = await driverService.getAll()
+      const { drivers, statistics } = await driverService.getAll(search)
       setDrivers(drivers)
       setStatistics(statistics)
     } catch (err) {

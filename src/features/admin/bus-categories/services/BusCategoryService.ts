@@ -10,9 +10,11 @@ const ENDPOINTS = {
 };
 
 export const busCategoryService = {
-  getAll: async (): Promise<{ categories: BusCategory[], statistics: BusCategoryStatistics | null }> => {
+  getAll: async (search?: string): Promise<{ categories: BusCategory[], statistics: BusCategoryStatistics | null }> => {
     try {
-      const response = await axios.get<BusCategoryApiResponse>(ENDPOINTS.BASE);
+      const response = await axios.get<BusCategoryApiResponse>(ENDPOINTS.BASE, {
+        params: { search }
+      });
       const responseData = response.data.data;
       
       let categories: BusCategory[] = [];

@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react"
+import { useState, useEffect } from "react"
 import { 
   QuotationTable, 
   QuotationForm, 
@@ -29,12 +29,12 @@ export default function QuotationPage() {
   const [quotationToDelete, setQuotationToDelete] = useState<Quotation | null>(null)
   const [deleteLoading, setDeleteLoading] = useState(false)
 
-  const filteredQuotations = useMemo(() => {
-    return quotations.filter(q => 
-      q.booking?.booking_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      q.booking?.customer?.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  }, [quotations, searchTerm])
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      refetch(searchTerm)
+    }, 500)
+    return () => clearTimeout(timeoutId)
+  }, [searchTerm, refetch])
 
   const handleCreate = () => {
     setSelectedQuotation(null)
@@ -48,7 +48,7 @@ export default function QuotationPage() {
 
   const handleSuccess = () => {
     setIsModalOpen(false)
-    refetch()
+    refetch(searchTerm)
   }
 
   const handleDeleteClick = (quotation: Quotation) => {
@@ -90,7 +90,7 @@ export default function QuotationPage() {
               onChange={setSearchTerm} 
               placeholder="Search by booking code or customer..." 
             />
-            <Button variant="outline" icon={RefreshCcw} onClick={refetch} loading={loading}>
+            <Button variant="outline" icon={RefreshCcw} onClick={() => refetch(searchTerm)} loading={loading}>
               Refresh
             </Button>
             <Button variant="primary" icon={Plus} onClick={handleCreate}>
@@ -127,12 +127,12 @@ export default function QuotationPage() {
                 <span className="block text-xs font-semibold uppercase tracking-[0.18em]">Authorization Required</span>
                 <p className="text-sm font-medium leading-relaxed">{error}</p>
               </div>
-              <Button size="sm" variant="danger" className="mt-2 w-full" onClick={refetch}>Try Again</Button>
+              <Button size="sm" variant="danger" className="mt-2 w-full" onClick={() => refetch(searchTerm)}>Try Again</Button>
             </div>
           </div>
         ) : (
           <QuotationTable 
-            data={filteredQuotations} 
+            data={quotations} 
             onDelete={handleDeleteClick} 
             onEdit={handleEdit}
             loading={loading} 

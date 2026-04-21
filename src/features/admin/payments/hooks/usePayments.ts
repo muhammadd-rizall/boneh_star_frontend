@@ -9,12 +9,16 @@ export function usePayments() {
   const [error, setError] = useState<string | null>(null)
   const [meta, setMeta] = useState<any>(null)
   const [page, setPage] = useState(1)
+  const [searchTerm, setSearchTerm] = useState("")
 
   const fetchPayments = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
-      const { payments, statistics, meta } = await paymentService.getPaginated({ page })
+      const { payments, statistics, meta } = await paymentService.getPaginated({ 
+        page, 
+        search: searchTerm || undefined 
+      })
       setPayments(payments)
       setStatistics(statistics)
       setMeta(meta)
@@ -24,7 +28,7 @@ export function usePayments() {
     } finally {
       setLoading(false)
     }
-  }, [page])
+  }, [page, searchTerm])
 
   const verifyPayment = async (id: string, data: PaymentVerifyData) => {
     try {
@@ -49,7 +53,10 @@ export function usePayments() {
   }
 
   useEffect(() => {
-    fetchPayments()
+    const timer = setTimeout(() => {
+      fetchPayments()
+    }, 500)
+    return () => clearTimeout(timer)
   }, [fetchPayments])
 
   return {
@@ -60,6 +67,8 @@ export function usePayments() {
     meta,
     page,
     setPage,
+    searchTerm,
+    setSearchTerm,
     refetch: fetchPayments,
     verifyPayment,
     deletePayment

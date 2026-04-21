@@ -9,11 +9,11 @@ export function useTransactions() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchTransactions = useCallback(async () => {
+  const fetchTransactions = useCallback(async (search?: string) => {
     try {
       setLoading(true)
       setError(null)
-      const { transactions, statistics } = await transactionService.getAll()
+      const { transactions, statistics } = await transactionService.getAll(search)
       setTransactions(transactions)
       setStatistics(statistics)
     } catch (err: any) {

@@ -9,11 +9,11 @@ export function useBookings() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchBookings = useCallback(async () => {
+  const fetchBookings = useCallback(async (search?: string) => {
     try {
       setLoading(true)
       setError(null)
-      const { bookings, statistics } = await bookingService.getAll()
+      const { bookings, statistics } = await bookingService.getAll(search)
       setBookings(bookings)
       setStatistics(statistics)
     } catch (err: any) {

@@ -10,9 +10,11 @@ const ENDPOINTS = {
 };
 
 export const busFacilityService = {
-  getAll: async (): Promise<{ facilities: BusFacility[], statistics: BusFacilityStatistics | null }> => {
+  getAll: async (search?: string): Promise<{ facilities: BusFacility[], statistics: BusFacilityStatistics | null }> => {
     try {
-      const response = await axios.get<BusFacilityApiResponse>(ENDPOINTS.BASE);
+      const response = await axios.get<BusFacilityApiResponse>(ENDPOINTS.BASE, {
+        params: { search }
+      });
       const responseData = response.data.data;
       
       let facilities: BusFacility[] = [];

@@ -41,9 +41,33 @@ export interface BookingFormData {
   buses?: BookingBusFormData[];
 }
 
+export interface PaginationLinks {
+  first: string | null;
+  last: string | null;
+  prev: string | null;
+  next: string | null;
+}
+
+export interface PaginationMeta {
+  current_page: number;
+  from: number | null;
+  last_page: number;
+  links: { url: string | null; label: string; active: boolean }[];
+  path: string;
+  per_page: number;
+  to: number | null;
+  total: number;
+}
+
+export interface PaginatedData<T> {
+  data: T[];
+  links: PaginationLinks;
+  meta: PaginationMeta;
+}
+
 export interface BookingApiResponse {
   success: boolean;
   message: string;
   statistics?: BookingStatistics;
-  data: Booking | Booking[];
+  data: Booking | PaginatedData<Booking> | Booking[];
 }

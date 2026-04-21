@@ -8,11 +8,11 @@ export function useRouteTypes() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchRouteTypes = useCallback(async () => {
+  const fetchRouteTypes = useCallback(async (search?: string) => {
     try {
       setLoading(true)
       setError(null)
-      const { routeTypes, statistics } = await routeTypeService.getAll()
+      const { routeTypes, statistics } = await routeTypeService.getAll(search)
       setRouteTypes(routeTypes)
       setStatistics(statistics)
     } catch (err) {

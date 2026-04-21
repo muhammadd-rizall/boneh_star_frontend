@@ -1,5 +1,11 @@
 import axios from '@/api/Axios';
-import type { Booking, BookingFormData, BookingApiResponse, BookingStatistics } from '@/features/admin/bookings/types/Booking';
+import type { 
+  Booking, 
+  BookingFormData, 
+  BookingApiResponse, 
+  BookingStatistics,
+  PaginatedData
+} from '@/features/admin/bookings/types/Booking';
 
 const ENDPOINTS = {
   BASE: '/admin/bookings',
@@ -10,12 +16,22 @@ const ENDPOINTS = {
 };
 
 export const bookingService = {
-  getAll: async (): Promise<{ bookings: Booking[], statistics: BookingStatistics | null }> => {
+  getAll: async (search?: string): Promise<{ bookings: Booking[], statistics: BookingStatistics | null }> => {
     try {
-      const response = await axios.get<BookingApiResponse>(ENDPOINTS.BASE);
+      const response = await axios.get<BookingApiResponse>(ENDPOINTS.BASE, {
+        params: { search }
+      });
       const data = response.data.data;
+      
+      let bookings: Booking[] = [];
+      if (data && typeof data === 'object' && 'data' in data && Array.isArray((data as PaginatedData<Booking>).data)) {
+        bookings = (data as PaginatedData<Booking>).data;
+      } else if (Array.isArray(data)) {
+        bookings = data as Booking[];
+      }
+
       return {
-        bookings: Array.isArray(data) ? data : [],
+        bookings,
         statistics: response.data.statistics || null
       };
     } catch (error) {

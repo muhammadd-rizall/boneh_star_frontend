@@ -1,26 +1,36 @@
-import { useState, useMemo } from "react"
+import { useState, useEffect } from "react"
 import { useBusCategories, useTrashedBusCategories } from "@/features/admin/bus-categories/hooks/useBusCategories"
 import BusCategoryTable from "@/features/admin/bus-categories/components/BusCategoryTable"
 import BusCategoryForm from "@/features/admin/bus-categories/components/BusCategoryForm"
 import Modal from "@/components/ui/Modal"
 import Button from "@/components/ui/Button"
 import Search from "@/components/ui/Search"
-import { Plus, RefreshCcw, Layout, ShieldAlert, List, History } from "lucide-react"
+import { Plus, RefreshCcw, Layout, ShieldAlert, List, History, Trash2 } from "lucide-react"
 import Confirmation from "@/components/feedback/Confirmation"
 import type { BusCategory } from "@/features/admin/bus-categories/types/BusCategory"
 
 export default function BusCategoryPage() {
   const [activeTab, setActiveTab] = useState<'all' | 'trash'>('all')
-  const { categories, statistics, loading, error, refetch, deleteCategory } = useBusCategories()
+  const [searchTerm, setSearchTerm] = useState("")
+  
+  const { 
+    categories, 
+    statistics, 
+    loading: activeLoading, 
+    error: activeError, 
+    deleteCategory,
+    refetch: refetchActive 
+  } = useBusCategories()
+
   const { 
     categories: trashedCategories, 
     loading: trashLoading, 
+    error: trashError,
     refetch: refetchTrash,
     restoreCategory,
     forceDeleteCategory 
   } = useTrashedBusCategories()
 
-  const [searchTerm, setSearchTerm] = useState("")
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState<BusCategory | null>(null)
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false)
@@ -28,13 +38,22 @@ export default function BusCategoryPage() {
   const [isForceDeleteConfirmOpen, setIsForceDeleteConfirmOpen] = useState(false)
   const [categoryToAction, setCategoryToAction] = useState<BusCategory | null>(null)
 
-  const filteredData = useMemo(() => {
-    const source = activeTab === 'all' ? categories : trashedCategories
-    return source.filter(item => 
-      item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (item.description && item.description.toLowerCase().includes(searchTerm.toLowerCase()))
-    )
-  }, [categories, trashedCategories, activeTab, searchTerm])
+  // Server-side search with debounce for active view
+  useEffect(() => {
+    if (activeTab === 'all') {
+      const timer = setTimeout(() => {
+        refetchActive(searchTerm)
+      }, 500)
+      return () => clearTimeout(timer)
+    }
+  }, [searchTerm, activeTab, refetchActive])
+
+  // Refetch trash when entering trash view
+  useEffect(() => {
+    if (activeTab === 'trash') {
+      refetchTrash()
+    }
+  }, [activeTab, refetchTrash])
 
   const handleCreate = () => {
     setSelectedCategory(null)
@@ -76,7 +95,7 @@ export default function BusCategoryPage() {
       await restoreCategory(categoryToAction.id)
       setIsRestoreConfirmOpen(false)
       setCategoryToAction(null)
-      refetch()
+      refetchActive(searchTerm)
     }
   }
 
@@ -93,6 +112,14 @@ export default function BusCategoryPage() {
     { label: "Active", value: (statistics?.total ?? 0) - (statistics?.trashed ?? 0), icon: List, note: "Used in fleet" },
     { label: "Trash", value: statistics?.trashed ?? 0, icon: History, note: "Deleted categories" },
   ]
+
+  const loading = activeTab === 'all' ? activeLoading : trashLoading
+  const error = activeTab === 'all' ? activeError : trashError
+  const displayData = activeTab === 'all' 
+    ? categories 
+    : trashedCategories.filter(item => 
+        item.name.toLowerCase().includes(searchTerm.toLowerCase())
+      )
 
   return (
     <div className="flex flex-col gap-8">
@@ -116,18 +143,20 @@ export default function BusCategoryPage() {
                   activeTab === 'all' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
                 }`}
               >
+                <List size={14} className="mr-1.5" />
                 All
               </button>
               <button
                 onClick={() => setActiveTab('trash')}
                 className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-xl transition-all ${
-                  activeTab === 'trash' ? 'bg-white text-rose-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                  activeTab === 'trash' ? 'bg-rose-500 text-white shadow-sm' : 'text-slate-500 hover:text-slate-700'
                 }`}
               >
+                <Trash2 size={14} className="mr-1.5" />
                 Trash
               </button>
             </div>
-            <Button variant="outline" icon={RefreshCcw} onClick={refetch} loading={loading}>
+            <Button variant="outline" icon={RefreshCcw} onClick={activeTab === 'all' ? () => refetchActive(searchTerm) : refetchTrash} loading={loading}>
               Refresh
             </Button>
             <Button variant="primary" icon={Plus} onClick={handleCreate}>
@@ -147,7 +176,7 @@ export default function BusCategoryPage() {
               </div>
               <p className="mt-5 text-sm font-medium text-slate-500">{stat.label}</p>
               <p className="mt-2 text-3xl font-semibold tracking-tight text-slate-900 truncate">
-                {loading ? "..." : stat.value}
+                {activeLoading ? "..." : stat.value}
               </p>
               <p className="mt-2 text-sm text-slate-400">{stat.note}</p>
             </div>
@@ -164,13 +193,13 @@ export default function BusCategoryPage() {
                 <span className="block text-xs font-semibold uppercase tracking-[0.18em]">Error Occurred</span>
                 <p className="text-sm font-medium leading-relaxed">{error}</p>
               </div>
-              <Button size="sm" variant="danger" className="mt-2 w-full" onClick={refetch}>Try Again</Button>
+              <Button size="sm" variant="danger" className="mt-2 w-full" onClick={activeTab === 'all' ? () => refetchActive(searchTerm) : refetchTrash}>Try Again</Button>
             </div>
           </div>
         ) : (
           <BusCategoryTable 
-            data={filteredData} 
-            loading={activeTab === 'all' ? loading : trashLoading}
+            data={displayData} 
+            loading={loading}
             isTrash={activeTab === 'trash'}
             onEdit={handleEdit}
             onDelete={activeTab === 'all' ? handleDeleteClick : handleForceDeleteClick}
@@ -180,7 +209,7 @@ export default function BusCategoryPage() {
       </div>
 
       <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedCategory ? "Edit Category" : "Create New Category"}>
-        <BusCategoryForm category={selectedCategory} onSuccess={() => { setIsModalOpen(false); refetch(); refetchTrash(); }} onCancel={() => setIsModalOpen(false)} />
+        <BusCategoryForm category={selectedCategory} onSuccess={() => { setIsModalOpen(false); refetchActive(searchTerm); refetchTrash(); }} onCancel={() => setIsModalOpen(false)} />
       </Modal>
 
       <Confirmation open={isDeleteConfirmOpen} onClose={() => setIsDeleteConfirmOpen(false)} onConfirm={confirmDelete} title="Delete Category?" message={`Are you sure you want to delete "${categoryToAction?.name}"? It will be moved to the trash.`} variant="danger" confirmText="Yes, Delete" />

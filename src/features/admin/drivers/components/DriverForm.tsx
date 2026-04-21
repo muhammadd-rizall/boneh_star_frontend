@@ -184,7 +184,7 @@ export default function DriverForm({ driver, onSuccess, onCancel }: DriverFormPr
             label="Status"
             icon={Info}
             value={formData.status}
-            onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
+            onChange={(value) => setFormData({ ...formData, status: value as any })}
             options={[
               { value: "available", label: "Available" },
               { value: "on_duty", label: "On Duty" },

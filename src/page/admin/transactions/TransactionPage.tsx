@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react"
+import { useState, useEffect } from "react"
 import { 
   TransactionTable, 
   TransactionForm, 
@@ -51,18 +51,14 @@ export default function TransactionPage() {
     if (view === 'trashed') {
       fetchTrashed()
     } else {
-      refetch()
+      const timeoutId = setTimeout(() => {
+        refetch(searchTerm)
+      }, 500)
+      return () => clearTimeout(timeoutId)
     }
-  }, [view, fetchTrashed, refetch])
+  }, [view, searchTerm, fetchTrashed, refetch])
 
   const currentData = view === 'active' ? transactions : trashedTransactions
-
-  const filteredTransactions = useMemo(() => {
-    return currentData.filter(t => 
-      t.invoice_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      t.booking?.customer?.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  }, [currentData, searchTerm])
 
   const handleCreate = () => {
     setSelectedTransaction(null)
@@ -76,7 +72,7 @@ export default function TransactionPage() {
 
   const handleSuccess = () => {
     setIsModalOpen(false)
-    refetch()
+    refetch(searchTerm)
   }
 
   const handleDeleteClick = (transaction: Transaction) => {
@@ -160,7 +156,7 @@ export default function TransactionPage() {
               onChange={setSearchTerm} 
               placeholder="Search by invoice or customer..." 
             />
-            <Button variant="outline" icon={RefreshCcw} onClick={view === 'active' ? refetch : fetchTrashed} loading={loading}>
+            <Button variant="outline" icon={RefreshCcw} onClick={view === 'active' ? () => refetch(searchTerm) : fetchTrashed} loading={loading}>
               Refresh
             </Button>
             <Button variant="primary" icon={Plus} onClick={handleCreate}>
@@ -216,12 +212,12 @@ export default function TransactionPage() {
                 <span className="block text-xs font-semibold uppercase tracking-[0.18em]">Data Error</span>
                 <p className="text-sm font-medium leading-relaxed">{error}</p>
               </div>
-              <Button size="sm" variant="danger" className="mt-2 w-full" onClick={view === 'active' ? refetch : fetchTrashed}>Try Again</Button>
+              <Button size="sm" variant="danger" className="mt-2 w-full" onClick={view === 'active' ? () => refetch(searchTerm) : fetchTrashed}>Try Again</Button>
             </div>
           </div>
         ) : (
-          <TransactionTable 
-            data={filteredTransactions} 
+          <BookingTable 
+            data={currentData} 
             onDelete={handleDeleteClick} 
             onEdit={handleEdit}
             onRestore={handleRestoreClick}

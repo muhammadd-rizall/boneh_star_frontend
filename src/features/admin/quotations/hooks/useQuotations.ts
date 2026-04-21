@@ -8,11 +8,11 @@ export function useQuotations() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchQuotations = useCallback(async () => {
+  const fetchQuotations = useCallback(async (search?: string) => {
     try {
       setLoading(true)
       setError(null)
-      const { quotations, statistics } = await quotationService.getAll()
+      const { quotations, statistics } = await quotationService.getAll(search)
       setQuotations(quotations)
       setStatistics(statistics)
     } catch (err: any) {

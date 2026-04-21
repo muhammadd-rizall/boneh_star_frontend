@@ -10,9 +10,11 @@ const ENDPOINTS = {
 };
 
 export const activityTypeService = {
-  getAll: async (): Promise<{ activityTypes: ActivityType[], statistics: ActivityTypeStatistics | null }> => {
+  getAll: async (search?: string): Promise<{ activityTypes: ActivityType[], statistics: ActivityTypeStatistics | null }> => {
     try {
-      const response = await axios.get<ActivityTypeApiResponse>(ENDPOINTS.BASE);
+      const response = await axios.get<ActivityTypeApiResponse>(ENDPOINTS.BASE, {
+        params: { search }
+      });
       const responseData = response.data.data;
       
       let activityTypes: ActivityType[] = [];

@@ -17,7 +17,7 @@ const ENDPOINTS = {
 };
 
 export const paymentService = {
-  getPaginated: async (params?: { page?: number; per_page?: number }): Promise<{ 
+  getPaginated: async (params?: { page?: number; per_page?: number; search?: string }): Promise<{ 
     payments: Payment[], 
     statistics: PaymentStatistics | null,
     meta: PaymentApiResponse['meta']
