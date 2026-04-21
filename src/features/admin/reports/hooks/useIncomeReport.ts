@@ -8,6 +8,7 @@ import type {
 export function useIncomeReport() {
   const [data, setData] = useState<IncomeReportApiResponse | null>(null);
   const [loading, setLoading] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Default filters: Current year
@@ -31,6 +32,30 @@ export function useIncomeReport() {
     }
   }, []);
 
+  const exportExcel = async () => {
+    try {
+      setExporting(true);
+      await incomeReportService.exportExcel(filters);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to export Excel";
+      setError(errorMessage);
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const exportPdf = async () => {
+    try {
+      setExporting(true);
+      await incomeReportService.exportPdf(filters);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to export PDF";
+      setError(errorMessage);
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const updateFilters = (newFilters: Partial<IncomeReportFilters>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
   };
@@ -42,9 +67,12 @@ export function useIncomeReport() {
   return {
     data,
     loading,
+    exporting,
     error,
     filters,
     updateFilters,
+    exportExcel,
+    exportPdf,
     refetch: () => fetchReport(filters),
   };
 }

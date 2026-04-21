@@ -9,6 +9,7 @@ type Props = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   size?: ButtonSize
   loading?: boolean
   icon?: React.ComponentType<{ size?: number | string, className?: string }>
+  suffix?: React.ComponentType<{ size?: number | string, className?: string }>
 }
 
 function Button({
@@ -17,6 +18,7 @@ function Button({
   size = "md",
   loading,
   icon: Icon,
+  suffix: SuffixIcon,
   className = "",
   ...props
 }: Props) {
@@ -40,7 +42,7 @@ function Button({
   return (
     <button
       className={`${base} ${variants[variant]} ${sizes[size]} ${className}`}
-      disabled={loading}
+      disabled={loading || props.disabled}
       {...props}
     >
       {loading ? (
@@ -48,7 +50,8 @@ function Button({
       ) : (
         Icon && <Icon className="w-4 h-4" />
       )}
-      <span>{loading ? "Please wait..." : children}</span>
+      <span>{children}</span>
+      {!loading && SuffixIcon && <SuffixIcon className="w-4 h-4" />}
     </button>
   )
 }

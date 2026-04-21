@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useIncomeReport } from "./hooks/useIncomeReport";
 import IncomeReportFilters from "./components/IncomeReportFilters";
 import IncomeReportSummary from "./components/IncomeReportSummary";
@@ -8,11 +8,22 @@ import OutstandingList from "./components/OutstandingList";
 import Loader from "@/components/feedback/Loader";
 import ErrorState from "@/components/feedback/ErrorState";
 import Button from "@/components/ui/Button";
-import { Download, RefreshCw, Calendar } from "lucide-react";
+import { Download, RefreshCw, Calendar, FileText, FileSpreadsheet, ChevronDown } from "lucide-react";
 import { formatMonth } from "@/utils/formatter";
 
-export default function IncomeReportFeature() {
-  const { data, loading, error, filters, updateFilters, refetch } = useIncomeReport();
+const IncomeReportFeature = () => {
+  const { 
+    data, 
+    loading, 
+    exporting, 
+    error, 
+    filters, 
+    updateFilters, 
+    refetch, 
+    exportExcel, 
+    exportPdf 
+  } = useIncomeReport();
+  const [showExportOptions, setShowExportOptions] = useState(false);
 
   if (error) return <ErrorState message={error} onRetry={refetch} />;
 
@@ -42,13 +53,42 @@ export default function IncomeReportFeature() {
           >
             Update
           </Button>
-          <Button 
-            variant="primary" 
-            icon={Download}
-            onClick={() => window.print()}
-          >
-            Export Report
-          </Button>
+          <div className="relative">
+            <Button 
+              variant="primary" 
+              icon={Download}
+              onClick={() => setShowExportOptions(!showExportOptions)}
+              loading={exporting}
+              suffix={ChevronDown}
+            >
+              Export Report
+            </Button>
+            
+            {showExportOptions && (
+              <div className="absolute right-0 mt-2 w-48 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 z-10">
+                <button
+                  onClick={() => {
+                    exportExcel();
+                    setShowExportOptions(false);
+                  }}
+                  className="flex w-full items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
+                >
+                  <FileSpreadsheet size={16} className="mr-2 text-green-600" />
+                  Excel (.xlsx)
+                </button>
+                <button
+                  onClick={() => {
+                    exportPdf();
+                    setShowExportOptions(false);
+                  }}
+                  className="flex w-full items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
+                >
+                  <FileText size={16} className="mr-2 text-red-600" />
+                  PDF (.pdf)
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -75,4 +115,6 @@ export default function IncomeReportFeature() {
       ) : null}
     </div>
   );
-}
+};
+
+export default IncomeReportFeature;

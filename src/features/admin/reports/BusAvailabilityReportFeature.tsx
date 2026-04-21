@@ -7,7 +7,7 @@ import ErrorState from "@/components/feedback/ErrorState";
 import Button from "@/components/ui/Button";
 import { Download, RefreshCw, Calendar } from "lucide-react";
 
-export default function BusAvailabilityReportFeature() {
+const BusAvailabilityReportFeature = () => {
   const { data, loading, error, filters, updateFilters, refetch } = useBusAvailabilityReport();
 
   if (error) return <ErrorState message={error} onRetry={refetch} />;
@@ -55,4 +55,6 @@ export default function BusAvailabilityReportFeature() {
       ) : null}
     </div>
   );
-}
+};
+
+export default BusAvailabilityReportFeature;

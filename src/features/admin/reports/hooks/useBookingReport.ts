@@ -8,6 +8,7 @@ import type {
 export function useBookingReport() {
   const [data, setData] = useState<BookingReportApiResponse | null>(null);
   const [loading, setLoading] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Default filters: last 30 days
@@ -36,6 +37,30 @@ export function useBookingReport() {
     }
   }, []);
 
+  const exportExcel = async () => {
+    try {
+      setExporting(true);
+      await bookingReportService.exportExcel(filters);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to export Excel";
+      setError(errorMessage);
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const exportPdf = async () => {
+    try {
+      setExporting(true);
+      await bookingReportService.exportPdf(filters);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to export PDF";
+      setError(errorMessage);
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const updateFilters = (newFilters: Partial<BookingReportFilters>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
   };
@@ -47,9 +72,12 @@ export function useBookingReport() {
   return {
     data,
     loading,
+    exporting,
     error,
     filters,
     updateFilters,
+    exportExcel,
+    exportPdf,
     refetch: () => fetchReport(filters),
   };
 }
