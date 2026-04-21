@@ -16,7 +16,6 @@ import TransactionPage from "@/page/admin/transactions/TransactionPage";
 import PaymentMethodPage from "@/page/admin/payment-methods/PaymentMethodPage";
 import PaymentPage from "@/page/admin/payments/PaymentPage";
 import ReviewPage from "@/page/admin/reviews/ReviewPage";
-import NotificationPage from "@/page/admin/notifications/NotificationPage";
 import BookingReportPage from "@/page/admin/reports/BookingReportPage";
 import IncomeReportPage from "@/page/admin/reports/IncomeReportPage";
 import BusAvailabilityReportPage from "@/page/admin/reports/BusAvailabilityReportPage";
@@ -324,7 +323,6 @@ function App() {
         <Route path="payments" element={<PaymentPage/>}/>
         <Route path="payment-methods" element={<PaymentMethodPage/>}/>
         <Route path="reviews" element={<ReviewPage/>}/>
-        <Route path="notifications" element={<NotificationPage/>}/>
         <Route path="reports/bookings" element={<BookingReportPage/>}/>
         <Route path="reports/income" element={<IncomeReportPage/>}/>
         <Route path="reports/bus-availability" element={<BusAvailabilityReportPage/>}/>

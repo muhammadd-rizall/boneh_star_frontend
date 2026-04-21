@@ -121,7 +121,7 @@ export default function UserPage() {
 
       {/* ── View Toggle ── */}
       <div className="flex justify-end">
-        <ViewToggle view={view} onViewChange={setView} activeLabel="Pengguna Aktif" trashLabel="Tong Sampah" />
+        <ViewToggle view={view} onViewChange={setView} activeLabel="Pengguna Aktif" trashLabel="Sampah" />
       </div>
 
       {/* ── Error / Table ── */}

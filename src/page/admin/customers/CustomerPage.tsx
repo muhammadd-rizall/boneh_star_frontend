@@ -57,7 +57,7 @@ export default function CustomerPage() {
       </div>
 
       <div className="flex justify-end">
-        <ViewToggle view={view} onViewChange={setView} activeLabel="Pelanggan Aktif" trashLabel="Tong Sampah" />
+        <ViewToggle view={view} onViewChange={setView} activeLabel="Pelanggan Aktif" trashLabel="Sampah" />
       </div>
 
       {error ? (

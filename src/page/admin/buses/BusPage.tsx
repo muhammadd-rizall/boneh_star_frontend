@@ -121,7 +121,7 @@ export default function BusPage() {
 
       {/* ── View Toggle ── */}
       <div className="flex justify-end">
-        <ViewToggle view={view} onViewChange={setView} activeLabel="Aktif" trashLabel="Tempat Sampah" />
+        <ViewToggle view={view} onViewChange={setView} activeLabel="Aktif" trashLabel="Sampah" />
       </div>
 
       {/* ── Error / Table ── */}
