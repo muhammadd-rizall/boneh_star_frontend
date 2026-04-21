@@ -19,6 +19,7 @@ import ReviewPage from "@/page/admin/reviews/ReviewPage";
 import NotificationPage from "@/page/admin/notifications/NotificationPage";
 import BookingReportPage from "@/page/admin/reports/BookingReportPage";
 import IncomeReportPage from "@/page/admin/reports/IncomeReportPage";
+import BusAvailabilityReportPage from "@/page/admin/reports/BusAvailabilityReportPage";
 import CompanyProfilePage from "@/page/admin/company-profile/CompanyProfilePage";
 import "./App.css";
 import BusPage from "./page/admin/buses/BusPage";
@@ -143,6 +144,7 @@ function App() {
         <Route path="notifications" element={<NotificationPage/>}/>
         <Route path="reports/bookings" element={<BookingReportPage/>}/>
         <Route path="reports/income" element={<IncomeReportPage/>}/>
+        <Route path="reports/bus-availability" element={<BusAvailabilityReportPage/>}/>
         <Route path="users" element={<UserPage />} />
         <Route path="customers" element={<CustomerPage />} />
         <Route path="roles" element={<RolePage />} />

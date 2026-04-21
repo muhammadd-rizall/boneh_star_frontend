@@ -72,6 +72,7 @@ export default function DahsbordLayout() {
     { to: "/admin/bookings", icon: FileText, label: "Bookings" },
     { to: "/admin/reports/bookings", icon: BarChart3, label: "Booking Reports" },
     { to: "/admin/reports/income", icon: BarChart3, label: "Income Reports" },
+    { to: "/admin/reports/bus-availability", icon: BarChart3, label: "Bus Availability" },
     { to: "/admin/quotations", icon: Banknote, label: "Quotations" },
     { to: "/admin/transactions", icon: Receipt, label: "Transactions" },
     { to: "/admin/payments", icon: Banknote, label: "Payments" },
