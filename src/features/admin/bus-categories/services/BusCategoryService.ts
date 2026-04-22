@@ -26,7 +26,7 @@ export const busCategoryService = {
 
       return {
         categories,
-        statistics: response.data.statistic || null
+        statistics: response.data.statistic || response.data.statistics || null
       };
     } catch (error) {
       console.error('Error fetching bus categories:', error);
@@ -37,8 +37,16 @@ export const busCategoryService = {
   getTrashed: async (): Promise<BusCategory[]> => {
     try {
       const response = await axios.get<BusCategoryApiResponse>(ENDPOINTS.TRASHED);
-      const data = response.data.data;
-      return Array.isArray(data) ? data : [];
+      const responseData = response.data.data;
+      
+      let categories: BusCategory[] = [];
+      if (responseData && typeof responseData === 'object' && 'data' in responseData && Array.isArray(responseData.data)) {
+        categories = responseData.data;
+      } else if (Array.isArray(responseData)) {
+        categories = responseData;
+      }
+      
+      return categories;
     } catch (error) {
       console.error('Error fetching trashed bus categories:', error);
       throw error;
@@ -66,6 +74,9 @@ export const busCategoryService = {
   },
 
   update: async (id: string, data: BusCategoryFormData): Promise<BusCategory> => {
+    if (!id || id === 'undefined') {
+      throw new Error("Invalid ID provided for update");
+    }
     try {
       const response = await axios.put<BusCategoryApiResponse>(ENDPOINTS.DETAIL(id), data);
       return response.data.data as BusCategory;
@@ -76,6 +87,9 @@ export const busCategoryService = {
   },
 
   delete: async (id: string): Promise<void> => {
+    if (!id || id === 'undefined') {
+      throw new Error("Invalid ID provided for delete");
+    }
     try {
       await axios.delete(ENDPOINTS.DETAIL(id));
     } catch (error) {

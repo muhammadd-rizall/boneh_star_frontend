@@ -29,5 +29,6 @@ export interface TransactionApiResponse {
   success: boolean;
   message: string;
   statistics?: TransactionStatistics;
+  statistic?: TransactionStatistics;
   data: Transaction | Transaction[];
 }

@@ -10,7 +10,7 @@ import Button from "@/components/ui/Button"
 import Modal from "@/components/ui/Modal"
 import Confirmation from "@/components/feedback/Confirmation"
 import {
-  PageHeader, StatCard, ViewToggle, PageToolbar, ErrorBanner,
+  PageHeader, StatCard, StatGrid, ViewToggle, PageToolbar, ErrorBanner,
 } from "@/components/ui/PageComponents"
 import { Plus, RefreshCcw, UserCircle, CheckCircle2, Clock, AlertCircle } from "lucide-react"
 
@@ -38,11 +38,34 @@ export default function DriverPage() {
   const handleEdit = (d: Driver) => { setSelectedDriver(d); setIsModalOpen(true) }
   const handleSuccess = () => { setIsModalOpen(false); if (view === "active") refetchActive(searchTerm); else refetchTrash() }
   const handleDeleteClick = (d: Driver) => { setDriverToManage(d); setIsDeleteConfirmOpen(true) }
-  const handleConfirmDelete = async () => { if (!driverToManage) return; setActionLoading(true); try { await deleteDriver(driverToManage.id); setIsDeleteConfirmOpen(false); setDriverToManage(null) } finally { setActionLoading(false) } }
+  const handleConfirmDelete = async () => { 
+    if (!driverToManage) return; 
+    setActionLoading(true); 
+    try { 
+      await deleteDriver(driverToManage.id); 
+      setIsDeleteConfirmOpen(false); 
+      setDriverToManage(null);
+      refetchActive(searchTerm);
+    } finally { 
+      setActionLoading(false); 
+    } 
+  }
   const handleRestoreClick = (id: string) => { const d = trashedDrivers.find(x => x.id === id); if (d) { setDriverToManage(d); setIsRestoreConfirmOpen(true) } }
   const handleConfirmRestore = async () => { if (!driverToManage) return; setActionLoading(true); try { await restoreDriver(driverToManage.id); setIsRestoreConfirmOpen(false); setDriverToManage(null); refetchActive(searchTerm) } finally { setActionLoading(false) } }
   const handleForceDeleteClick = (d: Driver) => { setDriverToManage(d); setIsForceDeleteConfirmOpen(true) }
-  const handleConfirmForceDelete = async () => { if (!driverToManage) return; setActionLoading(true); try { await forceDeleteDriver(driverToManage.id); setIsForceDeleteConfirmOpen(false); setDriverToManage(null) } finally { setActionLoading(false) } }
+  const handleConfirmForceDelete = async () => { 
+    if (!driverToManage) return; 
+    setActionLoading(true); 
+    try { 
+      await forceDeleteDriver(driverToManage.id); 
+      setIsForceDeleteConfirmOpen(false); 
+      setDriverToManage(null);
+      refetchActive(searchTerm);
+      refetchTrash();
+    } finally { 
+      setActionLoading(false); 
+    } 
+  }
 
   const loading = view === "active" ? activeLoading : trashLoading
   const error = view === "active" ? activeError : trashError
@@ -64,12 +87,12 @@ export default function DriverPage() {
         }
       />
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <StatGrid columns={4}>
         <StatCard label="Total Pengemudi" value={statistics?.total ?? 0} icon={UserCircle} loading={activeLoading} />
         <StatCard label="Tersedia" value={statistics?.available ?? 0} icon={CheckCircle2} loading={activeLoading} color="emerald" />
         <StatCard label="Sedang Bertugas" value={statistics?.on_duty ?? 0} icon={Clock} loading={activeLoading} color="blue" />
         <StatCard label="Tidak Aktif" value={statistics?.inactive ?? 0} icon={AlertCircle} loading={activeLoading} color="rose" />
-      </div>
+      </StatGrid>
 
       <div className="flex justify-end">
         <ViewToggle view={view} onViewChange={setView} activeLabel="Aktif" trashLabel="Sampah" />

@@ -60,6 +60,25 @@ export default function BusTable({ data, onDelete, onEdit, onRestore, loading, i
         </div>
       )
     },
+    {
+      header: "Facilities",
+      accessor: (row) => (
+        <div className="flex flex-wrap gap-1 max-w-[200px]">
+          {row.facilities && row.facilities.length > 0 ? (
+            row.facilities.map((facility) => (
+              <span 
+                key={facility.id} 
+                className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600 border border-slate-200"
+              >
+                {facility.name}
+              </span>
+            ))
+          ) : (
+            <span className="text-[10px] italic text-slate-400">No facilities</span>
+          )}
+        </div>
+      )
+    },
     { 
       header: "Year", 
       accessor: (row) => (

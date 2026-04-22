@@ -23,5 +23,6 @@ export interface DriverApiResponse {
   success: boolean;
   message: string;
   statistic?: DriverStatistics;
+  statistics?: DriverStatistics;
   data: Driver | Driver[] | { data: Driver[] };
 }

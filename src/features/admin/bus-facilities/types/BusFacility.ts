@@ -15,5 +15,6 @@ export interface BusFacilityApiResponse {
   success: boolean;
   message: string;
   statistic?: BusFacilityStatistics;
+  statistics?: BusFacilityStatistics;
   data: BusFacility | BusFacility[] | { data: BusFacility[] };
 }

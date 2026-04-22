@@ -11,7 +11,7 @@ import Modal from "@/components/ui/Modal"
 import Confirmation from "@/components/feedback/Confirmation"
 import {
   PageHeader,
-  StatCard,
+  StatCard, StatGrid,
   ViewToggle,
   PageToolbar,
   ErrorBanner,
@@ -51,7 +51,12 @@ export default function UserPage() {
   const handleDeleteClick = (u: User) => { setUserToManage(u); setIsDeleteConfirmOpen(true) }
   const handleConfirmDelete = async () => {
     if (!userToManage) return; setActionLoading(true)
-    try { await deleteUser(userToManage.id); setIsDeleteConfirmOpen(false); setUserToManage(null) }
+    try { 
+      await deleteUser(userToManage.id); 
+      setIsDeleteConfirmOpen(false); 
+      setUserToManage(null);
+      refetchActive(searchTerm);
+    }
     finally { setActionLoading(false) }
   }
 
@@ -68,7 +73,12 @@ export default function UserPage() {
   const handleForceDeleteClick = (u: User) => { setUserToManage(u); setIsForceDeleteConfirmOpen(true) }
   const handleConfirmForceDelete = async () => {
     if (!userToManage) return; setActionLoading(true)
-    try { await forceDeleteUser(userToManage.id); setIsForceDeleteConfirmOpen(false); setUserToManage(null) }
+    try { 
+      await forceDeleteUser(userToManage.id); 
+      setIsForceDeleteConfirmOpen(false); 
+      setUserToManage(null);
+      refetchActive(searchTerm);
+    }
     finally { setActionLoading(false) }
   }
 
@@ -112,12 +122,13 @@ export default function UserPage() {
       />
 
       {/* ── Stats ── */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <StatGrid columns={4}>
         <StatCard label="Total Pengguna" value={statistics?.total ?? 0} icon={Users} loading={activeLoading} />
         <StatCard label="Akun Aktif" value={statistics?.active ?? 0} icon={UserCheck} loading={activeLoading} color="emerald" />
         <StatCard label="Tidak Aktif" value={statistics?.inactive ?? 0} icon={UserMinus} loading={activeLoading} color="amber" />
         <StatCard label="Tong Sampah" value={statistics?.trashed ?? 0} icon={Trash2} loading={activeLoading} color="rose" />
-      </div>
+      </StatGrid>
+
 
       {/* ── View Toggle ── */}
       <div className="flex justify-end">

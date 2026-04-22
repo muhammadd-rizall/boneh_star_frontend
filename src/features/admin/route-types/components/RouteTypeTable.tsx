@@ -29,11 +29,16 @@ export default function RouteTypeTable({
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-500 overflow-hidden">
             <Map size={20} />
           </div>
-          <div className="flex flex-col">
-            <span className="leading-tight font-semibold text-slate-800">{row.name}</span>
-            <span className="text-xs text-slate-500 line-clamp-1">{row.description}</span>
-          </div>
+          <span className="leading-tight font-semibold text-slate-800">{row.name}</span>
         </div>
+      )
+    },
+    {
+      header: "Description",
+      accessor: (row) => (
+        <span className="text-xs text-slate-500 font-medium line-clamp-2 max-w-[250px]">
+          {row.description || <span className="italic text-slate-400">No description</span>}
+        </span>
       )
     },
     {

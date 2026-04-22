@@ -11,7 +11,7 @@ import Modal from "@/components/ui/Modal"
 import Confirmation from "@/components/feedback/Confirmation"
 import {
   PageHeader,
-  StatCard,
+  StatCard, StatGrid,
   ViewToggle,
   PageToolbar,
   ErrorBanner,
@@ -51,7 +51,12 @@ export default function BusPage() {
   const handleDeleteClick = (b: Bus) => { setBusToManage(b); setIsDeleteConfirmOpen(true) }
   const handleConfirmDelete = async () => {
     if (!busToManage) return; setActionLoading(true)
-    try { await deleteBus(busToManage.id); setIsDeleteConfirmOpen(false); setBusToManage(null) }
+    try { 
+      await deleteBus(busToManage.id); 
+      setIsDeleteConfirmOpen(false); 
+      setBusToManage(null);
+      refetchActive(searchTerm);
+    }
     finally { setActionLoading(false) }
   }
 
@@ -68,7 +73,13 @@ export default function BusPage() {
   const handleForceDeleteClick = (b: Bus) => { setBusToManage(b); setIsForceDeleteConfirmOpen(true) }
   const handleConfirmForceDelete = async () => {
     if (!busToManage) return; setActionLoading(true)
-    try { await forceDeleteBus(busToManage.id); setIsForceDeleteConfirmOpen(false); setBusToManage(null) }
+    try { 
+      await forceDeleteBus(busToManage.id); 
+      setIsForceDeleteConfirmOpen(false); 
+      setBusToManage(null);
+      refetchActive(searchTerm);
+      refetchTrash();
+    }
     finally { setActionLoading(false) }
   }
 
@@ -112,12 +123,12 @@ export default function BusPage() {
       />
 
       {/* ── Stats ── */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <StatGrid columns={4}>
         <StatCard label="Total Armada" value={statistics?.cards.total ?? 0} icon={LayoutGrid} loading={activeLoading} />
         <StatCard label="Tersedia" value={statistics?.cards.available ?? 0} icon={ShieldCheck} loading={activeLoading} color="emerald" />
         <StatCard label="Terpesan" value={statistics?.cards.booked ?? 0} icon={BusIcon} loading={activeLoading} color="blue" />
         <StatCard label="Perawatan" value={statistics?.cards.maintenance ?? 0} icon={Wrench} loading={activeLoading} color="amber" />
-      </div>
+      </StatGrid>
 
       {/* ── View Toggle ── */}
       <div className="flex justify-end">
@@ -144,7 +155,7 @@ export default function BusPage() {
         onClose={() => setIsModalOpen(false)}
         title={selectedBus ? "Edit Data Bus" : "Tambah Bus Baru"}
         subtitle={selectedBus ? `Mengubah data bus ${selectedBus.name}` : "Daftarkan kendaraan baru ke armada"}
-        size="lg"
+        size="xl"
       >
         <BusForm bus={selectedBus} onSuccess={handleSuccess} onCancel={() => setIsModalOpen(false)} />
       </Modal>

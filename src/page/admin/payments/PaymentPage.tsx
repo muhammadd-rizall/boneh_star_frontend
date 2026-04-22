@@ -8,7 +8,7 @@ import {
 } from "@/features/admin/payments"
 import Modal from "@/components/ui/Modal"
 import Button from "@/components/ui/Button"
-import { PageHeader, StatCard, ViewToggle, PageToolbar, ErrorBanner } from "@/components/ui/PageComponents"
+import { PageHeader, StatCard, StatGrid, ViewToggle, PageToolbar, ErrorBanner } from "@/components/ui/PageComponents"
 import { Receipt, DollarSign, Clock, CheckCircle, RefreshCcw } from "lucide-react"
 import Confirmation from "@/components/feedback/Confirmation"
 
@@ -85,13 +85,13 @@ export default function PaymentPage() {
         }
       />
 
-      {statistics && view === 'active' && (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      {statistics && (
+        <StatGrid columns={4}>
           <StatCard label="Total Terverifikasi" value={formatRp(statistics.cards.total_amount)} icon={DollarSign} color="emerald" loading={activeLoading} />
           <StatCard label="Menunggu" value={statistics.cards.pending_count} icon={Clock} color="amber" loading={activeLoading} />
           <StatCard label="Berhasil" value={statistics.cards.verified_count} icon={CheckCircle} color="blue" loading={activeLoading} />
           <StatCard label="Total Pengajuan" value={statistics.cards.total_count} icon={Receipt} color="violet" loading={activeLoading} />
-        </div>
+        </StatGrid>
       )}
 
       <div className="flex justify-end">

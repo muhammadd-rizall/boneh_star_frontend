@@ -26,7 +26,7 @@ export const busService = {
 
       return {
         buses,
-        statistics: response.data.statistic || null
+        statistics: response.data.statistic || (response.data as any).statistics || null
       };
     } catch (error) {
       console.error('Error fetching buses:', error);

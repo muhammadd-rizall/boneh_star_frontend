@@ -71,7 +71,26 @@ export function StatCard({ label, value, note, icon: Icon, loading, color = "def
   )
 }
 
-// ─── ViewToggle (Active / Trash) ───────────────────────────────────────────────
+// ─── StatGrid ─────────────────────────────────────────────────────────────────
+interface StatGridProps {
+  children: React.ReactNode
+  columns?: 2 | 3 | 4
+}
+
+const gridCols: Record<2 | 3 | 4, string> = {
+  2: "grid-cols-1 sm:grid-cols-2",
+  3: "grid-cols-2 sm:grid-cols-3",
+  4: "grid-cols-2 sm:grid-cols-4",
+}
+
+export function StatGrid({ children, columns = 4 }: StatGridProps) {
+  return (
+    <div className={`grid gap-3 ${gridCols[columns]}`}>
+      {children}
+    </div>
+  )
+}
+
 interface ViewToggleProps {
   view: "active" | "trash"
   onViewChange: (view: "active" | "trash") => void

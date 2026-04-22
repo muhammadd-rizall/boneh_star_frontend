@@ -18,6 +18,7 @@ export const routeTypeService = {
       const responseData = response.data.data;
       
       let routeTypes: RouteType[] = [];
+      // Mendukung struktur getData(true) dari Laravel
       if (responseData && typeof responseData === 'object' && 'data' in responseData && Array.isArray(responseData.data)) {
         routeTypes = responseData.data;
       } else if (Array.isArray(responseData)) {
@@ -26,7 +27,7 @@ export const routeTypeService = {
 
       return {
         routeTypes,
-        statistics: response.data.statistic || null
+        statistics: response.data.statistic || response.data.statistics || null
       };
     } catch (error) {
       console.error('Error fetching route types:', error);
@@ -37,8 +38,10 @@ export const routeTypeService = {
   getTrashed: async (): Promise<RouteType[]> => {
     try {
       const response = await axios.get<RouteTypeApiResponse>(ENDPOINTS.TRASHED);
-      const data = response.data.data;
-      return Array.isArray(data) ? data : [];
+      const responseData = response.data.data;
+      
+      // Di controller trashed tidak menggunakan getData(true), jadi data biasanya langsung array
+      return Array.isArray(responseData) ? responseData : [];
     } catch (error) {
       console.error('Error fetching trashed route types:', error);
       throw error;

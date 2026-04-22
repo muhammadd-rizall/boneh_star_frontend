@@ -34,7 +34,7 @@ export default function UserForm({ user, onSuccess, onCancel }: UserFormProps) {
       setFormData({
         name: user.name,
         email: user.email,
-        role_ids: user.roles.map(r => r.id),
+        role_ids: user.roles?.map(r => r.id) ?? [],
         is_active: user.is_active,
         password: "",
       });

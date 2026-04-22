@@ -32,7 +32,7 @@ export const bookingService = {
 
       return {
         bookings,
-        statistics: response.data.statistics || null
+        statistics: response.data.statistics || response.data.statistic || null
       };
     } catch (error) {
       console.error('Error fetching bookings:', error);

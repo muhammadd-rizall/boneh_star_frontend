@@ -85,12 +85,11 @@ export default function RouteTypeForm({ routeType, onSuccess, onCancel }: RouteT
         />
         
         <Textarea
-          label="Description"
+          label="Description (Optional)"
           placeholder="Describe this route type..."
           icon={AlignLeft}
           value={formData.description}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          required
           rows={4}
         />
       </div>

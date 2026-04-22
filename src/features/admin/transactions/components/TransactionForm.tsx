@@ -144,12 +144,11 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
 
       <div className="grid gap-5 md:grid-cols-2">
         <Input
-          label="Invoice Number"
-          placeholder="e.g. INV-20231001"
+          label="Invoice Number (Optional)"
+          placeholder="Auto-generated if left empty"
           icon={Receipt}
           value={formData.invoice_number}
           onChange={(e) => setFormData({ ...formData, invoice_number: e.target.value })}
-          required
         />
 
         <Select

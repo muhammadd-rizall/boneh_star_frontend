@@ -17,5 +17,6 @@ export interface RouteTypeApiResponse {
   success: boolean;
   message: string;
   statistic?: RouteTypeStatistics;
+  statistics?: RouteTypeStatistics; // Menambahkan dukungan untuk plural
   data: RouteType | RouteType[] | { data: RouteType[] };
 }

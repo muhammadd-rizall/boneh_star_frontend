@@ -87,8 +87,8 @@ export default function PaymentMethodPage() {
         }
       />
 
-      {statistics && view === 'active' && (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+      {statistics && (
+        <StatGrid columns={3}>
           <StatCard 
             label="Total Akun" 
             value={statistics.total} 
@@ -98,7 +98,7 @@ export default function PaymentMethodPage() {
           />
           <StatCard 
             label="Metode Aktif" 
-            value={paymentMethods.filter(m => m.is_active).length} 
+            value={statistics.active} 
             icon={ShieldCheck} 
             color="emerald" 
             loading={activeLoading}
@@ -110,7 +110,7 @@ export default function PaymentMethodPage() {
             color="violet" 
             loading={activeLoading}
           />
-        </div>
+        </StatGrid>
       )}
 
       <div className="flex justify-end">

@@ -9,7 +9,7 @@ import Button from "@/components/ui/Button"
 import Modal from "@/components/ui/Modal"
 import Confirmation from "@/components/feedback/Confirmation"
 import {
-  PageHeader, StatCard, ViewToggle, PageToolbar, ErrorBanner,
+  PageHeader, StatCard, StatGrid, ViewToggle, PageToolbar, ErrorBanner,
 } from "@/components/ui/PageComponents"
 import { Plus, RefreshCcw, TrendingUp, Banknote, Clock, CheckCircle2 } from "lucide-react"
 
@@ -66,12 +66,12 @@ export default function TransactionPage() {
         }
       />
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <StatGrid columns={4}>
         <StatCard label="Total Pendapatan" value={formatRp(statistics?.total_revenue ?? 0)} icon={TrendingUp} loading={loading} color="emerald" />
         <StatCard label="DP Terkumpul" value={formatRp(statistics?.total_dp_collected ?? 0)} icon={Banknote} loading={loading} color="blue" />
         <StatCard label="Sisa Tagihan" value={formatRp(statistics?.total_outstanding ?? 0)} icon={Clock} loading={loading} color="amber" />
         <StatCard label="Lunas" value={statistics?.by_status.fully_paid ?? 0} icon={CheckCircle2} loading={loading} color="violet" />
-      </div>
+      </StatGrid>
 
       <div className="flex justify-end">
         <ViewToggle view={view} onViewChange={setView} activeLabel="Aktif" trashLabel="Sampah" />

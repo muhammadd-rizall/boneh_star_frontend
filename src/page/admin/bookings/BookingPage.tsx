@@ -10,7 +10,7 @@ import Modal from "@/components/ui/Modal"
 import Confirmation from "@/components/feedback/Confirmation"
 import {
   PageHeader,
-  StatCard,
+  StatCard, StatGrid,
   ViewToggle,
   PageToolbar,
   ErrorBanner,
@@ -120,12 +120,12 @@ export default function BookingPage() {
       />
 
       {/* ── Stats ── */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <StatGrid columns={4}>
         <StatCard label="Total Booking" value={statistics?.total_bookings ?? 0} icon={FileText} loading={loading} color="default" />
         <StatCard label="Dikonfirmasi" value={statistics?.by_status.confirmed ?? 0} icon={CheckCircle2} loading={loading} color="emerald" />
         <StatCard label="Menunggu" value={statistics?.by_status.pending ?? 0} icon={Clock} loading={loading} color="amber" />
         <StatCard label="Dibatalkan" value={statistics?.by_status.cancelled ?? 0} icon={XCircle} loading={loading} color="rose" />
-      </div>
+      </StatGrid>
 
       {/* ── Overview row ── */}
       <div className="flex flex-wrap items-center justify-between gap-4">

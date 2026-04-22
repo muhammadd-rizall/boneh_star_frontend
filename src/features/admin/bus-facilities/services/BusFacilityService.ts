@@ -26,7 +26,7 @@ export const busFacilityService = {
 
       return {
         facilities,
-        statistics: response.data.statistic || null
+        statistics: response.data.statistic || response.data.statistics || null
       };
     } catch (error) {
       console.error('Error fetching bus facilities:', error);
@@ -37,8 +37,16 @@ export const busFacilityService = {
   getTrashed: async (): Promise<BusFacility[]> => {
     try {
       const response = await axios.get<BusFacilityApiResponse>(ENDPOINTS.TRASHED);
-      const data = response.data.data;
-      return Array.isArray(data) ? data : [];
+      const responseData = response.data.data;
+      
+      let facilities: BusFacility[] = [];
+      if (responseData && typeof responseData === 'object' && 'data' in responseData && Array.isArray(responseData.data)) {
+        facilities = responseData.data;
+      } else if (Array.isArray(responseData)) {
+        facilities = responseData;
+      }
+      
+      return facilities;
     } catch (error) {
       console.error('Error fetching trashed bus facilities:', error);
       throw error;

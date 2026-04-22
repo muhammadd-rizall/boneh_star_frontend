@@ -6,7 +6,7 @@ import {
   type Review 
 } from "@/features/admin/reviews"
 import Button from "@/components/ui/Button"
-import { PageHeader, StatCard, ViewToggle, PageToolbar, ErrorBanner } from "@/components/ui/PageComponents"
+import { PageHeader, StatCard, StatGrid, ViewToggle, PageToolbar, ErrorBanner } from "@/components/ui/PageComponents"
 import { Star, MessageSquare, CheckCircle, EyeOff, RefreshCcw } from "lucide-react"
 import Confirmation from "@/components/feedback/Confirmation"
 
@@ -75,12 +75,12 @@ export default function ReviewPage() {
       />
 
       {statistics && view === 'active' && (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <StatGrid columns={4}>
           <StatCard label="Rating Rata-rata" value={`${statistics.cards.average_rating} / 5.0`} icon={Star} color="amber" loading={activeLoading} />
           <StatCard label="Total Ulasan" value={statistics.cards.total_count} icon={MessageSquare} color="blue" loading={activeLoading} />
           <StatCard label="Dipublikasi" value={statistics.cards.published_count} icon={CheckCircle} color="emerald" loading={activeLoading} />
           <StatCard label="Disembunyikan" value={statistics.cards.unpublished_count} icon={EyeOff} color="rose" loading={activeLoading} />
-        </div>
+        </StatGrid>
       )}
 
       <div className="flex justify-end">

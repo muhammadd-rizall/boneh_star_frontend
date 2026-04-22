@@ -34,4 +34,5 @@ export interface RoleApiResponse {
   message: string;
   data: Role | Role[] | Record<string, Permission[]>;
   statistic?: RoleStatistics;
+  statistics?: RoleStatistics;
 }

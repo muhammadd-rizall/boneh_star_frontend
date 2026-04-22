@@ -5,7 +5,7 @@ import {
 import Button from "@/components/ui/Button"
 import Modal from "@/components/ui/Modal"
 import Confirmation from "@/components/feedback/Confirmation"
-import { PageHeader, StatCard, ViewToggle, PageToolbar, ErrorBanner } from "@/components/ui/PageComponents"
+import { PageHeader, StatCard, StatGrid, ViewToggle, PageToolbar, ErrorBanner } from "@/components/ui/PageComponents"
 import { Plus, RefreshCcw, Tag, CheckCircle2, Trash2 } from "lucide-react"
 
 export default function ActivityTypePage() {
@@ -44,11 +44,11 @@ export default function ActivityTypePage() {
         }
       />
 
-      <div className="grid grid-cols-3 gap-3">
+      <StatGrid columns={3}>
         <StatCard label="Total Jenis" value={statistics?.total ?? 0} icon={Tag} loading={activeLoading} />
-        <StatCard label="Aktif" value={(statistics?.total ?? 0) - (statistics?.trashed ?? 0)} icon={CheckCircle2} loading={activeLoading} color="emerald" />
+        <StatCard label="Aktif" value={statistics?.total ?? 0} icon={CheckCircle2} loading={activeLoading} color="emerald" />
         <StatCard label="Tong Sampah" value={statistics?.trashed ?? 0} icon={Trash2} loading={activeLoading} color="rose" />
-      </div>
+      </StatGrid>
 
       <div className="flex justify-end">
         <ViewToggle view={view} onViewChange={setView} activeLabel="Semua" trashLabel="Sampah" />
@@ -59,7 +59,14 @@ export default function ActivityTypePage() {
       ) : (
         <ActivityTypeTable data={displayData} loading={loading} isTrash={view === "trash"}
           onEdit={t => { setSelectedType(t); setIsModalOpen(true) }}
-          onDelete={t => { setTypeToAction(t); setIsDeleteOpen(true) }}
+          onDelete={t => { 
+            setTypeToAction(t); 
+            if (view === "trash") {
+              setIsForceDeleteOpen(true);
+            } else {
+              setIsDeleteOpen(true);
+            }
+          }}
           onRestore={id => { const t = trashedTypes.find(x => x.id === id) || null; setTypeToAction(t); setIsRestoreOpen(true) }}
         />
       )}
@@ -68,9 +75,9 @@ export default function ActivityTypePage() {
         <ActivityTypeForm activityType={selectedType} onSuccess={() => { setIsModalOpen(false); refetchActive(searchTerm); refetchTrash() }} onCancel={() => setIsModalOpen(false)} />
       </Modal>
 
-      <Confirmation open={isDeleteOpen} onClose={() => setIsDeleteOpen(false)} onConfirm={async () => { if (typeToAction) { await deleteActivityType(typeToAction.id); setIsDeleteOpen(false); setTypeToAction(null) } }} title="Hapus Jenis Kegiatan?" message={`"${typeToAction?.name}" akan dipindahkan ke sampah.`} variant="warning" confirmText="Ya, Hapus" />
+      <Confirmation open={isDeleteOpen} onClose={() => setIsDeleteOpen(false)} onConfirm={async () => { if (typeToAction) { await deleteActivityType(typeToAction.id); setIsDeleteOpen(false); setTypeToAction(null); refetchActive(searchTerm) } }} title="Hapus Jenis Kegiatan?" message={`"${typeToAction?.name}" akan dipindahkan ke sampah.`} variant="warning" confirmText="Ya, Hapus" />
       <Confirmation open={isRestoreOpen} onClose={() => setIsRestoreOpen(false)} onConfirm={async () => { if (typeToAction) { await restoreActivityType(typeToAction.id); setIsRestoreOpen(false); setTypeToAction(null); refetchActive(searchTerm) } }} title="Pulihkan?" message={`"${typeToAction?.name}" akan dipulihkan.`} variant="info" confirmText="Ya, Pulihkan" />
-      <Confirmation open={isForceDeleteOpen} onClose={() => setIsForceDeleteOpen(false)} onConfirm={async () => { if (typeToAction) { await forceDeleteActivityType(typeToAction.id); setIsForceDeleteOpen(false); setTypeToAction(null) } }} title="Hapus Permanen?" message={`"${typeToAction?.name}" akan dihapus permanen.`} variant="danger" confirmText="Ya, Hapus" />
+      <Confirmation open={isForceDeleteOpen} onClose={() => setIsForceDeleteOpen(false)} onConfirm={async () => { if (typeToAction) { await forceDeleteActivityType(typeToAction.id); setIsForceDeleteOpen(false); setTypeToAction(null); refetchActive(searchTerm) } }} title="Hapus Permanen?" message={`"${typeToAction?.name}" akan dihapus permanen.`} variant="danger" confirmText="Ya, Hapus" />
     </div>
   )
 }

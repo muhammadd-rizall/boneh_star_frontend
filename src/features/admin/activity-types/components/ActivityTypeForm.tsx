@@ -70,12 +70,11 @@ export default function ActivityTypeForm({ activityType, onSuccess, onCancel }: 
         />
         
         <Textarea
-          label="Description"
+          label="Description (Optional)"
           placeholder="Describe this activity type..."
           icon={AlignLeft}
           value={formData.description}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          required
           rows={4}
         />
       </div>

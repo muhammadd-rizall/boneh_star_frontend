@@ -9,7 +9,7 @@ import Button from "@/components/ui/Button"
 import Modal from "@/components/ui/Modal"
 import Confirmation from "@/components/feedback/Confirmation"
 import {
-  PageHeader, StatCard, PageToolbar, ErrorBanner,
+  PageHeader, StatCard, StatGrid, PageToolbar, ErrorBanner,
 } from "@/components/ui/PageComponents"
 import { Plus, RefreshCcw, FileText, CheckCircle2, Send, AlertCircle } from "lucide-react"
 
@@ -50,12 +50,12 @@ export default function QuotationPage() {
         }
       />
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <StatGrid columns={4}>
         <StatCard label="Total Penawaran" value={statistics?.total_quotations ?? 0} icon={FileText} loading={loading} />
         <StatCard label="Diterima" value={statistics?.by_status.accepted ?? 0} icon={CheckCircle2} loading={loading} color="emerald" />
         <StatCard label="Terkirim / Draft" value={(statistics?.by_status.sent ?? 0) + (statistics?.by_status.draft ?? 0)} icon={Send} loading={loading} color="blue" />
         <StatCard label="Revisi / Ditolak" value={(statistics?.by_status.revision ?? 0) + (statistics?.by_status.rejected ?? 0)} icon={AlertCircle} loading={loading} color="rose" />
-      </div>
+      </StatGrid>
 
       {error ? (
         <ErrorBanner error={error} onRetry={() => refetch(searchTerm)} />

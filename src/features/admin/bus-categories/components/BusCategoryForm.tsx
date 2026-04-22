@@ -26,10 +26,17 @@ export default function BusCategoryForm({ category, onSuccess, onCancel }: BusCa
   useEffect(() => {
     if (category) {
       setFormData({
-        name: category.name,
-        min_capacity: category.min_capacity,
-        max_capacity: category.max_capacity,
+        name: category.name || "",
+        min_capacity: category.min_capacity || 1,
+        max_capacity: category.max_capacity || 1,
         description: category.description || "",
+      });
+    } else {
+      setFormData({
+        name: "",
+        min_capacity: 1,
+        max_capacity: 1,
+        description: "",
       });
     }
   }, [category]);
@@ -40,13 +47,17 @@ export default function BusCategoryForm({ category, onSuccess, onCancel }: BusCa
     setError(null);
 
     try {
-      if (isEdit && category) {
+      if (isEdit) {
+        if (!category?.id) {
+          throw new Error("ID Kategori tidak ditemukan. Tidak dapat memperbarui data.");
+        }
         await busCategoryService.update(category.id, formData);
       } else {
         await busCategoryService.create(formData);
       }
       onSuccess();
     } catch (err: any) {
+      console.error("Form submission error:", err);
       const errorMessage = err.response?.data?.message || err.message || "Something went wrong.";
       setError(errorMessage);
     } finally {

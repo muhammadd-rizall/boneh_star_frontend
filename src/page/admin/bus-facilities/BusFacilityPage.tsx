@@ -5,7 +5,7 @@ import BusFacilityForm from "@/features/admin/bus-facilities/components/BusFacil
 import Modal from "@/components/ui/Modal"
 import Button from "@/components/ui/Button"
 import Confirmation from "@/components/feedback/Confirmation"
-import { PageHeader, StatCard, ViewToggle, PageToolbar, ErrorBanner } from "@/components/ui/PageComponents"
+import { PageHeader, StatCard, StatGrid, ViewToggle, PageToolbar, ErrorBanner } from "@/components/ui/PageComponents"
 import type { BusFacility } from "@/features/admin/bus-facilities/types/BusFacility"
 import { Plus, RefreshCcw, Wrench, Shield, Trash2 } from "lucide-react"
 
@@ -45,11 +45,11 @@ export default function BusFacilityPage() {
         }
       />
 
-      <div className="grid grid-cols-3 gap-3">
+      <StatGrid columns={3}>
         <StatCard label="Total Fasilitas" value={statistics?.total ?? 0} icon={Wrench} loading={activeLoading} />
-        <StatCard label="Aktif" value={(statistics?.total ?? 0) - (statistics?.trashed ?? 0)} icon={Shield} loading={activeLoading} color="emerald" />
+        <StatCard label="Aktif" value={statistics?.total ?? 0} icon={Shield} loading={activeLoading} color="emerald" />
         <StatCard label="Tong Sampah" value={statistics?.trashed ?? 0} icon={Trash2} loading={activeLoading} color="rose" />
-      </div>
+      </StatGrid>
 
       <div className="flex justify-end">
         <ViewToggle view={view} onViewChange={setView} activeLabel="Semua" trashLabel="Sampah" />
@@ -60,7 +60,14 @@ export default function BusFacilityPage() {
       ) : (
         <BusFacilityTable data={displayData} loading={loading} isTrash={view === "trash"}
           onEdit={f => { setSelectedFacility(f); setIsModalOpen(true) }}
-          onDelete={f => { setFacilityToAction(f); setIsDeleteOpen(true) }}
+          onDelete={f => { 
+            setFacilityToAction(f); 
+            if (view === "trash") {
+              setIsForceDeleteOpen(true);
+            } else {
+              setIsDeleteOpen(true);
+            }
+          }}
           onRestore={id => { const f = trashedFacilities.find(x => x.id === id) || null; setFacilityToAction(f); setIsRestoreOpen(true) }}
         />
       )}
@@ -69,9 +76,9 @@ export default function BusFacilityPage() {
         <BusFacilityForm facility={selectedFacility} onSuccess={() => { setIsModalOpen(false); refetchActive(searchTerm); refetchTrash() }} onCancel={() => setIsModalOpen(false)} />
       </Modal>
 
-      <Confirmation open={isDeleteOpen} onClose={() => setIsDeleteOpen(false)} onConfirm={async () => { if (facilityToAction) { await deleteFacility(facilityToAction.id); setIsDeleteOpen(false); setFacilityToAction(null) } }} title="Hapus Fasilitas?" message={`"${facilityToAction?.name}" akan dipindahkan ke sampah.`} variant="warning" confirmText="Ya, Hapus" />
+      <Confirmation open={isDeleteOpen} onClose={() => setIsDeleteOpen(false)} onConfirm={async () => { if (facilityToAction) { await deleteFacility(facilityToAction.id); setIsDeleteOpen(false); setFacilityToAction(null); refetchActive(searchTerm) } }} title="Hapus Fasilitas?" message={`"${facilityToAction?.name}" akan dipindahkan ke sampah.`} variant="warning" confirmText="Ya, Hapus" />
       <Confirmation open={isRestoreOpen} onClose={() => setIsRestoreOpen(false)} onConfirm={async () => { if (facilityToAction) { await restoreFacility(facilityToAction.id); setIsRestoreOpen(false); setFacilityToAction(null); refetchActive(searchTerm) } }} title="Pulihkan?" message={`"${facilityToAction?.name}" akan dipulihkan.`} variant="info" confirmText="Ya, Pulihkan" />
-      <Confirmation open={isForceDeleteOpen} onClose={() => setIsForceDeleteOpen(false)} onConfirm={async () => { if (facilityToAction) { await forceDeleteFacility(facilityToAction.id); setIsForceDeleteOpen(false); setFacilityToAction(null) } }} title="Hapus Permanen?" message={`"${facilityToAction?.name}" akan dihapus permanen.`} variant="danger" confirmText="Ya, Hapus" />
+      <Confirmation open={isForceDeleteOpen} onClose={() => setIsForceDeleteOpen(false)} onConfirm={async () => { if (facilityToAction) { await forceDeleteFacility(facilityToAction.id); setIsForceDeleteOpen(false); setFacilityToAction(null); refetchActive(searchTerm) } }} title="Hapus Permanen?" message={`"${facilityToAction?.name}" akan dihapus permanen.`} variant="danger" confirmText="Ya, Hapus" />
     </div>
   )
 }

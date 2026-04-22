@@ -5,7 +5,7 @@ import RouteTypeForm from "@/features/admin/route-types/components/RouteTypeForm
 import Modal from "@/components/ui/Modal"
 import Button from "@/components/ui/Button"
 import Confirmation from "@/components/feedback/Confirmation"
-import { PageHeader, StatCard, ViewToggle, PageToolbar, ErrorBanner } from "@/components/ui/PageComponents"
+import { PageHeader, StatCard, StatGrid, ViewToggle, PageToolbar, ErrorBanner } from "@/components/ui/PageComponents"
 import type { RouteType } from "@/features/admin/route-types/types/RouteType"
 import { Plus, RefreshCcw, Map, MapPin, Trash2 } from "lucide-react"
 
@@ -45,11 +45,11 @@ export default function RouteTypePage() {
         }
       />
 
-      <div className="grid grid-cols-3 gap-3">
+      <StatGrid columns={3}>
         <StatCard label="Total Rute" value={statistics?.total ?? 0} icon={Map} loading={activeLoading} />
-        <StatCard label="Aktif" value={(statistics?.total ?? 0) - (statistics?.trashed ?? 0)} icon={MapPin} loading={activeLoading} color="emerald" />
+        <StatCard label="Aktif" value={statistics?.total ?? 0} icon={MapPin} loading={activeLoading} color="emerald" />
         <StatCard label="Tong Sampah" value={statistics?.trashed ?? 0} icon={Trash2} loading={activeLoading} color="rose" />
-      </div>
+      </StatGrid>
 
       <div className="flex justify-end">
         <ViewToggle view={view} onViewChange={setView} activeLabel="Semua" trashLabel="Sampah" />
@@ -60,7 +60,14 @@ export default function RouteTypePage() {
       ) : (
         <RouteTypeTable data={displayData} loading={loading} isTrash={view === "trash"}
           onEdit={r => { setSelectedRouteType(r); setIsModalOpen(true) }}
-          onDelete={r => { setRouteTypeToAction(r); setIsDeleteOpen(true) }}
+          onDelete={r => { 
+            setRouteTypeToAction(r); 
+            if (view === "trash") {
+              setIsForceDeleteOpen(true);
+            } else {
+              setIsDeleteOpen(true);
+            }
+          }}
           onRestore={id => { const r = trashedRouteTypes.find(x => x.id === id) || null; setRouteTypeToAction(r); setIsRestoreOpen(true) }}
         />
       )}
@@ -69,9 +76,9 @@ export default function RouteTypePage() {
         <RouteTypeForm routeType={selectedRouteType} onSuccess={() => { setIsModalOpen(false); refetchActive(searchTerm); refetchTrash() }} onCancel={() => setIsModalOpen(false)} />
       </Modal>
 
-      <Confirmation open={isDeleteOpen} onClose={() => setIsDeleteOpen(false)} onConfirm={async () => { if (routeTypeToAction) { await deleteRouteType(routeTypeToAction.id); setIsDeleteOpen(false); setRouteTypeToAction(null) } }} title="Hapus Tipe Rute?" message={`"${routeTypeToAction?.name}" akan dipindahkan ke sampah.`} variant="warning" confirmText="Ya, Hapus" />
+      <Confirmation open={isDeleteOpen} onClose={() => setIsDeleteOpen(false)} onConfirm={async () => { if (routeTypeToAction) { await deleteRouteType(routeTypeToAction.id); setIsDeleteOpen(false); setRouteTypeToAction(null); refetchActive(searchTerm) } }} title="Hapus Tipe Rute?" message={`"${routeTypeToAction?.name}" akan dipindahkan ke sampah.`} variant="warning" confirmText="Ya, Hapus" />
       <Confirmation open={isRestoreOpen} onClose={() => setIsRestoreOpen(false)} onConfirm={async () => { if (routeTypeToAction) { await restoreRouteType(routeTypeToAction.id); setIsRestoreOpen(false); setRouteTypeToAction(null); refetchActive(searchTerm) } }} title="Pulihkan?" message={`"${routeTypeToAction?.name}" akan dipulihkan.`} variant="info" confirmText="Ya, Pulihkan" />
-      <Confirmation open={isForceDeleteOpen} onClose={() => setIsForceDeleteOpen(false)} onConfirm={async () => { if (routeTypeToAction) { await forceDeleteRouteType(routeTypeToAction.id); setIsForceDeleteOpen(false); setRouteTypeToAction(null) } }} title="Hapus Permanen?" message={`"${routeTypeToAction?.name}" akan dihapus permanen.`} variant="danger" confirmText="Ya, Hapus" />
+      <Confirmation open={isForceDeleteOpen} onClose={() => setIsForceDeleteOpen(false)} onConfirm={async () => { if (routeTypeToAction) { await forceDeleteRouteType(routeTypeToAction.id); setIsForceDeleteOpen(false); setRouteTypeToAction(null); refetchActive(searchTerm) } }} title="Hapus Permanen?" message={`"${routeTypeToAction?.name}" akan dihapus permanen.`} variant="danger" confirmText="Ya, Hapus" />
     </div>
   )
 }

@@ -18,7 +18,7 @@ export const transactionService = {
       const data = response.data.data;
       return {
         transactions: Array.isArray(data) ? data : [],
-        statistics: response.data.statistics || null
+        statistics: response.data.statistics || response.data.statistic || null
       };
     } catch (error) {
       console.error('Error fetching transactions:', error);

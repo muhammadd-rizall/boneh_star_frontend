@@ -5,7 +5,7 @@ import BusCategoryForm from "@/features/admin/bus-categories/components/BusCateg
 import Modal from "@/components/ui/Modal"
 import Button from "@/components/ui/Button"
 import Confirmation from "@/components/feedback/Confirmation"
-import { PageHeader, StatCard, ViewToggle, PageToolbar, ErrorBanner } from "@/components/ui/PageComponents"
+import { PageHeader, StatCard, StatGrid, ViewToggle, PageToolbar, ErrorBanner } from "@/components/ui/PageComponents"
 import type { BusCategory } from "@/features/admin/bus-categories/types/BusCategory"
 import { Plus, RefreshCcw, Layers, LayoutGrid, Trash2 } from "lucide-react"
 
@@ -45,11 +45,11 @@ export default function BusCategoryPage() {
         }
       />
 
-      <div className="grid grid-cols-3 gap-3">
+      <StatGrid columns={3}>
         <StatCard label="Total Kategori" value={statistics?.total ?? 0} icon={Layers} loading={activeLoading} />
-        <StatCard label="Aktif" value={(statistics?.total ?? 0) - (statistics?.trashed ?? 0)} icon={LayoutGrid} loading={activeLoading} color="emerald" />
+        <StatCard label="Aktif" value={statistics?.total ?? 0} icon={LayoutGrid} loading={activeLoading} color="emerald" />
         <StatCard label="Tong Sampah" value={statistics?.trashed ?? 0} icon={Trash2} loading={activeLoading} color="rose" />
-      </div>
+      </StatGrid>
 
       <div className="flex justify-end">
         <ViewToggle view={view} onViewChange={setView} activeLabel="Semua" trashLabel="Sampah" />
@@ -60,7 +60,14 @@ export default function BusCategoryPage() {
       ) : (
         <BusCategoryTable data={displayData} loading={loading} isTrash={view === "trash"}
           onEdit={c => { setSelectedCategory(c); setIsModalOpen(true) }}
-          onDelete={c => { setCategoryToAction(c); setIsDeleteOpen(true) }}
+          onDelete={c => { 
+            setCategoryToAction(c); 
+            if (view === "trash") {
+              setIsForceDeleteOpen(true);
+            } else {
+              setIsDeleteOpen(true);
+            }
+          }}
           onRestore={id => { const c = trashedCategories.find(x => x.id === id) || null; setCategoryToAction(c); setIsRestoreOpen(true) }}
         />
       )}
@@ -69,9 +76,21 @@ export default function BusCategoryPage() {
         <BusCategoryForm category={selectedCategory} onSuccess={() => { setIsModalOpen(false); refetchActive(searchTerm); refetchTrash() }} onCancel={() => setIsModalOpen(false)} />
       </Modal>
 
-      <Confirmation open={isDeleteOpen} onClose={() => setIsDeleteOpen(false)} onConfirm={async () => { if (categoryToAction) { await deleteCategory(categoryToAction.id); setIsDeleteOpen(false); setCategoryToAction(null) } }} title="Hapus Kategori?" message={`"${categoryToAction?.name}" akan dipindahkan ke sampah.`} variant="warning" confirmText="Ya, Hapus" />
+      <Confirmation open={isDeleteOpen} onClose={() => setIsDeleteOpen(false)} onConfirm={async () => { if (categoryToAction) { await deleteCategory(categoryToAction.id); setIsDeleteOpen(false); setCategoryToAction(null); refetchActive(searchTerm) } }} title="Hapus Kategori?" message={`"${categoryToAction?.name}" akan dipindahkan ke sampah.`} variant="warning" confirmText="Ya, Hapus" />
       <Confirmation open={isRestoreOpen} onClose={() => setIsRestoreOpen(false)} onConfirm={async () => { if (categoryToAction) { await restoreCategory(categoryToAction.id); setIsRestoreOpen(false); setCategoryToAction(null); refetchActive(searchTerm) } }} title="Pulihkan Kategori?" message={`"${categoryToAction?.name}" akan dipulihkan.`} variant="info" confirmText="Ya, Pulihkan" />
-      <Confirmation open={isForceDeleteOpen} onClose={() => setIsForceDeleteOpen(false)} onConfirm={async () => { if (categoryToAction) { await forceDeleteCategory(categoryToAction.id); setIsForceDeleteOpen(false); setCategoryToAction(null) } }} title="Hapus Permanen?" message={`"${categoryToAction?.name}" akan dihapus secara permanen.`} variant="danger" confirmText="Ya, Hapus Permanen" />
+      <Confirmation open={isForceDeleteOpen} onClose={() => setIsForceDeleteOpen(false)} onConfirm={async () => { 
+        if (categoryToAction) { 
+          try {
+            await forceDeleteCategory(categoryToAction.id); 
+            setIsForceDeleteOpen(false); 
+            setCategoryToAction(null); 
+            refetchActive(searchTerm);
+            refetchTrash(); // Penting: Refresh daftar sampah juga
+          } catch (err) {
+            // Error ditangani oleh hook
+          }
+        } 
+      }} title="Hapus Permanen?" message={`"${categoryToAction?.name}" akan dihapus secara permanen.`} variant="danger" confirmText="Ya, Hapus Permanen" />
     </div>
   )
 }

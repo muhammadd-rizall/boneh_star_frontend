@@ -28,7 +28,14 @@ export default function CustomerTable({
         <div className="flex items-center gap-4 text-left">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-500 overflow-hidden">
             {row.profile_picture ? (
-              <img src={row.profile_picture} alt={row.name} className="h-full w-full object-cover" />
+              <img 
+                src={row.profile_picture} 
+                alt={row.name} 
+                className="h-full w-full object-cover"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(row.name);
+                }}
+              />
             ) : (
               <UserIcon size={20} />
             )}

@@ -9,7 +9,7 @@ export interface ActivityTypeStatistics {
 
 export interface ActivityTypeFormData {
   name: string;
-  description: string;
+  description?: string;
 }
 
 export interface ActivityTypeApiResponse {

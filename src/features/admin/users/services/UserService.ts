@@ -16,9 +16,17 @@ export const userService = {
       const response = await axios.get<UserApiResponse>(ENDPOINTS.BASE, {
         params: { search }
       });
-      const data = response.data.data;
+      const responseData = response.data.data;
+      
+      let users: User[] = [];
+      if (responseData && typeof responseData === 'object' && 'data' in responseData && Array.isArray(responseData.data)) {
+        users = responseData.data;
+      } else if (Array.isArray(responseData)) {
+        users = responseData;
+      }
+
       return {
-        users: Array.isArray(data) ? data : [],
+        users,
         statistics: response.data.statistics || null
       };
     } catch (error) {

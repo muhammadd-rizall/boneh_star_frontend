@@ -69,5 +69,6 @@ export interface BookingApiResponse {
   success: boolean;
   message: string;
   statistics?: BookingStatistics;
+  statistic?: BookingStatistics;
   data: Booking | PaginatedData<Booking> | Booking[];
 }

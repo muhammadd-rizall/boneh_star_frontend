@@ -214,12 +214,11 @@ export default function BookingForm({ booking, onSuccess, onCancel }: BookingFor
 
         <div className="grid gap-5 md:grid-cols-2">
           <Input
-            label="Booking Code"
-            placeholder="e.g. BOK-2023001"
+            label="Booking Code (Optional)"
+            placeholder="Auto-generated if left empty"
             icon={Hash}
             value={formData.booking_code}
             onChange={(e) => setFormData({ ...formData, booking_code: e.target.value })}
-            required
           />
 
           <Select

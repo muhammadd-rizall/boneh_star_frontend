@@ -3,7 +3,7 @@ import { CustomerTable, CustomerForm, useCustomers, useTrashedCustomers, type Cu
 import Button from "@/components/ui/Button"
 import Modal from "@/components/ui/Modal"
 import Confirmation from "@/components/feedback/Confirmation"
-import { PageHeader, StatCard, ViewToggle, PageToolbar, ErrorBanner } from "@/components/ui/PageComponents"
+import { PageHeader, StatCard, StatGrid, ViewToggle, PageToolbar, ErrorBanner } from "@/components/ui/PageComponents"
 import { Plus, RefreshCcw, Users, UserCheck, UserPlus, Heart } from "lucide-react"
 
 export default function CustomerPage() {
@@ -49,12 +49,12 @@ export default function CustomerPage() {
         }
       />
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <StatGrid columns={4}>
         <StatCard label="Total Pelanggan" value={statistics?.cards.total ?? 0} icon={Users} loading={activeLoading} />
         <StatCard label="Aktif" value={statistics?.cards.active ?? 0} icon={UserCheck} loading={activeLoading} color="emerald" />
         <StatCard label="Anggota Baru" value={statistics?.cards.new_members ?? 0} icon={UserPlus} loading={activeLoading} color="blue" />
         <StatCard label="Pelanggan Setia" value={statistics?.cards.loyal_customers ?? 0} icon={Heart} loading={activeLoading} color="violet" />
-      </div>
+      </StatGrid>
 
       <div className="flex justify-end">
         <ViewToggle view={view} onViewChange={setView} activeLabel="Pelanggan Aktif" trashLabel="Sampah" />

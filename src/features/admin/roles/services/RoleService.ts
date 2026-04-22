@@ -56,7 +56,7 @@ export const roleService = {
     const response = await axios.get<RoleApiResponse>(ENDPOINTS.BASE);
     return {
       roles: Array.isArray(response.data.data) ? (response.data.data as Role[]) : [],
-      statistic: response.data.statistic,
+      statistic: response.data.statistic || response.data.statistics,
     };
   },
 

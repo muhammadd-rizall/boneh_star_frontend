@@ -19,7 +19,7 @@ export interface User extends TimestampedEntity, ActivableEntity {
   email: string;
   password?: string;
   roles: Role[];
-  permission: Permission[];
+  permissions?: Permission[];
 }
 
 export interface UserStatistics {
@@ -41,5 +41,5 @@ export interface UserApiResponse {
   success: boolean;
   message: string;
   statistics?: UserStatistics;
-  data: User | User[];
+  data: User | User[] | { data: User[] };
 }

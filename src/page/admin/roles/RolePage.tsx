@@ -3,7 +3,7 @@ import { RoleTable, RoleForm, useRoles, type Role } from "@/features/admin/roles
 import Button from "@/components/ui/Button"
 import Modal from "@/components/ui/Modal"
 import Confirmation from "@/components/feedback/Confirmation"
-import { PageHeader, StatCard, PageToolbar, ErrorBanner } from "@/components/ui/PageComponents"
+import { PageHeader, StatCard, StatGrid, PageToolbar, ErrorBanner } from "@/components/ui/PageComponents"
 import { Plus, RefreshCcw, ShieldCheck, Key, Lock } from "lucide-react"
 
 export default function RolePage() {
@@ -42,11 +42,11 @@ export default function RolePage() {
         }
       />
 
-      <div className="grid grid-cols-3 gap-3">
+      <StatGrid columns={3}>
         <StatCard label="Total Role" value={statistics?.total_roles ?? roles.length} icon={ShieldCheck} loading={loading} />
         <StatCard label="Role Aktif" value={statistics?.active_roles ?? roles.filter(r => r.is_active).length} icon={Key} loading={loading} color="emerald" />
         <StatCard label="Total Izin" value={statistics?.total_permissions ?? Object.values(permissions).flat().length} icon={Lock} loading={loading} color="violet" />
-      </div>
+      </StatGrid>
 
       {error ? (
         <ErrorBanner error={error} onRetry={refetch} />
