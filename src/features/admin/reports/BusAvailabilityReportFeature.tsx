@@ -5,7 +5,7 @@ import BusAvailabilityReportTable from "./components/BusAvailabilityReportTable"
 import Loader from "@/components/feedback/Loader";
 import ErrorState from "@/components/feedback/ErrorState";
 import Button from "@/components/ui/Button";
-import { Download, RefreshCw, Calendar } from "lucide-react";
+import { RefreshCw, Calendar } from "lucide-react";
 
 const BusAvailabilityReportFeature = () => {
   const { data, loading, error, filters, updateFilters, refetch } = useBusAvailabilityReport();

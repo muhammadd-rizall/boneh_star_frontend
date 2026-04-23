@@ -379,8 +379,8 @@ export interface Notification extends BaseEntity {
 export interface CompanyProfile extends TimestampedEntity {
   company_name: string;
   address: string;
-  phone: string[];
   whatsapp: string[];
+  social_media?: { platform: string; url: string }[] | null;
   email?: string | null;
   description?: string | null;
   logo?: string | null;
