@@ -182,7 +182,6 @@ export default function DahsbordLayout() {
           <SidebarGroup label="Operasional" collapsed={isCollapsed}>
             <SidebarItem to="/admin/bookings" icon={CalendarCheck} label="Pemesanan" collapsed={isCollapsed} />
             <SidebarItem to="/admin/quotations" icon={FileText} label="Penawaran" collapsed={isCollapsed} />
-            <SidebarItem to="/admin/reviews" icon={MessageSquare} label="Ulasan" collapsed={isCollapsed} />
           </SidebarGroup>
 
           <SidebarGroup label="Keuangan" collapsed={isCollapsed}>
@@ -195,6 +194,7 @@ export default function DahsbordLayout() {
             <SidebarItem to="/admin/reports/bookings" icon={BarChart3} label="Laporan Booking" collapsed={isCollapsed} />
             <SidebarItem to="/admin/reports/income" icon={TrendingUp} label="Laporan Pendapatan" collapsed={isCollapsed} />
             <SidebarItem to="/admin/reports/bus-availability" icon={CalendarRange} label="Ketersediaan Bus" collapsed={isCollapsed} />
+            <SidebarItem to="/admin/reviews" icon={MessageSquare} label="Ulasan" collapsed={isCollapsed} />
           </SidebarGroup>
 
           <SidebarGroup label="Armada" collapsed={isCollapsed}>

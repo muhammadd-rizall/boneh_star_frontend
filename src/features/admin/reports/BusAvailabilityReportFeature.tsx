@@ -34,13 +34,6 @@ const BusAvailabilityReportFeature = () => {
           >
             Update
           </Button>
-          <Button 
-            variant="primary" 
-            icon={Download}
-            onClick={() => window.print()}
-          >
-            Export Report
-          </Button>
         </div>
       </div>
 
