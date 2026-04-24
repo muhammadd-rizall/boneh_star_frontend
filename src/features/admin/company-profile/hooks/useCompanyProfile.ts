@@ -29,7 +29,8 @@ export function useCompanyProfile() {
       social_media: normalizeSocialMedia(profile.social_media),
       email: profile.email || "",
       description: profile.description || "",
-      logo: null, 
+      logo: null,
+      remove_logo: false,
     };
   }, []);
 

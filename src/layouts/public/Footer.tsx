@@ -3,19 +3,16 @@ import {
   BusFront,
   Mail,
   MapPin,
-  MessageCircleMore,
-  MessageCircle,
-  Music2,
-  Globe,
-  AtSign,
-  Share2,
 } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import { Link } from "react-router-dom";
 import {
   buildWhatsAppHref,
   normalizeWhatsApp,
   normalizeSocialMedia,
   resolveMediaUrl,
+  getSocialIcon,
 } from "@/features/admin/company-profile/utils/companyProfileUtils";
 
 const quickLinks = [
@@ -30,18 +27,6 @@ interface FooterProps {
     "company_name" | "address" | "whatsapp" | "social_media" | "email" | "description" | "logo"
   >;
 }
-
-const getSocialIcon = (platform: string) => {
-  const p = platform.toLowerCase();
-  if (p.includes("instagram")) return Share2;
-  if (p.includes("facebook")) return Share2;
-  if (p.includes("twitter") || p.includes("x.com")) return Share2;
-  if (p.includes("youtube")) return Share2;
-  if (p.includes("tiktok")) return Music2;
-  if (p.includes("threads")) return AtSign;
-  if (p.includes("whatsapp")) return MessageCircle;
-  return Globe;
-};
 
 export default function Footer({ companyProfile }: FooterProps) {
   const whatsappNumbers = normalizeWhatsApp(companyProfile.whatsapp);
@@ -85,20 +70,8 @@ export default function Footer({ companyProfile }: FooterProps) {
               "Kami membantu pemesanan armada menjadi lebih cepat, rapi, dan profesional, dari permintaan penawaran sampai konfirmasi keberangkatan."}
           </p>
           <div className="mt-6 flex items-center gap-3">
-            {whatsappNumbers[0] && (
-              <a
-                href={buildWhatsAppHref(whatsappNumbers[0])}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-200 transition hover:bg-white/10 hover:text-white"
-                aria-label="WhatsApp"
-              >
-                <MessageCircleMore size={18} />
-              </a>
-            )}
-            
             {socialMedias.map((social, idx) => {
-              const Icon = getSocialIcon(social.platform);
+              const icon = getSocialIcon(social.platform);
               return (
                 <a
                   key={idx}
@@ -108,7 +81,7 @@ export default function Footer({ companyProfile }: FooterProps) {
                   className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-200 transition hover:bg-white/10 hover:text-white"
                   aria-label={social.platform}
                 >
-                  <Icon size={18} />
+                  <FontAwesomeIcon icon={icon} className="text-lg" />
                 </a>
               );
             })}
@@ -165,7 +138,7 @@ export default function Footer({ companyProfile }: FooterProps) {
                 rel="noreferrer"
                 className="flex items-center gap-3 transition hover:text-white"
               >
-                <MessageCircleMore size={16} className="text-cyan-300" />
+                <FontAwesomeIcon icon={faWhatsapp} className="text-cyan-300" />
                 <span>{whatsapp} (WA)</span>
               </a>
             ))}
@@ -182,10 +155,9 @@ export default function Footer({ companyProfile }: FooterProps) {
         </div>
       </div>
 
-      <div className="relative border-t border-white/10">
+      <div className="flex border-t border-white/10">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-5 text-sm text-slate-500 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
           <p>© {new Date().getFullYear()} {companyProfile.company_name}. Seluruh hak cipta dilindungi.</p>
-          <p>Sistem reservasi dan operasional transportasi yang terintegrasi.</p>
         </div>
       </div>
     </footer>

@@ -1,5 +1,6 @@
 import axios from '@/api/Axios';
 import type { CompanyProfile, CompanyProfileFormData, CompanyProfileApiResponse } from '@/features/admin/company-profile/types/CompanyProfile';
+import { normalizeSocialMedia } from '@/features/admin/company-profile/utils/companyProfileUtils';
 
 const ENDPOINT = '/admin/company-profile';
 
@@ -54,25 +55,26 @@ export const companyProfileService = {
 
       formData.append('email', data.email || '');
       formData.append('description', data.description || '');
+      formData.append('remove_logo', data.remove_logo ? '1' : '0');
 
       const whatsappList = data.whatsapp
         .map((num) => num.trim())
         .filter(Boolean);
 
       if (whatsappList.length === 0) {
-        formData.append('whatsapp[0]', '');
+        formData.append('clear_whatsapp', '1');
       } else {
         whatsappList.forEach((num, index) => {
           formData.append(`whatsapp[${index}]`, num);
         });
       }
 
-      const socialMediaList = (data.social_media || []).filter(
+      const socialMediaList = normalizeSocialMedia(data.social_media || []).filter(
         (social) => social.platform.trim() || social.url.trim()
       );
 
       if (socialMediaList.length === 0) {
-        formData.append('social_media', '[]');
+        formData.append('clear_social_media', '1');
       } else {
         socialMediaList.forEach((social, index) => {
           formData.append(`social_media[${index}][platform]`, social.platform.trim());

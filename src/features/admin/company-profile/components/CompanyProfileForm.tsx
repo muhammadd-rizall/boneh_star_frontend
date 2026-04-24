@@ -16,11 +16,17 @@ import {
   Link as LinkIcon,
   AlertCircle
 } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useCompanyProfile } from "../hooks/useCompanyProfile";
 import type { CompanyProfileFormData } from "../types/CompanyProfile";
 import Loader from "@/components/feedback/Loader";
 import Alert from "@/components/feedback/Alert";
-import { resolveMediaUrl } from "../utils/companyProfileUtils";
+import {
+  normalizeSocialMedia,
+  normalizeSocialPlatform,
+  resolveMediaUrl,
+  SOCIAL_PLATFORMS,
+} from "../utils/companyProfileUtils";
 
 export default function CompanyProfileForm() {
   const { profile, loading, error, updateProfile, refetch, mapToFormData } = useCompanyProfile();
@@ -37,6 +43,7 @@ export default function CompanyProfileForm() {
     email: "",
     description: "",
     logo: null,
+    remove_logo: false,
   });
 
   // Sinkronisasi data dari global store ke local state form
@@ -59,7 +66,7 @@ export default function CompanyProfileForm() {
       }
       
       setFormError(null);
-      setFormData({ ...formData, logo: file });
+      setFormData({ ...formData, logo: file, remove_logo: false });
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
@@ -84,28 +91,37 @@ export default function CompanyProfileForm() {
   };
 
   const removeArrayItem = (index: number) => {
-    if (formData.whatsapp.length > 1) {
-      const newArray = formData.whatsapp.filter((_, i) => i !== index);
-      setFormData({ ...formData, whatsapp: newArray });
+    const newArray = formData.whatsapp.filter((_, i) => i !== index);
+    setFormData({ ...formData, whatsapp: newArray });
+  };
+
+  const toggleSocialPlatform = (platform: string) => {
+    const normalizedPlatform = normalizeSocialPlatform(platform);
+    const normalizedSocialMedia = normalizeSocialMedia(formData.social_media);
+    const exists = normalizedSocialMedia.some((item) => item.platform === normalizedPlatform);
+
+    if (exists) {
+      setFormData({
+        ...formData,
+        social_media: normalizedSocialMedia.filter((item) => item.platform !== normalizedPlatform),
+      });
+      return;
     }
-  };
 
-  const handleSocialMediaChange = (index: number, field: "platform" | "url", value: string) => {
-    const newSocialMedia = [...formData.social_media];
-    newSocialMedia[index] = { ...newSocialMedia[index], [field]: value };
-    setFormData({ ...formData, social_media: newSocialMedia });
-  };
-
-  const addSocialMediaItem = () => {
     setFormData({
       ...formData,
-      social_media: [...formData.social_media, { platform: "", url: "" }],
+      social_media: [...normalizedSocialMedia, { platform: normalizedPlatform, url: "" }],
     });
   };
 
-  const removeSocialMediaItem = (index: number) => {
-    const newSocialMedia = formData.social_media.filter((_, i) => i !== index);
-    setFormData({ ...formData, social_media: newSocialMedia });
+  const handleSocialUrlChange = (platform: string, value: string) => {
+    const normalizedPlatform = normalizeSocialPlatform(platform);
+    setFormData({
+      ...formData,
+      social_media: normalizeSocialMedia(formData.social_media).map((item) =>
+        item.platform === normalizedPlatform ? { ...item, url: value } : item
+      ),
+    });
   };
 
   const validateForm = () => {
@@ -117,12 +133,8 @@ export default function CompanyProfileForm() {
       return "Format email tidak valid";
     }
 
-    // Validasi WhatsApp (minimal 1 nomor valid)
-    const validWA = formData.whatsapp.filter(wa => wa.length >= 9);
-    if (validWA.length === 0) return "Masukkan setidaknya satu nomor WhatsApp yang valid (min. 9 digit)";
-
     // Validasi Social Media URL
-    for (const sm of formData.social_media) {
+    for (const sm of normalizeSocialMedia(formData.social_media)) {
       if (sm.platform && !sm.url) return `URL untuk platform ${sm.platform} wajib diisi`;
       if (sm.url && !sm.url.startsWith("http")) return `URL untuk ${sm.platform || "media sosial"} harus diawali dengan http:// atau https://`;
     }
@@ -144,7 +156,10 @@ export default function CompanyProfileForm() {
 
     setIsSaving(true);
     try {
-      await updateProfile(formData);
+      await updateProfile({
+        ...formData,
+        social_media: normalizeSocialMedia(formData.social_media),
+      });
       setSuccessMessage("Profil perusahaan berhasil diperbarui!");
       await refetch();
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -199,7 +214,7 @@ export default function CompanyProfileForm() {
           </div>
           <div className="flex flex-col gap-2">
             <h5 className="font-semibold text-slate-800">Identitas Visual</h5>
-            <p className="text-sm text-slate-500 max-w-xs leading-relaxed">Gunakan gambar PNG atau SVG transparan untuk hasil terbaik di Header. Maksimal ukuran file 2MB.</p>
+            <p className="text-sm text-slate-500 max-w-xs leading-relaxed">Maksimal ukuran file 2MB.</p>
             <div className="mt-2 flex gap-2">
               <Button 
                 type="button" 
@@ -218,7 +233,7 @@ export default function CompanyProfileForm() {
                   className="rounded-xl text-rose-500 border-rose-100 hover:bg-rose-50"
                   onClick={() => {
                     setImagePreview(null);
-                    setFormData({ ...formData, logo: null });
+                    setFormData({ ...formData, logo: null, remove_logo: true });
                   }}
                 >
                   Hapus
@@ -266,8 +281,8 @@ export default function CompanyProfileForm() {
             rows={4}
           />
           <Textarea
-            label="Deskripsi Singkat"
-            placeholder="Ceritakan sejarah atau visi misi perusahaan..."
+            label="Deskripsi Singkat (Opsional)"
+            placeholder="Buatkan Deskripsi Singkat..."
             icon={Info}
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -285,45 +300,72 @@ export default function CompanyProfileForm() {
           <h4 className="text-sm font-bold uppercase tracking-wider text-slate-500">Saluran Komunikasi</h4>
         </div>
         
-        <div className="flex flex-col gap-4">
-          <label className="text-sm font-medium text-slate-700">Nomor WhatsApp Aktif</label>
-          <div className="grid gap-3">
-            {formData.whatsapp.map((num, index) => (
-              <div key={`ws-${index}`} className="group flex gap-2">
-                <div className="relative flex-1">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium text-sm">
-                    +62
-                  </div>
-                  <Input
-                    className="pl-12"
-                    placeholder="8123456789"
-                    value={num}
-                    onChange={(e) => handleArrayChange(index, e.target.value)}
-                  />
-                </div>
-                {formData.whatsapp.length > 1 && (
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    className="aspect-square rounded-2xl p-2 text-rose-500 border-rose-100 hover:bg-rose-50 opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={() => removeArrayItem(index)}
-                  >
-                    <Trash2 size={18} />
-                  </Button>
-                )}
-              </div>
-            ))}
+        <div className="rounded-[2rem] border border-slate-200/80 bg-gradient-to-br from-white to-slate-50 p-6 shadow-[0_18px_40px_-32px_rgba(15,23,42,0.28)]">
+          <div className="mb-5 flex items-start justify-between gap-4">
+            <div>
+              <p className="text-sm font-semibold text-slate-800">Nomor WhatsApp Aktif</p>
+              <p className="mt-1 text-xs leading-6 text-slate-500">
+                Tambahkan semua nomor yang dapat dihubungi pelanggan. Nomor bisa dihapus langsung dari daftar.
+              </p>
+            </div>
+            <Button 
+              type="button" 
+              variant="outline" 
+              size="sm" 
+              className="rounded-xl border-dashed"
+              icon={Plus}
+              onClick={addArrayItem}
+            >
+              Tambah Nomor
+            </Button>
           </div>
-          <Button 
-            type="button" 
-            variant="outline" 
-            size="sm" 
-            className="mt-1 border-dashed w-fit rounded-xl"
-            icon={Plus}
-            onClick={addArrayItem}
-          >
-            Tambah Nomor
-          </Button>
+
+          {formData.whatsapp.length === 0 ? (
+            <div className="rounded-[1.5rem] border border-dashed border-slate-200 bg-white/70 px-5 py-8 text-center">
+              <p className="text-sm font-medium text-slate-600">Belum ada nomor komunikasi</p>
+              <p className="mt-1 text-xs text-slate-400">
+                Klik `Tambah Nomor` jika ingin menambahkan WhatsApp perusahaan.
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-4">
+              {formData.whatsapp.map((num, index) => (
+                <div
+                  key={`ws-${index}`}
+                  className="rounded-[1.5rem] border border-slate-200 bg-white p-4 shadow-[0_14px_32px_-28px_rgba(15,23,42,0.35)]"
+                >
+                  <div className="mb-3 flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-800">Nomor {index + 1}</p>
+                      <p className="text-xs text-slate-400">Format Indonesia tanpa simbol tambahan.</p>
+                    </div>
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      size="sm" 
+                      className="rounded-xl border-rose-100 text-rose-500 hover:bg-rose-50"
+                      onClick={() => removeArrayItem(index)}
+                      icon={Trash2}
+                    >
+                      Hapus
+                    </Button>
+                  </div>
+                  <div className="relative">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-medium text-slate-400">
+                      +62
+                    </div>
+                    <Input
+                      className="rounded-2xl pl-12"
+                      placeholder="8123456789"
+                      value={num}
+                      onChange={(e) => handleArrayChange(index, e.target.value)}
+                      hint="Contoh: 8123456789"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -336,69 +378,98 @@ export default function CompanyProfileForm() {
           <h4 className="text-sm font-bold uppercase tracking-wider text-slate-500">Kehadiran Digital (Sosial Media)</h4>
         </div>
         
-        <div className="flex flex-col gap-4">
-          {formData.social_media.map((social, index) => (
-            <div key={`social-${index}`} className="flex flex-col gap-4 rounded-[2rem] border border-slate-100 bg-slate-50/40 p-6 md:flex-row md:items-end">
-              <div className="flex-1 grid gap-4 sm:grid-cols-2">
-                <Input
-                  label="Nama Platform"
-                  placeholder="Contoh: Instagram, Facebook"
-                  icon={Share2}
-                  value={social.platform}
-                  onChange={(e) => handleSocialMediaChange(index, "platform", e.target.value)}
-                  required
-                />
-                <Input
-                  label="Tautan (URL)"
-                  placeholder="https://..."
-                  icon={LinkIcon}
-                  value={social.url}
-                  onChange={(e) => handleSocialMediaChange(index, "url", e.target.value)}
-                  required
-                />
-              </div>
-              <Button 
-                type="button" 
-                variant="outline" 
-                className="h-11 w-full md:w-auto p-2 text-rose-500 border-rose-100 hover:bg-rose-50 rounded-2xl"
-                onClick={() => removeSocialMediaItem(index)}
-              >
-                <Trash2 size={18} />
-              </Button>
-            </div>
-          ))}
+        <div className="flex flex-col gap-6">
+          <div>
+            <p className="text-sm font-medium text-slate-700">Pilih ikon media sosial</p>
+            <p className="mt-1 text-xs text-slate-400">
+              Setelah ikon dipilih, kolom URL untuk platform tersebut akan muncul di bawah.
+            </p>
+          </div>
 
-          {formData.social_media.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-10 rounded-[2.5rem] border-2 border-dashed border-slate-200 bg-slate-50/50 text-slate-400">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+            {SOCIAL_PLATFORMS.map((platform) => {
+              const isSelected = formData.social_media.some(
+                (item) => item.platform === platform.id
+              );
+
+              return (
+                <button
+                  key={platform.id}
+                  type="button"
+                  onClick={() => toggleSocialPlatform(platform.id)}
+                  className={`flex flex-col items-center justify-center gap-3 rounded-[1.75rem] border px-4 py-5 text-sm transition ${
+                    isSelected
+                      ? "border-slate-900 bg-slate-900 text-white shadow-lg shadow-slate-900/10"
+                      : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                  }`}
+                >
+                  <span
+                    className={`flex h-11 w-11 items-center justify-center rounded-2xl ${
+                      isSelected ? "bg-white/10" : "bg-slate-100"
+                    }`}
+                  >
+                    <FontAwesomeIcon icon={platform.icon} className="text-lg" />
+                  </span>
+                  <span className="font-medium">{platform.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {formData.social_media.length === 0 ? (
+            <div className="flex flex-col items-center justify-center rounded-[2.5rem] border-2 border-dashed border-slate-200 bg-slate-50/50 py-10 text-slate-400">
               <div className="mb-4 rounded-full bg-white p-4 shadow-sm">
                 <Share2 size={32} className="opacity-20" />
               </div>
-              <p className="text-sm font-semibold text-slate-600">Belum ada media sosial</p>
-              <p className="text-xs text-slate-400 mt-1">Tambahkan link profil untuk mempermudah pelanggan menemukan Anda</p>
-              <Button 
-                type="button" 
-                variant="outline" 
-                size="sm" 
-                className="mt-6 rounded-xl border-dashed"
-                icon={Plus}
-                onClick={addSocialMediaItem}
-              >
-                Hubungkan Sekarang
-              </Button>
+              <p className="text-sm font-semibold text-slate-600">Belum ada platform dipilih</p>
+              <p className="mt-1 text-xs text-slate-400">
+                Klik ikon media sosial di atas untuk menghubungkan akun perusahaan.
+              </p>
             </div>
-          )}
+          ) : (
+            <div className="grid gap-4">
+              {formData.social_media.map((social) => {
+                const platform = SOCIAL_PLATFORMS.find((item) => item.id === social.platform);
+                if (!platform) return null;
 
-          {formData.social_media.length > 0 && (
-            <Button 
-              type="button" 
-              variant="outline" 
-              size="sm" 
-              className="w-fit border-dashed rounded-xl"
-              icon={Plus}
-              onClick={addSocialMediaItem}
-            >
-              Tambah Platform Lain
-            </Button>
+                return (
+                  <div
+                    key={social.platform}
+                    className="rounded-[2rem] border border-slate-100 bg-slate-50/40 p-6"
+                  >
+                    <div className="mb-4 flex items-start justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-900 text-white">
+                          <FontAwesomeIcon icon={platform.icon} className="text-lg" />
+                        </div>
+                        <div>
+                          <p className="font-semibold text-slate-900">{platform.label}</p>
+                          <p className="text-xs text-slate-400">Masukkan URL profil resmi</p>
+                        </div>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="rounded-xl border-rose-100 text-rose-500 hover:bg-rose-50"
+                        icon={Trash2}
+                        onClick={() => toggleSocialPlatform(social.platform)}
+                      >
+                        Hapus
+                      </Button>
+                    </div>
+                    <Input
+                      label={`URL ${platform.label}`}
+                      placeholder="https://..."
+                      icon={LinkIcon}
+                      value={social.url}
+                      onChange={(e) => handleSocialUrlChange(social.platform, e.target.value)}
+                      required
+                    />
+                  </div>
+                );
+              })}
+            </div>
           )}
         </div>
       </section>

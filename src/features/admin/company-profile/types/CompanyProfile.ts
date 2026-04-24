@@ -22,6 +22,7 @@ export interface CompanyProfileFormData {
   email?: string;
   description?: string;
   logo?: File | null;
+  remove_logo?: boolean;
 }
 
 export interface CompanyProfileApiResponse {
