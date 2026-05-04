@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
+import { adminAuthService } from "@/features/auth/admin";
 import Card from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
-import api from "@/api/Axios";
 import { BusFront, Mail, Lock, ArrowRight, AlertCircle } from "lucide-react";
 
 export default function Login() {
@@ -22,9 +22,8 @@ export default function Login() {
     setError(null);
 
     try {
-      const response = await api.post("/admin/auth/login", { email, password });
+      const response = await adminAuthService.login({ email, password });
       
-      // Mengantisipasi struktur response Laravel (biasanya { data: { user, token } } atau { user, token })
       const responseData = response.data.data || response.data;
       const { user, token } = responseData;
 
@@ -34,7 +33,6 @@ export default function Login() {
       
       login(user, token);
       
-      // Gunakan navigate agar transisi state SPA lebih mulus
       navigate("/admin/dashboard");
     } catch (err: any) {
       console.error("Login error:", err);

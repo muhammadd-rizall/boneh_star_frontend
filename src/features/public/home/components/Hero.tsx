@@ -8,13 +8,17 @@ import {
 } from "lucide-react";
 import heroImage from "@/assets/hero.png";
 import { useState, useEffect } from "react";
-import { busCategoryService } from "@/features/admin/bus-categories/services/BusCategoryService";
-import type { BusCategory } from "@/features/admin/bus-categories/types/BusCategory";
+import { publicService } from "@/features/public/services/publicService";
 import { buildWhatsAppHref } from "@/features/admin/company-profile/utils/companyProfileUtils";
+
+interface HeroCategoryOption {
+  id: string;
+  name: string;
+}
 
 export default function Hero() {
   const { profile } = usePublicCompanyProfile();
-  const [categories, setCategories] = useState<BusCategory[]>([]);
+  const [categories, setCategories] = useState<HeroCategoryOption[]>([]);
   const [formData, setFormData] = useState({
     tujuan: "",
     jenisBus: "",
@@ -23,7 +27,28 @@ export default function Hero() {
   });
 
   useEffect(() => {
-    busCategoryService.getAll().then(res => setCategories(prev => res.categories || prev));
+    const loadCategories = async () => {
+      try {
+        const buses = await publicService.getBuses();
+        const mappedCategories: HeroCategoryOption[] = Array.from(
+          new Map<string, HeroCategoryOption>(
+            (buses || [])
+              .filter((bus: any) => bus?.bus_category?.id && bus?.bus_category?.name)
+              .map((bus: any) => [
+                String(bus.bus_category.id),
+                { id: String(bus.bus_category.id), name: bus.bus_category.name },
+              ]),
+          ).values(),
+        );
+
+        setCategories(mappedCategories);
+      } catch (error) {
+        console.error("Failed to load bus categories for hero form:", error);
+        setCategories([]);
+      }
+    };
+
+    loadCategories();
   }, []);
 
   const handleSendInquiry = (e: React.FormEvent) => {

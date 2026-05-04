@@ -1,9 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { busService } from "@/features/admin/buses/services/BusService";
-import { bookingService } from "@/features/admin/bookings/services/BookingService";
-import { routeTypeService } from "@/features/admin/route-types/services/RouteTypeService";
-import { activityTypeService } from "@/features/admin/activity-types/services/ActivityTypeService";
-import { reviewService } from "@/features/admin/reviews/services/ReviewService";
+import { publicService } from "@/features/public/services/publicService";
 import type { Bus } from "@/features/admin/buses/types/Bus";
 import type { ActivityType } from "@/features/admin/activity-types/types/ActivityType";
 import type { Review } from "@/features/admin/reviews/types/Review";
@@ -34,23 +30,22 @@ export function useHomeData() {
     try {
       setData((prev) => ({ ...prev, loading: true, error: null }));
       
-      const [busRes, bookingRes, routeRes, activityRes, reviewRes] = await Promise.all([
-        busService.getAll(),
-        bookingService.getAll(),
-        routeTypeService.getAll(),
-        activityTypeService.getAll(),
-        reviewService.getReport({ per_page: 6 }), // Fetch latest reviews
+      const [busRes, routeRes, activityRes, reviewRes] = await Promise.all([
+        publicService.getBuses(),
+        publicService.getRouteTypes(),
+        publicService.getActivityTypes(),
+        publicService.getReviews({ per_page: 6 }),
       ]);
 
       // Filter featured buses (available + has images)
-      const featured = busRes.buses
-        .filter(b => b.status === 'available' && b.images && b.images.length > 0)
+      const featured = busRes
+        .filter((b: Bus) => b.status === 'available' && b.images && b.images.length > 0)
         .slice(0, 4);
 
       // Extract statistics
-      const totalBuses = busRes.statistics?.cards.total || busRes.buses.length;
-      const completedBookings = bookingRes.statistics?.by_status.completed || 0;
-      const totalRoutes = routeRes.routeTypes.length;
+      const totalBuses = busRes.length;
+      const totalRoutes = routeRes.length;
+      const completedBookings = reviewRes.length;
 
       setData({
         stats: {
@@ -59,9 +54,9 @@ export function useHomeData() {
           routes: totalRoutes,
           founded: 2018, // Default value
         },
-        activityTypes: activityRes.activityTypes,
+        activityTypes: activityRes,
         featuredBuses: featured,
-        reviews: reviewRes.reviews.data || [],
+        reviews: reviewRes,
         loading: false,
         error: null,
       });

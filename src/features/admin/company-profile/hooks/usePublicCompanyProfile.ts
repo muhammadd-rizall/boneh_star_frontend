@@ -7,7 +7,10 @@ import { useCompanyStore } from "@/store/useCompanyStore";
  * tetap sinkron di seluruh komponen dan tidak hilang saat navigasi.
  */
 export function usePublicCompanyProfile() {
-  const { profile, loading, error, fetchProfile } = useCompanyStore();
+  const profile = useCompanyStore((state) => state.profile);
+  const loading = useCompanyStore((state) => state.loading);
+  const error = useCompanyStore((state) => state.error);
+  const fetchProfile = useCompanyStore((state) => state.fetchProfile);
 
   useEffect(() => {
     // Ambil data dari server (hanya jika belum ada di store)

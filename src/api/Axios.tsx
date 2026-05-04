@@ -1,40 +1,51 @@
 import axios from 'axios';
 import { useAuthStore } from '../store/useAuthStore';
+import { useCustomerAuthStore } from '../features/auth/public';
 
 const api = axios.create({
-    baseURL: 'http://localhost:8000/api', // Sesuaikan URL Laravel Anda
+    baseURL: 'http://localhost:8000/api',
     headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
     }
 });
 
-// Interceptor untuk menempelkan token otomatis dari Zustand Store
+// Interceptor untuk memilih token yang tepat
 api.interceptors.request.use((config) => {
-    const token = useAuthStore.getState().token;
+    // Cek apakah request ditujukan untuk admin
+    const isAdminRequest = config.url?.startsWith('/admin');
+    
+    // Pilih store berdasarkan request
+    const adminToken = useAuthStore.getState().token;
+    const customerToken = useCustomerAuthStore.getState().token;
+    
+    const token = isAdminRequest ? adminToken : customerToken;
+
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
+    
     return config;
 });
 
-// Interceptor untuk menangani response error (seperti 401 Unauthorized)
+// Interceptor untuk menangani response error (401)
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        const isPublicPage = window.location.pathname === '/' || !window.location.pathname.startsWith('/admin');
-        const isWriteRequest = ['post', 'put', 'patch', 'delete'].includes(error.config?.method?.toLowerCase() || '');
-
-        // Jika token tidak valid atau expired (401)
         if (error.response?.status === 401) {
-            // Logout tetap dilakukan untuk membersihkan state yang korup
-            useAuthStore.getState().logout();
+            const isAdminRequest = error.config.url?.startsWith('/admin');
+            const currentPath = window.location.pathname;
 
-            // Redirect jika:
-            // 1. Sedang di halaman admin (BUKAN halaman publik)
-            // 2. ATAU Request bersifat modifikasi data (POST/PUT/DELETE) - meskipun di halaman publik
-            if (!isPublicPage || isWriteRequest) {
-                window.location.href = '/admin/login';
+            if (isAdminRequest) {
+                useAuthStore.getState().logout();
+                if (currentPath !== '/admin/login') {
+                    window.location.href = '/admin/login';
+                }
+            } else {
+                useCustomerAuthStore.getState().logout();
+                if (currentPath !== '/auth/login') {
+                    window.location.href = '/auth/login';
+                }
             }
         }
         return Promise.reject(error);

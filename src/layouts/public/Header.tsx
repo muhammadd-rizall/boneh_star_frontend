@@ -1,14 +1,22 @@
 import type { CompanyProfile } from "@/features/admin/company-profile/types/CompanyProfile";
-import { BusFront, Menu, X } from "lucide-react";
+import { BusFront, LogOut, Menu, User, X } from "lucide-react";
 import { useState, useEffect } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { resolveMediaUrl } from "@/features/admin/company-profile/utils/companyProfileUtils";
+import { useCustomerAuthStore } from "@/features/auth/public";
 
 const navigation = [
   { label: "Armada", href: "#armada" },
   { label: "Layanan", href: "#services" },
   { label: "Testimoni", href: "#testimonials" },
   { label: "Kontak", href: "#contact" },
+];
+
+const customerNavigation = [
+  { label: "Booking Saya", to: "/customer/bookings" },
+  { label: "Profil", to: "/customer/profile" },
+  { label: "Ulasan", to: "/customer/reviews" },
+  { label: "Notifikasi", to: "/customer/notifications" },
 ];
 
 interface HeaderProps {
@@ -19,9 +27,28 @@ export default function Header({ companyProfile }: HeaderProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const isHome = location.pathname === "/";
+  const isAuthenticated = useCustomerAuthStore((state) => state.isAuthenticated);
+  const user = useCustomerAuthStore((state) => state.user);
+  const logout = useCustomerAuthStore((state) => state.logout);
 
   const logoUrl = resolveMediaUrl(companyProfile.logo);
+
+  const handleCustomerLogout = async () => {
+    try {
+      await logout();
+    } catch {
+      useCustomerAuthStore.setState({
+        user: null,
+        token: null,
+        isAuthenticated: false,
+      });
+    } finally {
+      setIsOpen(false);
+      navigate("/");
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -64,23 +91,81 @@ export default function Header({ companyProfile }: HeaderProps) {
 
         {/* Desktop Nav */}
         <nav className="hidden items-center gap-8 md:flex">
-          {navigation.map((item) => (
-            <a
-              key={item.label}
-              href={item.href}
-              className={`text-sm font-bold transition-all hover:opacity-100 ${
-                isScrolled || !isHome 
-                  ? "text-slate-600 hover:text-slate-900" 
-                  : "text-white/80 hover:text-white"
-              }`}
-            >
-              {item.label}
-            </a>
-          ))}
+          {isAuthenticated
+            ? customerNavigation.map((item) => (
+                <NavLink
+                  key={item.label}
+                  to={item.to}
+                  className={({ isActive }) =>
+                    `text-sm font-bold transition-all ${
+                      isScrolled || !isHome
+                        ? isActive
+                          ? "text-orange-600"
+                          : "text-slate-600 hover:text-slate-900"
+                        : isActive
+                          ? "text-white"
+                          : "text-white/80 hover:text-white"
+                    }`
+                  }
+                >
+                  {item.label}
+                </NavLink>
+              ))
+            : navigation.map((item) => (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  className={`text-sm font-bold transition-all hover:opacity-100 ${
+                    isScrolled || !isHome 
+                      ? "text-slate-600 hover:text-slate-900" 
+                      : "text-white/80 hover:text-white"
+                  }`}
+                >
+                  {item.label}
+                </a>
+              ))}
         </nav>
 
         {/* Right Actions */}
         <div className="hidden items-center gap-4 md:flex">
+          {isAuthenticated ? (
+            <>
+              <NavLink
+                to="/customer/profile"
+                className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-bold transition-colors ${
+                  isScrolled || !isHome ? "text-slate-600 hover:text-slate-900" : "text-white/80 hover:text-white"
+                }`}
+              >
+                <User size={16} />
+                <span className="max-w-32 truncate">{user?.name || "Akun Saya"}</span>
+              </NavLink>
+              <button
+                type="button"
+                onClick={handleCustomerLogout}
+                className="inline-flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 transition-all hover:border-slate-300 hover:bg-slate-50"
+              >
+                <LogOut size={16} />
+                Keluar
+              </button>
+            </>
+          ) : (
+            <>
+              <NavLink
+                to="/auth/login"
+                className={`px-4 py-2 text-sm font-bold transition-colors ${
+                  isScrolled || !isHome ? "text-slate-600 hover:text-slate-900" : "text-white/80 hover:text-white"
+                }`}
+              >
+                Masuk
+              </NavLink>
+              <NavLink
+                to="/auth/register"
+                className="inline-flex h-11 items-center rounded-xl bg-orange-600 px-6 text-sm font-bold text-white shadow-lg shadow-orange-600/20 transition-all hover:bg-orange-500 active:scale-95"
+              >
+                Daftar
+              </NavLink>
+            </>
+          )}
           <NavLink
             to="/admin/login"
             className={`px-4 py-2 text-sm font-bold transition-colors ${
@@ -89,12 +174,6 @@ export default function Header({ companyProfile }: HeaderProps) {
           >
             Portal Admin
           </NavLink>
-          <a
-            href="#contact"
-            className="inline-flex h-11 items-center rounded-xl bg-orange-600 px-6 text-sm font-bold text-white shadow-lg shadow-orange-600/20 transition-all hover:bg-orange-500 active:scale-95"
-          >
-            Pesan Sekarang
-          </a>
         </div>
 
         {/* Mobile Menu Button */}
@@ -126,7 +205,42 @@ export default function Header({ companyProfile }: HeaderProps) {
                 {item.label}
               </a>
             ))}
+            {isAuthenticated && (
+              <>
+                <hr className="my-2 border-slate-100" />
+                {customerNavigation.map((item) => (
+                  <NavLink
+                    key={item.label}
+                    to={item.to}
+                    onClick={() => setIsOpen(false)}
+                    className={({ isActive }) =>
+                      `rounded-xl px-4 py-3 text-sm font-bold transition hover:bg-slate-50 ${
+                        isActive ? "text-orange-600" : "text-slate-600 hover:text-slate-900"
+                      }`
+                    }
+                  >
+                    {item.label}
+                  </NavLink>
+                ))}
+              </>
+            )}
             <hr className="my-2 border-slate-100" />
+            <NavLink
+              to={isAuthenticated ? "/customer/profile" : "/auth/login"}
+              onClick={() => setIsOpen(false)}
+              className="rounded-xl px-4 py-3 text-sm font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
+            >
+              {isAuthenticated ? user?.name || "Akun Saya" : "Masuk Customer"}
+            </NavLink>
+            {!isAuthenticated && (
+              <NavLink
+                to="/auth/register"
+                onClick={() => setIsOpen(false)}
+                className="rounded-xl px-4 py-3 text-sm font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
+              >
+                Daftar Customer
+              </NavLink>
+            )}
             <NavLink
               to="/admin/login"
               onClick={() => setIsOpen(false)}
@@ -134,13 +248,24 @@ export default function Header({ companyProfile }: HeaderProps) {
             >
               Masuk Portal Admin
             </NavLink>
-            <a
-              href="#contact"
-              onClick={() => setIsOpen(false)}
-              className="mt-2 flex items-center justify-center rounded-xl bg-orange-600 px-4 py-4 text-sm font-bold text-white shadow-lg shadow-orange-600/15"
-            >
-              Pesan Sekarang
-            </a>
+            {isAuthenticated ? (
+              <button
+                type="button"
+                onClick={handleCustomerLogout}
+                className="mt-2 flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-4 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
+              >
+                <LogOut size={16} />
+                Keluar
+              </button>
+            ) : (
+              <a
+                href="#contact"
+                onClick={() => setIsOpen(false)}
+                className="mt-2 flex items-center justify-center rounded-xl bg-orange-600 px-4 py-4 text-sm font-bold text-white shadow-lg shadow-orange-600/15"
+              >
+                Pesan Sekarang
+              </a>
+            )}
           </div>
         </div>
       )}

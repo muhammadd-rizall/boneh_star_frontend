@@ -1,10 +1,9 @@
 import React from "react"
 
 type Props = {
-  children: React.ReactNode
   className?: string
   padding?: "none" | "sm" | "md" | "lg"
-}
+} & React.HTMLAttributes<HTMLDivElement>
 
 const paddingMap = {
   none: "",
@@ -13,9 +12,10 @@ const paddingMap = {
   lg: "p-6",
 }
 
-function Card({ children, className = "", padding = "md" }: Props) {
+function Card({ children, className = "", padding = "md", ...props }: Props) {
   return (
     <div
+      {...props}
       className={`rounded-xl border border-slate-200 bg-white shadow-sm ${paddingMap[padding]} ${className}`}
     >
       {children}

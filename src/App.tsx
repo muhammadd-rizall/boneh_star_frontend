@@ -37,6 +37,26 @@ import {
 import "./App.css";
 import BusPage from "./page/admin/buses/BusPage";
 import Home from "@/page/public/home";
+import CustomerProfilePage from "@/page/customer/profile";
+import BookingIndexPage from "@/page/customer/bookings";
+import BookingDetailPage from "@/page/customer/bookings/BookingDetailPage";
+import HistoryDetailPage from "@/page/customer/bookings/HistoryDetailPage";
+import BookingRequestPage from "@/page/customer/bookings/request";
+import ReviewIndexPage from "@/page/customer/reviews";
+import NotificationIndexPage from "@/page/customer/notifications";
+import LoginPage from "@/page/auth/public/Login";
+import RegisterPage from "@/page/auth/public/Register";
+import { useCustomerAuthStore } from "@/features/auth/public";
+
+function CustomerProtectedRoute({ children }: { children: React.ReactNode }) {
+  const isCustomerAuthenticated = useCustomerAuthStore((state) => state.isAuthenticated);
+
+  if (!isCustomerAuthenticated) {
+    return <Navigate to="/auth/login" replace />;
+  }
+
+  return <>{children}</>;
+}
 
 // ─── Stat Card ────────────────────────────────────────────────────────────────
 function StatCard({
@@ -271,10 +291,69 @@ const DashboardHome = () => {
 
 function App() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const isCustomerAuthenticated = useCustomerAuthStore((state) => state.isAuthenticated);
 
   return (
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route
+        path="/customer/profile"
+        element={
+          <CustomerProtectedRoute>
+            <CustomerProfilePage />
+          </CustomerProtectedRoute>
+        }
+      />
+      <Route
+        path="/customer/bookings"
+        element={
+          <CustomerProtectedRoute>
+            <BookingIndexPage />
+          </CustomerProtectedRoute>
+        }
+      />
+      <Route
+        path="/customer/bookings/request"
+        element={
+          <CustomerProtectedRoute>
+            <BookingRequestPage />
+          </CustomerProtectedRoute>
+        }
+      />
+      <Route
+        path="/customer/bookings/:id"
+        element={
+          <CustomerProtectedRoute>
+            <BookingDetailPage />
+          </CustomerProtectedRoute>
+        }
+      />
+      <Route
+        path="/customer/history/:id"
+        element={
+          <CustomerProtectedRoute>
+            <HistoryDetailPage />
+          </CustomerProtectedRoute>
+        }
+      />
+      <Route
+        path="/customer/reviews"
+        element={
+          <CustomerProtectedRoute>
+            <ReviewIndexPage />
+          </CustomerProtectedRoute>
+        }
+      />
+      <Route
+        path="/customer/notifications"
+        element={
+          <CustomerProtectedRoute>
+            <NotificationIndexPage />
+          </CustomerProtectedRoute>
+        }
+      />
+      <Route path="/auth/login" element={isCustomerAuthenticated ? <Navigate to="/" /> : <LoginPage />} />
+      <Route path="/auth/register" element={isCustomerAuthenticated ? <Navigate to="/" /> : <RegisterPage />} />
       <Route
         path="/admin/login"
         element={
