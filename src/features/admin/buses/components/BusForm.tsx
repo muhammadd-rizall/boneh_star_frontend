@@ -196,11 +196,6 @@ export default function BusForm({ bus, onSuccess, onCancel }: BusFormProps) {
     value: cat.id,
   }));
 
-  const statusOptions = (Object.keys(statusConfig) as BusStatus[]).map((s) => ({
-    label: statusConfig[s].label,
-    value: s,
-  }));
-
   // ── Render ───────────────────────────────────────────────────────────────
   return (
     <div className="flex flex-col gap-0">

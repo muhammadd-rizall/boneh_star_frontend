@@ -23,7 +23,6 @@ api.interceptors.response.use(
     (response) => response,
     (error) => {
         const isPublicPage = window.location.pathname === '/' || !window.location.pathname.startsWith('/admin');
-        const isAdminRequest = error.config?.url?.includes('/admin/');
         const isWriteRequest = ['post', 'put', 'patch', 'delete'].includes(error.config?.method?.toLowerCase() || '');
 
         // Jika token tidak valid atau expired (401)
@@ -32,10 +31,9 @@ api.interceptors.response.use(
             useAuthStore.getState().logout();
 
             // Redirect jika:
-            // 1. Sedang di halaman admin
-            // 2. Request ke endpoint /admin/
-            // 3. Request bersifat modifikasi data (POST/PUT/DELETE) - seperti Update Profile
-            if (!isPublicPage || isAdminRequest || isWriteRequest) {
+            // 1. Sedang di halaman admin (BUKAN halaman publik)
+            // 2. ATAU Request bersifat modifikasi data (POST/PUT/DELETE) - meskipun di halaman publik
+            if (!isPublicPage || isWriteRequest) {
                 window.location.href = '/admin/login';
             }
         }

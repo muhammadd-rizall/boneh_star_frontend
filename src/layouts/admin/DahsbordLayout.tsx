@@ -7,7 +7,6 @@ import NotificationDrawer from "@/features/admin/notifications/components/Notifi
 import {
   LayoutDashboard,
   Users,
-  Settings,
   LogOut,
   Menu,
   BusFront,
@@ -38,7 +37,7 @@ import {
 
 interface SidebarItemProps {
   to: string;
-  icon: React.ComponentType<{ size?: number | string; className?: string }>;
+  icon: React.ComponentType<{ size?: any; className?: string }>;
   label: string;
   collapsed?: boolean;
 }

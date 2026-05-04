@@ -1,7 +1,6 @@
 import axios from '@/api/Axios';
 import type { 
   Review, 
-  ReviewFormData, 
   ReviewApiResponse, 
   ReviewReportData
 } from '@/features/admin/reviews/types/Review';

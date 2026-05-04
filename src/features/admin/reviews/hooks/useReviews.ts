@@ -49,7 +49,7 @@ export function useReviews(initialParams: ReviewQueryParams = {}) {
   }
 
   const updateParams = (newParams: Partial<ReviewQueryParams>) => {
-    setParams(prev => ({ ...prev, ...newParams, page: newParams.page ?? 1 }))
+    setParams((prev: ReviewQueryParams) => ({ ...prev, ...newParams, page: newParams.page ?? 1 }))
   }
 
   useEffect(() => {

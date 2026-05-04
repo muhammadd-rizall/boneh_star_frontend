@@ -3,6 +3,7 @@ import {
   BusFront,
   Mail,
   MapPin,
+  ArrowUpRight,
 } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
@@ -16,9 +17,10 @@ import {
 } from "@/features/admin/company-profile/utils/companyProfileUtils";
 
 const quickLinks = [
+  { label: "Armada Kami", href: "#armada" },
   { label: "Layanan", href: "#services" },
-  { label: "Keunggulan", href: "#features" },
-  { label: "Kontak", href: "#contact" },
+  { label: "Testimoni", href: "#testimonials" },
+  { label: "Fitur", href: "#features" },
 ];
 
 interface FooterProps {
@@ -36,128 +38,141 @@ export default function Footer({ companyProfile }: FooterProps) {
   return (
     <footer
       id="contact"
-      className="relative overflow-hidden border-t border-slate-200 bg-slate-950 text-slate-200"
+      className="bg-slate-900 text-slate-200"
     >
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
-      <div className="absolute left-0 top-0 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl" />
-      <div className="absolute bottom-0 right-0 h-64 w-64 rounded-full bg-amber-400/10 blur-3xl" />
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="py-20 lg:py-24">
+          <div className="grid gap-16 lg:grid-cols-12">
+            {/* Brand Section */}
+            <div className="lg:col-span-5 flex flex-col gap-8">
+              <div className="flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl bg-white text-slate-900 shadow-xl shadow-white/5">
+                  {logoUrl ? (
+                    <img
+                      src={logoUrl}
+                      alt={companyProfile.company_name}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <BusFront size={24} />
+                  )}
+                </div>
+                <span className="text-2xl font-black tracking-tighter text-white">
+                  {companyProfile.company_name}
+                </span>
+              </div>
+              
+              <p className="text-lg font-medium leading-relaxed text-slate-400 max-w-md">
+                {companyProfile.description ||
+                  "Solusi transportasi rombongan dengan standar layanan premium untuk setiap perjalanan berharga Anda."}
+              </p>
 
-      <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-3 lg:px-8">
-        <div>
-          <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl bg-white text-slate-900">
-              {logoUrl ? (
-                <img
-                  src={logoUrl}
-                  alt={companyProfile.company_name}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <BusFront size={20} />
-              )}
+              <div className="flex items-center gap-4">
+                {socialMedias.map((social, idx) => {
+                  const icon = getSocialIcon(social.platform);
+                  return (
+                    <a
+                      key={idx}
+                      href={social.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="group flex h-12 w-12 items-center justify-center rounded-2xl bg-white/5 border border-white/10 text-slate-400 transition-all hover:bg-orange-600 hover:text-white hover:border-orange-500"
+                      aria-label={social.platform}
+                    >
+                      <FontAwesomeIcon icon={icon} className="text-lg group-hover:scale-110 transition-transform" />
+                    </a>
+                  );
+                })}
+              </div>
             </div>
-            <div>
-              <p className="text-lg font-bold tracking-tight text-white">
-                {companyProfile.company_name}
-              </p>
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
-                Transport Service
-              </p>
-            </div>
-          </div>
-          <p className="mt-6 max-w-xl text-sm leading-7 text-slate-400">
-            {companyProfile.description ||
-              "Kami membantu pemesanan armada menjadi lebih cepat, rapi, dan profesional, dari permintaan penawaran sampai konfirmasi keberangkatan."}
-          </p>
-          <div className="mt-6 flex items-center gap-3">
-            {socialMedias.map((social, idx) => {
-              const icon = getSocialIcon(social.platform);
-              return (
-                <a
-                  key={idx}
-                  href={social.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-200 transition hover:bg-white/10 hover:text-white"
-                  aria-label={social.platform}
+
+            {/* Links Grid */}
+            <div className="lg:col-span-7 grid gap-12 sm:grid-cols-3">
+              {/* Navigation */}
+              <div className="flex flex-col gap-6">
+                <h4 className="text-xs font-black uppercase tracking-[0.3em] text-orange-500">Eksplorasi</h4>
+                <ul className="flex flex-col gap-4">
+                  {quickLinks.map((item) => (
+                    <li key={item.label}>
+                      <a
+                        href={item.href}
+                        className="group inline-flex items-center text-sm font-bold text-slate-300 hover:text-white transition-colors"
+                      >
+                        {item.label}
+                        <ArrowUpRight size={14} className="ml-1 opacity-0 -translate-y-1 translate-x-1 group-hover:opacity-100 group-hover:translate-y-0 group-hover:translate-x-0 transition-all" />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Contact Info */}
+              <div className="flex flex-col gap-6">
+                <h4 className="text-xs font-black uppercase tracking-[0.3em] text-orange-500">Hubungi Kami</h4>
+                <div className="flex flex-col gap-4 text-sm font-bold text-slate-300">
+                  <div className="flex items-start gap-3 group">
+                    <MapPin size={18} className="mt-0.5 text-orange-500 shrink-0 group-hover:scale-110 transition-transform" />
+                    <span className="leading-relaxed group-hover:text-white transition-colors">{companyProfile.address}</span>
+                  </div>
+                  
+                  {whatsappNumbers.map((whatsapp) => (
+                    <a
+                      key={whatsapp}
+                      href={buildWhatsAppHref(whatsapp)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-3 group"
+                    >
+                      <div className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                        <FontAwesomeIcon icon={faWhatsapp} size="xs" />
+                      </div>
+                      <span className="group-hover:text-white transition-colors">{whatsapp}</span>
+                    </a>
+                  ))}
+
+                  {companyProfile.email && (
+                    <a
+                      href={`mailto:${companyProfile.email}`}
+                      className="flex items-center gap-3 group"
+                    >
+                      <Mail size={18} className="text-orange-500 shrink-0 group-hover:scale-110 transition-transform" />
+                      <span className="group-hover:text-white transition-colors">{companyProfile.email}</span>
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              {/* Portal Info */}
+              <div className="flex flex-col gap-6">
+                <h4 className="text-xs font-black uppercase tracking-[0.3em] text-orange-500">Internal</h4>
+                <Link
+                  to="/admin/login"
+                  className="group relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 p-5 transition-all hover:border-white/20"
                 >
-                  <FontAwesomeIcon icon={icon} className="text-lg" />
-                </a>
-              );
-            })}
-
-            {!socialMedias.length && companyProfile.email && (
-              <a
-                href={`mailto:${companyProfile.email}`}
-                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-200 transition hover:bg-white/10 hover:text-white"
-                aria-label="Email"
-              >
-                <Mail size={18} />
-              </a>
-            )}
-          </div>
-        </div>
-
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500">
-            Navigasi
-          </p>
-          <div className="mt-5 flex flex-col gap-3 text-sm">
-            {quickLinks.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                className="text-slate-300 transition hover:text-white"
-              >
-                {item.label}
-              </a>
-            ))}
-            <Link
-              to="/admin/login"
-              className="text-slate-300 transition hover:text-white"
-            >
-              Portal Admin
-            </Link>
-          </div>
-        </div>
-
-        <div className="rounded-[28px] border border-white/10 bg-white/5 p-6 backdrop-blur-sm">
-          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500">
-            Hubungi Kami
-          </p>
-          <div className="mt-5 space-y-4 text-sm text-slate-300">
-            <div className="flex items-start gap-3">
-              <MapPin size={16} className="mt-0.5 text-cyan-300" />
-              <span>{companyProfile.address}</span>
+                  <div className="relative z-10 flex flex-col gap-2">
+                    <span className="text-xs font-black text-white">Portal Admin</span>
+                    <span className="text-[10px] text-slate-500 uppercase tracking-widest">Manajemen Sistem</span>
+                  </div>
+                  <div className="absolute top-4 right-4 text-slate-700 group-hover:text-orange-500 transition-colors">
+                    <ArrowUpRight size={18} />
+                  </div>
+                </Link>
+              </div>
             </div>
-            {whatsappNumbers.map((whatsapp) => (
-              <a
-                key={whatsapp}
-                href={buildWhatsAppHref(whatsapp)}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-3 transition hover:text-white"
-              >
-                <FontAwesomeIcon icon={faWhatsapp} className="text-cyan-300" />
-                <span>{whatsapp} (WA)</span>
-              </a>
-            ))}
-            {companyProfile.email && (
-              <a
-                href={`mailto:${companyProfile.email}`}
-                className="flex items-center gap-3 transition hover:text-white"
-              >
-                <Mail size={16} className="text-cyan-300" />
-                <span>{companyProfile.email}</span>
-              </a>
-            )}
           </div>
         </div>
-      </div>
 
-      <div className="flex border-t border-white/10">
-        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-5 text-sm text-slate-500 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
-          <p>© {new Date().getFullYear()} {companyProfile.company_name}. Seluruh hak cipta dilindungi.</p>
+        {/* Bottom Bar */}
+        <div className="py-10 border-t border-white/5">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <p className="text-[11px] font-bold uppercase tracking-widest text-slate-500">
+              © {new Date().getFullYear()} {companyProfile.company_name}. Built for Excellence.
+            </p>
+            <div className="flex items-center gap-8">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-600 hover:text-white cursor-pointer transition-colors">Privacy Policy</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-600 hover:text-white cursor-pointer transition-colors">Terms of Service</span>
+            </div>
+          </div>
         </div>
       </div>
     </footer>

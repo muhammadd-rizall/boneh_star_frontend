@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Footer from "./Footer";
 import Header from "./Header";
+import WhatsAppFloating from "./WhatsAppFloating";
 import { usePublicCompanyProfile } from "@/features/admin/company-profile/hooks/usePublicCompanyProfile";
 
 interface PublicLayoutProps {
@@ -17,6 +18,7 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
         <Header companyProfile={profile} />
         <main className="flex-1">{children}</main>
         <Footer companyProfile={profile} />
+        <WhatsAppFloating whatsapp={profile.whatsapp} />
       </div>
     </div>
   );

@@ -3,8 +3,8 @@ import Table from "@/components/ui/Table"
 import type { Column } from "@/components/ui/Table"
 import Button from "@/components/ui/Button"
 import Modal from "@/components/ui/Modal"
-import type { User, Permission } from "@/features/admin/users/types/User"
-import { Edit, Trash2, Shield, Mail, User as UserIcon, RotateCcw, X, Key } from "lucide-react"
+import type { User } from "@/features/admin/users/types/User"
+import { Edit, Trash2, Shield, Mail, User as UserIcon, RotateCcw, Key } from "lucide-react"
 
 interface UserTableProps {
   data: User[]

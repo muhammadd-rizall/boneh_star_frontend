@@ -4,12 +4,12 @@ import { Loader2 } from "lucide-react"
 export type ButtonVariant = "primary" | "secondary" | "danger" | "ghost" | "outline" | "success"
 export type ButtonSize = "xs" | "sm" | "md" | "lg"
 
-type Props = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant
   size?: ButtonSize
   loading?: boolean
-  icon?: React.ComponentType<{ size?: number | string; className?: string }>
-  suffix?: React.ComponentType<{ size?: number | string; className?: string }>
+  icon?: React.ComponentType<{ size?: any; className?: string }>
+  suffix?: React.ComponentType<{ size?: any; className?: string }>
 }
 
 function Button({
@@ -21,7 +21,7 @@ function Button({
   suffix: SuffixIcon,
   className = "",
   ...props
-}: Props) {
+}: ButtonProps) {
   const base =
     "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-150 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
 

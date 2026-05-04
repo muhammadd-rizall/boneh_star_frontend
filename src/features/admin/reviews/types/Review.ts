@@ -42,6 +42,14 @@ export interface BusAverage {
   avg_rating: number;
 }
 
+export interface ReviewQueryParams {
+  start_date?: string;
+  end_date?: string;
+  rating?: number;
+  per_page?: number;
+  page?: number;
+}
+
 export interface ReviewReportData {
   period: ReviewPeriod;
   filters: ReviewFilters;

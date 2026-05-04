@@ -13,8 +13,7 @@ import {
   Trash2,
   Globe,
   Share2,
-  Link as LinkIcon,
-  AlertCircle
+  Link as LinkIcon
 } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useCompanyProfile } from "../hooks/useCompanyProfile";
@@ -183,7 +182,7 @@ export default function CompanyProfileForm() {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-10">
       {(error || formError) && (
-        <Alert variant="error" title="Perhatian" message={formError || error} icon={AlertCircle} />
+        <Alert variant="error" title="Perhatian" message={formError || error || ""} />
       )}
 
       {successMessage && (

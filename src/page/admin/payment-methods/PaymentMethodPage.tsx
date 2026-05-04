@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import {
   PaymentMethodTable,
   PaymentMethodForm,
@@ -88,7 +88,7 @@ export default function PaymentMethodPage() {
       />
 
       {statistics && (
-        <StatGrid columns={3}>
+        <div className="grid gap-4 md:grid-cols-3">
           <StatCard 
             label="Total Akun" 
             value={statistics.total} 
@@ -110,7 +110,7 @@ export default function PaymentMethodPage() {
             color="violet" 
             loading={activeLoading}
           />
-        </StatGrid>
+        </div>
       )}
 
       <div className="flex justify-end">

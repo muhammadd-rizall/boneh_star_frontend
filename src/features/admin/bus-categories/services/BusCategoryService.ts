@@ -26,7 +26,7 @@ export const busCategoryService = {
 
       return {
         categories,
-        statistics: response.data.statistic || response.data.statistics || null
+        statistics: response.data.statistic || null
       };
     } catch (error) {
       console.error('Error fetching bus categories:', error);

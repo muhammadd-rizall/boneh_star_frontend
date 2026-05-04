@@ -1,4 +1,3 @@
-import React from "react";
 import { X, Bell, Trash2, CheckCircle2, Info, AlertCircle } from "lucide-react";
 import { useNotifications } from "../hooks/useNotifications";
 import { formatTimeAgo } from "@/utils/formatter";
@@ -102,14 +101,14 @@ export default function NotificationDrawer({ isOpen, onClose }: NotificationDraw
                     onClick={() => !notification.read_at && markAsRead(notification.id)}
                   >
                     <div className="mt-1 shrink-0">
-                      {getIcon(notification.data.type || 'info')}
+                      {getIcon(notification.type || 'info')}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className={`text-sm leading-snug ${!notification.read_at ? 'font-semibold text-slate-900' : 'text-slate-600'}`}>
-                        {notification.data.title}
+                        {notification.title}
                       </p>
                       <p className="mt-1 text-xs text-slate-500 line-clamp-2 leading-relaxed">
-                        {notification.data.message}
+                        {notification.message}
                       </p>
                       <p className="mt-2 text-[10px] font-medium text-slate-400">
                         {formatTimeAgo(notification.created_at)}
