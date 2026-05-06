@@ -5,7 +5,7 @@ type Props = React.InputHTMLAttributes<HTMLInputElement> & {
   label?: string
   error?: string
   hint?: string
-  icon?: React.ComponentType<{ size?: number | string; className?: string }>
+  icon?: React.ComponentType<{ size?: number | string; className?: string; strokeWidth?: number }>
 }
 
 function Input({
@@ -24,17 +24,17 @@ function Input({
   const inputId = id || label?.toLowerCase().replace(/\s+/g, "-")
 
   return (
-    <div className="flex flex-col gap-1.5 w-full text-left">
+    <div className="flex flex-col gap-2 w-full text-left">
       {label && (
-        <label htmlFor={inputId} className="text-sm font-medium text-slate-700">
+        <label htmlFor={inputId} className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">
           {label}
         </label>
       )}
 
       <div className="relative group">
         {Icon && (
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-slate-600 transition-colors pointer-events-none">
-            <Icon size={16} />
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-orange-500 transition-colors pointer-events-none">
+            <Icon size={18} strokeWidth={2} />
           </div>
         )}
 
@@ -42,13 +42,13 @@ function Input({
           id={inputId}
           type={inputType}
           className={[
-            "w-full rounded-lg border bg-white py-2.5 text-sm text-slate-900 outline-none transition-all duration-150",
-            "placeholder:text-slate-400",
-            Icon ? "pl-9" : "pl-3",
-            isPassword ? "pr-9" : "pr-3",
+            "w-full rounded-2xl border bg-white py-3.5 text-sm font-bold text-slate-700 outline-none transition-all duration-200",
+            "placeholder:text-slate-300 placeholder:font-medium",
+            Icon ? "pl-11" : "pl-4",
+            isPassword ? "pr-11" : "pr-4",
             error
-              ? "border-rose-300 bg-rose-50/30 focus:border-rose-400 focus:ring-2 focus:ring-rose-100"
-              : "border-slate-200 focus:border-slate-400 focus:ring-2 focus:ring-slate-100",
+              ? "border-rose-200 bg-rose-50/20 focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10"
+              : "border-slate-100 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 focus:bg-white",
             className,
           ].join(" ")}
           {...props}
@@ -58,21 +58,21 @@ function Input({
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 hover:text-orange-500 transition-colors"
           >
-            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            {showPassword ? <EyeOff size={18} strokeWidth={2} /> : <Eye size={18} strokeWidth={2} />}
           </button>
         )}
       </div>
 
       {error && (
-        <p className="text-xs font-medium text-rose-600 flex items-center gap-1">
-          <span className="inline-block h-1 w-1 rounded-full bg-rose-500" />
+        <p className="text-[10px] font-bold text-rose-500 flex items-center gap-1.5 ml-1">
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-rose-500" />
           {error}
         </p>
       )}
       {!error && hint && (
-        <p className="text-xs text-slate-400">{hint}</p>
+        <p className="text-[10px] font-bold text-slate-400 ml-1">{hint}</p>
       )}
     </div>
   )

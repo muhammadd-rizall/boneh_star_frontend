@@ -27,13 +27,14 @@ export default function ReportFilters({ filters, onFilterChange }: ReportFilters
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-4 rounded-[28px] border border-slate-200/80 bg-white/90 p-6 shadow-sm sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-1 gap-4 rounded-[2.5rem] border border-slate-200/80 bg-white/90 p-6 shadow-xl shadow-slate-200/50 sm:grid-cols-2 lg:grid-cols-4">
       <Input
         label="Start Date"
         type="date"
         icon={Calendar}
         value={filters.start_date}
         onChange={(e) => onFilterChange({ start_date: e.target.value })}
+        className="rounded-2xl"
       />
       <Input
         label="End Date"
@@ -41,6 +42,7 @@ export default function ReportFilters({ filters, onFilterChange }: ReportFilters
         icon={Calendar}
         value={filters.end_date}
         onChange={(e) => onFilterChange({ end_date: e.target.value })}
+        className="rounded-2xl"
       />
       <Select
         label="Booking Status"
@@ -48,6 +50,7 @@ export default function ReportFilters({ filters, onFilterChange }: ReportFilters
         value={filters.status || ""}
         options={statusOptions}
         onChange={(value) => onFilterChange({ status: value || undefined })}
+        className="rounded-2xl"
       />
       <Select
         label="Trip Scope"
@@ -55,6 +58,7 @@ export default function ReportFilters({ filters, onFilterChange }: ReportFilters
         value={filters.scope || ""}
         options={scopeOptions}
         onChange={(value) => onFilterChange({ scope: (value as any) || undefined })}
+        className="rounded-2xl"
       />
     </div>
   );

@@ -8,7 +8,8 @@ import OutstandingList from "./components/OutstandingList";
 import Loader from "@/components/feedback/Loader";
 import ErrorState from "@/components/feedback/ErrorState";
 import Button from "@/components/ui/Button";
-import { Download, RefreshCw, Calendar, FileText, FileSpreadsheet, ChevronDown } from "lucide-react";
+import { PageHeader } from "@/components/ui/PageComponents";
+import { Download, RefreshCw, FileText, FileSpreadsheet, ChevronDown } from "lucide-react";
 import { formatMonth } from "@/utils/formatter";
 
 const IncomeReportFeature = () => {
@@ -29,68 +30,67 @@ const IncomeReportFeature = () => {
 
   const periodText = data 
     ? `${data.period.month ? formatMonth(data.period.month) + ' ' : ''}${data.period.year}`
-    : "";
+    : "Ringkasan Pendapatan";
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-bold text-slate-900">Income Reports</h1>
-          {data && (
-            <div className="flex items-center gap-2 text-sm text-slate-500 font-medium">
-              <Calendar size={14} />
-              <span>Report Period: {periodText}</span>
-            </div>
-          )}
-        </div>
-
-        <div className="flex items-center gap-3">
-          <Button 
-            variant="ghost" 
-            icon={RefreshCw} 
-            onClick={refetch}
-            loading={loading}
-          >
-            Update
-          </Button>
-          <div className="relative">
+      <PageHeader
+        title="Income Reports"
+        subtitle={data ? `Periode Laporan: ${periodText}` : "Analisis pendapatan dan penagihan"}
+        badge="Keuangan"
+        actions={
+          <div className="flex items-center gap-3">
             <Button 
-              variant="primary" 
-              icon={Download}
-              onClick={() => setShowExportOptions(!showExportOptions)}
-              loading={exporting}
-              suffix={ChevronDown}
+              variant="outline" 
+              icon={RefreshCw} 
+              onClick={refetch}
+              loading={loading}
+              size="sm"
+              className="rounded-xl"
             >
-              Export Report
+              Update
             </Button>
-            
-            {showExportOptions && (
-              <div className="absolute right-0 mt-2 w-48 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 z-10">
-                <button
-                  onClick={() => {
-                    exportExcel();
-                    setShowExportOptions(false);
-                  }}
-                  className="flex w-full items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
-                >
-                  <FileSpreadsheet size={16} className="mr-2 text-green-600" />
-                  Excel (.xlsx)
-                </button>
-                <button
-                  onClick={() => {
-                    exportPdf();
-                    setShowExportOptions(false);
-                  }}
-                  className="flex w-full items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
-                >
-                  <FileText size={16} className="mr-2 text-red-600" />
-                  PDF (.pdf)
-                </button>
-              </div>
-            )}
+            <div className="relative">
+              <Button 
+                variant="primary" 
+                icon={Download}
+                onClick={() => setShowExportOptions(!showExportOptions)}
+                loading={exporting}
+                suffix={ChevronDown}
+                size="sm"
+                className="rounded-xl shadow-lg shadow-slate-200"
+              >
+                Export Report
+              </Button>
+              
+              {showExportOptions && (
+                <div className="absolute right-0 mt-2 w-48 rounded-2xl bg-white py-2 shadow-xl ring-1 ring-black/5 z-20 border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                  <button
+                    onClick={() => {
+                      exportExcel();
+                      setShowExportOptions(false);
+                    }}
+                    className="flex w-full items-center px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+                  >
+                    <FileSpreadsheet size={16} className="mr-3 text-emerald-600" />
+                    Excel (.xlsx)
+                  </button>
+                  <button
+                    onClick={() => {
+                      exportPdf();
+                      setShowExportOptions(false);
+                    }}
+                    className="flex w-full items-center px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+                  >
+                    <FileText size={16} className="mr-3 text-rose-600" />
+                    PDF (.pdf)
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </div>
+        }
+      />
 
       <IncomeReportFilters filters={filters} onFilterChange={updateFilters} />
 

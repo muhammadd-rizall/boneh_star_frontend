@@ -19,7 +19,7 @@ export default function StarRating({
   const [hoverRating, setHoverRating] = React.useState(0);
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-1.5">
       {Array.from({ length: maxRating }).map((_, i) => {
         const starValue = i + 1;
         const isActive = hoverRating ? starValue <= hoverRating : starValue <= rating;
@@ -32,11 +32,15 @@ export default function StarRating({
             onClick={() => onRatingChange?.(starValue)}
             onMouseEnter={() => !readonly && setHoverRating(starValue)}
             onMouseLeave={() => !readonly && setHoverRating(0)}
-            className={`${readonly ? 'cursor-default' : 'cursor-pointer'} transition-transform hover:scale-110 active:scale-95`}
+            className={`${readonly ? 'cursor-default' : 'cursor-pointer'} transition-all hover:scale-110 active:scale-90 duration-200`}
           >
             <Star
               size={size}
-              className={`${isActive ? 'fill-amber-400 text-amber-400' : 'text-slate-300'}`}
+              className={`transition-colors duration-300 ${
+                isActive 
+                  ? 'fill-amber-400 text-amber-400 drop-shadow-sm' 
+                  : 'text-slate-200'
+              }`}
             />
           </button>
         );

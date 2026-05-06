@@ -9,22 +9,22 @@ interface Props {
 export default function BookingStats({ statistics }: Props) {
   const stats = [
     {
-      label: 'Total Pemesanan',
+      label: 'Total Pesanan',
       value: statistics.total_bookings,
       icon: ShoppingBag,
-      color: 'bg-slate-100 text-slate-600',
+      color: 'bg-slate-50 text-slate-900',
     },
     {
       label: 'Menunggu',
       value: statistics.pending,
       icon: Clock,
-      color: 'bg-amber-50 text-amber-600',
+      color: 'bg-orange-50 text-orange-600',
     },
     {
       label: 'Dikonfirmasi',
       value: statistics.confirmed,
       icon: CalendarCheck,
-      color: 'bg-sky-50 text-sky-600',
+      color: 'bg-blue-50 text-blue-600',
     },
     {
       label: 'Selesai',
@@ -43,13 +43,13 @@ export default function BookingStats({ statistics }: Props) {
   return (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
       {stats.map((stat) => (
-        <Card key={stat.label} padding="sm" className="flex flex-col gap-3">
-          <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${stat.color}`}>
-            <stat.icon size={18} />
+        <Card key={stat.label} padding="sm" className="flex flex-col gap-4 border-none shadow-md shadow-slate-100/50">
+          <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${stat.color}`}>
+            <stat.icon size={20} />
           </div>
           <div>
-            <p className="text-2xl font-bold tracking-tight text-slate-900">{stat.value}</p>
-            <p className="text-xs font-medium text-slate-500">{stat.label}</p>
+            <p className="text-3xl font-black tracking-tighter text-slate-950">{stat.value}</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-1">{stat.label}</p>
           </div>
         </Card>
       ))}

@@ -5,7 +5,6 @@ import { useCustomerAuthStore } from '@/features/auth/public';
 import Card from '@/components/ui/Card';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
-import { Section, Container } from '@/components/ui/PageComponents';
 import { Mail, Lock, ArrowRight, AlertCircle } from 'lucide-react';
 
 export default function LoginPage() {
@@ -34,30 +33,35 @@ export default function LoginPage() {
 
   return (
     <PublicLayout>
-      <Section className="pt-32 pb-20">
-        <Container>
-          <div className="mx-auto max-w-[400px]">
-            <div className="mb-8 text-center">
-              <h1 className="text-3xl font-black text-slate-900">Masuk Akun</h1>
-              <p className="mt-2 text-slate-500">Selamat datang kembali di Boneh Star</p>
-            </div>
+      <div className="flex min-h-[85vh] items-center justify-center px-4 pt-32 pb-20">
+        <div className="w-full max-w-[440px]">
+          <div className="mb-10 text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <h1 className="text-4xl font-black tracking-tighter text-slate-950">
+              Masuk <span className="text-orange-500">Akun</span>
+            </h1>
+            <p className="mt-3 text-sm font-semibold text-slate-500">
+              Selamat datang kembali di Boneh Star Charter
+            </p>
+          </div>
 
-            <Card className="p-8">
-              <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-                {error && (
-                  <div className="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                    <AlertCircle className="w-5 h-5 flex-shrink-0" />
-                    <span className="font-medium">{error}</span>
-                  </div>
-                )}
+          <Card className="p-10 border-none shadow-2xl shadow-slate-200/60 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+              {error && (
+                <div className="flex items-center gap-3 rounded-2xl bg-rose-50 px-5 py-4 text-sm text-rose-600 border border-rose-100 animate-in shake duration-500">
+                  <AlertCircle className="w-5 h-5 shrink-0" />
+                  <span className="font-bold">{error}</span>
+                </div>
+              )}
 
+              <div className="space-y-4">
                 <Input
-                  label="Email"
+                  label="Alamat Email"
                   type="email"
-                  placeholder="anda@email.com"
+                  placeholder="name@example.com"
                   icon={Mail}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  className="rounded-2xl border-slate-100 focus:border-orange-500 transition-all"
                   required
                 />
 
@@ -68,24 +72,39 @@ export default function LoginPage() {
                   icon={Lock}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  className="rounded-2xl border-slate-100 focus:border-orange-500 transition-all"
                   required
                 />
+              </div>
 
-                <Button type="submit" loading={loading} size="lg" className="w-full" icon={ArrowRight}>
-                  Masuk
-                </Button>
-              </form>
+              <div className="flex items-center justify-end">
+                <Link to="#" className="text-xs font-bold text-slate-400 hover:text-orange-500 transition-colors">
+                  Lupa Password?
+                </Link>
+              </div>
 
-              <p className="mt-6 text-center text-sm text-slate-600">
+              <Button 
+                type="submit" 
+                loading={loading} 
+                size="lg" 
+                className="w-full shadow-lg shadow-slate-200" 
+                suffix={ArrowRight}
+              >
+                Masuk Sekarang
+              </Button>
+            </form>
+
+            <div className="mt-10 border-t border-slate-50 pt-8 text-center">
+              <p className="text-sm font-semibold text-slate-500">
                 Belum punya akun?{' '}
-                <Link to="/auth/register" className="font-bold text-orange-600 hover:underline">
-                  Daftar sekarang
+                <Link to="/auth/register" className="font-black text-orange-600 hover:text-orange-500 transition-colors">
+                  Daftar Gratis
                 </Link>
               </p>
-            </Card>
-          </div>
-        </Container>
-      </Section>
+            </div>
+          </Card>
+        </div>
+      </div>
     </PublicLayout>
   );
 }

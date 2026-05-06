@@ -41,26 +41,25 @@ export default function StatsSection({ stats }: StatsSectionProps) {
   ];
 
   return (
-    <section className="relative py-12 md:py-16 bg-white">
+    <section className="relative py-24 bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 gap-px bg-slate-100 overflow-hidden rounded-3xl border border-slate-100 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-12 md:grid-cols-4">
           {cards.map((card, i) => (
             <div
               key={i}
-              className="group relative flex flex-col items-center bg-white p-8 text-center transition-all hover:bg-slate-50 md:p-12"
+              className="group flex flex-col items-center text-center transition-all animate-in fade-in slide-in-from-bottom-4 duration-700"
+              style={{ animationDelay: `${i * 100}ms` }}
             >
-              <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-50 text-orange-600 transition-transform group-hover:scale-110">
-                <card.icon size={24} />
+              <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-[1.25rem] bg-slate-50 text-slate-400 group-hover:bg-orange-50 group-hover:text-orange-600 transition-all duration-500 shadow-sm shadow-slate-100">
+                <card.icon size={24} strokeWidth={1.5} />
               </div>
-              <p className="text-4xl font-black tracking-tight text-slate-900 md:text-5xl">
-                {card.value}+
+              <p className="text-5xl font-black tracking-tighter text-slate-950 md:text-6xl">
+                {card.value}<span className="text-orange-500">+</span>
               </p>
-              <p className="mt-2 text-xs font-bold uppercase tracking-[0.2em] text-slate-400">
+              <p className="mt-3 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
                 {card.label}
               </p>
-              <p className="mt-4 text-[11px] font-medium text-slate-500 opacity-0 transition-opacity group-hover:opacity-100">
-                {card.sub}
-              </p>
+              <div className="mt-4 h-1 w-1 rounded-full bg-slate-100 group-hover:w-8 group-hover:bg-orange-200 transition-all duration-500" />
             </div>
           ))}
         </div>

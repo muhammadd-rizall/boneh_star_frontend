@@ -26,27 +26,46 @@ export default function ReviewForm({ bookingId, onSubmit, onCancel }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-      <div className="flex flex-col items-center gap-2">
-        <label className="text-sm font-bold text-slate-700">Berikan Penilaian Anda</label>
-        <StarRating rating={rating} onRatingChange={setRating} size={32} />
+    <form onSubmit={handleSubmit} className="flex flex-col gap-10">
+      <div className="flex flex-col items-center gap-4 text-center">
+        <div>
+          <h3 className="text-lg font-black tracking-tight text-slate-950">Bagaimana perjalanan Anda?</h3>
+          <p className="text-xs font-semibold text-slate-400 mt-1 uppercase tracking-widest">Berikan penilaian bintang untuk layanan kami</p>
+        </div>
+        <StarRating rating={rating} onRatingChange={setRating} size={40} />
       </div>
 
-      <Textarea
-        label="Ulasan Anda"
-        value={comment}
-        onChange={(e) => setComment(e.target.value)}
-        placeholder="Bagikan pengalaman perjalanan Anda bersama kami..."
-        required
-      />
+      <div className="flex flex-col gap-2">
+        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Detail Pengalaman</label>
+        <Textarea
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          placeholder="Ceritakan apa yang Anda sukai atau area yang perlu kami tingkatkan..."
+          className="rounded-[2rem] border-slate-100 min-h-[120px] focus:border-orange-500"
+          required
+        />
+      </div>
 
-      <div className="flex gap-3">
-        <Button type="button" variant="ghost" onClick={onCancel} className="flex-1" disabled={loading}>
-          Batal
-        </Button>
-        <Button type="submit" loading={loading} className="flex-1">
+      <div className="flex gap-4">
+        <Button 
+          type="submit" 
+          loading={loading} 
+          className="flex-1 rounded-2xl shadow-xl shadow-orange-600/20"
+          size="lg"
+        >
           Kirim Ulasan
         </Button>
+        {onCancel && (
+          <Button 
+            type="button" 
+            variant="ghost" 
+            onClick={onCancel} 
+            className="px-8 font-bold" 
+            disabled={loading}
+          >
+            Batal
+          </Button>
+        )}
       </div>
     </form>
   );

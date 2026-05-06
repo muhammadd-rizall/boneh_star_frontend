@@ -23,28 +23,28 @@ function Button({
   ...props
 }: ButtonProps) {
   const base =
-    "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-150 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+    "inline-flex items-center justify-center gap-2 rounded-2xl font-semibold transition-all duration-200 active:scale-[0.97] disabled:opacity-50 disabled:pointer-events-none cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
 
   const variants: Record<ButtonVariant, string> = {
     primary:
-      "bg-slate-900 text-white hover:bg-slate-800 focus-visible:ring-slate-900 shadow-sm",
+      "bg-slate-950 text-white hover:bg-slate-800 focus-visible:ring-slate-950 shadow-sm shadow-slate-200",
     secondary:
-      "bg-slate-100 text-slate-800 hover:bg-slate-200 focus-visible:ring-slate-400",
+      "bg-orange-50 text-orange-600 hover:bg-orange-100 focus-visible:ring-orange-200",
     danger:
-      "bg-rose-500 text-white hover:bg-rose-600 focus-visible:ring-rose-500 shadow-sm",
+      "bg-rose-50 text-rose-600 hover:bg-rose-100 focus-visible:ring-rose-200",
     ghost:
-      "text-slate-600 hover:bg-slate-100 hover:text-slate-900 focus-visible:ring-slate-400",
+      "text-slate-600 hover:bg-slate-50 hover:text-slate-900 focus-visible:ring-slate-200",
     outline:
-      "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:border-slate-300 focus-visible:ring-slate-400",
+      "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:border-slate-300 focus-visible:ring-slate-200",
     success:
-      "bg-emerald-500 text-white hover:bg-emerald-600 focus-visible:ring-emerald-500 shadow-sm",
+      "bg-emerald-50 text-emerald-600 hover:bg-emerald-100 focus-visible:ring-emerald-200",
   }
 
   const sizes: Record<ButtonSize, string> = {
-    xs: "px-2.5 py-1.5 text-xs",
-    sm: "px-3 py-2 text-xs",
-    md: "px-4 py-2.5 text-sm",
-    lg: "px-5 py-3 text-sm",
+    xs: "px-3 py-1.5 text-xs",
+    sm: "px-4 py-2 text-xs",
+    md: "px-6 py-3 text-sm",
+    lg: "px-8 py-4 text-base",
   }
 
   return (

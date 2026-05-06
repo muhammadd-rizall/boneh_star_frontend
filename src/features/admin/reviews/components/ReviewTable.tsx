@@ -27,8 +27,8 @@ export default function ReviewTable({
       accessor: (row) => (
         <div className="flex items-center gap-4 text-left">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-500 overflow-hidden">
-            {row.customer?.profil_picture ? (
-              <img src={row.customer.profil_picture} alt={row.customer.name} className="h-full w-full object-cover" />
+            {row.customer?.profile_picture ? (
+              <img src={row.customer.profile_picture} alt={row.customer.name} className="h-full w-full object-cover" />
             ) : (
               <User size={20} />
             )}

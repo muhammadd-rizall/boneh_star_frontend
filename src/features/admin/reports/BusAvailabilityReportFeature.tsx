@@ -5,7 +5,8 @@ import BusAvailabilityReportTable from "./components/BusAvailabilityReportTable"
 import Loader from "@/components/feedback/Loader";
 import ErrorState from "@/components/feedback/ErrorState";
 import Button from "@/components/ui/Button";
-import { RefreshCw, Calendar } from "lucide-react";
+import { PageHeader } from "@/components/ui/PageComponents";
+import { RefreshCw } from "lucide-react";
 
 const BusAvailabilityReportFeature = () => {
   const { data, loading, error, filters, updateFilters, refetch } = useBusAvailabilityReport();
@@ -14,28 +15,23 @@ const BusAvailabilityReportFeature = () => {
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-bold text-slate-900">Bus Availability Reports</h1>
-          {data && (
-            <div className="flex items-center gap-2 text-sm text-slate-500 font-medium">
-              <Calendar size={14} />
-              <span>Report Period: {data.period.start_date} to {data.period.end_date}</span>
-            </div>
-          )}
-        </div>
-
-        <div className="flex items-center gap-3">
+      <PageHeader
+        title="Bus Availability Reports"
+        subtitle={data ? `Periode Laporan: ${data.period.start_date} s/d ${data.period.end_date}` : "Monitoring ketersediaan unit armada"}
+        badge="Operasional"
+        actions={
           <Button 
-            variant="ghost" 
+            variant="outline" 
             icon={RefreshCw} 
             onClick={refetch}
             loading={loading}
+            size="sm"
+            className="rounded-xl"
           >
             Update
           </Button>
-        </div>
-      </div>
+        }
+      />
 
       <BusAvailabilityFilters filters={filters} onFilterChange={updateFilters} />
 

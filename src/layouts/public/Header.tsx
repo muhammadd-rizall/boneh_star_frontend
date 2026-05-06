@@ -1,9 +1,10 @@
 import type { CompanyProfile } from "@/features/admin/company-profile/types/CompanyProfile";
-import { BusFront, LogOut, Menu, User, X } from "lucide-react";
+import { BusFront, LogOut, Menu, User, X, Bell } from "lucide-react";
 import { useState, useEffect } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { resolveMediaUrl } from "@/features/admin/company-profile/utils/companyProfileUtils";
 import { useCustomerAuthStore } from "@/features/auth/public";
+import Button from "@/components/ui/Button";
 
 const navigation = [
   { label: "Armada", href: "#armada" },
@@ -13,10 +14,9 @@ const navigation = [
 ];
 
 const customerNavigation = [
-  { label: "Booking Saya", to: "/customer/bookings" },
+  { label: "Booking", to: "/customer/bookings" },
   { label: "Profil", to: "/customer/profile" },
   { label: "Ulasan", to: "/customer/reviews" },
-  { label: "Notifikasi", to: "/customer/notifications" },
 ];
 
 interface HeaderProps {
@@ -60,51 +60,51 @@ export default function Header({ companyProfile }: HeaderProps) {
 
   return (
     <header 
-      className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ${
         isScrolled 
-          ? "bg-white/90 backdrop-blur-xl border-b border-slate-200 shadow-sm py-3" 
-          : "bg-transparent py-5"
+          ? "bg-white/80 backdrop-blur-xl border-b border-slate-100 py-3 shadow-sm shadow-slate-200/20" 
+          : "bg-transparent py-6"
       }`}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         {/* Logo */}
-        <NavLink to="/" className="flex items-center gap-3">
-          <div className={`flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl transition-all duration-300 ${
-            isScrolled ? "bg-slate-900 text-white" : "bg-white text-slate-900"
+        <NavLink to="/" className="flex items-center gap-3 group">
+          <div className={`flex h-11 w-11 items-center justify-center overflow-hidden rounded-2xl transition-all duration-500 shadow-lg ${
+            isScrolled ? "bg-slate-950 text-white shadow-slate-200" : "bg-white text-slate-950 shadow-black/5"
           }`}>
             {logoUrl ? (
               <img
                 src={logoUrl}
                 alt={companyProfile.company_name}
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cover transition-transform group-hover:scale-110"
               />
             ) : (
-              <BusFront size={20} />
+              <BusFront size={22} />
             )}
           </div>
-          <span className={`text-xl font-black tracking-tight transition-colors duration-300 ${
-            isScrolled || !isHome ? "text-slate-900" : "text-white"
+          <span className={`text-xl font-black tracking-tight transition-colors duration-500 ${
+            isScrolled || !isHome ? "text-slate-950" : "text-white"
           }`}>
             {companyProfile.company_name}
           </span>
         </NavLink>
 
         {/* Desktop Nav */}
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav className="hidden items-center gap-1 md:flex">
           {isAuthenticated
             ? customerNavigation.map((item) => (
                 <NavLink
                   key={item.label}
                   to={item.to}
                   className={({ isActive }) =>
-                    `text-sm font-bold transition-all ${
+                    `px-4 py-2 text-sm font-bold transition-all rounded-xl ${
                       isScrolled || !isHome
                         ? isActive
-                          ? "text-orange-600"
-                          : "text-slate-600 hover:text-slate-900"
+                          ? "bg-slate-950 text-white"
+                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"
                         : isActive
-                          ? "text-white"
-                          : "text-white/80 hover:text-white"
+                          ? "bg-white text-slate-950"
+                          : "text-white/80 hover:bg-white/10 hover:text-white"
                     }`
                   }
                 >
@@ -115,10 +115,10 @@ export default function Header({ companyProfile }: HeaderProps) {
                 <a
                   key={item.label}
                   href={item.href}
-                  className={`text-sm font-bold transition-all hover:opacity-100 ${
+                  className={`px-4 py-2 text-sm font-bold transition-all rounded-xl ${
                     isScrolled || !isHome 
-                      ? "text-slate-600 hover:text-slate-900" 
-                      : "text-white/80 hover:text-white"
+                      ? "text-slate-600 hover:bg-slate-50 hover:text-slate-950" 
+                      : "text-white/80 hover:bg-white/10 hover:text-white"
                   }`}
                 >
                   {item.label}
@@ -127,53 +127,51 @@ export default function Header({ companyProfile }: HeaderProps) {
         </nav>
 
         {/* Right Actions */}
-        <div className="hidden items-center gap-4 md:flex">
+        <div className="hidden items-center gap-3 md:flex">
           {isAuthenticated ? (
             <>
-              <NavLink
-                to="/customer/profile"
-                className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-bold transition-colors ${
-                  isScrolled || !isHome ? "text-slate-600 hover:text-slate-900" : "text-white/80 hover:text-white"
-                }`}
-              >
-                <User size={16} />
-                <span className="max-w-32 truncate">{user?.name || "Akun Saya"}</span>
+              <NavLink to="/customer/notifications" className="relative group">
+                <div className={`p-2.5 rounded-xl transition-all ${
+                  isScrolled || !isHome ? "text-slate-600 hover:bg-slate-50 hover:text-slate-950" : "text-white/80 hover:bg-white/10 hover:text-white"
+                }`}>
+                  <Bell size={20} />
+                  <span className="absolute top-2 right-2 flex h-2 w-2 rounded-full bg-orange-500 ring-2 ring-white" />
+                </div>
               </NavLink>
-              <button
-                type="button"
-                onClick={handleCustomerLogout}
-                className="inline-flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 transition-all hover:border-slate-300 hover:bg-slate-50"
-              >
-                <LogOut size={16} />
-                Keluar
-              </button>
+              <div className="h-6 w-px bg-slate-200 mx-2" />
+              <div className="flex items-center gap-3">
+                <div className="flex flex-col items-end">
+                  <span className={`text-xs font-black tracking-tight ${isScrolled || !isHome ? "text-slate-950" : "text-white"}`}>
+                    {user?.name?.split(' ')[0] || "User"}
+                  </span>
+                  <button onClick={handleCustomerLogout} className="text-[10px] font-bold text-slate-400 hover:text-orange-500 transition-colors uppercase tracking-widest">
+                    Keluar
+                  </button>
+                </div>
+                <NavLink to="/customer/profile" className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 border-2 border-white shadow-sm overflow-hidden">
+                  <User size={20} className="text-slate-400" />
+                </NavLink>
+              </div>
             </>
           ) : (
             <>
               <NavLink
                 to="/auth/login"
                 className={`px-4 py-2 text-sm font-bold transition-colors ${
-                  isScrolled || !isHome ? "text-slate-600 hover:text-slate-900" : "text-white/80 hover:text-white"
+                  isScrolled || !isHome ? "text-slate-600 hover:text-slate-950" : "text-white/80 hover:text-white"
                 }`}
               >
                 Masuk
               </NavLink>
-              <NavLink
-                to="/auth/register"
-                className="inline-flex h-11 items-center rounded-xl bg-orange-600 px-6 text-sm font-bold text-white shadow-lg shadow-orange-600/20 transition-all hover:bg-orange-500 active:scale-95"
+              <Button
+                size="sm"
+                onClick={() => navigate('/auth/register')}
+                className={isScrolled || !isHome ? "" : "bg-white text-slate-950 hover:bg-slate-50 shadow-none"}
               >
                 Daftar
-              </NavLink>
+              </Button>
             </>
           )}
-          <NavLink
-            to="/admin/login"
-            className={`px-4 py-2 text-sm font-bold transition-colors ${
-              isScrolled || !isHome ? "text-slate-600 hover:text-slate-900" : "text-white/80 hover:text-white"
-            }`}
-          >
-            Portal Admin
-          </NavLink>
         </div>
 
         {/* Mobile Menu Button */}
@@ -182,8 +180,8 @@ export default function Header({ companyProfile }: HeaderProps) {
           onClick={() => setIsOpen((value) => !value)}
           className={`inline-flex h-10 w-10 items-center justify-center rounded-xl border transition-all md:hidden ${
             isScrolled || !isHome 
-              ? "border-slate-200 bg-white text-slate-700" 
-              : "border-white/20 bg-white/10 text-white backdrop-blur-md"
+              ? "border-slate-100 bg-white text-slate-700" 
+              : "border-white/10 bg-white/5 text-white backdrop-blur-md"
           }`}
           aria-label="Toggle navigation"
         >
@@ -193,29 +191,29 @@ export default function Header({ companyProfile }: HeaderProps) {
 
       {/* Mobile Nav */}
       {isOpen && (
-        <div className="absolute inset-x-0 top-full border-t border-slate-100 bg-white p-4 shadow-xl md:hidden animate-in fade-in slide-in-from-top-2">
+        <div className="absolute inset-x-0 top-full border-t border-slate-50 bg-white p-4 shadow-2xl md:hidden animate-in fade-in slide-in-from-top-2">
           <div className="flex flex-col gap-1">
             {navigation.map((item) => (
               <a
                 key={item.label}
                 href={item.href}
                 onClick={() => setIsOpen(false)}
-                className="rounded-xl px-4 py-3 text-sm font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
+                className="rounded-xl px-4 py-3 text-sm font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-950"
               >
                 {item.label}
               </a>
             ))}
             {isAuthenticated && (
               <>
-                <hr className="my-2 border-slate-100" />
+                <div className="my-3 h-px bg-slate-50 mx-4" />
                 {customerNavigation.map((item) => (
                   <NavLink
                     key={item.label}
                     to={item.to}
                     onClick={() => setIsOpen(false)}
                     className={({ isActive }) =>
-                      `rounded-xl px-4 py-3 text-sm font-bold transition hover:bg-slate-50 ${
-                        isActive ? "text-orange-600" : "text-slate-600 hover:text-slate-900"
+                      `rounded-xl px-4 py-3 text-sm font-bold transition ${
+                        isActive ? "bg-orange-50 text-orange-600" : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"
                       }`
                     }
                   >
@@ -224,47 +222,26 @@ export default function Header({ companyProfile }: HeaderProps) {
                 ))}
               </>
             )}
-            <hr className="my-2 border-slate-100" />
-            <NavLink
-              to={isAuthenticated ? "/customer/profile" : "/auth/login"}
-              onClick={() => setIsOpen(false)}
-              className="rounded-xl px-4 py-3 text-sm font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
-            >
-              {isAuthenticated ? user?.name || "Akun Saya" : "Masuk Customer"}
-            </NavLink>
-            {!isAuthenticated && (
-              <NavLink
-                to="/auth/register"
-                onClick={() => setIsOpen(false)}
-                className="rounded-xl px-4 py-3 text-sm font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
-              >
-                Daftar Customer
-              </NavLink>
-            )}
-            <NavLink
-              to="/admin/login"
-              onClick={() => setIsOpen(false)}
-              className="rounded-xl px-4 py-3 text-sm font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
-            >
-              Masuk Portal Admin
-            </NavLink>
-            {isAuthenticated ? (
-              <button
-                type="button"
-                onClick={handleCustomerLogout}
-                className="mt-2 flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-4 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
-              >
-                <LogOut size={16} />
-                Keluar
-              </button>
+            <div className="my-3 h-px bg-slate-50 mx-4" />
+            {!isAuthenticated ? (
+              <div className="grid grid-cols-2 gap-3 p-2">
+                <Button variant="outline" size="sm" onClick={() => { setIsOpen(false); navigate('/auth/login'); }}>
+                  Masuk
+                </Button>
+                <Button size="sm" onClick={() => { setIsOpen(false); navigate('/auth/register'); }}>
+                  Daftar
+                </Button>
+              </div>
             ) : (
-              <a
-                href="#contact"
-                onClick={() => setIsOpen(false)}
-                className="mt-2 flex items-center justify-center rounded-xl bg-orange-600 px-4 py-4 text-sm font-bold text-white shadow-lg shadow-orange-600/15"
+              <Button 
+                variant="danger" 
+                size="sm" 
+                onClick={handleCustomerLogout} 
+                icon={LogOut}
+                className="mx-2"
               >
-                Pesan Sekarang
-              </a>
+                Keluar
+              </Button>
             )}
           </div>
         </div>

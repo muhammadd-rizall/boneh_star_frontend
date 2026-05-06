@@ -13,7 +13,7 @@ interface SelectProps {
   onChange: (value: string) => void
   error?: string
   hint?: string
-  icon?: React.ComponentType<{ size?: number | string; className?: string }>
+  icon?: React.ComponentType<{ size?: number | string; className?: string; strokeWidth?: number }>
   placeholder?: string
   className?: string
   id?: string
@@ -38,17 +38,17 @@ function Select({
   const selectId = id || label?.toLowerCase().replace(/\s+/g, "-")
 
   return (
-    <div className={`flex flex-col gap-1.5 w-full text-left ${className}`}>
+    <div className={`flex flex-col gap-2 w-full text-left ${className}`}>
       {label && (
-        <label htmlFor={selectId} className="text-sm font-medium text-slate-700">
+        <label htmlFor={selectId} className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">
           {label}
         </label>
       )}
 
       <div className="relative group">
         {Icon && (
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-slate-600 transition-colors pointer-events-none">
-            <Icon size={16} />
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-orange-500 transition-colors pointer-events-none">
+            <Icon size={18} strokeWidth={2} />
           </div>
         )}
 
@@ -59,11 +59,11 @@ function Select({
           required={required}
           disabled={disabled}
           className={[
-            "w-full appearance-none rounded-lg border bg-white py-2.5 pr-9 text-sm text-slate-900 outline-none transition-all duration-150 cursor-pointer",
-            Icon ? "pl-9" : "pl-3",
+            "w-full appearance-none rounded-2xl border bg-white py-3.5 pr-11 text-sm font-bold text-slate-700 outline-none transition-all duration-200 cursor-pointer",
+            Icon ? "pl-11" : "pl-4",
             error
-              ? "border-rose-300 bg-rose-50/30 focus:border-rose-400 focus:ring-2 focus:ring-rose-100"
-              : "border-slate-200 focus:border-slate-400 focus:ring-2 focus:ring-slate-100",
+              ? "border-rose-200 bg-rose-50/20 focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10"
+              : "border-slate-100 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 focus:bg-white",
           ].join(" ")}
         >
           {placeholder && (
@@ -78,19 +78,19 @@ function Select({
           ))}
         </select>
 
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none group-focus-within:text-slate-600 transition-colors">
-          <ChevronDown size={16} />
+        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none group-focus-within:text-orange-500 transition-colors">
+          <ChevronDown size={18} strokeWidth={2} />
         </div>
       </div>
 
       {error && (
-        <p className="text-xs font-medium text-rose-600 flex items-center gap-1">
-          <span className="inline-block h-1 w-1 rounded-full bg-rose-500" />
+        <p className="text-[10px] font-bold text-rose-500 flex items-center gap-1.5 ml-1">
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-rose-500" />
           {error}
         </p>
       )}
       {!error && hint && (
-        <p className="text-xs text-slate-400">{hint}</p>
+        <p className="text-[10px] font-bold text-slate-400 ml-1">{hint}</p>
       )}
     </div>
   )

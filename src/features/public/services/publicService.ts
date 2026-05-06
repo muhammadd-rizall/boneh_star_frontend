@@ -23,9 +23,11 @@ function extractCollection<T>(payload: unknown): T[] {
     return payload;
   }
 
-  if (payload && typeof payload === 'object' && 'data' in payload) {
-    const nested = (payload as { data?: unknown }).data;
-    return Array.isArray(nested) ? nested as T[] : [];
+  if (payload && typeof payload === 'object') {
+    // Handle Laravel Resource Collection wrapper: { data: [...] }
+    if ('data' in payload && Array.isArray((payload as any).data)) {
+      return (payload as any).data;
+    }
   }
 
   return [];

@@ -1,11 +1,10 @@
 import { useNavigate } from 'react-router-dom';
-import PublicLayout from '@/layouts/public/PublicLayout';
+import CustomerLayout from '@/layouts/customer/CustomerLayout';
 import { useBookings } from '@/features/customer/bookings/hooks/useBookings';
 import BookingList from '@/features/customer/bookings/components/BookingList';
 import Button from '@/components/ui/Button';
 import Loader from '@/components/feedback/Loader';
 import ErrorState from '@/components/feedback/ErrorState';
-import { Section, Container } from '@/components/ui/PageComponents';
 import { Plus } from 'lucide-react';
 
 export default function BookingIndexPage() {
@@ -14,43 +13,39 @@ export default function BookingIndexPage() {
 
   if (loading) {
     return (
-      <PublicLayout>
-        <div className="flex min-h-[60vh] items-center justify-center">
+      <CustomerLayout>
+        <div className="flex min-h-[40vh] items-center justify-center">
           <Loader />
         </div>
-      </PublicLayout>
+      </CustomerLayout>
     );
   }
 
   return (
-    <PublicLayout>
-      <Section className="pt-32 pb-20">
-        <Container>
-          <div className="mb-10 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-            <div className="flex flex-col gap-2">
-              <h1 className="text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">
-                Riwayat <span className="text-orange-600">Pemesanan</span>
-              </h1>
-              <p className="max-w-xl text-lg font-medium text-slate-500">
-                Pantau status pemesanan bus Anda dan kelola dokumen perjalanan secara mandiri.
-              </p>
-            </div>
-            <Button 
-              icon={Plus} 
-              onClick={() => navigate('/customer/bookings/request')}
-              className="w-full sm:w-auto"
-            >
-              Pesan Baru
-            </Button>
-          </div>
+    <CustomerLayout>
+      <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">
+            Riwayat <span className="text-orange-600">Pemesanan</span>
+          </h1>
+          <p className="text-sm font-medium text-slate-500">
+            Kelola dan pantau status pemesanan bus Anda.
+          </p>
+        </div>
+        <Button 
+          icon={Plus} 
+          onClick={() => navigate('/customer/bookings/request')}
+          className="w-full sm:w-auto shadow-lg shadow-slate-200"
+        >
+          Pesan Baru
+        </Button>
+      </div>
 
-          {error ? (
-            <ErrorState message={error} onRetry={refresh} />
-          ) : (
-            <BookingList bookings={bookings} />
-          )}
-        </Container>
-      </Section>
-    </PublicLayout>
+      {error ? (
+        <ErrorState message={error} onRetry={refresh} />
+      ) : (
+        <BookingList bookings={bookings} />
+      )}
+    </CustomerLayout>
   );
 }

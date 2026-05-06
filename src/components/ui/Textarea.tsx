@@ -21,9 +21,9 @@ function Textarea({
   const textareaId = id || label?.toLowerCase().replace(/\s+/g, "-")
 
   return (
-    <div className="flex flex-col gap-1.5 w-full text-left">
+    <div className="flex flex-col gap-2 w-full text-left">
       {label && (
-        <label htmlFor={textareaId} className="text-sm font-medium text-slate-700">
+        <label htmlFor={textareaId} className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">
           {label}
         </label>
       )}
@@ -31,24 +31,24 @@ function Textarea({
       <textarea
         id={textareaId}
         className={[
-          "w-full rounded-lg border bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition-all duration-150 resize-y min-h-[100px]",
-          "placeholder:text-slate-400",
+          "w-full rounded-[1.5rem] border bg-white px-5 py-4 text-sm font-bold text-slate-700 outline-none transition-all duration-200 resize-y min-h-[120px]",
+          "placeholder:text-slate-300 placeholder:font-medium",
           error
-            ? "border-rose-300 bg-rose-50/30 focus:border-rose-400 focus:ring-2 focus:ring-rose-100"
-            : "border-slate-200 focus:border-slate-400 focus:ring-2 focus:ring-slate-100",
+            ? "border-rose-200 bg-rose-50/20 focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10"
+            : "border-slate-100 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 focus:bg-white",
           className,
         ].join(" ")}
         {...props}
       />
 
       {error && (
-        <p className="text-xs font-medium text-rose-600 flex items-center gap-1">
-          <span className="inline-block h-1 w-1 rounded-full bg-rose-500" />
+        <p className="text-[10px] font-bold text-rose-500 flex items-center gap-1.5 ml-1">
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-rose-500" />
           {error}
         </p>
       )}
       {!error && hint && (
-        <p className="text-xs text-slate-400">{hint}</p>
+        <p className="text-[10px] font-bold text-slate-400 ml-1">{hint}</p>
       )}
     </div>
   )

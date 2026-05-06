@@ -1,6 +1,5 @@
 import React from "react"
-import { ArrowUpDown } from "lucide-react"
-import { InboxIcon } from "lucide-react"
+import { ArrowUpDown, InboxIcon } from "lucide-react"
 
 export interface Column<T> {
   header: string
@@ -25,27 +24,27 @@ function Table<T>({
   onSort,
 }: Props<T>) {
   return (
-    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+    <div className="overflow-hidden rounded-[2rem] border border-slate-50 bg-white shadow-xl shadow-slate-200/40">
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
 
           {/* HEADER */}
           <thead>
-            <tr className="border-b border-slate-200 bg-slate-50">
+            <tr className="bg-slate-50/50">
               {columns.map((col, index) => (
                 <th
                   key={index}
                   onClick={() => col.sortable && onSort?.(index)}
                   className={[
-                    "px-4 py-3 text-left text-xs font-semibold text-slate-500 whitespace-nowrap",
-                    col.sortable ? "cursor-pointer select-none hover:text-slate-800 transition-colors" : "",
+                    "px-6 py-5 text-left text-[10px] font-black uppercase tracking-widest text-slate-400 whitespace-nowrap",
+                    col.sortable ? "cursor-pointer select-none hover:text-slate-950 transition-colors" : "",
                     col.className || "",
                   ].join(" ")}
                 >
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-2">
                     {col.header}
                     {col.sortable && (
-                      <ArrowUpDown size={11} className="text-slate-400" />
+                      <ArrowUpDown size={12} className="text-slate-300" strokeWidth={3} />
                     )}
                   </div>
                 </th>
@@ -54,14 +53,14 @@ function Table<T>({
           </thead>
 
           {/* BODY */}
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-slate-50">
             {loading ? (
               Array.from({ length: 5 }).map((_, i) => (
                 <tr key={i} className="animate-pulse">
                   {columns.map((_, j) => (
-                    <td key={j} className="px-4 py-3">
+                    <td key={j} className="px-6 py-5">
                       <div
-                        className="h-4 rounded-md bg-slate-100"
+                        className="h-4 rounded-xl bg-slate-50"
                         style={{ width: `${60 + Math.random() * 30}%` }}
                       />
                     </td>
@@ -70,13 +69,15 @@ function Table<T>({
               ))
             ) : data.length === 0 ? (
               <tr>
-                <td colSpan={columns.length} className="py-16 text-center">
-                  <div className="flex flex-col items-center gap-3 text-slate-400">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100">
-                      <InboxIcon size={22} className="text-slate-300" />
+                <td colSpan={columns.length} className="py-24 text-center">
+                  <div className="flex flex-col items-center gap-4 animate-in fade-in duration-700">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-[1.5rem] bg-slate-50 text-slate-200 shadow-inner">
+                      <InboxIcon size={32} strokeWidth={1.5} />
                     </div>
-                    <p className="text-sm font-medium text-slate-500">{emptyMessage}</p>
-                    <p className="text-xs text-slate-400">Data belum tersedia atau tidak ditemukan</p>
+                    <div>
+                      <p className="text-sm font-black text-slate-950 uppercase tracking-widest">{emptyMessage}</p>
+                      <p className="mt-1 text-xs font-bold text-slate-400">Data belum tersedia atau tidak ditemukan</p>
+                    </div>
                   </div>
                 </td>
               </tr>
@@ -84,12 +85,12 @@ function Table<T>({
               data.map((row, rowIndex) => (
                 <tr
                   key={rowIndex}
-                  className="transition-colors hover:bg-slate-50/80 group"
+                  className="transition-all hover:bg-slate-50/50 group cursor-default"
                 >
                   {columns.map((col, colIndex) => (
                     <td
                       key={colIndex}
-                      className="px-4 py-3 text-slate-700 text-sm"
+                      className="px-6 py-5 text-slate-700 text-sm font-bold"
                     >
                       {typeof col.accessor === "function"
                         ? col.accessor(row)

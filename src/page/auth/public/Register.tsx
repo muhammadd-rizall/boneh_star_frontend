@@ -5,7 +5,6 @@ import { useCustomerAuthStore } from '@/features/auth/public';
 import Card from '@/components/ui/Card';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
-import { Section, Container } from '@/components/ui/PageComponents';
 import { Mail, Lock, User, ArrowRight, AlertCircle } from 'lucide-react';
 
 export default function RegisterPage() {
@@ -33,23 +32,27 @@ export default function RegisterPage() {
 
   return (
     <PublicLayout>
-      <Section className="pt-32 pb-20">
-        <Container>
-          <div className="mx-auto max-w-[400px]">
-            <div className="mb-8 text-center">
-              <h1 className="text-3xl font-black text-slate-900">Buat Akun Baru</h1>
-              <p className="mt-2 text-slate-500">Bergabunglah dan mulai perjalanan Anda</p>
-            </div>
+      <div className="flex min-h-[85vh] items-center justify-center px-4 pt-32 pb-20">
+        <div className="w-full max-w-[440px]">
+          <div className="mb-10 text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <h1 className="text-4xl font-black tracking-tighter text-slate-950">
+              Buat <span className="text-orange-500">Akun</span>
+            </h1>
+            <p className="mt-3 text-sm font-semibold text-slate-500">
+              Bergabunglah dan mulai rencanakan perjalanan Anda
+            </p>
+          </div>
 
-            <Card className="p-8">
-              <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-                {error && (
-                  <div className="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                    <AlertCircle className="w-5 h-5 flex-shrink-0" />
-                    <span className="font-medium">{error}</span>
-                  </div>
-                )}
+          <Card className="p-10 border-none shadow-2xl shadow-slate-200/60 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+              {error && (
+                <div className="flex items-center gap-3 rounded-2xl bg-rose-50 px-5 py-4 text-sm text-rose-600 border border-rose-100 animate-in shake duration-500">
+                  <AlertCircle className="w-5 h-5 shrink-0" />
+                  <span className="font-bold">{error}</span>
+                </div>
+              )}
 
+              <div className="space-y-4">
                 <Input
                   label="Nama Lengkap"
                   type="text"
@@ -57,16 +60,18 @@ export default function RegisterPage() {
                   icon={User}
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="rounded-2xl border-slate-100 focus:border-orange-500 transition-all"
                   required
                 />
 
                 <Input
-                  label="Email"
+                  label="Alamat Email"
                   type="email"
-                  placeholder="anda@email.com"
+                  placeholder="name@example.com"
                   icon={Mail}
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="rounded-2xl border-slate-100 focus:border-orange-500 transition-all"
                   required
                 />
 
@@ -77,24 +82,40 @@ export default function RegisterPage() {
                   icon={Lock}
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  className="rounded-2xl border-slate-100 focus:border-orange-500 transition-all"
                   required
                 />
+              </div>
 
-                <Button type="submit" loading={loading} size="lg" className="w-full" icon={ArrowRight}>
-                  Daftar
-                </Button>
-              </form>
+              <div className="flex items-center gap-2">
+                <input type="checkbox" className="h-4 w-4 rounded border-slate-200 text-orange-600 focus:ring-orange-500" required />
+                <label className="text-xs font-semibold text-slate-500">
+                  Saya setuju dengan <Link to="#" className="text-slate-950 underline">Syarat & Ketentuan</Link>
+                </label>
+              </div>
 
-              <p className="mt-6 text-center text-sm text-slate-600">
+              <Button 
+                type="submit" 
+                loading={loading} 
+                size="lg" 
+                className="w-full shadow-lg shadow-slate-200" 
+                suffix={ArrowRight}
+              >
+                Daftar Sekarang
+              </Button>
+            </form>
+
+            <div className="mt-10 border-t border-slate-50 pt-8 text-center">
+              <p className="text-sm font-semibold text-slate-500">
                 Sudah punya akun?{' '}
-                <Link to="/auth/login" className="font-bold text-orange-600 hover:underline">
+                <Link to="/auth/login" className="font-black text-orange-600 hover:text-orange-500 transition-colors">
                   Masuk di sini
                 </Link>
               </p>
-            </Card>
-          </div>
-        </Container>
-      </Section>
+            </div>
+          </Card>
+        </div>
+      </div>
     </PublicLayout>
   );
 }

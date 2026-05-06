@@ -36,36 +36,45 @@ function Modal({ open, onClose, title, subtitle, children, size = "md" }: ModalP
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+        className="absolute inset-0 bg-slate-950/40 backdrop-blur-md animate-in fade-in duration-500"
         onClick={onClose}
       />
 
       {/* Dialog */}
       <div
-        className={`relative w-full ${sizes[size]} flex flex-col max-h-[92vh] overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-2xl shadow-slate-900/10`}
+        className={`relative w-full ${sizes[size]} flex flex-col max-h-[92vh] overflow-hidden rounded-[2.5rem] border-none bg-white shadow-2xl shadow-slate-900/10 animate-in fade-in zoom-in-95 duration-500`}
       >
         {/* Header */}
         {(title || subtitle) && (
-          <div className="flex flex-shrink-0 items-start justify-between border-b border-slate-100 px-8 py-5">
-            <div className="flex flex-col gap-0.5">
+          <div className="flex flex-shrink-0 items-start justify-between px-10 pt-10 pb-6">
+            <div className="flex flex-col gap-1">
               {title && (
-                <h3 className="text-lg font-bold tracking-tight text-slate-900">{title}</h3>
+                <h3 className="text-2xl font-black tracking-tighter text-slate-950">{title}</h3>
               )}
               {subtitle && (
-                <p className="text-sm text-slate-400">{subtitle}</p>
+                <p className="text-sm font-semibold text-slate-400">{subtitle}</p>
               )}
             </div>
             <button
               onClick={onClose}
-              className="ml-6 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl border border-slate-200 text-slate-400 transition-all hover:border-slate-300 hover:bg-slate-50 hover:text-slate-700"
+              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-2xl bg-slate-50 text-slate-400 transition-all hover:text-slate-950 active:scale-90"
             >
-              <X size={15} />
+              <X size={20} />
             </button>
           </div>
         )}
 
+        {!title && !subtitle && (
+          <button
+            onClick={onClose}
+            className="absolute right-6 top-6 z-10 flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-50 text-slate-400 transition-all hover:text-slate-950 active:scale-90"
+          >
+            <X size={20} />
+          </button>
+        )}
+
         {/* Body */}
-        <div className="flex-1 overflow-y-auto px-8 py-6">
+        <div className="flex-1 overflow-y-auto px-10 pb-10 pt-4">
           {children}
         </div>
       </div>

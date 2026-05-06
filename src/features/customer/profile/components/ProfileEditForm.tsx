@@ -1,8 +1,9 @@
 import React from 'react';
 import type { CustomerProfile, UpdateProfileData } from '../types/Profile';
 import Button from '@/components/ui/Button';
-import FormField from '@/components/form/FormField';
+import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
+import { User, Mail, Phone, MapPin, Save } from 'lucide-react';
 
 interface Props {
   profile: CustomerProfile;
@@ -30,39 +31,61 @@ export default function ProfileEditForm({ profile, onSubmit, onCancel }: Props) 
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <FormField
+    <form onSubmit={handleSubmit} className="flex flex-col gap-10">
+      <div className="grid gap-6 sm:grid-cols-2">
+        <Input
           label="Nama Lengkap"
+          icon={User}
           value={formData.name || ''}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          required
         />
-        <FormField
+        <Input
           label="Email"
           type="email"
+          icon={Mail}
           value={formData.email || ''}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          required
         />
-        <FormField
+        <Input
           label="No. Telepon"
+          icon={Phone}
           value={formData.phone || ''}
           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+          required
         />
         <div className="sm:col-span-2">
           <Textarea
-            label="Alamat"
+            label="Alamat Lengkap"
+            icon={MapPin}
             value={formData.address || ''}
             onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+            placeholder="Masukkan alamat lengkap Anda..."
+            className="min-h-[100px]"
           />
         </div>
       </div>
 
-      <div className="flex justify-end gap-3 border-t border-slate-100 pt-6">
-        <Button type="button" variant="ghost" onClick={onCancel} disabled={loading}>
-          Batal
-        </Button>
-        <Button type="submit" loading={loading}>
+      <div className="flex gap-4 border-t border-slate-50 pt-10">
+        <Button 
+          type="submit" 
+          loading={loading} 
+          className="flex-1 rounded-2xl shadow-xl shadow-orange-600/20"
+          icon={Save}
+          size="lg"
+        >
           Simpan Perubahan
+        </Button>
+        <Button 
+          type="button" 
+          variant="ghost" 
+          onClick={onCancel} 
+          className="px-10 font-bold"
+          disabled={loading}
+          size="lg"
+        >
+          Batal
         </Button>
       </div>
     </form>

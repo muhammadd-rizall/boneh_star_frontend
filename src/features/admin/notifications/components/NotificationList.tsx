@@ -1,6 +1,6 @@
 import type { Notification } from "@/features/admin/notifications/types/Notification"
 import NotificationItem from "./NotificationItem"
-import EmpetyState from "@/components/feedback/EmpetyState"
+import EmptyState from "@/components/feedback/EmptyState"
 import { Bell } from "lucide-react"
 
 interface NotificationListProps {
@@ -18,7 +18,7 @@ export default function NotificationList({
 }: NotificationListProps) {
   if (!loading && notifications.length === 0) {
     return (
-      <EmpetyState
+      <EmptyState
         icon={Bell}
         title="No notifications"
         description="You're all caught up! No new notifications for now."

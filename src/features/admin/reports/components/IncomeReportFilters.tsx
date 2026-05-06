@@ -9,11 +9,10 @@ interface IncomeReportFiltersProps {
 }
 
 export default function IncomeReportFilters({ filters, onFilterChange }: IncomeReportFiltersProps) {
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: currentYear - 2020 + 1 }, (_, i) => ({
-    label: (2020 + i).toString(),
-    value: (2020 + i).toString(),
-  })).reverse();
+  const years = Array.from({ length: 5 }, (_, i) => ({
+    label: (new Date().getFullYear() - i).toString(),
+    value: (new Date().getFullYear() - i).toString(),
+  }));
 
   const months = [
     { label: "All Months", value: "" },
@@ -31,26 +30,39 @@ export default function IncomeReportFilters({ filters, onFilterChange }: IncomeR
     { label: "December", value: "12" },
   ];
 
+  const statusOptions = [
+    { label: "All Status", value: "" },
+    { label: "Fully Paid", value: "fully_paid" },
+    { label: "Down Payment", value: "dp" },
+    { label: "Unpaid", value: "unpaid" },
+  ];
+
   return (
-    <div className="flex flex-wrap items-end gap-4 rounded-[28px] border border-slate-200/80 bg-white/90 p-6 shadow-sm">
-      <div className="w-full sm:w-48">
-        <Select
-          label="Select Year"
-          icon={Calendar}
-          value={filters.year?.toString() || ""}
-          options={years}
-          onChange={(value) => onFilterChange({ year: value ? parseInt(value) : undefined })}
-        />
-      </div>
-      <div className="w-full sm:w-48">
-        <Select
-          label="Select Month"
-          icon={Filter}
-          value={filters.month?.toString() || ""}
-          options={months}
-          onChange={(value) => onFilterChange({ month: value ? parseInt(value) : undefined })}
-        />
-      </div>
+    <div className="grid grid-cols-1 gap-4 rounded-[2.5rem] border border-slate-200/80 bg-white/90 p-6 shadow-xl shadow-slate-200/50 sm:grid-cols-2 lg:grid-cols-3">
+      <Select
+        label="Report Year"
+        icon={Calendar}
+        value={filters.year}
+        options={years}
+        onChange={(value) => onFilterChange({ year: value })}
+        className="rounded-2xl"
+      />
+      <Select
+        label="Report Month"
+        icon={Calendar}
+        value={filters.month || ""}
+        options={months}
+        onChange={(value) => onFilterChange({ month: value || undefined })}
+        className="rounded-2xl"
+      />
+      <Select
+        label="Payment Status"
+        icon={Filter}
+        value={filters.status || ""}
+        options={statusOptions}
+        onChange={(value) => onFilterChange({ status: (value as any) || undefined })}
+        className="rounded-2xl"
+      />
     </div>
   );
 }

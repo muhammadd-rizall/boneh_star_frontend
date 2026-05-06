@@ -89,7 +89,7 @@ export interface Customer extends TimestampedEntity, ActivableEntity {
   email: string
   phone: string
   password?: string
-  profil_picture: string
+  profile_picture: string
   address: string
   is_active: boolean
 }

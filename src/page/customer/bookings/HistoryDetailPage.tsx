@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import PublicLayout from '@/layouts/public/PublicLayout';
+import CustomerLayout from '@/layouts/customer/CustomerLayout';
 import { historyService } from '@/features/customer/bookings/services/HistoryService';
 import BookingTimeline from '@/features/customer/bookings/components/BookingTimeline';
 import BookingStatusBadge from '@/features/customer/bookings/components/BookingStatusBadge';
@@ -8,7 +8,6 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Loader from '@/components/feedback/Loader';
 import ErrorState from '@/components/feedback/ErrorState';
-import { Section, Container } from '@/components/ui/PageComponents';
 import { ArrowLeft, FileDown, Calendar, MapPin } from 'lucide-react';
 import { formatDate } from '@/utils/formatter';
 
@@ -46,61 +45,88 @@ export default function HistoryDetailPage() {
     link.remove();
   };
 
-  if (loading) return <PublicLayout><div className="flex h-[60vh] items-center justify-center"><Loader /></div></PublicLayout>;
-  if (error || !data) return <PublicLayout><div className="flex h-[60vh] items-center justify-center"><ErrorState message={error || 'Detail tidak ditemukan'} onRetry={fetchData} /></div></PublicLayout>;
+  if (loading) {
+    return (
+      <CustomerLayout>
+        <div className="flex min-h-[40vh] items-center justify-center">
+          <Loader />
+        </div>
+      </CustomerLayout>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <CustomerLayout>
+        <div className="flex min-h-[40vh] items-center justify-center">
+          <ErrorState message={error || 'Detail tidak ditemukan'} onRetry={fetchData} />
+        </div>
+      </CustomerLayout>
+    );
+  }
 
   return (
-    <PublicLayout>
-      <Section className="pt-32 pb-20">
-        <Container>
-          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <button onClick={() => navigate('/customer/bookings')} className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors">
-              <ArrowLeft size={16} /> Kembali ke Riwayat
-            </button>
-            <Button variant="outline" size="sm" icon={FileDown} onClick={handleDownloadInvoice}>
-              Download Invoice
-            </Button>
-          </div>
+    <CustomerLayout>
+      <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+        <button 
+          onClick={() => navigate('/customer/bookings')} 
+          className="group flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-slate-950 transition-colors"
+        >
+          <ArrowLeft size={16} className="transition-transform group-hover:-translate-x-1" /> 
+          Kembali ke Riwayat
+        </button>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          icon={FileDown} 
+          onClick={handleDownloadInvoice}
+          className="rounded-xl font-bold border-slate-100"
+        >
+          Download Invoice
+        </Button>
+      </div>
 
-          <div className="grid gap-10 lg:grid-cols-[1fr_400px]">
-            <div className="flex flex-col gap-8">
-              <Card>
-                <div className="flex flex-col gap-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h1 className="text-3xl font-black text-slate-900">#{data.booking.booking_code}</h1>
-                      <p className="text-sm font-medium text-slate-500">Pemesanan dibuat pada {formatDate(data.booking.created_at)}</p>
-                    </div>
-                    <BookingStatusBadge status={data.booking.status} />
-                  </div>
-                  
-                  <div className="grid gap-4 sm:grid-cols-2 border-t border-slate-100 pt-6">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-400"><Calendar size={18} /></div>
-                      <div>
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Jadwal</p>
-                        <p className="text-sm font-bold text-slate-700">{formatDate(data.booking.departure_date)}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-400"><MapPin size={18} /></div>
-                      <div>
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Rute</p>
-                        <p className="text-sm font-bold text-slate-700">{data.booking.origin} - {data.booking.full_route}</p>
-                      </div>
-                    </div>
-                  </div>
+      <div className="flex flex-col gap-10">
+        <Card className="border-none shadow-xl shadow-slate-100/50">
+          <div className="flex flex-col gap-8">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h1 className="text-3xl font-black tracking-tighter text-slate-950">#{data.booking.booking_code}</h1>
+                <p className="text-sm font-semibold text-slate-400 mt-1">Dibuat pada {formatDate(data.booking.created_at)}</p>
+              </div>
+              <BookingStatusBadge status={data.booking.status} />
+            </div>
+            
+            <div className="grid gap-6 sm:grid-cols-2 border-t border-slate-50 pt-8">
+              <div className="flex items-center gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-slate-400">
+                  <Calendar size={20} strokeWidth={1.5} />
                 </div>
-              </Card>
-
-              <Card>
-                <h3 className="mb-8 text-sm font-bold uppercase tracking-wider text-slate-400">Timeline Perjalanan</h3>
-                <BookingTimeline timeline={data.timeline} />
-              </Card>
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Jadwal Perjalanan</p>
+                  <p className="text-sm font-bold text-slate-700">{formatDate(data.booking.departure_date)}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-slate-400">
+                  <MapPin size={20} strokeWidth={1.5} />
+                </div>
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Rute & Destinasi</p>
+                  <p className="text-sm font-bold text-slate-700">{data.booking.origin} • {data.booking.full_route}</p>
+                </div>
+              </div>
             </div>
           </div>
-        </Container>
-      </Section>
-    </PublicLayout>
+        </Card>
+
+        <div className="flex flex-col gap-6">
+          <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Timeline & Status Perjalanan</h3>
+          <Card className="border-none shadow-xl shadow-slate-100/50 p-8 sm:p-12">
+            <BookingTimeline timeline={data.timeline} />
+          </Card>
+        </div>
+      </div>
+    </CustomerLayout>
   );
 }
