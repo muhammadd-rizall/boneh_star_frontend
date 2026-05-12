@@ -2,13 +2,12 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import CustomerLayout from '@/layouts/customer/CustomerLayout';
 import { bookingService } from '@/features/customer/bookings/services/BookingService';
-import { activityTypeService } from '@/features/admin/activity-types/services/ActivityTypeService';
-import { routeTypeService } from '@/features/admin/route-types/services/RouteTypeService';
+import { publicService } from '@/features/public/shared/services/publicService';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import FormField from '@/components/form/FormField';
+import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
-import { ArrowLeft, Send, Compass, MapPin, Users, Info } from 'lucide-react';
+import { ArrowLeft, Send, Compass, MapPin, Users, Info, AlertCircle } from 'lucide-react';
 import type { ActivityType, RouteType } from '@/types/Database';
 
 export default function BookingRequestPage() {
@@ -16,6 +15,7 @@ export default function BookingRequestPage() {
   const [activities, setActivities] = React.useState<ActivityType[]>([]);
   const [routeTypes, setRouteTypes] = React.useState<RouteType[]>([]);
   const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
 
   const [formData, setFormData] = React.useState({
     activity_id: '',
@@ -31,22 +31,24 @@ export default function BookingRequestPage() {
 
   React.useEffect(() => {
     Promise.all([
-      activityTypeService.getAll(),
-      routeTypeService.getAll(),
+      publicService.getActivityTypes(),
+      publicService.getRouteTypes(),
     ]).then(([actData, routeData]) => {
-      setActivities(actData.activityTypes);
-      setRouteTypes(routeData.routeTypes);
+      setActivities(actData);
+      setRouteTypes(routeData);
     });
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
     try {
       const result = await bookingService.create(formData as any);
       navigate(`/customer/bookings/${result.id}`);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      setError(err.response?.data?.message || 'Gagal mengirim permintaan. Pastikan semua data terisi dengan benar.');
     } finally {
       setLoading(false);
     }
@@ -71,6 +73,13 @@ export default function BookingRequestPage() {
       </div>
 
       <div className="mx-auto max-w-4xl">
+        {error && (
+          <div className="mb-6 flex items-center gap-3 rounded-2xl bg-rose-50 px-6 py-4 text-sm text-rose-600 border border-rose-100 animate-in shake duration-500">
+            <AlertCircle className="w-5 h-5 shrink-0" />
+            <span className="font-bold">{error}</span>
+          </div>
+        )}
+
         <Card className="border-none shadow-2xl shadow-slate-100/60 p-8 sm:p-12">
           <form onSubmit={handleSubmit} className="flex flex-col gap-12">
             {/* Section: Basic Info */}
@@ -109,8 +118,8 @@ export default function BookingRequestPage() {
                   </select>
                 </div>
 
-                <FormField label="Tanggal Keberangkatan" type="date" value={formData.departure_date} onChange={(e) => setFormData({ ...formData, departure_date: e.target.value })} className="rounded-2xl border-slate-100" />
-                <FormField label="Estimasi Tanggal Kembali" type="date" value={formData.return_date} onChange={(e) => setFormData({ ...formData, return_date: e.target.value })} className="rounded-2xl border-slate-100" />
+                <Input label="Tanggal Keberangkatan" type="date" value={formData.departure_date} onChange={(e) => setFormData({ ...formData, departure_date: e.target.value })} required />
+                <Input label="Estimasi Tanggal Kembali" type="date" value={formData.return_date} onChange={(e) => setFormData({ ...formData, return_date: e.target.value })} required />
               </div>
             </div>
 
@@ -124,8 +133,8 @@ export default function BookingRequestPage() {
               </div>
               
               <div className="grid gap-6 sm:grid-cols-2">
-                <FormField label="Titik Penjemputan Spesifik" placeholder="Contoh: Gedung Sate, Bandung" value={formData.origin} onChange={(e) => setFormData({ ...formData, origin: e.target.value })} className="rounded-2xl border-slate-100" />
-                <FormField label="Rute & Kota Tujuan" placeholder="Contoh: Bandung - Jakarta - Anyer" value={formData.full_route} onChange={(e) => setFormData({ ...formData, full_route: e.target.value })} className="rounded-2xl border-slate-100" />
+                <Input label="Titik Penjemputan Spesifik" placeholder="Contoh: Gedung Sate, Bandung" value={formData.origin} onChange={(e) => setFormData({ ...formData, origin: e.target.value })} required />
+                <Input label="Rute & Kota Tujuan" placeholder="Contoh: Bandung - Jakarta - Anyer" value={formData.full_route} onChange={(e) => setFormData({ ...formData, full_route: e.target.value })} required />
               </div>
             </div>
 
@@ -139,8 +148,8 @@ export default function BookingRequestPage() {
               </div>
               
               <div className="grid gap-6 sm:grid-cols-2">
-                <FormField label="Estimasi Jumlah Penumpang" type="number" value={formData.passenger_count.toString()} onChange={(e) => setFormData({ ...formData, passenger_count: Number(e.target.value) })} className="rounded-2xl border-slate-100" />
-                <FormField label="Jumlah Unit Bus (Opsional)" type="number" placeholder="Bisa dikosongkan" value={formData.bus_count_requested.toString()} onChange={(e) => setFormData({ ...formData, bus_count_requested: Number(e.target.value) })} className="rounded-2xl border-slate-100" />
+                <Input label="Estimasi Jumlah Penumpang" type="number" min="1" value={formData.passenger_count.toString()} onChange={(e) => setFormData({ ...formData, passenger_count: Number(e.target.value) })} required />
+                <Input label="Jumlah Unit Bus" type="number" min="1" value={formData.bus_count_requested.toString()} onChange={(e) => setFormData({ ...formData, bus_count_requested: Number(e.target.value) })} required />
               </div>
             </div>
 

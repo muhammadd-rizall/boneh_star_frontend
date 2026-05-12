@@ -1,98 +1,139 @@
 import type { Bus } from "@/features/admin/buses/types/Bus";
 import { resolveMediaUrl } from "@/features/admin/company-profile/utils/companyProfileUtils";
-import { Users, ArrowUpRight, ShieldCheck } from "lucide-react";
-import { Button } from "@/components/ui/Button";
+import { ShieldCheck, Armchair, Calendar, Bus as BusIcon, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface FeaturedFleetSectionProps {
   buses: Bus[];
 }
 
+const MAX_PREVIEW = 6;
+
 export default function FeaturedFleetSection({ buses }: FeaturedFleetSectionProps) {
   if (buses.length === 0) return null;
 
+  const preview = buses.slice(0, MAX_PREVIEW);
+  const hasMore = buses.length > MAX_PREVIEW;
+
   return (
-    <section id="armada" className="py-24 bg-transparent">
+    <section id="armada" className="py-20 bg-transparent">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-20 text-center flex flex-col items-center">
-          <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] border border-slate-100 mb-6">
-            <ShieldCheck size={14} />
+        {/* Header */}
+        <div className="mb-14 text-center flex flex-col items-center">
+          <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white text-slate-500 text-[11px] font-semibold uppercase tracking-wider border border-slate-100 mb-5">
+            <ShieldCheck size={13} />
             Armada Eksklusif
           </span>
-          <h2 className="text-5xl font-black tracking-tighter text-slate-950 md:text-6xl leading-[1.1]">
-            Kenyamanan Premium <br />
+          <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl leading-tight">
+            Kenyamanan Premium{" "}
+            <br className="hidden sm:block" />
             <span className="text-orange-500">Di Setiap Unit Kami.</span>
           </h2>
         </div>
 
-        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-3">
-          {buses.map((bus, i) => {
-            const primaryImage = bus.images?.find((img) => img.is_primary) || bus.images?.[0];
-            const imageUrl = resolveMediaUrl(primaryImage?.url);
-
-            return (
-              <div
-                key={bus.id}
-                className="group flex flex-col animate-in fade-in slide-in-from-bottom-8 duration-700"
-                style={{ animationDelay: `${i * 150}ms` }}
-              >
-                {/* Image Container */}
-                <div className="relative aspect-[16/11] overflow-hidden rounded-[3rem] bg-white shadow-2xl shadow-slate-200/40 border-4 border-white transition-all duration-500 group-hover:shadow-orange-200/50 group-hover:-translate-y-2">
-                  {imageUrl ? (
-                    <img
-                      src={imageUrl}
-                      alt={bus.name}
-                      className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center text-slate-100 bg-slate-50">
-                      <Users size={64} strokeWidth={1} />
-                    </div>
-                  )}
-                  
-                  {/* Floating Category Badge */}
-                  <div className="absolute left-6 top-6 rounded-2xl bg-white/80 px-4 py-2 text-[9px] font-black uppercase tracking-[0.15em] text-slate-950 backdrop-blur-xl border border-white/50 shadow-xl shadow-black/5">
-                    {bus.category?.name || "Premium Fleet"}
-                  </div>
-
-                  {/* Quick Detail Overlay */}
-                  <div className="absolute bottom-6 left-6 right-6 translate-y-8 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
-                    <div className="rounded-[1.5rem] bg-slate-950/90 p-4 backdrop-blur-xl flex items-center justify-between">
-                      <div className="flex items-center gap-3 px-2">
-                        <Users size={16} className="text-orange-500" />
-                        <span className="text-[10px] font-black text-white uppercase tracking-widest">{bus.seat_count} Seats</span>
-                      </div>
-                      <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-orange-600 text-white">
-                        <ArrowUpRight size={18} />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Info */}
-                <div className="mt-8 px-4 text-center">
-                  <h3 className="text-2xl font-black tracking-tight text-slate-950 mb-2 transition-colors group-hover:text-orange-600">
-                    {bus.name}
-                  </h3>
-                  <div className="flex items-center justify-center gap-2">
-                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Unit Siap Jalan</span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+        {/* Grid Cards — max 6 preview */}
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {preview.map((bus, i) => (
+            <FleetCard key={bus.id} bus={bus} index={i} />
+          ))}
         </div>
-        
-        <div className="mt-20 flex justify-center">
-          <Button
-            variant="outline"
-            size="lg"
-            className="rounded-full border-slate-200 font-black tracking-widest uppercase text-[10px] hover:bg-slate-950 hover:text-white transition-all duration-500 px-12"
+
+        {/* View All Button */}
+        <div className="mt-14 flex justify-center">
+          <Link
+            to="/armada"
+            className="group inline-flex items-center gap-3 rounded-full border border-slate-200 bg-white px-8 py-3 text-xs font-bold uppercase tracking-wider text-slate-700 shadow-sm transition-all duration-300 hover:bg-slate-900 hover:text-white hover:border-slate-900 hover:shadow-lg"
           >
-            Lihat Katalog Lengkap
-          </Button>
+            {hasMore
+              ? `Lihat Semua Armada (${buses.length} Unit)`
+              : "Lihat Katalog Lengkap"}
+            <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+          </Link>
         </div>
       </div>
     </section>
+  );
+}
+
+/* ─── Fleet Card ─────────────────────────────────────────────── */
+function FleetCard({ bus, index }: { bus: Bus; index: number }) {
+  const primaryImage = bus.images?.find((img) => img.is_primary) || bus.images?.[0];
+  const imageUrl = resolveMediaUrl(primaryImage?.url);
+  const facilities = bus.facilities?.slice(0, 3) || [];
+
+  return (
+    <div
+      className="group flex flex-col rounded-2xl bg-white border border-slate-100 overflow-hidden hover:shadow-xl hover:shadow-slate-200/60 transition-all duration-500 animate-in fade-in slide-in-from-bottom-6"
+      style={{ animationDelay: `${index * 100}ms` }}
+    >
+      {/* Image */}
+      <div className="relative aspect-[16/10] overflow-hidden bg-slate-50">
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={bus.name}
+            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center text-slate-200">
+            <BusIcon size={48} strokeWidth={1} />
+          </div>
+        )}
+
+        {/* Category Badge */}
+        <div className="absolute left-3 top-3 rounded-lg bg-white/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-700 backdrop-blur-md shadow-sm">
+          {bus.category?.name || "Premium"}
+        </div>
+
+        {/* Status Indicator */}
+        <div className="absolute right-3 top-3 flex items-center gap-1.5 rounded-lg bg-emerald-500/90 px-2.5 py-1 backdrop-blur-md">
+          <div className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
+          <span className="text-[10px] font-bold text-white uppercase tracking-wider">Tersedia</span>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="flex flex-1 flex-col p-5">
+        <h3 className="text-base font-bold tracking-tight text-slate-900 group-hover:text-orange-600 transition-colors">
+          {bus.name}
+        </h3>
+        {bus.brand && (
+          <p className="mt-0.5 text-xs font-medium text-slate-400">{bus.brand}</p>
+        )}
+
+        {/* Quick Info */}
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-1.5 text-slate-500">
+            <Armchair size={14} className="text-slate-300" />
+            <span className="text-xs font-semibold">{bus.seat_count} Kursi</span>
+          </div>
+          {bus.production_year && (
+            <div className="flex items-center gap-1.5 text-slate-500">
+              <Calendar size={14} className="text-slate-300" />
+              <span className="text-xs font-semibold">{bus.production_year}</span>
+            </div>
+          )}
+        </div>
+
+        {/* Facilities */}
+        {facilities.length > 0 && (
+          <div className="mt-4 flex flex-wrap gap-1.5">
+            {facilities.map((f) => (
+              <span
+                key={f.id}
+                className="inline-flex rounded-md bg-slate-50 px-2 py-1 text-[10px] font-semibold text-slate-500 border border-slate-100"
+              >
+                {f.name}
+              </span>
+            ))}
+            {(bus.facilities?.length || 0) > 3 && (
+              <span className="inline-flex rounded-md bg-orange-50 px-2 py-1 text-[10px] font-semibold text-orange-500 border border-orange-100">
+                +{(bus.facilities?.length || 0) - 3} lagi
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

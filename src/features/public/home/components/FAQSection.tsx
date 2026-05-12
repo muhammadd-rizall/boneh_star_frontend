@@ -28,46 +28,47 @@ export default function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section className="py-24 bg-white">
-      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-20 text-center flex flex-col items-center">
-          <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-50 text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] border border-slate-100 mb-6">
-            <HelpCircle size={14} />
+    <section className="py-20 bg-white">
+      <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-14 text-center flex flex-col items-center">
+          <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-50 text-slate-500 text-[11px] font-semibold uppercase tracking-wider border border-slate-100 mb-5">
+            <HelpCircle size={13} />
             Bantuan & FAQ
           </span>
-          <h2 className="text-5xl font-black tracking-tighter text-slate-950 md:text-6xl leading-[1.1]">
-            Informasi Penting <br />
-            <span className="text-slate-400 italic">Untuk Perjalanan Anda.</span>
+          <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl leading-tight">
+            Informasi Penting{" "}
+            <br className="hidden sm:block" />
+            <span className="text-slate-400">Untuk Perjalanan Anda.</span>
           </h2>
         </div>
 
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-3">
           {faqs.map((faq, index) => (
             <div 
               key={index} 
-              className={`rounded-[2.5rem] transition-all duration-500 border ${
+              className={`rounded-xl transition-all duration-400 border ${
                 openIndex === index 
-                  ? "border-orange-100 bg-orange-50/20 shadow-xl shadow-orange-100/30" 
-                  : "border-slate-50 bg-white hover:border-slate-200"
+                  ? "border-orange-100 bg-orange-50/30 shadow-md shadow-orange-50" 
+                  : "border-slate-100 bg-white hover:border-slate-200"
               }`}
             >
               <button
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                className="flex w-full items-center justify-between p-8 text-left outline-none"
+                className="flex w-full items-center justify-between p-6 text-left outline-none"
               >
-                <span className={`text-lg font-black tracking-tight ${openIndex === index ? "text-slate-900" : "text-slate-600"}`}>
+                <span className={`text-sm sm:text-base font-bold pr-4 ${openIndex === index ? "text-slate-900" : "text-slate-600"}`}>
                   {faq.question}
                 </span>
-                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl transition-all duration-500 ${
-                  openIndex === index ? "bg-orange-600 text-white rotate-180" : "bg-slate-50 text-slate-400"
+                <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-all duration-300 ${
+                  openIndex === index ? "bg-orange-500 text-white" : "bg-slate-50 text-slate-400"
                 }`}>
-                  {openIndex === index ? <Minus size={18} /> : <Plus size={18} />}
+                  {openIndex === index ? <Minus size={15} /> : <Plus size={15} />}
                 </div>
               </button>
               
               {openIndex === index && (
-                <div className="px-8 pb-10 animate-in fade-in slide-in-from-top-4 duration-500">
-                  <p className="text-slate-500 leading-relaxed font-semibold text-sm">
+                <div className="px-6 pb-6 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <p className="text-slate-500 leading-relaxed font-medium text-sm">
                     {faq.answer}
                   </p>
                 </div>

@@ -3,8 +3,11 @@ import StatsSection from "./components/StatsSection";
 import ActivityTypesSection from "./components/ActivityTypesSection";
 import FeaturedFleetSection from "./components/FeaturedFleetSection";
 import TestimonialsSection from "./components/TestimonialsSection";
+import FAQSection from "./components/FAQSection";
+import ContactSection from "../Contact/ContactFeature";
 import { useHomeData } from "./hooks/useHomeData";
 import Loader from "@/components/feedback/Loader";
+import { CheckCircle2, ShieldCheck, Zap, Clock } from "lucide-react";
 
 export default function HomeFeature() {
   const { stats, activityTypes, featuredBuses, reviews, loading } = useHomeData();
@@ -19,54 +22,93 @@ export default function HomeFeature() {
 
   return (
     <>
+      {/* Hero Section */}
       <Hero />
       
-      {/* Stats Section */}
-      <StatsSection stats={stats} />
+      {/* Stats Divider */}
+      <div className="bg-white border-b border-slate-50">
+        <StatsSection stats={stats} />
+      </div>
 
-      {/* Services/Activity Types Section */}
-      <ActivityTypesSection activityTypes={activityTypes} />
+      {/* Services Section */}
+      <div id="services" className="relative bg-white py-4">
+        <ActivityTypesSection activityTypes={activityTypes} />
+      </div>
 
-      {/* Featured Fleet Section */}
-      <FeaturedFleetSection buses={featuredBuses} />
+      {/* Fleet Catalog */}
+      <section id="armada" className="bg-slate-50/60 py-8 rounded-3xl mx-4 lg:mx-8">
+        <FeaturedFleetSection buses={featuredBuses} />
+      </section>
 
-      {/* Modernized Features Section */}
-      <section id="features" className="bg-slate-900 py-24 text-white overflow-hidden">
+      {/* Why Choose Us Section */}
+      <section id="features" className="relative bg-white py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-20 lg:grid-cols-2 lg:items-center">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.3em] text-orange-500 mb-6">Keunggulan Utama</p>
-              <h2 className="text-4xl font-black tracking-tight md:text-5xl leading-tight">
-                Mengapa Harus <br />
-                <span className="text-white/40">Memilih Boneh Star?</span>
-              </h2>
-              <p className="mt-8 text-lg text-slate-400 leading-relaxed">
-                Kami menggabungkan teknologi modern dengan pelayanan personal untuk memastikan setiap perjalanan Anda menjadi standar baru dalam kenyamanan.
-              </p>
-              
-              <div className="mt-12 grid gap-8 sm:grid-cols-2">
+          <div className="grid gap-16 lg:grid-cols-2 lg:items-center">
+            {/* Left Content */}
+            <div className="flex flex-col gap-8">
+              <div>
+                <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-50 text-slate-500 text-[11px] font-semibold uppercase tracking-wider border border-slate-100 mb-5">
+                  <ShieldCheck size={13} />
+                  Komitmen Kami
+                </span>
+                <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl leading-tight">
+                  Standar Baru dalam{" "}
+                  <br className="hidden sm:block" />
+                  <span className="text-orange-500">Perjalanan Anda.</span>
+                </h2>
+                <p className="mt-5 text-base font-medium text-slate-400 leading-relaxed max-w-lg">
+                  Lebih dari sekadar transportasi, kami memberikan standar baru dalam perjalanan rombongan dengan kenyamanan maksimal dan keamanan terjamin.
+                </p>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
                 {[
-                  { title: "Armada Modern", desc: "Unit kendaraan terbaru dengan standar keamanan internasional." },
-                  { title: "Kru Profesional", desc: "Driver bersertifikat dengan jam terbang tinggi di berbagai medan." },
-                  { title: "Sistem Terpadu", desc: "Proses booking dan monitoring armada yang transparan." },
-                  { title: "Layanan 24/7", desc: "Tim operasional yang siaga mendampingi perjalanan Anda." },
+                  { 
+                    title: "Armada Modern", 
+                    desc: "Seleksi unit terbaru dengan fitur kenyamanan premium.",
+                    icon: Zap
+                  },
+                  { 
+                    title: "Driver Ahli", 
+                    desc: "Kru profesional dengan sertifikasi dan jam terbang tinggi.",
+                    icon: CheckCircle2
+                  },
+                  { 
+                    title: "Harga Jujur", 
+                    desc: "Transparansi biaya tanpa biaya tambahan tersembunyi.",
+                    icon: ShieldCheck
+                  },
+                  { 
+                    title: "24/7 Siaga", 
+                    desc: "Dukungan operasional penuh di setiap rute perjalanan.",
+                    icon: Clock
+                  },
                 ].map((feature) => (
-                  <div key={feature.title} className="group transition-all">
-                    <h4 className="text-sm font-bold text-white group-hover:text-orange-500 transition-colors uppercase tracking-widest">{feature.title}</h4>
-                    <p className="mt-3 text-xs text-slate-500 leading-relaxed">{feature.desc}</p>
+                  <div key={feature.title} className="flex flex-col gap-3 p-6 rounded-xl bg-white border border-slate-100 hover:border-orange-100 hover:shadow-md hover:shadow-orange-50/50 transition-all duration-300 group">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-50 text-orange-500 group-hover:bg-orange-500 group-hover:text-white transition-all duration-300">
+                      <feature.icon size={18} />
+                    </div>
+                    <h4 className="text-sm font-bold text-slate-900">{feature.title}</h4>
+                    <p className="text-xs font-medium text-slate-400 leading-relaxed">{feature.desc}</p>
                   </div>
                 ))}
               </div>
             </div>
-            
-            <div className="relative flex justify-center">
-              <div className="absolute -inset-20 bg-orange-600/10 rounded-full blur-[120px]" />
-              <div className="relative aspect-square w-full max-w-md rounded-[64px] border border-white/10 bg-white/5 backdrop-blur-3xl flex items-center justify-center p-12 text-center overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-orange-600/5 to-transparent" />
-                <div className="relative z-10">
-                  <p className="text-8xl font-black tracking-tighter text-orange-500">98%</p>
-                  <p className="mt-6 text-xl font-bold tracking-tight text-white uppercase tracking-[0.1em]">Customer Satisfaction</p>
-                  <p className="mt-4 text-xs text-slate-500 leading-relaxed">Berdasarkan data ulasan nyata dari ribuan pelanggan kami di tahun 2023.</p>
+
+            {/* Right — Trust Card */}
+            <div className="relative">
+              <div className="relative bg-slate-900 rounded-3xl p-12 shadow-2xl overflow-hidden group border border-slate-800">
+                <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-transparent" />
+                
+                <div className="relative z-10 text-center">
+                  <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 mb-6 transition-transform group-hover:scale-110 duration-500">
+                    <span className="text-3xl">⭐</span>
+                  </div>
+                  <p className="text-6xl sm:text-7xl font-extrabold tracking-tighter text-orange-500 mb-3">98%</p>
+                  <h3 className="text-xl font-bold text-white mb-3">Customer Trust</h3>
+                  <p className="text-sm font-medium text-slate-400 leading-relaxed max-w-sm mx-auto">
+                    Indeks kepuasan pelanggan kami mencerminkan komitmen terhadap kualitas layanan di setiap perjalanan.
+                  </p>
                 </div>
               </div>
             </div>
@@ -74,37 +116,14 @@ export default function HomeFeature() {
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <TestimonialsSection reviews={reviews} />
-      
-      {/* Call to Action Bottom */}
-      <section id="contact" className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
-        <div className="relative overflow-hidden rounded-[48px] bg-slate-900 px-8 py-24 text-center shadow-2xl">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(249,115,22,0.15),transparent_40%)]" />
-          <div className="relative z-10">
-            <h2 className="text-4xl font-black tracking-tight text-white md:text-6xl leading-tight">
-              Siap Menjelajah Bersama?
-            </h2>
-            <p className="mx-auto mt-8 max-w-2xl text-lg text-slate-400 leading-relaxed">
-              Dapatkan pengalaman perjalanan rombongan yang tak terlupakan. Hubungi kami sekarang untuk penawaran harga terbaik.
-            </p>
-            <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <a
-                href="#contact"
-                className="inline-flex h-16 items-center justify-center rounded-2xl bg-orange-600 px-12 text-sm font-bold text-white shadow-xl shadow-orange-600/20 transition-all hover:bg-orange-500 active:scale-95"
-              >
-                Minta Penawaran Gratis
-              </a>
-              <a
-                href="#armada"
-                className="inline-flex h-16 items-center justify-center rounded-2xl border border-white/20 px-12 text-sm font-bold text-white backdrop-blur-sm transition-all hover:bg-white/10 active:scale-95"
-              >
-                Lihat Katalog Armada
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Testimonials */}
+      <div id="testimonials">
+        <TestimonialsSection reviews={reviews} />
+      </div>
+
+      {/* FAQ Section */}
+      <FAQSection />
+
     </>
   );
 }

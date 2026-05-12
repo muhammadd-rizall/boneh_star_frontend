@@ -3,18 +3,31 @@ import { useParams, useNavigate } from 'react-router-dom';
 import CustomerLayout from '@/layouts/customer/CustomerLayout';
 import { useBookingDetail } from '@/features/customer/bookings/hooks/useBookings';
 import { bookingService } from '@/features/customer/bookings/services/BookingService';
+import { historyService } from '@/features/customer/bookings/services/HistoryService';
+import { reviewService } from '@/features/customer/reviews/services/ReviewService';
+import type { ReviewFormData } from '@/features/customer/reviews/types/Review';
 import BookingStatusBadge from '@/features/customer/bookings/components/BookingStatusBadge';
 import QuotationSection from '@/features/customer/bookings/components/QuotationSection';
 import PaymentSection from '@/features/customer/bookings/components/PaymentSection';
+import BookingTimeline from '@/features/customer/bookings/components/BookingTimeline';
 import ReviewForm from '@/features/customer/reviews/components/ReviewForm';
-import { reviewService } from '@/features/customer/reviews/services/ReviewService';
-import type { ReviewFormData } from '@/features/customer/reviews/types/Review';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import Loader from '@/components/feedback/Loader';
 import ErrorState from '@/components/feedback/ErrorState';
 import { Modal } from '@/components/ui/Modal';
-import { Calendar, MapPin, Users, Bus, ArrowLeft, Info, FileText, XCircle } from 'lucide-react';
+import { 
+  Calendar, 
+  MapPin, 
+  Users, 
+  Bus, 
+  ArrowLeft, 
+  Info, 
+  FileText, 
+  XCircle,
+  FileDown,
+  Star
+} from 'lucide-react';
 import { formatCurrency, formatDate } from '@/utils/formatter';
 import type { PaymentMethod } from '@/types/Database';
 
@@ -23,6 +36,7 @@ export default function BookingDetailPage() {
   const navigate = useNavigate();
   const { 
     booking, 
+    paymentMethods,
     loading, 
     error, 
     refresh, 
@@ -31,14 +45,20 @@ export default function BookingDetailPage() {
     cancelBooking 
   } = useBookingDetail(id!);
 
-  const [paymentMethods, setPaymentMethods] = React.useState<PaymentMethod[]>([]);
   const [showCancelModal, setShowCancelModal] = React.useState(false);
   const [cancelReason, setCancelReason] = React.useState('');
   const [cancelLoading, setCancelLoading] = React.useState(false);
+  const [timeline, setTimeline] = React.useState<any[]>([]);
+  const [loadingTimeline, setLoadingTimeline] = React.useState(false);
 
   React.useEffect(() => {
-    bookingService.getPaymentMethods().then(setPaymentMethods);
-  }, []);
+    if (id) {
+      setLoadingTimeline(true);
+      historyService.getDetail(id).then(res => {
+        setTimeline(res.timeline);
+      }).finally(() => setLoadingTimeline(false));
+    }
+  }, [id, booking?.status]);
 
   const handleCancel = async () => {
     if (!cancelReason.trim()) return;
@@ -48,6 +68,22 @@ export default function BookingDetailPage() {
       setShowCancelModal(false);
     } finally {
       setCancelLoading(false);
+    }
+  };
+
+  const handleDownloadInvoice = async () => {
+    if (!id || !booking?.transaction) return;
+    try {
+      const blob = await historyService.downloadInvoice(id);
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Invoice-${booking.transaction.invoice_number}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err) {
+      console.error('Failed to download invoice:', err);
     }
   };
 
@@ -83,6 +119,17 @@ export default function BookingDetailPage() {
           Kembali ke Riwayat
         </button>
         <div className="flex items-center gap-3">
+          {booking.transaction && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              icon={FileDown} 
+              onClick={handleDownloadInvoice}
+              className="rounded-xl font-bold border-slate-100"
+            >
+              Download Invoice
+            </Button>
+          )}
           {['pending', 'quoted'].includes(booking.status) && (
             <Button 
               variant="ghost" 
@@ -113,8 +160,8 @@ export default function BookingDetailPage() {
             </div>
 
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              <DetailItem icon={Calendar} label="Jadwal" value={`${formatDate(booking.departure_date)} - ${formatDate(booking.return_date || '')}`} />
-              <DetailItem icon={MapPin} label="Rute" value={`${booking.origin} (${booking.full_route})`} />
+              <DetailItem icon={Calendar} label="Jadwal" value={booking.return_date ? `${formatDate(booking.departure_date)} - ${formatDate(booking.return_date)}` : formatDate(booking.departure_date)} />
+              <DetailItem icon={MapPin} label="Rute" value={`${booking.origin} (${booking.full_route || 'Rute belum diatur'})`} />
               <DetailItem icon={Users} label="Kapasitas" value={`${booking.passenger_count} Penumpang`} />
               <DetailItem icon={Bus} label="Armada" value={`${booking.bus_count_requested} Unit Bus`} />
             </div>
@@ -141,7 +188,7 @@ export default function BookingDetailPage() {
             <div className="flex flex-col gap-5 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
               <h2 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Penawaran Harga</h2>
               <QuotationSection 
-                quotation={booking.quotation} 
+                quotation={booking.quotation as any} 
                 onAccept={() => acceptQuotation(booking.quotation!.id)} 
                 onRevise={(note) => reviseQuotation(booking.quotation!.id, note)}
               />
@@ -153,7 +200,7 @@ export default function BookingDetailPage() {
             <div className="flex flex-col gap-5 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
               <h2 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Manajemen Pembayaran</h2>
               <PaymentSection 
-                transaction={booking.transaction} 
+                transaction={booking.transaction as any} 
                 paymentMethods={paymentMethods}
                 onUpload={(data) => bookingService.uploadPayment(booking.id, data).then(refresh)}
               />
@@ -164,15 +211,29 @@ export default function BookingDetailPage() {
           {booking.status === 'completed' && (
             <div className="flex flex-col gap-5 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300">
               <h2 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Bagikan Pengalaman</h2>
-              <Card className="border-none shadow-xl shadow-slate-100/50">
-                <ReviewForm 
-                  bookingId={booking.id} 
-                  onCancel={() => {}} 
-                  onSubmit={async (data: ReviewFormData) => {
-                    await reviewService.create(data);
-                    refresh();
-                  }}
-                />
+              <Card className="border-none shadow-xl shadow-slate-100/50 p-8 sm:p-10">
+                {(booking as any).review ? (
+                  <div className="flex flex-col items-center text-center gap-4">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+                      <Star className="fill-emerald-600" size={32} />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-black text-slate-950">Terima kasih atas ulasan Anda!</h3>
+                      <p className="mt-2 text-sm font-medium text-slate-500 max-w-sm">
+                        Ulasan Anda telah kami terima dan sangat berarti bagi kami untuk terus meningkatkan kualitas layanan.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <ReviewForm 
+                    bookingId={booking.id} 
+                    onCancel={() => {}} 
+                    onSubmit={async (data: ReviewFormData) => {
+                      await reviewService.create(data);
+                      refresh();
+                    }}
+                  />
+                )}
               </Card>
             </div>
           )}
@@ -216,6 +277,17 @@ export default function BookingDetailPage() {
                 <p className="text-xs font-bold text-rose-600 leading-relaxed italic">"{booking.cancelled_reason || 'Tidak ada alasan spesifik.'}"</p>
               </div>
             )}
+
+            <div className="h-px bg-slate-100" />
+            
+            <div className="flex flex-col gap-5">
+              <h2 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Timeline</h2>
+              {loadingTimeline ? (
+                <div className="flex justify-center py-4"><Loader size="sm" /></div>
+              ) : (
+                <BookingTimeline timeline={timeline} />
+              )}
+            </div>
           </Card>
         </div>
       </div>

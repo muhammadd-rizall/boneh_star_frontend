@@ -112,8 +112,9 @@ export function resolveMediaUrl(path: string | null | undefined): string {
   if (path.startsWith("http")) return path;
   
   // Fallback jika backend mengirim path relatif (cadangan)
-  const storageUrl = "http://localhost:8000/storage/";
-  return `${storageUrl}${path.replace(/^\//, "")}`;
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
+  const baseUrl = apiBaseUrl.replace(/\/api$/, "");
+  return `${baseUrl}/storage/${path.replace(/^\//, "")}`;
 }
 
 export function buildWhatsAppHref(whatsapp: string): string {

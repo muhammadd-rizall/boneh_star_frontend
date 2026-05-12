@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { publicService } from "@/features/public/services/publicService";
+import { publicService } from "@/features/public/shared/services/publicService";
 import type { Bus } from "@/features/admin/buses/types/Bus";
 import type { ActivityType } from "@/features/admin/activity-types/types/ActivityType";
 import type { Review } from "@/features/admin/reviews/types/Review";
@@ -30,27 +30,30 @@ export function useHomeData() {
     try {
       setData((prev) => ({ ...prev, loading: true, error: null }));
       
-      const [busRes, routeRes, activityRes, reviewRes] = await Promise.all([
-        publicService.getBuses(),
+      const [busPage, routeRes, activityRes, reviewPage] = await Promise.all([
+        publicService.getBusesPaginated({ per_page: 100 }), // Get many for featured filtering
         publicService.getRouteTypes(),
         publicService.getActivityTypes(),
-        publicService.getReviews({ per_page: 6 }),
+        publicService.getReviewsPaginated({ per_page: 6 }),
       ]);
+
+      const busRes = busPage.data;
+      const reviewRes = reviewPage.data;
 
       // Filter featured buses (available + has images)
       const featured = busRes
         .filter((b: Bus) => b.status === 'available' && b.images && b.images.length > 0)
         .slice(0, 4);
 
-      // Extract statistics
-      const totalBuses = busRes.length;
+      // Extract statistics from meta if available, else fallback to length
+      const totalBuses = busPage.meta?.total || busRes.length;
       const totalRoutes = routeRes.length;
-      const completedBookings = reviewRes.length;
+      const totalBookings = reviewPage.meta?.total || reviewRes.length;
 
       setData({
         stats: {
           buses: totalBuses,
-          bookings: completedBookings,
+          bookings: totalBookings,
           routes: totalRoutes,
           founded: 2018, // Default value
         },

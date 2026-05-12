@@ -8,9 +8,11 @@ interface AuthState {
   user: Customer | null;
   token: string | null;
   isAuthenticated: boolean;
+  hasHydrated: boolean;
   login: (data: LoginFormData) => Promise<void>;
   register: (data: RegisterFormData) => Promise<void>;
   logout: () => Promise<void>;
+  setHasHydrated: (state: boolean) => void;
 }
 
 export const useCustomerAuthStore = create<AuthState>()(
@@ -19,13 +21,14 @@ export const useCustomerAuthStore = create<AuthState>()(
       user: null,
       token: null,
       isAuthenticated: false,
+      hasHydrated: false,
 
       login: async (data: LoginFormData) => {
         const response = await authService.login(data);
         set({
           user: response.data.user,
           token: response.data.token,
-          isAuthenticated: true,
+          isAuthenticated: Boolean(response.data.token),
         });
       },
 
@@ -34,17 +37,36 @@ export const useCustomerAuthStore = create<AuthState>()(
         set({
           user: response.data.user,
           token: response.data.token,
-          isAuthenticated: true,
+          isAuthenticated: Boolean(response.data.token),
         });
       },
 
       logout: async () => {
-        await authService.logout();
-        set({ user: null, token: null, isAuthenticated: false });
+        try {
+          await authService.logout();
+        } catch {
+          // Keep local logout deterministic even if the token is already invalid.
+        } finally {
+          set({ user: null, token: null, isAuthenticated: false });
+        }
       },
+
+      setHasHydrated: (state) => set({ hasHydrated: state }),
     }),
     {
       name: 'customer-auth-storage',
+      onRehydrateStorage: () => (state, error) => {
+        if (error) {
+          console.error('Failed to hydrate customer auth store.', error);
+        }
+
+        if (state && !state.token) {
+          state.user = null;
+          state.isAuthenticated = false;
+        }
+
+        state?.setHasHydrated(true);
+      },
     }
   )
 );

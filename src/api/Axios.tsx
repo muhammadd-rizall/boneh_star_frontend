@@ -37,12 +37,20 @@ api.interceptors.response.use(
             const currentPath = window.location.pathname;
 
             if (isAdminRequest) {
-                useAuthStore.getState().logout();
+                useAuthStore.setState({
+                    user: null,
+                    token: null,
+                    isAuthenticated: false,
+                });
                 if (currentPath !== '/admin/login') {
                     window.location.href = '/admin/login';
                 }
             } else {
-                useCustomerAuthStore.getState().logout();
+                useCustomerAuthStore.setState({
+                    user: null,
+                    token: null,
+                    isAuthenticated: false,
+                });
                 if (currentPath !== '/auth/login') {
                     window.location.href = '/auth/login';
                 }

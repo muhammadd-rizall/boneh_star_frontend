@@ -37,6 +37,8 @@ import {
 import "./App.css";
 import BusPage from "./page/admin/buses/BusPage";
 import Home from "@/page/public/home";
+import ContactPage from "@/page/public/contact";
+import FleetPage from "@/page/public/fleet";
 import CustomerProfilePage from "@/page/customer/profile";
 import BookingIndexPage from "@/page/customer/bookings";
 import BookingDetailPage from "@/page/customer/bookings/BookingDetailPage";
@@ -47,9 +49,15 @@ import NotificationIndexPage from "@/page/customer/notifications";
 import LoginPage from "@/page/auth/public/Login";
 import RegisterPage from "@/page/auth/public/Register";
 import { useCustomerAuthStore } from "@/features/auth/public";
+import Loader from "@/components/feedback/Loader";
 
 function CustomerProtectedRoute({ children }: { children: React.ReactNode }) {
   const isCustomerAuthenticated = useCustomerAuthStore((state) => state.isAuthenticated);
+  const hasHydrated = useCustomerAuthStore((state) => state.hasHydrated);
+
+  if (!hasHydrated) {
+    return <Loader text="Memuat sesi pelanggan..." />;
+  }
 
   if (!isCustomerAuthenticated) {
     return <Navigate to="/auth/login" replace />;
@@ -292,10 +300,13 @@ const DashboardHome = () => {
 function App() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const isCustomerAuthenticated = useCustomerAuthStore((state) => state.isAuthenticated);
+  const hasCustomerHydrated = useCustomerAuthStore((state) => state.hasHydrated);
 
   return (
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/contact" element={<ContactPage />} />
+      <Route path="/armada" element={<FleetPage />} />
       <Route
         path="/customer/profile"
         element={
@@ -352,8 +363,14 @@ function App() {
           </CustomerProtectedRoute>
         }
       />
-      <Route path="/auth/login" element={isCustomerAuthenticated ? <Navigate to="/" /> : <LoginPage />} />
-      <Route path="/auth/register" element={isCustomerAuthenticated ? <Navigate to="/" /> : <RegisterPage />} />
+      <Route
+        path="/auth/login"
+        element={hasCustomerHydrated ? (isCustomerAuthenticated ? <Navigate to="/" /> : <LoginPage />) : <Loader text="Memuat sesi pelanggan..." />}
+      />
+      <Route
+        path="/auth/register"
+        element={hasCustomerHydrated ? (isCustomerAuthenticated ? <Navigate to="/" /> : <RegisterPage />) : <Loader text="Memuat sesi pelanggan..." />}
+      />
       <Route
         path="/admin/login"
         element={
