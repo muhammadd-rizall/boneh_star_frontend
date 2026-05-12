@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import Input from "@/components/ui/Input";
-import Select from "@/components/ui/Select";
-import Button from "@/components/ui/Button";
-import Textarea from "@/components/ui/Textarea";
+import { Input } from "@/components/ui/Input";
+import { CustomSelect as Select } from "@/components/ui/CustomSelect";
+import { Button } from "@/components/ui/Button";
+import { Textarea } from "@/components/ui/Textarea";
 import { quotationService } from "../services/QuotationService";
 import type { Quotation, QuotationFormData, QuotationStatus } from "../types/Quotation";
 import { bookingService } from "@/features/admin/bookings/services/BookingService";

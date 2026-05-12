@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import Input from "@/components/ui/Input";
-import Button from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 import { roleService } from "../services/RoleService";
 import type { Role, RoleFormData, Permission } from "../types/Role";
 import { ShieldCheck, Save, CheckSquare, Square, Loader2 } from "lucide-react";

@@ -1,7 +1,7 @@
 import type { Bus } from "@/features/admin/buses/types/Bus";
 import { resolveMediaUrl } from "@/features/admin/company-profile/utils/companyProfileUtils";
 import { Users, ArrowUpRight, ShieldCheck } from "lucide-react";
-import Button from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 
 interface FeaturedFleetSectionProps {
   buses: Bus[];

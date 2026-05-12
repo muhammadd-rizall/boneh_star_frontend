@@ -1,7 +1,7 @@
 import React from 'react';
 import type { CustomerQuotation } from '../types/Booking';
-import Card from '@/components/ui/Card';
-import Button from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
 import { formatCurrency, formatDate } from '@/utils/formatter';
 import { Receipt, Info, CheckCircle2, MessageSquareText, Calendar } from 'lucide-react';
 

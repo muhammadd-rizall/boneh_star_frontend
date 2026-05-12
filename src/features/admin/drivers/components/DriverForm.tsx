@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
-import Input from "@/components/ui/Input";
-import Textarea from "@/components/ui/Textarea";
-import Select from "@/components/ui/Select";
-import Button from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
+import { CustomSelect as Select } from "@/components/ui/CustomSelect";
+import { Button } from "@/components/ui/Button";
 import { User, Save, Phone, MapPin, Image as ImageIcon, Info, X, Camera } from "lucide-react";
 import type { Driver } from "../types/Driver";
 import { driverService } from "../services/DriverService";

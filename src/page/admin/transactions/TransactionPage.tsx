@@ -5,8 +5,8 @@ import {
   useTransactions,
   type Transaction,
 } from "@/features/admin/transactions"
-import Button from "@/components/ui/Button"
-import Modal from "@/components/ui/Modal"
+import { Button } from "@/components/ui/Button"
+import { Modal } from "@/components/ui/Modal"
 import Confirmation from "@/components/feedback/Confirmation"
 import {
   PageHeader, StatCard, StatGrid, ViewToggle, PageToolbar, ErrorBanner,

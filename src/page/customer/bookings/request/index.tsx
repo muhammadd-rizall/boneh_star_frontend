@@ -4,10 +4,10 @@ import CustomerLayout from '@/layouts/customer/CustomerLayout';
 import { bookingService } from '@/features/customer/bookings/services/BookingService';
 import { activityTypeService } from '@/features/admin/activity-types/services/ActivityTypeService';
 import { routeTypeService } from '@/features/admin/route-types/services/RouteTypeService';
-import Button from '@/components/ui/Button';
-import Card from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 import FormField from '@/components/form/FormField';
-import Textarea from '@/components/ui/Textarea';
+import { Textarea } from '@/components/ui/Textarea';
 import { ArrowLeft, Send, Compass, MapPin, Users, Info } from 'lucide-react';
 import type { ActivityType, RouteType } from '@/types/Database';
 

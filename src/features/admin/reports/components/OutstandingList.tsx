@@ -1,6 +1,6 @@
 
-import Table from "@/components/ui/Table";
-import type { Column } from "@/components/ui/Table";
+import { DataTable } from "@/components/ui/DataTable";
+import type { Column } from "@/components/ui/DataTable";
 import { formatCurrency, formatDate } from "@/utils/formatter";
 import type { OutstandingItem } from "../types/IncomeReport";
 
@@ -43,7 +43,7 @@ export default function OutstandingList({ data, loading }: OutstandingListProps)
           {data.length} Unpaid Invoices
         </span>
       </div>
-      <Table 
+      <DataTable 
         data={data} 
         columns={columns} 
         loading={loading} 

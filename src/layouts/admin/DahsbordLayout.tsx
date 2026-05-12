@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
 import api from "@/api/Axios";
-import { useNotifications } from "@/features/admin/notifications/hooks/useNotifications";
-import NotificationDrawer from "@/features/admin/notifications/components/NotificationDrawer";
+import { useNotifications, NotificationDrawer } from "@/features/admin/notifications";
 import {
   LayoutDashboard,
   Users,

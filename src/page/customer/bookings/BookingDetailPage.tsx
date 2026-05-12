@@ -9,11 +9,11 @@ import PaymentSection from '@/features/customer/bookings/components/PaymentSecti
 import ReviewForm from '@/features/customer/reviews/components/ReviewForm';
 import { reviewService } from '@/features/customer/reviews/services/ReviewService';
 import type { ReviewFormData } from '@/features/customer/reviews/types/Review';
-import Card from '@/components/ui/Card';
-import Button from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
 import Loader from '@/components/feedback/Loader';
 import ErrorState from '@/components/feedback/ErrorState';
-import Modal from '@/components/ui/Modal';
+import { Modal } from '@/components/ui/Modal';
 import { Calendar, MapPin, Users, Bus, ArrowLeft, Info, FileText, XCircle } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/utils/formatter';
 import type { PaymentMethod } from '@/types/Database';

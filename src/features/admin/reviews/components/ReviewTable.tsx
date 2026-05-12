@@ -1,6 +1,6 @@
-import Table from "@/components/ui/Table"
-import type { Column } from "@/components/ui/Table"
-import Button from "@/components/ui/Button"
+import { DataTable } from "@/components/ui/DataTable"
+import type { Column } from "@/components/ui/DataTable"
+import { Button } from "@/components/ui/Button"
 import type { Review } from "@/features/admin/reviews/types/Review"
 import { Star, Eye, EyeOff, Trash2, RotateCcw, User } from "lucide-react"
 
@@ -124,5 +124,5 @@ export default function ReviewTable({
     }
   ]
 
-  return <Table columns={columns} data={data} loading={loading} />
+  return <DataTable columns={columns} data={data} loading={loading} />
 }

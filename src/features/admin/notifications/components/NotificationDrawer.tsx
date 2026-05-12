@@ -1,7 +1,7 @@
 import { X, Bell, Trash2, CheckCircle2, Info, AlertCircle } from "lucide-react";
 import { useNotifications } from "../hooks/useNotifications";
 import { formatTimeAgo } from "@/utils/formatter";
-import Button from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import Loader from "@/components/feedback/Loader";
 
 interface NotificationDrawerProps {

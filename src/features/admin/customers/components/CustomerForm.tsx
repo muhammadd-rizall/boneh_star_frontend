@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import Input from "@/components/ui/Input";
-import Button from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 import { User as UserIcon, Mail, Lock, Phone, MapPin, Save } from "lucide-react";
 import type { Customer, CustomerFormData } from "../types/Customer";
 import { customerService } from "../services/CustomerService";

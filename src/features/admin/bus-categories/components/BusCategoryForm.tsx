@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import Input from "@/components/ui/Input";
-import Button from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 import { Layout, Users, FileText, Save } from "lucide-react";
 import type { BusCategory, BusCategoryFormData } from "../types/BusCategory";
 import { busCategoryService } from "../services/BusCategoryService";

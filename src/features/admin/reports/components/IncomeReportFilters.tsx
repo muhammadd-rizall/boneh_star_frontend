@@ -1,5 +1,5 @@
 
-import Select from "@/components/ui/Select";
+import { CustomSelect as Select } from "@/components/ui/CustomSelect";
 import { Calendar, Filter } from "lucide-react";
 import type { IncomeReportFilters as FiltersType } from "../types/IncomeReport";
 

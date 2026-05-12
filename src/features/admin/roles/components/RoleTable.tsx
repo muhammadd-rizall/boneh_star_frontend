@@ -1,6 +1,6 @@
-import Table from "@/components/ui/Table"
-import type { Column } from "@/components/ui/Table"
-import Button from "@/components/ui/Button"
+import { DataTable } from "@/components/ui/DataTable"
+import type { Column } from "@/components/ui/DataTable"
+import { Button } from "@/components/ui/Button"
 import type { Role } from "../types/Role"
 import { Edit, Trash2, ShieldCheck, Users } from "lucide-react"
 
@@ -80,5 +80,5 @@ export default function RoleTable({ data, onDelete, onEdit, loading }: RoleTable
     }
   ]
 
-  return <Table columns={columns} data={data} loading={loading} />
+  return <DataTable columns={columns} data={data} loading={loading} />
 }

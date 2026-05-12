@@ -1,6 +1,6 @@
-import Table from "@/components/ui/Table"
-import type { Column } from "@/components/ui/Table"
-import Button from "@/components/ui/Button"
+import { DataTable } from "@/components/ui/DataTable"
+import type { Column } from "@/components/ui/DataTable"
+import { Button } from "@/components/ui/Button"
 import type { Booking } from "@/features/admin/bookings/types/Booking"
 import { Edit, Trash2, Calendar, MapPin, Users, Bus, RotateCcw } from "lucide-react"
 
@@ -171,5 +171,5 @@ export default function BookingTable({
     }
   ]
 
-  return <Table columns={columns} data={data} loading={loading} />
+  return <DataTable columns={columns} data={data} loading={loading} />
 }

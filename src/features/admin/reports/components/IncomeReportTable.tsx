@@ -1,6 +1,6 @@
 
-import Table from "@/components/ui/Table";
-import type { Column } from "@/components/ui/Table";
+import { DataTable } from "@/components/ui/DataTable";
+import type { Column } from "@/components/ui/DataTable";
 import { formatCurrency, formatDate } from "@/utils/formatter";
 import type { Payment } from "@/types/Database";
 
@@ -52,7 +52,7 @@ export default function IncomeReportTable({ data, loading }: IncomeReportTablePr
       <div className="flex items-center justify-between px-1">
         <h3 className="text-lg font-bold text-slate-800">Verified Payments History</h3>
       </div>
-      <Table 
+      <DataTable 
         data={data} 
         columns={columns} 
         loading={loading} 

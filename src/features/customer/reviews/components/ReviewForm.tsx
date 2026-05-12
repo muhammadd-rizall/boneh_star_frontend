@@ -1,7 +1,7 @@
 import React from 'react';
 import type { ReviewFormData } from '../types/Review';
-import Button from '@/components/ui/Button';
-import Textarea from '@/components/ui/Textarea';
+import { Button } from '@/components/ui/Button';
+import { Textarea } from '@/components/ui/Textarea';
 import StarRating from './StarRating';
 
 interface Props {

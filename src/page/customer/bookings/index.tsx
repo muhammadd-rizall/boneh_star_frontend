@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import CustomerLayout from '@/layouts/customer/CustomerLayout';
 import { useBookings } from '@/features/customer/bookings/hooks/useBookings';
 import BookingList from '@/features/customer/bookings/components/BookingList';
-import Button from '@/components/ui/Button';
+import { Button } from '@/components/ui/Button';
 import Loader from '@/components/feedback/Loader';
 import ErrorState from '@/components/feedback/ErrorState';
 import { Plus } from 'lucide-react';

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import Input from "@/components/ui/Input";
-import Button from "@/components/ui/Button";
-import Select from "@/components/ui/Select";
-import Textarea from "@/components/ui/Textarea";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import { CustomSelect as Select } from "@/components/ui/CustomSelect";
+import { Textarea } from "@/components/ui/Textarea";
 import {
   Tag,
   Bus as BusIcon,

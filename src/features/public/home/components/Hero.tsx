@@ -10,7 +10,7 @@ import heroImage from "@/assets/hero.png";
 import { useState, useEffect } from "react";
 import { publicService } from "@/features/public/services/publicService";
 import { buildWhatsAppHref } from "@/features/admin/company-profile/utils/companyProfileUtils";
-import Button from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 
 interface HeroCategoryOption {
   id: string;

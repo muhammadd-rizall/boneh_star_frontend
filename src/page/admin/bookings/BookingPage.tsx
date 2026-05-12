@@ -5,8 +5,8 @@ import {
   useBookings,
   type Booking,
 } from "@/features/admin/bookings"
-import Button from "@/components/ui/Button"
-import Modal from "@/components/ui/Modal"
+import { Button } from "@/components/ui/Button"
+import { Modal } from "@/components/ui/Modal"
 import Confirmation from "@/components/feedback/Confirmation"
 import {
   PageHeader,

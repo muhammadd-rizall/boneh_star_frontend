@@ -1,6 +1,6 @@
 import React from "react"
 import { List, Trash2 } from "lucide-react"
-import Button from "./Button"
+import { Button } from "./Button"
 import Search from "./Search"
 
 // ─── PageHeader ────────────────────────────────────────────────────────────────

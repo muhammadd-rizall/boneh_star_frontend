@@ -4,7 +4,7 @@ import { useProfile } from '@/features/customer/profile/hooks/useProfile';
 import ProfileInfo from '@/features/customer/profile/components/ProfileInfo';
 import ProfileEditForm from '@/features/customer/profile/components/ProfileEditForm';
 import BookingStats from '@/features/customer/profile/components/BookingStats';
-import Modal from '@/components/ui/Modal';
+import { Modal } from '@/components/ui/Modal';
 import Loader from '@/components/feedback/Loader';
 import ErrorState from '@/components/feedback/ErrorState';
 

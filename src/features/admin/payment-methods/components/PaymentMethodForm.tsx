@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import Input from "@/components/ui/Input";
-import Button from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 import { CreditCard, Save, User, Hash, CheckCircle2, Circle } from "lucide-react";
 import type { PaymentMethod, PaymentMethodFormData } from "../types/PaymentMethod";
 import { paymentMethodService } from "../services/PaymentMethodService";

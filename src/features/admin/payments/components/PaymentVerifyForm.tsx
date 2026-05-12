@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import Button from "@/components/ui/Button";
-import Textarea from "@/components/ui/Textarea";
+import { Button } from "@/components/ui/Button";
+import { Textarea } from "@/components/ui/Textarea";
 import { CheckCircle, XCircle, Save, AlignLeft } from "lucide-react";
 import type { Payment, PaymentVerifyData } from "../types/Payment";
 import { paymentService } from "../services/PaymentService";

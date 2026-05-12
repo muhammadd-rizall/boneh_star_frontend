@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import Input from "@/components/ui/Input";
-import Textarea from "@/components/ui/Textarea";
-import Select from "@/components/ui/Select";
-import Button from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
+import { CustomSelect as Select } from "@/components/ui/CustomSelect";
+import { Button } from "@/components/ui/Button";
 import { Map, Save, AlignLeft, Globe } from "lucide-react";
 import type { RouteType, RouteTypeFormData } from "../types/RouteType";
 import { routeTypeService } from "../services/RouteTypeService";

@@ -4,7 +4,7 @@ import BusAvailabilityFilters from "./components/BusAvailabilityFilters";
 import BusAvailabilityReportTable from "./components/BusAvailabilityReportTable";
 import Loader from "@/components/feedback/Loader";
 import ErrorState from "@/components/feedback/ErrorState";
-import Button from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import { PageHeader } from "@/components/ui/PageComponents";
 import { RefreshCw } from "lucide-react";
 

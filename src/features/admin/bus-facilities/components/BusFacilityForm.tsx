@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import Input from "@/components/ui/Input";
-import Button from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 import { Shield, Save } from "lucide-react";
 import type { BusFacility, BusFacilityFormData } from "../types/BusFacility";
 import { busFacilityService } from "../services/BusFacilityService";

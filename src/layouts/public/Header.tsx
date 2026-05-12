@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { resolveMediaUrl } from "@/features/admin/company-profile/utils/companyProfileUtils";
 import { useCustomerAuthStore } from "@/features/auth/public";
-import Button from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 
 const navigation = [
   { label: "Armada", href: "#armada" },

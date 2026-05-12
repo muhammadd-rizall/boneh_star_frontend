@@ -1,6 +1,6 @@
 import { CalendarCheck, Clock, CheckCircle2, XCircle, ShoppingBag } from 'lucide-react';
 import type { BookingStatistics } from '../types/Profile';
-import Card from '@/components/ui/Card';
+import { Card } from '@/components/ui/Card';
 
 interface Props {
   statistics: BookingStatistics;

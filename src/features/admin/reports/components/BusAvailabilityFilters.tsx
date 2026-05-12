@@ -1,5 +1,5 @@
 
-import Input from "@/components/ui/Input";
+import { Input } from "@/components/ui/Input";
 import { Calendar } from "lucide-react";
 import type { BusAvailabilityReportFilters } from "../types/BusAvailabilityReport";
 

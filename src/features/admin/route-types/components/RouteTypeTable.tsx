@@ -1,6 +1,6 @@
-import Table from "@/components/ui/Table"
-import type { Column } from "@/components/ui/Table"
-import Button from "@/components/ui/Button"
+import { DataTable } from "@/components/ui/DataTable"
+import type { Column } from "@/components/ui/DataTable"
+import { Button } from "@/components/ui/Button"
 import type { RouteType } from "@/features/admin/route-types/types/RouteType"
 import { Edit, Trash2, Map, RotateCcw } from "lucide-react"
 
@@ -113,5 +113,5 @@ export default function RouteTypeTable({
     }
   ]
 
-  return <Table columns={columns} data={data} loading={loading} />
+  return <DataTable columns={columns} data={data} loading={loading} />
 }

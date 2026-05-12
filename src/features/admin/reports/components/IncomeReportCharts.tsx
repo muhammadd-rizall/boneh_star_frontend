@@ -1,5 +1,5 @@
 
-import Card from "@/components/ui/Card";
+import { Card } from "@/components/ui/Card";
 import { formatCurrency } from "@/utils/formatter";
 import type { IncomeReportStatistics } from "../types/IncomeReport";
 

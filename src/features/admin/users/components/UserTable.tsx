@@ -1,8 +1,8 @@
 import { useState } from "react"
-import Table from "@/components/ui/Table"
-import type { Column } from "@/components/ui/Table"
-import Button from "@/components/ui/Button"
-import Modal from "@/components/ui/Modal"
+import { DataTable } from "@/components/ui/DataTable"
+import type { Column } from "@/components/ui/DataTable"
+import { Button } from "@/components/ui/Button"
+import { Modal } from "@/components/ui/Modal"
 import type { User } from "@/features/admin/users/types/User"
 import { Edit, Trash2, Shield, Mail, User as UserIcon, RotateCcw, Key } from "lucide-react"
 
@@ -191,7 +191,7 @@ export default function UserTable({ data, onDelete, onEdit, onRestore, loading, 
 
   return (
     <>
-      <Table columns={columns} data={data} loading={loading} />
+      <DataTable columns={columns} data={data} loading={loading} />
 
       <Modal 
         open={isDetailOpen} 

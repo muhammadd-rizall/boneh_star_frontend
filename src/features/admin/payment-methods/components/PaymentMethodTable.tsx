@@ -1,6 +1,6 @@
-import Table from "@/components/ui/Table"
-import type { Column } from "@/components/ui/Table"
-import Button from "@/components/ui/Button"
+import { DataTable } from "@/components/ui/DataTable"
+import type { Column } from "@/components/ui/DataTable"
+import { Button } from "@/components/ui/Button"
 import type { PaymentMethod } from "@/features/admin/payment-methods/types/PaymentMethod"
 import { Edit, Trash2, CreditCard, RotateCcw } from "lucide-react"
 
@@ -100,5 +100,5 @@ export default function PaymentMethodTable({
     }
   ]
 
-  return <Table columns={columns} data={data} loading={loading} />
+  return <DataTable columns={columns} data={data} loading={loading} />
 }

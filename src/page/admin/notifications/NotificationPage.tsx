@@ -1,6 +1,5 @@
-import { useNotifications } from "@/features/admin/notifications/hooks/useNotifications"
-import NotificationList from "@/features/admin/notifications/components/NotificationList"
-import Button from "@/components/ui/Button"
+import { useNotifications, NotificationList } from "@/features/admin/notifications"
+import { Button } from "@/components/ui/Button"
 import ErrorState from "@/components/feedback/ErrorState"
 import { Bell, CheckCheck, RefreshCw, ChevronLeft, ChevronRight } from "lucide-react"
 

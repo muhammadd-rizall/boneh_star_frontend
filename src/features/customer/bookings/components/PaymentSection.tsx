@@ -1,8 +1,8 @@
 import React from 'react';
 import type { CustomerTransaction } from '../types/Booking';
 import type { PaymentMethod } from '@/types/Database';
-import Card from '@/components/ui/Card';
-import Button from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
 import { formatCurrency, formatDate } from '@/utils/formatter';
 import { CreditCard, Upload, ExternalLink, Clock, CheckCircle2, XCircle, Landmark } from 'lucide-react';
 import { resolveMediaUrl } from '@/features/admin/company-profile/utils/companyProfileUtils';

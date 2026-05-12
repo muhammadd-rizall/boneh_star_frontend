@@ -1,8 +1,8 @@
 import React from 'react';
 import type { CustomerProfile, UpdateProfileData } from '../types/Profile';
-import Button from '@/components/ui/Button';
-import Input from '@/components/ui/Input';
-import Textarea from '@/components/ui/Textarea';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Textarea } from '@/components/ui/Textarea';
 import { User, Mail, Phone, MapPin, Save } from 'lucide-react';
 
 interface Props {

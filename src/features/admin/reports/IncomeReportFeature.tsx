@@ -7,7 +7,7 @@ import IncomeReportTable from "./components/IncomeReportTable";
 import OutstandingList from "./components/OutstandingList";
 import Loader from "@/components/feedback/Loader";
 import ErrorState from "@/components/feedback/ErrorState";
-import Button from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import { PageHeader } from "@/components/ui/PageComponents";
 import { Download, RefreshCw, FileText, FileSpreadsheet, ChevronDown } from "lucide-react";
 import { formatMonth } from "@/utils/formatter";

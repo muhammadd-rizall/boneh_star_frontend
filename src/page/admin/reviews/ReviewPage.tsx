@@ -4,10 +4,10 @@ import {
   useReviews, 
   type Review 
 } from "@/features/admin/reviews"
-import Button from "@/components/ui/Button"
-import Input from "@/components/ui/Input"
-import Select from "@/components/ui/Select"
-import Card from "@/components/ui/Card"
+import { Button } from "@/components/ui/Button"
+import { Input } from "@/components/ui/Input"
+import { CustomSelect as Select } from "@/components/ui/CustomSelect"
+import { Card } from "@/components/ui/Card"
 import { PageHeader, StatCard, StatGrid, ErrorBanner } from "@/components/ui/PageComponents"
 import { Star, MessageSquare, CheckCircle, EyeOff, RefreshCcw, Calendar } from "lucide-react"
 import Confirmation from "@/components/feedback/Confirmation"

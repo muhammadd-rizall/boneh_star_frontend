@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Calendar, MapPin, Users, Bus, ChevronRight } from 'lucide-react';
 import type { CustomerBooking } from '../types/Booking';
-import Card from '@/components/ui/Card';
+import { Card } from '@/components/ui/Card';
 import BookingStatusBadge from './BookingStatusBadge';
 import { formatDate } from '@/utils/formatter';
 

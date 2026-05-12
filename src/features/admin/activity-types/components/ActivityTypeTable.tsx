@@ -1,6 +1,6 @@
-import Table from "@/components/ui/Table"
-import type { Column } from "@/components/ui/Table"
-import Button from "@/components/ui/Button"
+import { DataTable } from "@/components/ui/DataTable"
+import type { Column } from "@/components/ui/DataTable"
+import { Button } from "@/components/ui/Button"
 import type { ActivityType } from "@/features/admin/activity-types/types/ActivityType"
 import { Edit, Trash2, Tag, RotateCcw } from "lucide-react"
 
@@ -101,5 +101,5 @@ export default function ActivityTypeTable({
     }
   ]
 
-  return <Table columns={columns} data={data} loading={loading} />
+  return <DataTable columns={columns} data={data} loading={loading} />
 }

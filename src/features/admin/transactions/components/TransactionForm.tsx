@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import Input from "@/components/ui/Input";
-import Select from "@/components/ui/Select";
-import Button from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { CustomSelect as Select } from "@/components/ui/CustomSelect";
+import { Button } from "@/components/ui/Button";
 import { transactionService } from "../services/TransactionService";
 import type { Transaction, TransactionFormData, TransactionStatus } from "../types/Transaction";
 import { bookingService } from "@/features/admin/bookings/services/BookingService";

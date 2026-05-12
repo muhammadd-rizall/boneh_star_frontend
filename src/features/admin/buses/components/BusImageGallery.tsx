@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Star, Trash2, Plus, Loader2, Image as ImageIcon } from "lucide-react";
-import Button from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import { busImageService } from "../services/BusImageService";
 import type { BusImage } from "@/types/Database";
 

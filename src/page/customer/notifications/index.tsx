@@ -1,7 +1,7 @@
 import CustomerLayout from '@/layouts/customer/CustomerLayout';
 import { useNotifications } from '@/features/customer/notifications/hooks/useNotifications';
-import Card from '@/components/ui/Card';
-import Button from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
 import Loader from '@/components/feedback/Loader';
 import { Bell, Trash2, CheckCircle2, Clock } from 'lucide-react';
 import { formatDate } from '@/utils/formatter';

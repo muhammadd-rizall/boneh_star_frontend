@@ -6,8 +6,8 @@ import {
   useTrashedPaymentMethods,
   type PaymentMethod,
 } from "@/features/admin/payment-methods"
-import Button from "@/components/ui/Button"
-import Modal from "@/components/ui/Modal"
+import { Button } from "@/components/ui/Button"
+import { Modal } from "@/components/ui/Modal"
 import Confirmation from "@/components/feedback/Confirmation"
 import {
   PageHeader,

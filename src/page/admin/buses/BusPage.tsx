@@ -6,8 +6,8 @@ import {
   type Bus,
 } from "@/features/admin/buses"
 import BusForm from "@/features/admin/buses/components/BusForm"
-import Button from "@/components/ui/Button"
-import Modal from "@/components/ui/Modal"
+import { Button } from "@/components/ui/Button"
+import { Modal } from "@/components/ui/Modal"
 import Confirmation from "@/components/feedback/Confirmation"
 import {
   PageHeader,

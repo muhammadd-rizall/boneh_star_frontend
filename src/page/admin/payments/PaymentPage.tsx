@@ -6,8 +6,8 @@ import {
   useTrashedPayments,
   type Payment 
 } from "@/features/admin/payments"
-import Modal from "@/components/ui/Modal"
-import Button from "@/components/ui/Button"
+import { Modal } from "@/components/ui/Modal"
+import { Button } from "@/components/ui/Button"
 import { PageHeader, StatCard, StatGrid, ViewToggle, PageToolbar, ErrorBanner } from "@/components/ui/PageComponents"
 import { Receipt, DollarSign, Clock, CheckCircle, RefreshCcw } from "lucide-react"
 import Confirmation from "@/components/feedback/Confirmation"

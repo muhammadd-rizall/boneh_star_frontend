@@ -1,6 +1,6 @@
 
-import Input from "@/components/ui/Input";
-import Select from "@/components/ui/Select";
+import { Input } from "@/components/ui/Input";
+import { CustomSelect as Select } from "@/components/ui/CustomSelect";
 import { Calendar, Filter, Map } from "lucide-react";
 import type { BookingReportFilters } from "../types/BookingReport";
 

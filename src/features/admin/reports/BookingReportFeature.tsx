@@ -6,7 +6,7 @@ import ReportTable from "./components/ReportTable";
 import ReportCharts from "./components/ReportCharts";
 import Loader from "@/components/feedback/Loader";
 import ErrorState from "@/components/feedback/ErrorState";
-import Button from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import { PageHeader } from "@/components/ui/PageComponents";
 import { Download, RefreshCw, FileText, FileSpreadsheet, ChevronDown } from "lucide-react";
 

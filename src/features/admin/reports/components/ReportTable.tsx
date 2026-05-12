@@ -1,6 +1,6 @@
 
-import Table from "@/components/ui/Table";
-import type { Column } from "@/components/ui/Table";
+import { DataTable } from "@/components/ui/DataTable";
+import type { Column } from "@/components/ui/DataTable";
 import type { Booking } from "@/types/Database";
 
 interface ReportTableProps {
@@ -71,7 +71,7 @@ export default function ReportTable({ data, loading }: ReportTableProps) {
         <h3 className="text-lg font-semibold text-slate-900">Detailed Report Items</h3>
         <p className="text-sm text-slate-500 mt-1">Full list of bookings within selected range</p>
       </div>
-      <Table columns={columns} data={data} loading={loading} />
+      <DataTable columns={columns} data={data} loading={loading} />
     </div>
   );
 }

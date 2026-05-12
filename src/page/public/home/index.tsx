@@ -8,7 +8,7 @@ import FAQSection from "@/features/public/home/components/FAQSection";
 import { useHomeData } from "@/features/public/home/hooks/useHomeData";
 import Loader from "@/components/feedback/Loader";
 import { ArrowRight, CheckCircle2, ShieldCheck, Zap } from "lucide-react";
-import Button from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 
 export default function HomePage() {
   const { stats, activityTypes, featuredBuses, reviews, loading } = useHomeData();

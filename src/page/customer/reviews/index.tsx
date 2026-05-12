@@ -1,6 +1,6 @@
 import CustomerLayout from '@/layouts/customer/CustomerLayout';
 import { useReviews } from '@/features/customer/reviews/hooks/useReviews';
-import Card from '@/components/ui/Card';
+import { Card } from '@/components/ui/Card';
 import Loader from '@/components/feedback/Loader';
 import ErrorState from '@/components/feedback/ErrorState';
 import { Star, MessageSquare } from 'lucide-react';

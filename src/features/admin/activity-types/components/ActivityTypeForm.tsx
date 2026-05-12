@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import Input from "@/components/ui/Input";
-import Textarea from "@/components/ui/Textarea";
-import Button from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
+import { Button } from "@/components/ui/Button";
 import { Tag, Save, AlignLeft } from "lucide-react";
 import type { ActivityType, ActivityTypeFormData } from "../types/ActivityType";
 import { activityTypeService } from "../services/ActivityTypeService";

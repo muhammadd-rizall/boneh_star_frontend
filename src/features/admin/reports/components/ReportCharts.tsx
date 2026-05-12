@@ -1,5 +1,5 @@
 
-import Card from "@/components/ui/Card";
+import { Card } from "@/components/ui/Card";
 import type { BookingReportStatistics } from "../types/BookingReport";
 
 interface ReportChartsProps {

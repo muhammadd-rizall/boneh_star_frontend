@@ -6,8 +6,8 @@ import {
   useTrashedDrivers,
   type Driver,
 } from "@/features/admin/drivers"
-import Button from "@/components/ui/Button"
-import Modal from "@/components/ui/Modal"
+import { Button } from "@/components/ui/Button"
+import { Modal } from "@/components/ui/Modal"
 import Confirmation from "@/components/feedback/Confirmation"
 import {
   PageHeader, StatCard, StatGrid, ViewToggle, PageToolbar, ErrorBanner,

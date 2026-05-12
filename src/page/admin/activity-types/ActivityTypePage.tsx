@@ -2,8 +2,8 @@ import { useState, useEffect } from "react"
 import {
   ActivityTypeTable, ActivityTypeForm, useActivityTypes, useTrashedActivityTypes, type ActivityType,
 } from "@/features/admin/activity-types"
-import Button from "@/components/ui/Button"
-import Modal from "@/components/ui/Modal"
+import { Button } from "@/components/ui/Button"
+import { Modal } from "@/components/ui/Modal"
 import Confirmation from "@/components/feedback/Confirmation"
 import { PageHeader, StatCard, StatGrid, ViewToggle, PageToolbar, ErrorBanner } from "@/components/ui/PageComponents"
 import { Plus, RefreshCcw, Tag, CheckCircle2, Trash2 } from "lucide-react"

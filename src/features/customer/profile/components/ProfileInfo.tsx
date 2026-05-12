@@ -1,8 +1,8 @@
 import React from 'react';
 import { User, Mail, Phone, MapPin, Camera } from 'lucide-react';
 import type { CustomerProfile } from '../types/Profile';
-import Button from '@/components/ui/Button';
-import Card from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 import { resolveMediaUrl } from '@/features/admin/company-profile/utils/companyProfileUtils';
 
 interface Props {

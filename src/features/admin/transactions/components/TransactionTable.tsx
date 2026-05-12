@@ -1,6 +1,6 @@
-import Table from "@/components/ui/Table"
-import type { Column } from "@/components/ui/Table"
-import Button from "@/components/ui/Button"
+import { DataTable } from "@/components/ui/DataTable"
+import type { Column } from "@/components/ui/DataTable"
+import { Button } from "@/components/ui/Button"
 import type { Transaction } from "@/features/admin/transactions/types/Transaction"
 import { Edit, Trash2, FileText, Banknote, User, RotateCcw, Receipt } from "lucide-react"
 
@@ -141,5 +141,5 @@ export default function TransactionTable({
     }
   ]
 
-  return <Table columns={columns} data={data} loading={loading} />
+  return <DataTable columns={columns} data={data} loading={loading} />
 }

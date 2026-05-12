@@ -1,32 +1,38 @@
-import React, { useState } from "react"
+import * as React from "react"
+import { Input as InputPrimitive } from "@base-ui/react/input"
 import { Eye, EyeOff } from "lucide-react"
 
-type Props = React.InputHTMLAttributes<HTMLInputElement> & {
+import { cn } from "@/lib/utils"
+
+interface InputProps extends React.ComponentProps<"input"> {
   label?: string
   error?: string
   hint?: string
-  icon?: React.ComponentType<{ size?: number | string; className?: string; strokeWidth?: number }>
+  icon?: React.ElementType
 }
 
 function Input({
+  className,
+  type = "text",
   label,
   error,
   hint,
   icon: Icon,
-  className = "",
-  type = "text",
   id,
   ...props
-}: Props) {
-  const [showPassword, setShowPassword] = useState(false)
+}: InputProps) {
+  const [showPassword, setShowPassword] = React.useState(false)
   const isPassword = type === "password"
   const inputType = isPassword ? (showPassword ? "text" : "password") : type
-  const inputId = id || label?.toLowerCase().replace(/\s+/g, "-")
+  const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, "-") : undefined)
 
   return (
     <div className="flex flex-col gap-2 w-full text-left">
       {label && (
-        <label htmlFor={inputId} className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">
+        <label
+          htmlFor={inputId}
+          className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1"
+        >
           {label}
         </label>
       )}
@@ -38,10 +44,11 @@ function Input({
           </div>
         )}
 
-        <input
+        <InputPrimitive
           id={inputId}
           type={inputType}
-          className={[
+          data-slot="input"
+          className={cn(
             "w-full rounded-2xl border bg-white py-3.5 text-sm font-bold text-slate-700 outline-none transition-all duration-200",
             "placeholder:text-slate-300 placeholder:font-medium",
             Icon ? "pl-11" : "pl-4",
@@ -49,8 +56,8 @@ function Input({
             error
               ? "border-rose-200 bg-rose-50/20 focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10"
               : "border-slate-100 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 focus:bg-white",
-            className,
-          ].join(" ")}
+            className
+          )}
           {...props}
         />
 
@@ -78,4 +85,4 @@ function Input({
   )
 }
 
-export default Input
+export { Input }

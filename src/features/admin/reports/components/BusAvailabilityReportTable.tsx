@@ -1,6 +1,6 @@
 
-import Table from "@/components/ui/Table";
-import type { Column } from "@/components/ui/Table";
+import { DataTable } from "@/components/ui/DataTable";
+import type { Column } from "@/components/ui/DataTable";
 import type { BusAvailability, BusSchedule } from "../types/BusAvailabilityReport";
 import { Calendar, Clock } from "lucide-react";
 
@@ -93,7 +93,7 @@ export default function BusAvailabilityReportTable({ data, loading }: BusAvailab
           </div>
         </div>
       </div>
-      <Table columns={columns} data={data} loading={loading} />
+      <DataTable columns={columns} data={data} loading={loading} />
     </div>
   );
 }
