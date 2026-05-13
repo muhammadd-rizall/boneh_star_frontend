@@ -1,10 +1,18 @@
 import axios from '@/api/Axios';
-import type { LoginFormData, RegisterFormData, AuthResponse } from '../types/Auth';
+import type { 
+  LoginFormData, 
+  RegisterFormData, 
+  AuthResponse, 
+  ForgotPasswordFormData, 
+  ResetPasswordFormData 
+} from '../types/Auth';
 
 const ENDPOINTS = {
   LOGIN: '/auth/login',
   REGISTER: '/auth/register',
   LOGOUT: '/auth/logout',
+  FORGOT_PASSWORD: '/auth/forgot-password',
+  RESET_PASSWORD: '/auth/reset-password',
 };
 
 export const authService = {
@@ -20,5 +28,15 @@ export const authService = {
 
   logout: async () => {
     await axios.post(ENDPOINTS.LOGOUT);
+  },
+
+  forgotPassword: async (data: ForgotPasswordFormData): Promise<{ success: boolean; message: string }> => {
+    const response = await axios.post(ENDPOINTS.FORGOT_PASSWORD, data);
+    return response.data;
+  },
+
+  resetPassword: async (data: ResetPasswordFormData): Promise<{ success: boolean; message: string }> => {
+    const response = await axios.post(ENDPOINTS.RESET_PASSWORD, data);
+    return response.data;
   },
 };

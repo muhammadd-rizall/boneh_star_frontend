@@ -48,6 +48,8 @@ import ReviewIndexPage from "@/page/customer/reviews";
 import NotificationIndexPage from "@/page/customer/notifications";
 import LoginPage from "@/page/auth/public/Login";
 import RegisterPage from "@/page/auth/public/Register";
+import ForgotPasswordPage from "@/page/auth/public/ForgotPassword";
+import ResetPasswordPage from "@/page/auth/public/ResetPassword";
 import { useCustomerAuthStore } from "@/features/auth/public";
 import Loader from "@/components/feedback/Loader";
 
@@ -370,6 +372,14 @@ function App() {
       <Route
         path="/auth/register"
         element={hasCustomerHydrated ? (isCustomerAuthenticated ? <Navigate to="/" /> : <RegisterPage />) : <Loader text="Memuat sesi pelanggan..." />}
+      />
+      <Route
+        path="/auth/forgot-password"
+        element={hasCustomerHydrated ? (isCustomerAuthenticated ? <Navigate to="/" /> : <ForgotPasswordPage />) : <Loader text="Memuat sesi pelanggan..." />}
+      />
+      <Route
+        path="/auth/reset-password"
+        element={hasCustomerHydrated ? (isCustomerAuthenticated ? <Navigate to="/" /> : <ResetPasswordPage />) : <Loader text="Memuat sesi pelanggan..." />}
       />
       <Route
         path="/admin/login"

@@ -19,3 +19,14 @@ export interface LoginFormData {
   email: string;
   password: string;
 }
+
+export interface ForgotPasswordFormData {
+  email: string;
+}
+
+export interface ResetPasswordFormData {
+  email: string;
+  token: string;
+  password: string;
+  password_confirmation: string;
+}

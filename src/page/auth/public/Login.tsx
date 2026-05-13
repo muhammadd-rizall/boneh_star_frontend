@@ -78,7 +78,7 @@ export default function LoginPage() {
               </div>
 
               <div className="flex items-center justify-end">
-                <Link to="#" className="text-xs font-bold text-slate-400 hover:text-orange-500 transition-colors">
+                <Link to="/auth/forgot-password" title="Lupa Password" className="text-xs font-bold text-slate-400 hover:text-orange-500 transition-colors">
                   Lupa Password?
                 </Link>
               </div>
