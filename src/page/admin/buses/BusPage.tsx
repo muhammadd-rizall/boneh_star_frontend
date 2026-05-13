@@ -1,22 +1,22 @@
-import { useState, useEffect } from "react"
-import {
-  BusTable,
-  useBuses,
-  useTrashedBuses,
-  type Bus,
-} from "@/features/admin/buses"
-import BusForm from "@/features/admin/buses/components/BusForm"
+import Confirmation from "@/components/feedback/Confirmation"
 import { Button } from "@/components/ui/Button"
 import { Modal } from "@/components/ui/Modal"
-import Confirmation from "@/components/feedback/Confirmation"
 import {
-  PageHeader,
-  StatCard, StatGrid,
-  ViewToggle,
-  PageToolbar,
-  ErrorBanner,
+    ErrorBanner,
+    PageHeader,
+    PageToolbar,
+    StatCard, StatGrid,
+    ViewToggle,
 } from "@/components/ui/PageComponents"
-import { Plus, RefreshCcw, Bus as BusIcon, ShieldCheck, Wrench, LayoutGrid } from "lucide-react"
+import {
+    BusTable,
+    useBuses,
+    useTrashedBuses,
+    type Bus,
+} from "@/features/admin/buses"
+import BusForm from "@/features/admin/buses/components/BusForm"
+import { Bus as BusIcon, LayoutGrid, Plus, RefreshCcw, ShieldCheck, Wrench } from "lucide-react"
+import { useEffect, useState } from "react"
 
 export default function BusPage() {
   const [view, setView] = useState<"active" | "trash">("active")
@@ -111,7 +111,7 @@ export default function BusPage() {
               <Button
                 variant="outline"
                 icon={RefreshCcw}
-                size="sm"
+                className="h-11 rounded-xl px-5"
                 onClick={view === "active" ? () => refetchActive(searchTerm) : refetchTrash}
                 loading={loading}
               >

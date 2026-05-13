@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react"
-import { useRouteTypes, useTrashedRouteTypes } from "@/features/admin/route-types/hooks/useRouteTypes"
-import RouteTypeTable from "@/features/admin/route-types/components/RouteTypeTable"
-import RouteTypeForm from "@/features/admin/route-types/components/RouteTypeForm"
-import { Modal } from "@/components/ui/Modal"
-import { Button } from "@/components/ui/Button"
 import Confirmation from "@/components/feedback/Confirmation"
-import { PageHeader, StatCard, StatGrid, ViewToggle, PageToolbar, ErrorBanner } from "@/components/ui/PageComponents"
+import { Button } from "@/components/ui/Button"
+import { Modal } from "@/components/ui/Modal"
+import { ErrorBanner, PageHeader, PageToolbar, StatCard, StatGrid, ViewToggle } from "@/components/ui/PageComponents"
+import RouteTypeForm from "@/features/admin/route-types/components/RouteTypeForm"
+import RouteTypeTable from "@/features/admin/route-types/components/RouteTypeTable"
+import { useRouteTypes, useTrashedRouteTypes } from "@/features/admin/route-types/hooks/useRouteTypes"
 import type { RouteType } from "@/features/admin/route-types/types/RouteType"
-import { Plus, RefreshCcw, Map, MapPin, Trash2 } from "lucide-react"
+import { Map, MapPin, Plus, RefreshCcw, Trash2 } from "lucide-react"
+import { useEffect, useState } from "react"
 
 export default function RouteTypePage() {
   const [view, setView] = useState<"active" | "trash">("active")
@@ -40,7 +40,7 @@ export default function RouteTypePage() {
           <PageToolbar
             searchValue={searchTerm} onSearchChange={setSearchTerm} searchPlaceholder="Cari tipe rute..."
             onCreate={() => { setSelectedRouteType(null); setIsModalOpen(true) }} createLabel="Tambah Rute" createIcon={Plus}
-            extraActions={<Button variant="outline" icon={RefreshCcw} size="sm" onClick={view === "active" ? () => refetchActive(searchTerm) : refetchTrash} loading={loading}>Refresh</Button>}
+            extraActions={<Button variant="outline" icon={RefreshCcw} className="h-11 rounded-xl px-5" onClick={view === "active" ? () => refetchActive(searchTerm) : refetchTrash} loading={loading}>Refresh</Button>}
           />
         }
       />

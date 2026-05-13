@@ -1,5 +1,5 @@
-import React from "react"
 import { List, Trash2 } from "lucide-react"
+import React from "react"
 import { Button } from "./Button"
 import Search from "./Search"
 
@@ -151,18 +151,26 @@ export function PageToolbar({
   searchPlaceholder,
   onCreate,
   createLabel = "Tambah",
-  createIcon,
+  createIcon: CreateIcon,
   extraActions,
 }: PageToolbarProps) {
   return (
-    <div className="flex flex-wrap items-center gap-4">
-      <div className="flex-1 min-w-[300px]">
-        <Search value={searchValue} onChange={onSearchChange} placeholder={searchPlaceholder} className="rounded-2xl" />
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      {/* Search area */}
+      <div className="flex-1 min-w-0 sm:max-w-xl lg:max-w-2xl">
+        <Search value={searchValue} onChange={onSearchChange} className="[&_input]:h-11" placeholder={searchPlaceholder} />
       </div>
-      <div className="flex items-center gap-3">
+
+      {/* Actions area */}
+      <div className="flex items-center gap-2.5 shrink-0">
         {extraActions}
         {onCreate && (
-          <Button variant="primary" icon={createIcon} onClick={onCreate} className="rounded-2xl shadow-lg shadow-slate-200">
+          <Button
+            variant="default"
+            icon={CreateIcon}
+            onClick={onCreate}
+            className="rounded-xl px-6 h-11 text-sm font-black uppercase tracking-wider shadow-md shadow-slate-900/10 hover:shadow-lg hover:shadow-slate-900/15 transition-all"
+          >
             {createLabel}
           </Button>
         )}

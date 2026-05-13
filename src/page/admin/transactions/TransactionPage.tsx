@@ -1,17 +1,20 @@
-import { useState, useEffect } from "react"
-import {
-  TransactionTable,
-  TransactionForm,
-  useTransactions,
-  type Transaction,
-} from "@/features/admin/transactions"
+import Confirmation from "@/components/feedback/Confirmation"
 import { Button } from "@/components/ui/Button"
 import { Modal } from "@/components/ui/Modal"
-import Confirmation from "@/components/feedback/Confirmation"
 import {
-  PageHeader, StatCard, StatGrid, ViewToggle, PageToolbar, ErrorBanner,
+    ErrorBanner,
+    PageHeader,
+    PageToolbar,
+    StatCard, StatGrid, ViewToggle,
 } from "@/components/ui/PageComponents"
-import { Plus, RefreshCcw, TrendingUp, Banknote, Clock, CheckCircle2 } from "lucide-react"
+import {
+    TransactionForm,
+    TransactionTable,
+    useTransactions,
+    type Transaction,
+} from "@/features/admin/transactions"
+import { Banknote, CheckCircle2, Clock, Plus, RefreshCcw, TrendingUp } from "lucide-react"
+import { useEffect, useState } from "react"
 
 const formatRp = (n: number) =>
   new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(n)
@@ -61,7 +64,7 @@ export default function TransactionPage() {
             searchValue={searchTerm} onSearchChange={setSearchTerm}
             searchPlaceholder="Cari nomor invoice atau pelanggan..."
             onCreate={handleCreate} createLabel="Buat Tagihan" createIcon={Plus}
-            extraActions={<Button variant="outline" icon={RefreshCcw} size="sm" onClick={view === "active" ? () => refetch(searchTerm) : fetchTrashed} loading={loading}>Refresh</Button>}
+            extraActions={<Button variant="outline" icon={RefreshCcw} className="h-11 rounded-xl px-5" onClick={view === "active" ? () => refetch(searchTerm) : fetchTrashed} loading={loading}>Refresh</Button>}
           />
         }
       />

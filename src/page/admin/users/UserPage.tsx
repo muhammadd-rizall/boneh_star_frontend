@@ -1,22 +1,22 @@
-import { useState, useEffect } from "react"
-import {
-  UserTable,
-  UserForm,
-  useUsers,
-  useTrashedUsers,
-  type User,
-} from "@/features/admin/users"
+import Confirmation from "@/components/feedback/Confirmation"
 import { Button } from "@/components/ui/Button"
 import { Modal } from "@/components/ui/Modal"
-import Confirmation from "@/components/feedback/Confirmation"
 import {
-  PageHeader,
-  StatCard, StatGrid,
-  ViewToggle,
-  PageToolbar,
-  ErrorBanner,
+    ErrorBanner,
+    PageHeader,
+    PageToolbar,
+    StatCard, StatGrid,
+    ViewToggle,
 } from "@/components/ui/PageComponents"
-import { Plus, RefreshCcw, Users, UserCheck, UserMinus, Trash2 } from "lucide-react"
+import {
+    UserForm,
+    UserTable,
+    useTrashedUsers,
+    useUsers,
+    type User,
+} from "@/features/admin/users"
+import { Plus, RefreshCcw, Trash2, UserCheck, UserMinus, Users } from "lucide-react"
+import { useEffect, useState } from "react"
 
 export default function UserPage() {
   const [view, setView] = useState<"active" | "trash">("active")
@@ -110,7 +110,7 @@ export default function UserPage() {
               <Button
                 variant="outline"
                 icon={RefreshCcw}
-                size="sm"
+                className="h-11 rounded-xl px-5"
                 onClick={view === "active" ? () => refetchActive(searchTerm) : refetchTrash}
                 loading={loading}
               >

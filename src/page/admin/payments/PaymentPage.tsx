@@ -1,16 +1,16 @@
-import { useState } from "react"
-import { 
-  PaymentTable, 
-  PaymentVerifyForm,
-  usePayments, 
-  useTrashedPayments,
-  type Payment 
-} from "@/features/admin/payments"
-import { Modal } from "@/components/ui/Modal"
-import { Button } from "@/components/ui/Button"
-import { PageHeader, StatCard, StatGrid, ViewToggle, PageToolbar, ErrorBanner } from "@/components/ui/PageComponents"
-import { Receipt, DollarSign, Clock, CheckCircle, RefreshCcw } from "lucide-react"
 import Confirmation from "@/components/feedback/Confirmation"
+import { Button } from "@/components/ui/Button"
+import { Modal } from "@/components/ui/Modal"
+import { ErrorBanner, PageHeader, PageToolbar, StatCard, StatGrid, ViewToggle } from "@/components/ui/PageComponents"
+import {
+    PaymentTable,
+    PaymentVerifyForm,
+    usePayments,
+    useTrashedPayments,
+    type Payment
+} from "@/features/admin/payments"
+import { CheckCircle, Clock, DollarSign, Receipt, RefreshCcw } from "lucide-react"
+import { useState } from "react"
 
 const formatRp = (n: number) =>
   new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(n)
@@ -74,10 +74,9 @@ export default function PaymentPage() {
         badge="Keuangan"
         actions={
           <PageToolbar
-            searchValue={searchTerm} onSearchChange={setSearchTerm}
-            searchPlaceholder="Cari invoice atau metode..."
+            searchValue={searchTerm} onSearchChange={setSearchTerm} searchPlaceholder="Cari kode booking..."
             extraActions={
-              <Button variant="outline" icon={RefreshCcw} size="sm" onClick={view === 'active' ? refetch : refetchTrash} loading={loading}>
+              <Button variant="outline" icon={RefreshCcw} className="h-11 rounded-xl px-5" onClick={view === 'active' ? refetch : refetchTrash} loading={loading}>
                 Refresh
               </Button>
             }

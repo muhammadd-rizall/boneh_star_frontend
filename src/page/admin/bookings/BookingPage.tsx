@@ -1,30 +1,30 @@
-import { useState, useEffect } from "react"
-import {
-  BookingTable,
-  BookingForm,
-  useBookings,
-  type Booking,
-} from "@/features/admin/bookings"
+import Confirmation from "@/components/feedback/Confirmation"
 import { Button } from "@/components/ui/Button"
 import { Modal } from "@/components/ui/Modal"
-import Confirmation from "@/components/feedback/Confirmation"
 import {
-  PageHeader,
-  StatCard, StatGrid,
-  ViewToggle,
-  PageToolbar,
-  ErrorBanner,
+    ErrorBanner,
+    PageHeader,
+    PageToolbar,
+    StatCard, StatGrid,
+    ViewToggle,
 } from "@/components/ui/PageComponents"
 import {
-  Plus,
-  RefreshCcw,
-  FileText,
-  CheckCircle2,
-  Clock,
-  XCircle,
-  Users,
-  Bus,
+    BookingForm,
+    BookingTable,
+    useBookings,
+    type Booking,
+} from "@/features/admin/bookings"
+import {
+    Bus,
+    CheckCircle2,
+    Clock,
+    FileText,
+    Plus,
+    RefreshCcw,
+    Users,
+    XCircle,
 } from "lucide-react"
+import { useEffect, useState } from "react"
 
 export default function BookingPage() {
   const {
@@ -108,7 +108,7 @@ export default function BookingPage() {
               <Button
                 variant="outline"
                 icon={RefreshCcw}
-                size="sm"
+                className="h-11 rounded-xl px-5"
                 onClick={view === "active" ? () => refetch(searchTerm) : fetchTrashed}
                 loading={loading}
               >

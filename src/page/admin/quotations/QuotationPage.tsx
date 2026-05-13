@@ -1,17 +1,20 @@
-import { useState, useEffect } from "react"
-import {
-  QuotationTable,
-  QuotationForm,
-  useQuotations,
-  type Quotation,
-} from "@/features/admin/quotations"
+import Confirmation from "@/components/feedback/Confirmation"
 import { Button } from "@/components/ui/Button"
 import { Modal } from "@/components/ui/Modal"
-import Confirmation from "@/components/feedback/Confirmation"
 import {
-  PageHeader, StatCard, StatGrid, PageToolbar, ErrorBanner,
+    ErrorBanner,
+    PageHeader,
+    PageToolbar,
+    StatCard, StatGrid,
 } from "@/components/ui/PageComponents"
-import { Plus, RefreshCcw, FileText, CheckCircle2, Send, AlertCircle } from "lucide-react"
+import {
+    QuotationForm,
+    QuotationTable,
+    useQuotations,
+    type Quotation,
+} from "@/features/admin/quotations"
+import { AlertCircle, CheckCircle2, FileText, Plus, RefreshCcw, Send } from "lucide-react"
+import { useEffect, useState } from "react"
 
 export default function QuotationPage() {
   const { quotations, statistics, loading, error, deleteQuotation, refetch } = useQuotations()
@@ -45,7 +48,7 @@ export default function QuotationPage() {
             searchValue={searchTerm} onSearchChange={setSearchTerm}
             searchPlaceholder="Cari kode booking atau pelanggan..."
             onCreate={handleCreate} createLabel="Buat Penawaran" createIcon={Plus}
-            extraActions={<Button variant="outline" icon={RefreshCcw} size="sm" onClick={() => refetch(searchTerm)} loading={loading}>Refresh</Button>}
+            extraActions={<Button variant="outline" icon={RefreshCcw} className="h-11 rounded-xl px-5" onClick={() => refetch(searchTerm)} loading={loading}>Refresh</Button>}
           />
         }
       />

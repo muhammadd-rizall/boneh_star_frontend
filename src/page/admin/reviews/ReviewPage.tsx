@@ -54,7 +54,7 @@ export default function ReviewPage() {
         badge="Feedback"
         actions={
           <div className="flex items-center gap-2">
-            <Button variant="outline" icon={RefreshCcw} size="sm" onClick={refetch} loading={loading}>
+            <Button variant="outline" icon={RefreshCcw} className="h-11 rounded-xl px-5" onClick={refetch} loading={loading}>
               Refresh
             </Button>
           </div>

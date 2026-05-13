@@ -1,22 +1,22 @@
-import { useState } from "react"
-import {
-  PaymentMethodTable,
-  PaymentMethodForm,
-  usePaymentMethods,
-  useTrashedPaymentMethods,
-  type PaymentMethod,
-} from "@/features/admin/payment-methods"
+import Confirmation from "@/components/feedback/Confirmation"
 import { Button } from "@/components/ui/Button"
 import { Modal } from "@/components/ui/Modal"
-import Confirmation from "@/components/feedback/Confirmation"
 import {
-  PageHeader,
-  StatCard,
-  ViewToggle,
-  PageToolbar,
-  ErrorBanner,
+    ErrorBanner,
+    PageHeader,
+    PageToolbar,
+    StatCard,
+    ViewToggle,
 } from "@/components/ui/PageComponents"
-import { Plus, RefreshCcw, Banknote, ShieldCheck, Layers } from "lucide-react"
+import {
+    PaymentMethodForm,
+    PaymentMethodTable,
+    usePaymentMethods,
+    useTrashedPaymentMethods,
+    type PaymentMethod,
+} from "@/features/admin/payment-methods"
+import { Banknote, Layers, Plus, RefreshCcw, ShieldCheck } from "lucide-react"
+import { useState } from "react"
 
 export default function PaymentMethodPage() {
   const [view, setView] = useState<'active' | 'trash'>('active')
@@ -79,7 +79,7 @@ export default function PaymentMethodPage() {
             searchPlaceholder="Cari bank atau akun..."
             onCreate={handleCreate} createLabel="Tambah Metode" createIcon={Plus}
             extraActions={
-              <Button variant="outline" icon={RefreshCcw} size="sm" onClick={view === 'active' ? refetch : refetchTrash} loading={loading}>
+              <Button variant="outline" icon={RefreshCcw} className="h-11 rounded-xl px-5" onClick={view === 'active' ? refetch : refetchTrash} loading={loading}>
                 Refresh
               </Button>
             }

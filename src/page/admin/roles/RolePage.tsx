@@ -1,10 +1,10 @@
-import { useState, useMemo } from "react"
-import { RoleTable, RoleForm, useRoles, type Role } from "@/features/admin/roles"
+import Confirmation from "@/components/feedback/Confirmation"
 import { Button } from "@/components/ui/Button"
 import { Modal } from "@/components/ui/Modal"
-import Confirmation from "@/components/feedback/Confirmation"
-import { PageHeader, StatCard, StatGrid, PageToolbar, ErrorBanner } from "@/components/ui/PageComponents"
-import { Plus, RefreshCcw, ShieldCheck, Key, Lock } from "lucide-react"
+import { ErrorBanner, PageHeader, PageToolbar, StatCard, StatGrid } from "@/components/ui/PageComponents"
+import { RoleForm, RoleTable, useRoles, type Role } from "@/features/admin/roles"
+import { Key, Lock, Plus, RefreshCcw, ShieldCheck } from "lucide-react"
+import { useMemo, useState } from "react"
 
 export default function RolePage() {
   const { roles, statistics, permissions, loading, error, deleteRole, refetch } = useRoles()
@@ -37,7 +37,7 @@ export default function RolePage() {
           <PageToolbar
             searchValue={searchTerm} onSearchChange={setSearchTerm} searchPlaceholder="Cari role..."
             onCreate={() => { setSelectedRole(null); setIsModalOpen(true) }} createLabel="Buat Role" createIcon={Plus}
-            extraActions={<Button variant="outline" icon={RefreshCcw} size="sm" onClick={refetch} loading={loading}>Refresh</Button>}
+            extraActions={<Button variant="outline" icon={RefreshCcw} className="h-11 rounded-xl px-5" onClick={refetch} loading={loading}>Refresh</Button>}
           />
         }
       />

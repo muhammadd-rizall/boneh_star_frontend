@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react"
-import { CustomerTable, CustomerForm, useCustomers, useTrashedCustomers, type Customer } from "@/features/admin/customers"
+import Confirmation from "@/components/feedback/Confirmation"
 import { Button } from "@/components/ui/Button"
 import { Modal } from "@/components/ui/Modal"
-import Confirmation from "@/components/feedback/Confirmation"
-import { PageHeader, StatCard, StatGrid, ViewToggle, PageToolbar, ErrorBanner } from "@/components/ui/PageComponents"
-import { Plus, RefreshCcw, Users, UserCheck, UserPlus, Heart } from "lucide-react"
+import { ErrorBanner, PageHeader, PageToolbar, StatCard, StatGrid, ViewToggle } from "@/components/ui/PageComponents"
+import { CustomerForm, CustomerTable, useCustomers, useTrashedCustomers, type Customer } from "@/features/admin/customers"
+import { Heart, Plus, RefreshCcw, UserCheck, UserPlus, Users } from "lucide-react"
+import { useEffect, useState } from "react"
 
 export default function CustomerPage() {
   const [view, setView] = useState<"active" | "trash">("active")
@@ -41,10 +41,9 @@ export default function CustomerPage() {
         badge="Pelanggan"
         actions={
           <PageToolbar
-            searchValue={searchTerm} onSearchChange={setSearchTerm}
-            searchPlaceholder="Cari nama atau email..."
-            onCreate={() => { setSelectedCustomer(null); setIsModalOpen(true) }} createLabel="Tambah Pelanggan" createIcon={Plus}
-            extraActions={<Button variant="outline" icon={RefreshCcw} size="sm" onClick={view === "active" ? () => refetchActive(searchTerm) : refetchTrash} loading={loading}>Refresh</Button>}
+            searchValue={searchTerm} onSearchChange={setSearchTerm} searchPlaceholder="Cari pelanggan..."
+            onCreate={() => { setSelectedCustomer(null); setIsModalOpen(true) }} createLabel="Tambah Pelanggan" createIcon={UserPlus}
+            extraActions={<Button variant="outline" icon={RefreshCcw} className="h-11 rounded-xl px-5" onClick={view === "active" ? () => refetchActive(searchTerm) : refetchTrash} loading={loading}>Refresh</Button>}
           />
         }
       />

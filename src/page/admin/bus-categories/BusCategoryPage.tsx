@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react"
-import { useBusCategories, useTrashedBusCategories } from "@/features/admin/bus-categories/hooks/useBusCategories"
-import BusCategoryTable from "@/features/admin/bus-categories/components/BusCategoryTable"
-import BusCategoryForm from "@/features/admin/bus-categories/components/BusCategoryForm"
-import { Modal } from "@/components/ui/Modal"
-import { Button } from "@/components/ui/Button"
 import Confirmation from "@/components/feedback/Confirmation"
-import { PageHeader, StatCard, StatGrid, ViewToggle, PageToolbar, ErrorBanner } from "@/components/ui/PageComponents"
+import { Button } from "@/components/ui/Button"
+import { Modal } from "@/components/ui/Modal"
+import { ErrorBanner, PageHeader, PageToolbar, StatCard, StatGrid, ViewToggle } from "@/components/ui/PageComponents"
+import BusCategoryForm from "@/features/admin/bus-categories/components/BusCategoryForm"
+import BusCategoryTable from "@/features/admin/bus-categories/components/BusCategoryTable"
+import { useBusCategories, useTrashedBusCategories } from "@/features/admin/bus-categories/hooks/useBusCategories"
 import type { BusCategory } from "@/features/admin/bus-categories/types/BusCategory"
-import { Plus, RefreshCcw, Layers, LayoutGrid, Trash2 } from "lucide-react"
+import { Layers, LayoutGrid, Plus, RefreshCcw, Trash2 } from "lucide-react"
+import { useEffect, useState } from "react"
 
 export default function BusCategoryPage() {
   const [view, setView] = useState<"active" | "trash">("active")
@@ -40,7 +40,7 @@ export default function BusCategoryPage() {
           <PageToolbar
             searchValue={searchTerm} onSearchChange={setSearchTerm} searchPlaceholder="Cari kategori..."
             onCreate={() => { setSelectedCategory(null); setIsModalOpen(true) }} createLabel="Tambah Kategori" createIcon={Plus}
-            extraActions={<Button variant="outline" icon={RefreshCcw} size="sm" onClick={view === "active" ? () => refetchActive(searchTerm) : refetchTrash} loading={loading}>Refresh</Button>}
+            extraActions={<Button variant="outline" icon={RefreshCcw} className="h-11 rounded-xl px-5" onClick={view === "active" ? () => refetchActive(searchTerm) : refetchTrash} loading={loading}>Refresh</Button>}
           />
         }
       />

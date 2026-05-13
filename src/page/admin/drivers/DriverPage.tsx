@@ -1,18 +1,21 @@
-import { useState, useEffect } from "react"
-import {
-  DriverTable,
-  DriverForm,
-  useDrivers,
-  useTrashedDrivers,
-  type Driver,
-} from "@/features/admin/drivers"
+import Confirmation from "@/components/feedback/Confirmation"
 import { Button } from "@/components/ui/Button"
 import { Modal } from "@/components/ui/Modal"
-import Confirmation from "@/components/feedback/Confirmation"
 import {
-  PageHeader, StatCard, StatGrid, ViewToggle, PageToolbar, ErrorBanner,
+    ErrorBanner,
+    PageHeader,
+    PageToolbar,
+    StatCard, StatGrid, ViewToggle,
 } from "@/components/ui/PageComponents"
-import { Plus, RefreshCcw, UserCircle, CheckCircle2, Clock, AlertCircle } from "lucide-react"
+import {
+    DriverForm,
+    DriverTable,
+    useDrivers,
+    useTrashedDrivers,
+    type Driver,
+} from "@/features/admin/drivers"
+import { AlertCircle, CheckCircle2, Clock, Plus, RefreshCcw, UserCircle } from "lucide-react"
+import { useEffect, useState } from "react"
 
 export default function DriverPage() {
   const [view, setView] = useState<"active" | "trash">("active")
@@ -82,7 +85,7 @@ export default function DriverPage() {
             searchValue={searchTerm} onSearchChange={setSearchTerm}
             searchPlaceholder="Cari nama atau no. telepon..."
             onCreate={handleCreate} createLabel="Tambah Pengemudi" createIcon={Plus}
-            extraActions={<Button variant="outline" icon={RefreshCcw} size="sm" onClick={view === "active" ? () => refetchActive(searchTerm) : refetchTrash} loading={loading}>Refresh</Button>}
+            extraActions={<Button variant="outline" icon={RefreshCcw} className="h-11 rounded-xl px-5" onClick={view === "active" ? () => refetchActive(searchTerm) : refetchTrash} loading={loading}>Refresh</Button>}
           />
         }
       />
