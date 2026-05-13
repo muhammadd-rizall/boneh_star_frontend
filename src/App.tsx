@@ -33,6 +33,7 @@ import {
   AlertCircle,
   UserCheck,
   CreditCard,
+  Info,
 } from "lucide-react";
 import "./App.css";
 import BusPage from "./page/admin/buses/BusPage";
@@ -52,6 +53,21 @@ import ForgotPasswordPage from "@/page/auth/public/ForgotPassword";
 import ResetPasswordPage from "@/page/auth/public/ResetPassword";
 import { useCustomerAuthStore } from "@/features/auth/public";
 import Loader from "@/components/feedback/Loader";
+import { useDashboard } from "@/features/admin/dashboard/hooks/useDashboard";
+
+const iconMap: Record<string, any> = {
+  CalendarCheck,
+  Users,
+  Bus,
+  TrendingUp,
+  Receipt,
+  Star,
+  CheckCircle2,
+  AlertCircle,
+  UserCheck,
+  CreditCard,
+  Info,
+};
 
 function CustomerProtectedRoute({ children }: { children: React.ReactNode }) {
   const isCustomerAuthenticated = useCustomerAuthStore((state) => state.isAuthenticated);
@@ -78,15 +94,17 @@ function StatCard({
   trendLabel,
   color = "slate",
   href,
+  loading = false,
 }: {
   label: string;
   value: string | number;
   sub: string;
-  icon: React.ComponentType<{ size?: number; className?: string }>;
+  icon: any;
   trend?: "up" | "down" | "neutral";
   trendLabel?: string;
   color?: "slate" | "emerald" | "violet" | "amber" | "rose" | "sky";
   href?: string;
+  loading?: boolean;
 }) {
   const colorMap: Record<string, string> = {
     slate:   "bg-slate-100  text-slate-600",
@@ -109,7 +127,11 @@ function StatCard({
           <ArrowUpRight size={15} className="text-slate-300 transition-colors group-hover:text-slate-500" />
         )}
       </div>
-      <p className="mt-4 text-2xl font-bold tracking-tight text-slate-900">{value}</p>
+      {loading ? (
+        <div className="mt-4 h-8 w-24 animate-pulse rounded-lg bg-slate-100" />
+      ) : (
+        <p className="mt-4 text-2xl font-bold tracking-tight text-slate-900">{value}</p>
+      )}
       <p className="mt-0.5 text-sm font-medium text-slate-500">{label}</p>
       <div className="mt-3 flex items-center gap-1.5">
         {trendLabel && <span className={`text-xs font-medium ${trendColor}`}>{trendLabel}</span>}
@@ -129,7 +151,7 @@ function QuickAction({
   desc,
 }: {
   to: string;
-  icon: React.ComponentType<{ size?: number; className?: string }>;
+  icon: any;
   label: string;
   desc: string;
 }) {
@@ -152,74 +174,28 @@ function QuickAction({
 
 // ─── Dashboard Home ────────────────────────────────────────────────────────────
 const DashboardHome = () => {
+  const { data, loading, error } = useDashboard();
   const now = new Date();
   const greeting =
     now.getHours() < 12 ? "Selamat pagi" : now.getHours() < 18 ? "Selamat siang" : "Selamat malam";
 
-  const stats = [
-    {
-      label: "Total Pemesanan",
-      value: "248",
-      sub: "bulan ini",
-      trendLabel: "+12%",
-      trend: "up" as const,
-      icon: CalendarCheck,
-      color: "emerald" as const,
-      href: "/admin/bookings",
-    },
-    {
-      label: "Total Pengguna",
-      value: "1,340",
-      sub: "terdaftar",
-      trendLabel: "+8 baru",
-      trend: "up" as const,
-      icon: Users,
-      color: "violet" as const,
-      href: "/admin/users",
-    },
-    {
-      label: "Bus Aktif",
-      value: "34",
-      sub: "dari 40 unit",
-      icon: Bus,
-      color: "sky" as const,
-      href: "/admin/buses",
-    },
-    {
-      label: "Pendapatan",
-      value: "Rp 84,5jt",
-      sub: "bulan ini",
-      trendLabel: "+5%",
-      trend: "up" as const,
-      icon: TrendingUp,
-      color: "amber" as const,
-      href: "/admin/reports/income",
-    },
-    {
-      label: "Transaksi",
-      value: "186",
-      sub: "total transaksi",
-      icon: Receipt,
-      color: "slate" as const,
-      href: "/admin/transactions",
-    },
-    {
-      label: "Rating Rata-rata",
-      value: "4.7",
-      sub: "dari semua ulasan",
-      icon: Star,
-      color: "rose" as const,
-      href: "/admin/reviews",
-    },
+  const defaultStats = [
+    { label: "Total Pemesanan", icon: CalendarCheck, color: "emerald" as const },
+    { label: "Total Pengguna", icon: Users, color: "violet" as const },
+    { label: "Bus Aktif", icon: Bus, color: "sky" as const },
+    { label: "Pendapatan", icon: TrendingUp, color: "amber" as const },
+    { label: "Transaksi", icon: Receipt, color: "slate" as const },
+    { label: "Rating Rata-rata", icon: Star, color: "rose" as const },
   ];
 
-  const recentActivity = [
-    { icon: CheckCircle2, color: "text-emerald-500", text: "Pemesanan #BK-1024 telah dikonfirmasi", time: "2 menit lalu" },
-    { icon: CreditCard, color: "text-sky-500",     text: "Pembayaran Rp 3.200.000 diterima",       time: "15 menit lalu" },
-    { icon: AlertCircle, color: "text-amber-500",  text: "Penawaran #QT-089 menunggu persetujuan", time: "1 jam lalu" },
-    { icon: UserCheck, color: "text-violet-500",   text: "Pengemudi Ahmad Fauzan ditambahkan",     time: "2 jam lalu" },
-    { icon: Star, color: "text-rose-500",          text: "Ulasan baru diterima dari pelanggan",    time: "3 jam lalu" },
-  ];
+  if (error) {
+    return (
+      <div className="rounded-2xl border border-rose-100 bg-rose-50 p-6 text-rose-600">
+        <p className="font-bold">Error loading dashboard</p>
+        <p className="text-sm mt-1">{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -236,9 +212,15 @@ const DashboardHome = () => {
 
       {/* Stat Cards */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
-        {stats.map((s) => (
-          <StatCard key={s.label} {...s} />
-        ))}
+        {loading ? (
+          defaultStats.map((s) => (
+            <StatCard key={s.label} label={s.label} value="..." sub="memuat..." icon={s.icon} color={s.color} loading />
+          ))
+        ) : (
+          data?.stats.map((s) => (
+            <StatCard key={s.label} {...s} icon={iconMap[s.icon] || Star} trend={s.trend as any} />
+          ))
+        )}
       </div>
 
       {/* Lower Grid */}
@@ -272,15 +254,24 @@ const DashboardHome = () => {
             <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
           </div>
           <div className="flex flex-col gap-3">
-            {recentActivity.map((act, i) => (
-              <div key={i} className="flex items-start gap-3">
-                <act.icon size={15} className={`mt-0.5 flex-shrink-0 ${act.color}`} />
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs font-medium text-slate-700 leading-relaxed">{act.text}</p>
-                  <p className="mt-0.5 text-[11px] text-slate-400">{act.time}</p>
-                </div>
+            {loading ? (
+              <div className="flex flex-col gap-4">
+                {[1, 2, 3, 4, 5].map(i => <div key={i} className="h-10 w-full animate-pulse rounded-lg bg-slate-50" />)}
               </div>
-            ))}
+            ) : (
+              data?.recent_activity.map((act, i) => {
+                const Icon = iconMap[act.icon] || Info;
+                return (
+                  <div key={i} className="flex items-start gap-3">
+                    <Icon size={15} className={`mt-0.5 flex-shrink-0 ${act.color}`} />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-medium text-slate-700 leading-relaxed">{act.text}</p>
+                      <p className="mt-0.5 text-[11px] text-slate-400">{act.time}</p>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
 
           {/* System Status */}
