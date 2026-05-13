@@ -175,7 +175,16 @@ export default function BookingForm({ booking, onSuccess, onCancel }: BookingFor
       }
       onSuccess();
     } catch (err: any) {
-      setError(err.response?.data?.message || "Something went wrong.");
+      const validationErrors = err.response?.data?.errors;
+      if (validationErrors) {
+        const firstErrorKey = Object.keys(validationErrors)[0];
+        const errorMessage = Array.isArray(validationErrors[firstErrorKey]) 
+          ? validationErrors[firstErrorKey][0] 
+          : validationErrors[firstErrorKey];
+        setError(errorMessage);
+      } else {
+        setError(err.response?.data?.message || "Terjadi kesalahan saat menyimpan data.");
+      }
     } finally {
       setLoading(false);
     }
