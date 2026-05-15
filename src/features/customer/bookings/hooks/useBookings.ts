@@ -30,6 +30,7 @@ export function useBookings() {
 export function useBookingDetail(id: string) {
   const [booking, setBooking] = useState<CustomerBooking | null>(null);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+  const [companyProfile, setCompanyProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,12 +38,14 @@ export function useBookingDetail(id: string) {
     if (!id) return;
     try {
       setLoading(true);
-      const [bookingData, methods] = await Promise.all([
+      const [bookingData, methods, profile] = await Promise.all([
         bookingService.getById(id),
         bookingService.getPaymentMethods(),
+        bookingService.getCompanyProfile(),
       ]);
       setBooking(bookingData);
       setPaymentMethods(methods);
+      setCompanyProfile(profile);
     } catch (err: any) {
       setError(err.message || 'Failed to fetch booking detail');
     } finally {
@@ -72,6 +75,7 @@ export function useBookingDetail(id: string) {
   return { 
     booking, 
     paymentMethods,
+    companyProfile,
     loading, 
     error, 
     refresh: fetchDetail, 

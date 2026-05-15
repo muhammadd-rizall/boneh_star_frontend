@@ -14,6 +14,7 @@ const ENDPOINTS = {
   PAYMENT_METHODS: '/customer/bookings/payment-methods',
   QUOTATION_ACCEPT: (id: string) => `/customer/quotations/${id}/accept`,
   QUOTATION_REVISE: (id: string) => `/customer/quotations/${id}/request-revision`,
+  COMPANY_PROFILE: '/public/company-profile',
 };
 
 export const bookingService = {
@@ -59,6 +60,11 @@ export const bookingService = {
 
   reviseQuotation: async (quotationId: string, note: string): Promise<any> => {
     const response = await axios.post(ENDPOINTS.QUOTATION_REVISE(quotationId), { revision_note: note });
+    return response.data.data;
+  },
+
+  getCompanyProfile: async (): Promise<any> => {
+    const response = await axios.get(ENDPOINTS.COMPANY_PROFILE);
     return response.data.data;
   }
 };

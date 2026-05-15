@@ -29,7 +29,6 @@ import {
   Star
 } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/utils/formatter';
-import type { PaymentMethod } from '@/types/Database';
 
 export default function BookingDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -37,6 +36,7 @@ export default function BookingDetailPage() {
   const { 
     booking, 
     paymentMethods,
+    companyProfile,
     loading, 
     error, 
     refresh, 
@@ -189,6 +189,8 @@ export default function BookingDetailPage() {
               <h2 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Penawaran Harga</h2>
               <QuotationSection 
                 quotation={booking.quotation as any} 
+                whatsappNumber={companyProfile?.whatsapp?.[0]}
+                bookingCode={booking.booking_code}
                 onAccept={() => acceptQuotation(booking.quotation!.id)} 
                 onRevise={(note) => reviseQuotation(booking.quotation!.id, note)}
               />

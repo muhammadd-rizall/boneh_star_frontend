@@ -3,15 +3,17 @@ import type { CustomerQuotation } from '../types/Booking';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { formatCurrency, formatDate } from '@/utils/formatter';
-import { Receipt, Info, CheckCircle2, MessageSquareText, Calendar } from 'lucide-react';
+import { Receipt, Info, CheckCircle2, MessageSquareText, Calendar, Clock, MessageCircle } from 'lucide-react';
 
 interface Props {
   quotation: CustomerQuotation;
+  whatsappNumber?: string;
+  bookingCode: string;
   onAccept: () => void;
   onRevise: (note: string) => void;
 }
 
-export default function QuotationSection({ quotation, onAccept, onRevise }: Props) {
+export default function QuotationSection({ quotation, whatsappNumber, bookingCode, onAccept, onRevise }: Props) {
   const [isRevising, setIsRevising] = React.useState(false);
   const [revisionNote, setRevisionNote] = React.useState('');
   const [loading, setLoading] = React.useState(false);
@@ -27,10 +29,18 @@ export default function QuotationSection({ quotation, onAccept, onRevise }: Prop
     }
   };
 
+  const handleWhatsAppNegotiation = () => {
+    if (!whatsappNumber) return;
+    const cleanNumber = whatsappNumber.replace(/\D/g, '');
+    const message = `Halo Admin Boneh Star, saya ingin bernegosiasi mengenai penawaran harga untuk Booking #${bookingCode}.`;
+    const url = `https://wa.me/${cleanNumber}?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
+  };
+
   if (quotation.status === 'accepted') {
     return (
       <Card className="bg-emerald-50/20 border-emerald-100 shadow-none rounded-3xl">
-        <div className="flex items-center gap-4 text-emerald-600">
+        <div className="flex items-center gap-4 text-emerald-600 p-2">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-100/50">
             <CheckCircle2 size={20} strokeWidth={2.5} />
           </div>
@@ -76,13 +86,26 @@ export default function QuotationSection({ quotation, onAccept, onRevise }: Prop
           </div>
 
           {quotation.status === 'sent' && !isRevising && (
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <Button onClick={onAccept} className="flex-1 shadow-lg shadow-slate-200" icon={CheckCircle2}>
-                Setujui Harga
-              </Button>
-              <Button variant="ghost" onClick={() => setIsRevising(true)} className="flex-1 font-bold" icon={MessageSquareText}>
-                Minta Revisi
-              </Button>
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <Button onClick={onAccept} className="flex-1 shadow-lg shadow-slate-200" icon={CheckCircle2}>
+                  Setujui Harga
+                </Button>
+                <Button variant="ghost" onClick={() => setIsRevising(true)} className="flex-1 font-bold" icon={MessageSquareText}>
+                  Minta Revisi
+                </Button>
+              </div>
+              
+              {whatsappNumber && (
+                <Button 
+                  variant="outline" 
+                  onClick={handleWhatsAppNegotiation} 
+                  className="w-full border-emerald-100 text-emerald-600 hover:bg-emerald-50 font-bold"
+                  icon={MessageCircle}
+                >
+                  Negosiasi via WhatsApp
+                </Button>
+              )}
             </div>
           )}
 
@@ -107,17 +130,37 @@ export default function QuotationSection({ quotation, onAccept, onRevise }: Prop
           )}
 
           {quotation.status === 'revision' && (
-            <div className="rounded-2xl border border-blue-50 bg-blue-50/30 p-5">
-              <div className="flex items-start gap-4">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-blue-600">
-                  <Clock size={16} strokeWidth={2.5} />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-blue-900 leading-relaxed">
-                    Menunggu Revisi. Permintaan Anda telah kami terima dan sedang ditinjau oleh admin. Kami akan segera memperbarui penawaran ini.
-                  </p>
+            <div className="flex flex-col gap-4 animate-in fade-in slide-in-from-top-2 duration-500">
+              <div className="rounded-2xl border border-blue-50 bg-blue-50/30 p-5">
+                <div className="flex items-start gap-4">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-blue-600">
+                    <Clock size={16} strokeWidth={2.5} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-blue-900 leading-relaxed">
+                      Menunggu Revisi. Permintaan Anda telah kami terima dan sedang ditinjau oleh admin. Kami akan segera memperbarui penawaran ini.
+                    </p>
+                  </div>
                 </div>
               </div>
+
+              {quotation.revision_note && (
+                <div className="rounded-2xl bg-slate-50 p-5 border border-slate-100/50">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Permintaan Anda:</p>
+                  <p className="text-xs font-bold text-slate-600 italic leading-relaxed">"{quotation.revision_note}"</p>
+                </div>
+              )}
+
+              {whatsappNumber && (
+                <Button 
+                  variant="outline" 
+                  onClick={handleWhatsAppNegotiation} 
+                  className="w-full border-emerald-100 text-emerald-600 hover:bg-emerald-50 font-bold"
+                  icon={MessageCircle}
+                >
+                  Follow up via WhatsApp
+                </Button>
+              )}
             </div>
           )}
         </div>
