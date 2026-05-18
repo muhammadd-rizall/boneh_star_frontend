@@ -16,6 +16,10 @@ export interface DashboardData {
     text: string;
     time: string;
   }[];
+  monthly_chart: {
+    month: string;
+    count: number;
+  }[];
 }
 
 export const dashboardService = {

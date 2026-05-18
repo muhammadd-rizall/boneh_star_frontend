@@ -2,7 +2,7 @@ import type { BookingStatus } from '@/types/Database';
 
 const statusMap: Record<BookingStatus, { label: string; className: string }> = {
   pending: { label: 'Menunggu', className: 'bg-amber-50 text-amber-600 border-amber-100' },
-  quoted: { label: 'Penawaran', className: 'bg-orange-50 text-orange-600 border-orange-100' },
+  quoted: { label: 'Menunggu Pembayaran', className: 'bg-orange-50 text-orange-600 border-orange-100' },
   confirmed: { label: 'Dikonfirmasi', className: 'bg-blue-50 text-blue-600 border-blue-100' },
   ongoing: { label: 'Berjalan', className: 'bg-indigo-50 text-indigo-600 border-indigo-100' },
   completed: { label: 'Selesai', className: 'bg-emerald-50 text-emerald-600 border-emerald-100' },

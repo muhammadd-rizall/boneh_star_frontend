@@ -54,6 +54,7 @@ import ResetPasswordPage from "@/page/auth/public/ResetPassword";
 import { useCustomerAuthStore } from "@/features/auth/public";
 import Loader from "@/components/feedback/Loader";
 import { useDashboard } from "@/features/admin/dashboard/hooks/useDashboard";
+import MonthlyTrendChart from "@/features/admin/dashboard/components/MonthlyTrendChart";
 
 const iconMap: Record<string, any> = {
   CalendarCheck,
@@ -222,6 +223,9 @@ const DashboardHome = () => {
           ))
         )}
       </div>
+
+      {/* Monthly Chart */}
+      <MonthlyTrendChart data={data?.monthly_chart || []} loading={loading} />
 
       {/* Lower Grid */}
       <div className="grid gap-4 lg:grid-cols-[1fr_360px]">

@@ -112,7 +112,7 @@ export default function HistoryDetailPage() {
                   <MapPin size={20} strokeWidth={1.5} />
                 </div>
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Rute & Destinasi</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Rute Perjalanan</p>
                   <p className="text-sm font-bold text-slate-700">{data.booking.origin} • {data.booking.full_route}</p>
                 </div>
               </div>

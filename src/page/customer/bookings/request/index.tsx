@@ -129,12 +129,12 @@ export default function BookingRequestPage() {
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
                   <MapPin size={20} strokeWidth={2.5} />
                 </div>
-                <h3 className="text-sm font-black uppercase tracking-widest text-slate-950">2. Lokasi & Destinasi</h3>
+                <h3 className="text-sm font-black uppercase tracking-widest text-slate-950">2. Rincian Rute Perjalanan</h3>
               </div>
               
               <div className="grid gap-6 sm:grid-cols-2">
                 <Input label="Titik Penjemputan Spesifik" placeholder="Contoh: Gedung Sate, Bandung" value={formData.origin} onChange={(e) => setFormData({ ...formData, origin: e.target.value })} required />
-                <Input label="Rute & Kota Tujuan" placeholder="Contoh: Bandung - Jakarta - Anyer" value={formData.full_route} onChange={(e) => setFormData({ ...formData, full_route: e.target.value })} required />
+                <Input label="Rincian Rute (Kota yang Dilalui)" placeholder="Contoh: Bandung - Jakarta - Anyer" value={formData.full_route} onChange={(e) => setFormData({ ...formData, full_route: e.target.value })} required />
               </div>
             </div>
 

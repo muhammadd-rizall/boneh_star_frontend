@@ -161,7 +161,7 @@ export default function BookingDetailPage() {
 
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               <DetailItem icon={Calendar} label="Jadwal" value={booking.return_date ? `${formatDate(booking.departure_date)} - ${formatDate(booking.return_date)}` : formatDate(booking.departure_date)} />
-              <DetailItem icon={MapPin} label="Rute" value={`${booking.origin} (${booking.full_route || 'Rute belum diatur'})`} />
+              <DetailItem icon={MapPin} label="Rute Perjalanan" value={`${booking.origin} (${booking.full_route || 'Rute belum diatur'})`} />
               <DetailItem icon={Users} label="Kapasitas" value={`${booking.passenger_count} Penumpang`} />
               <DetailItem icon={Bus} label="Armada" value={`${booking.bus_count_requested} Unit Bus`} />
             </div>
@@ -204,6 +204,7 @@ export default function BookingDetailPage() {
               <PaymentSection 
                 transaction={booking.transaction as any} 
                 paymentMethods={paymentMethods}
+                departureDate={booking.departure_date}
                 onUpload={(data) => bookingService.uploadPayment(booking.id, data).then(refresh)}
               />
             </div>
@@ -307,7 +308,7 @@ export default function BookingDetailPage() {
           <div className="flex flex-col gap-2">
             <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Alasan Pembatalan</label>
             <textarea 
-              className="w-full rounded-2xl border border-slate-100 bg-slate-50 p-4 text-sm font-semibold focus:border-rose-500 focus:ring-1 focus:ring-rose-500 outline-none transition-all" 
+              className="w-full rounded-2xl border border-slate-100 bg-slate-50/50 p-4 text-sm font-semibold focus:border-rose-500 focus:ring-1 focus:ring-rose-500 outline-none transition-all" 
               rows={4} 
               placeholder="Contoh: Perubahan jadwal rencana kegiatan atau masalah lainnya..."
               value={cancelReason}

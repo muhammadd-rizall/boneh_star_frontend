@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { notificationService } from '../services/NotificationService';
 import type { CustomerNotification } from '../types/Notification';
 
@@ -19,6 +19,10 @@ export function useNotifications() {
       setLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    fetchNotifications();
+  }, [fetchNotifications]);
 
   const markAsRead = async (id: string) => {
     await notificationService.markAsRead(id);

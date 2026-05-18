@@ -10,16 +10,25 @@ import { resolveMediaUrl } from '@/features/admin/company-profile/utils/companyP
 interface Props {
   transaction: CustomerTransaction;
   paymentMethods: PaymentMethod[];
+  departureDate: string;
   onUpload: (data: any) => Promise<void>;
 }
 
-export default function PaymentSection({ transaction, paymentMethods, onUpload }: Props) {
+export default function PaymentSection({ transaction, paymentMethods, departureDate, onUpload }: Props) {
   const [isUploading, setIsUploading] = React.useState(false);
+  
+  // Calculate max date (departure date - 1 day)
+  const maxDate = React.useMemo(() => {
+    const date = new Date(departureDate);
+    date.setDate(date.getDate() - 1);
+    return date.toISOString().split('T')[0];
+  }, [departureDate]);
+
   const [formData, setFormData] = React.useState({
     payment_method_id: '',
     amount: transaction.remaining_amount,
-    payment_type: 'dp',
-    payment_date: new Date().toISOString().split('T')[0],
+    payment_type: 'dp' as 'dp' | 'settlement',
+    payment_date: new Date().toISOString().split('T')[0] > maxDate ? maxDate : new Date().toISOString().split('T')[0],
     transfer_proof: null as File | null,
   });
   const [loading, setLoading] = React.useState(false);
@@ -182,9 +191,11 @@ export default function PaymentSection({ transaction, paymentMethods, onUpload }
                   type="date" 
                   className="rounded-2xl border border-slate-100 bg-white p-3.5 text-sm font-bold text-slate-700 focus:border-orange-500 outline-none transition-all"
                   required
+                  max={maxDate}
                   value={formData.payment_date}
                   onChange={(e) => setFormData({ ...formData, payment_date: e.target.value })}
                 />
+                <p className="text-[9px] font-bold text-slate-400 ml-1 italic">* Maksimal H-1 sebelum keberangkatan</p>
               </div>
 
               <div className="flex flex-col gap-2 sm:col-span-2">
