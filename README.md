@@ -1,75 +1,88 @@
-# React + TypeScript + Vite
+# Boneh Star Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The modern web frontend for the Boneh Star bus management and booking platform, built with React 19, Vite, and TypeScript.
 
-Currently, two official plugins are available:
+## 🚀 Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Framework:** [React 19](https://react.dev)
+- **Build Tool:** [Vite](https://vitejs.dev)
+- **Language:** TypeScript
+- **Styling:** [Tailwind CSS 4](https://tailwindcss.com)
+- **State Management:** [Zustand](https://github.com/pmndrs/zustand)
+- **Routing:** [React Router 7](https://reactrouter.com)
+- **UI Components:** [Shadcn UI](https://ui.shadcn.com), Lucide React, FontAwesome
 
-## React Compiler
+## 🛠️ Key Features
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+- **Public Booking Platform:** Search and book bus tickets easily.
+- **Admin Dashboard:** Manage bus fleets, schedules, bookings, and reports.
+- **Responsive Design:** Optimized for both desktop and mobile devices.
+- **Real-time Updates:** Smooth UI interactions and state management.
 
-Note: This will impact Vite dev & build performances.
+## 📋 Prerequisites
 
-## Expanding the ESLint configuration
+- Node.js >= 20
+- NPM or PNPM
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## ⚙️ Installation & Setup
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+1. **Clone the repository:**
+   ```bash
+   git clone <repository-url>
+   cd boneh-star-frontend
+   ```
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+3. **Environment Setup:**
+   ```bash
+   cp .env.example .env
+   ```
+   *Update `VITE_API_BASE_URL` in `.env` to point to your backend API.*
+
+4. **Run the Development Server:**
+   ```bash
+   npm run dev
+   ```
+
+5. **Build for Production:**
+   ```bash
+   npm run build
+   ```
+
+## 🏗️ Project Structure
+
+```text
+boneh-star-frontend/
+├── public/                 # Static assets (icons, images)
+├── src/
+│   ├── api/                # API client (Axios) & interceptors
+│   ├── assets/             # Images, fonts, and global styles
+│   ├── components/         # Reusable UI components (Shadcn UI)
+│   ├── features/           # Domain-specific logic, hooks, and services
+│   ├── hooks/              # Global custom React hooks
+│   ├── layouts/            # Page layouts (e.g., DashboardLayout)
+│   ├── lib/                # Library configurations (e.g., utils, tailwind-merge)
+│   ├── page/               # Page-level components (Admin, Customer, Public)
+│   ├── services/           # External service integrations
+│   ├── store/              # Global state management (Zustand)
+│   ├── types/              # TypeScript interfaces & types
+│   └── utils/              # Helper functions & constants
+├── .env                    # Environment variables
+├── package.json            # Project dependencies & scripts
+└── tsconfig.json           # TypeScript configuration
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 💅 Development Conventions
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- **Component Styling:** Use Tailwind CSS utility classes.
+- **API Calls:** Use the pre-configured Axios instance in `src/api/` for automatic auth header handling.
+- **Icons:** Use Lucide React for general icons and FontAwesome for brand/specific icons.
+- **Form Handling:** Standardized form components in `src/components/`.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 📄 License
+
+This project is licensed under the MIT License.
