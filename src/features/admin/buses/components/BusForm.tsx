@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { CustomSelect as Select } from "@/components/ui/CustomSelect";
 import { Textarea } from "@/components/ui/Textarea";
+import { DialogFooter } from "@/components/ui/Dialog";
 import {
   Tag,
   Bus as BusIcon,
@@ -394,14 +395,14 @@ export default function BusForm({ bus, onSuccess, onCancel }: BusFormProps) {
         </div>
 
         {/* ── Action Buttons ── */}
-        <div className="sticky bottom-0 -mx-0.5 flex items-center gap-3 border-t border-slate-100 bg-white/90 pt-5 pb-1 backdrop-blur-sm">
-          <Button type="button" variant="ghost" className="flex-none px-6" onClick={onCancel}>
+        <DialogFooter>
+          <Button type="button" variant="ghost" className="px-10" onClick={onCancel}>
             Batal
           </Button>
           <Button type="submit" variant="primary" className="flex-1" loading={loading} icon={Save}>
             {isEdit ? "Simpan Perubahan" : "Daftarkan Bus"}
           </Button>
-        </div>
+        </DialogFooter>
       </form>
 
       {/* ── Image Gallery (edit mode only) ── */}

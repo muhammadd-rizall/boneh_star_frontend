@@ -113,5 +113,5 @@ export default function RouteTypeTable({
     }
   ]
 
-  return <DataTable columns={columns} data={data} loading={loading} />
+  return <DataTable columns={columns} data={data} loading={loading} paginated />
 }

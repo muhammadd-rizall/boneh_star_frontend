@@ -80,5 +80,5 @@ export default function RoleTable({ data, onDelete, onEdit, loading }: RoleTable
     }
   ]
 
-  return <DataTable columns={columns} data={data} loading={loading} />
+  return <DataTable columns={columns} data={data} loading={loading} paginated />
 }

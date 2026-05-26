@@ -3,6 +3,7 @@ import type { CustomerProfile, UpdateProfileData } from '../types/Profile';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
+import { DialogFooter } from "@/components/ui/Dialog";
 import { User, Mail, Phone, MapPin, Save } from 'lucide-react';
 
 interface Props {
@@ -67,27 +68,26 @@ export default function ProfileEditForm({ profile, onSubmit, onCancel }: Props) 
         </div>
       </div>
 
-      <div className="flex gap-4 border-t border-slate-50 pt-10">
-        <Button 
-          type="submit" 
-          loading={loading} 
-          className="flex-1 rounded-2xl shadow-xl shadow-orange-600/20"
-          icon={Save}
-          size="lg"
-        >
-          Simpan Perubahan
-        </Button>
+      <DialogFooter>
         <Button 
           type="button" 
           variant="ghost" 
           onClick={onCancel} 
           className="px-10 font-bold"
           disabled={loading}
-          size="lg"
         >
           Batal
         </Button>
-      </div>
+        <Button 
+          type="submit" 
+          variant="primary"
+          loading={loading} 
+          className="flex-1"
+          icon={Save}
+        >
+          Simpan Perubahan
+        </Button>
+      </DialogFooter>
     </form>
   );
 }

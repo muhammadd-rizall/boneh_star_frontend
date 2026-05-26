@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { DialogFooter } from "@/components/ui/Dialog";
 import { CreditCard, Save, User, Hash, CheckCircle2, Circle } from "lucide-react";
 import type { PaymentMethod, PaymentMethodFormData } from "../types/PaymentMethod";
 import { paymentMethodService } from "../services/PaymentMethodService";
@@ -121,12 +122,12 @@ export default function PaymentMethodForm({ paymentMethod, onSuccess, onCancel }
         </div>
       </div>
 
-      <div className="mt-2 flex items-center gap-3 border-t border-slate-100 pt-6">
-        <Button type="button" variant="ghost" className="flex-1" onClick={onCancel}>Cancel</Button>
+      <DialogFooter>
+        <Button type="button" variant="ghost" onClick={onCancel} className="px-10">Cancel</Button>
         <Button type="submit" variant="primary" className="flex-1" loading={loading} icon={Save}>
           {isEdit ? "Update Payment Method" : "Create Payment Method"}
         </Button>
-      </div>
+      </DialogFooter>
     </form>
   );
 }

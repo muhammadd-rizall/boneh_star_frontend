@@ -38,16 +38,16 @@ export function Modal({
 }: ModalProps) {
   return (
     <Dialog open={open} onOpenChange={(val) => !val && onClose()}>
-      <DialogContent className={cn("rounded-[2.5rem] px-10 pb-10 pt-4 max-h-[92vh] overflow-y-auto", sizeMap[size], className)}>
+      <DialogContent className={cn("rounded-xl px-8 pb-8 pt-3 max-h-[92vh] overflow-y-auto", sizeMap[size], className)}>
         {(title || subtitle) && (
-          <DialogHeader className="px-0 pt-6 pb-2 text-left">
+          <DialogHeader className="px-0 pt-5 pb-1 text-left">
             {title && (
-              <DialogTitle className="text-2xl font-black tracking-tighter text-slate-950">
+              <DialogTitle className="text-xl font-semibold tracking-tight text-slate-900">
                 {title}
               </DialogTitle>
             )}
             {subtitle && (
-              <DialogDescription className="text-sm font-semibold text-slate-400">
+              <DialogDescription className="text-sm text-slate-500 mt-0.5">
                 {subtitle}
               </DialogDescription>
             )}

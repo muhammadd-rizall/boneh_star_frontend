@@ -110,5 +110,5 @@ export default function BusCategoryTable({
     }
   ]
 
-  return <DataTable columns={columns} data={data} loading={loading} />
+  return <DataTable columns={columns} data={data} loading={loading} paginated />
 }

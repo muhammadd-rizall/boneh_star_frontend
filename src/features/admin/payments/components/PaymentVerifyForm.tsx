@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Textarea";
+import { DialogFooter } from "@/components/ui/Dialog";
 import { CheckCircle, XCircle, Save, AlignLeft } from "lucide-react";
 import type { Payment, PaymentVerifyData } from "../types/Payment";
 import { paymentService } from "../services/PaymentService";
@@ -105,12 +106,12 @@ export default function PaymentVerifyForm({ payment, onSuccess, onCancel }: Paym
         )}
       </div>
 
-      <div className="mt-2 flex items-center gap-3 border-t border-slate-100 pt-6">
-        <Button type="button" variant="ghost" className="flex-1" onClick={onCancel}>Cancel</Button>
+      <DialogFooter>
+        <Button type="button" variant="ghost" onClick={onCancel} className="px-10">Cancel</Button>
         <Button type="submit" variant="primary" className="flex-1" loading={loading} icon={Save}>
           Confirm Decision
         </Button>
-      </div>
+      </DialogFooter>
     </form>
   );
 }

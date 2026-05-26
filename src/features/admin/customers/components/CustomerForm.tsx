@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { DialogFooter } from "@/components/ui/Dialog";
 import { User as UserIcon, Mail, Lock, Phone, MapPin, Save } from "lucide-react";
 import type { Customer, CustomerFormData } from "../types/Customer";
 import { customerService } from "../services/CustomerService";
@@ -140,12 +141,12 @@ export default function CustomerForm({ customer, onSuccess, onCancel }: Customer
         </label>
       </div>
 
-      <div className="mt-2 flex items-center gap-3 border-t border-slate-100 pt-6">
-        <Button type="button" variant="ghost" className="flex-1" onClick={onCancel}>Cancel</Button>
+      <DialogFooter>
+        <Button type="button" variant="ghost" onClick={onCancel} className="px-10">Cancel</Button>
         <Button type="submit" variant="primary" className="flex-1" loading={loading} icon={Save}>
           {isEdit ? "Update Customer" : "Create Customer"}
         </Button>
-      </div>
+      </DialogFooter>
     </form>
   );
 }

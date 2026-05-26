@@ -132,5 +132,5 @@ export default function PaymentTable({
     }
   ]
 
-  return <DataTable columns={columns} data={data} loading={loading} />
+  return <DataTable columns={columns} data={data} loading={loading} paginated />
 }

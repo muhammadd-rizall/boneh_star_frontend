@@ -191,7 +191,7 @@ export default function UserTable({ data, onDelete, onEdit, onRestore, loading, 
 
   return (
     <>
-      <DataTable columns={columns} data={data} loading={loading} />
+      <DataTable columns={columns} data={data} loading={loading} paginated />
 
       <Modal 
         open={isDetailOpen} 

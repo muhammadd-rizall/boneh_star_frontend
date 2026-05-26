@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/Input";
 import { CustomSelect as Select } from "@/components/ui/CustomSelect";
 import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Textarea";
+import { DialogFooter } from "@/components/ui/Dialog";
 import { bookingService } from "../services/BookingService";
 import type { Booking, BookingFormData, BookingStatus, CancelledBy, BookingBusFormData } from "../types/Booking";
 import { customerService } from "@/features/admin/customers/services/CustomerService";
@@ -446,15 +447,12 @@ export default function BookingForm({ booking, onSuccess, onCancel }: BookingFor
         />
       </section>
 
-      {/* Form Actions */}
-      <div className="mt-4 flex items-center gap-4 border-t border-slate-100 pt-8">
-        <Button type="button" variant="ghost" className="flex-1 rounded-[20px] py-4" onClick={onCancel}>
-          Discard Changes
-        </Button>
-        <Button type="submit" variant="primary" className="flex-1 rounded-[20px] py-4 shadow-lg shadow-slate-200" loading={loading} icon={Save}>
+      <DialogFooter>
+        <Button type="button" variant="ghost" onClick={onCancel} className="px-10">Discard Changes</Button>
+        <Button type="submit" variant="primary" className="flex-1" loading={loading} icon={Save}>
           {isEdit ? "Update Booking" : "Finalize Booking"}
         </Button>
-      </div>
+      </DialogFooter>
     </form>
   );
 }

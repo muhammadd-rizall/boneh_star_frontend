@@ -93,7 +93,7 @@ export default function BusAvailabilityReportTable({ data, loading }: BusAvailab
           </div>
         </div>
       </div>
-      <DataTable columns={columns} data={data} loading={loading} />
+      <DataTable columns={columns} data={data} loading={loading} paginated />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { DialogFooter } from "@/components/ui/Dialog";
 import { roleService } from "../services/RoleService";
 import type { Role, RoleFormData, Permission } from "../types/Role";
 import { ShieldCheck, Save, CheckSquare, Square, Loader2 } from "lucide-react";
@@ -175,12 +176,12 @@ export default function RoleForm({ role, availablePermissions, onSuccess, onCanc
         </label>
       </div>
 
-      <div className="flex items-center gap-3 border-t border-slate-100 pt-6">
-        <Button type="button" variant="ghost" className="flex-1" onClick={onCancel}>Cancel</Button>
+      <DialogFooter>
+        <Button type="button" variant="ghost" onClick={onCancel} className="px-10">Cancel</Button>
         <Button type="submit" variant="primary" className="flex-1" loading={loading} icon={Save}>
           {isEdit ? "Update Role" : "Save Role"}
         </Button>
-      </div>
+      </DialogFooter>
     </form>
   );
 }

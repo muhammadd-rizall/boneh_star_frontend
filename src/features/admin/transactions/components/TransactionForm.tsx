@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/Input";
 import { CustomSelect as Select } from "@/components/ui/CustomSelect";
 import { Button } from "@/components/ui/Button";
+import { DialogFooter } from "@/components/ui/Dialog";
 import { transactionService } from "../services/TransactionService";
 import type { Transaction, TransactionFormData, TransactionStatus } from "../types/Transaction";
 import { bookingService } from "@/features/admin/bookings/services/BookingService";
@@ -41,7 +42,7 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
   });
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async ( ) => {
       try {
         setFetchingData(true);
         const [bookingsRes, quotationsRes] = await Promise.all([
@@ -210,12 +211,12 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
         />
       </div>
 
-      <div className="mt-2 flex items-center gap-3 border-t border-slate-100 pt-6">
-        <Button type="button" variant="ghost" className="flex-1" onClick={onCancel}>Cancel</Button>
+      <DialogFooter>
+        <Button type="button" variant="ghost" onClick={onCancel} className="px-10">Cancel</Button>
         <Button type="submit" variant="primary" className="flex-1" loading={loading} icon={Save}>
           {isEdit ? "Update Transaction" : "Create Invoice"}
         </Button>
-      </div>
+      </DialogFooter>
     </form>
   );
 }

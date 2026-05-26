@@ -2,6 +2,7 @@ import React from 'react';
 import type { ReviewFormData } from '../types/Review';
 import { Button } from '@/components/ui/Button';
 import { Textarea } from '@/components/ui/Textarea';
+import { DialogFooter } from "@/components/ui/Dialog";
 import StarRating from './StarRating';
 
 interface Props {
@@ -46,27 +47,27 @@ export default function ReviewForm({ bookingId, onSubmit, onCancel }: Props) {
         />
       </div>
 
-      <div className="flex gap-4">
-        <Button 
-          type="submit" 
-          loading={loading} 
-          className="flex-1 rounded-2xl shadow-xl shadow-orange-600/20"
-          size="lg"
-        >
-          Kirim Ulasan
-        </Button>
+      <DialogFooter>
         {onCancel && (
           <Button 
             type="button" 
             variant="ghost" 
             onClick={onCancel} 
-            className="px-8 font-bold" 
+            className="px-10 font-bold" 
             disabled={loading}
           >
             Batal
           </Button>
         )}
-      </div>
+        <Button 
+          type="submit" 
+          variant="primary"
+          loading={loading} 
+          className="flex-1"
+        >
+          Kirim Ulasan
+        </Button>
+      </DialogFooter>
     </form>
   );
 }

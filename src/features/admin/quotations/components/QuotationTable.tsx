@@ -122,5 +122,5 @@ export default function QuotationTable({ data, onDelete, onEdit, loading }: Quot
     }
   ]
 
-  return <DataTable columns={columns} data={data} loading={loading} />
+  return <DataTable columns={columns} data={data} loading={loading} paginated />
 }

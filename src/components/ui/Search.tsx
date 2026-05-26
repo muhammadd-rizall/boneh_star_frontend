@@ -17,8 +17,8 @@ export default function Search({
   return (
     <div className={cn("relative group w-full", className)}>
       {/* Search Icon */}
-      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-orange-500 transition-colors pointer-events-none z-10">
-        <SearchIcon size={18} strokeWidth={2.5} />
+      <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-slate-600 transition-colors pointer-events-none z-10">
+        <SearchIcon size={15} strokeWidth={2} />
       </div>
 
       <input
@@ -27,11 +27,11 @@ export default function Search({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className={cn(
-          "w-full rounded-xl border bg-white pl-11 pr-11 py-2.5 text-sm font-bold text-slate-700 outline-none transition-all duration-200",
-          "placeholder:text-slate-300 placeholder:font-medium",
+          "w-full rounded-lg border bg-white pl-10 pr-9 py-2 text-sm text-slate-700 outline-none transition-all duration-150",
+          "placeholder:text-slate-400",
           "border-slate-200 shadow-sm",
           "hover:border-slate-300",
-          "focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 focus:bg-white"
+          "focus:border-slate-400 focus:ring-2 focus:ring-slate-200 focus:bg-white"
         )}
       />
 
@@ -39,9 +39,9 @@ export default function Search({
       {value && (
         <button
           onClick={() => onChange("")}
-          className="absolute right-2.5 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-lg bg-slate-50 text-slate-400 hover:bg-rose-50 hover:text-rose-500 transition-all active:scale-90 z-10"
+          className="absolute right-2.5 top-1/2 -translate-y-1/2 flex h-6 w-6 items-center justify-center rounded-md text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-all z-10"
         >
-          <X size={15} strokeWidth={2.5} />
+          <X size={13} strokeWidth={2} />
         </button>
       )}
     </div>

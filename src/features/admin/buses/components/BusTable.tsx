@@ -147,5 +147,5 @@ export default function BusTable({ data, onDelete, onEdit, onRestore, loading, i
     }
   ]
 
-  return <DataTable columns={columns} data={data} loading={loading} />
+  return <DataTable columns={columns} data={data} loading={loading} paginated />
 }

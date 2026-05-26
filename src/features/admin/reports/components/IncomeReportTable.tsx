@@ -57,6 +57,7 @@ export default function IncomeReportTable({ data, loading }: IncomeReportTablePr
         columns={columns} 
         loading={loading} 
         emptyMessage="No verified payments in this period"
+        paginated
       />
     </div>
   );

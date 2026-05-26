@@ -48,6 +48,7 @@ export default function OutstandingList({ data, loading }: OutstandingListProps)
         columns={columns} 
         loading={loading} 
         emptyMessage="No outstanding payments"
+        paginated
       />
     </div>
   );

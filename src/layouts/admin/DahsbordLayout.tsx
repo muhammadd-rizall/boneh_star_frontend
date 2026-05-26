@@ -54,36 +54,30 @@ const SidebarItem = ({ to, icon: Icon, label, collapsed }: SidebarItemProps) => 
     to={to}
     title={collapsed ? label : undefined}
     className={({ isActive }) =>
-      `group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all duration-200
+      `group relative flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition-colors duration-150
       ${
         isActive
-          ? "bg-slate-900 text-white shadow-lg shadow-slate-900/20"
-          : "text-slate-500 hover:bg-slate-100 hover:text-slate-900"
+          ? "bg-slate-900 text-white"
+          : "text-slate-500 hover:bg-slate-100 hover:text-slate-800"
       }
       ${collapsed ? "justify-center" : ""}`
     }
   >
-    <Icon size={18} className="flex-shrink-0" />
+    <Icon size={16} className="flex-shrink-0" />
     {!collapsed && (
-      <>
-        <span className="font-medium leading-none">{label}</span>
-        <ChevronRight
-          size={13}
-          className="ml-auto opacity-0 transition-opacity group-hover:opacity-50"
-        />
-      </>
+      <span className="font-medium leading-none">{label}</span>
     )}
   </NavLink>
 );
 
 const SidebarGroup = ({ label, children, collapsed }: SidebarGroupProps) => (
-  <div className="mb-2">
+  <div className="mb-4">
     {!collapsed && (
-      <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+      <p className="mb-1.5 px-2.5 text-[10px] font-semibold uppercase tracking-widest text-slate-400">
         {label}
       </p>
     )}
-    {collapsed && <div className="mb-2 mx-3 h-px bg-slate-100" />}
+    {collapsed && <div className="mb-2 mx-2.5 h-px bg-slate-100" />}
     <div className="flex flex-col gap-0.5">{children}</div>
   </div>
 );
@@ -94,7 +88,7 @@ export default function DahsbordLayout() {
   const [isMobileOpen, setMobileOpen] = useState(false);
   const [isCollapsed, setCollapsed] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-  
+
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
   const { unreadCount } = useNotifications();
@@ -111,14 +105,14 @@ export default function DahsbordLayout() {
     }
   };
 
-  const sidebarWidth = isCollapsed ? "w-[76px]" : "w-64";
+  const sidebarWidth = isCollapsed ? "w-[64px]" : "w-60";
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className="flex h-screen overflow-hidden bg-slate-50/60">
       {/* Mobile Overlay */}
       {isMobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-slate-950/40 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-slate-950/30 backdrop-blur-sm lg:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}
@@ -126,26 +120,26 @@ export default function DahsbordLayout() {
       {/* ── SIDEBAR ──────────────────────────────────────── */}
       <aside
         className={`
-          fixed inset-y-0 left-0 z-50 flex flex-col border-r border-slate-200 bg-white transition-all duration-300
+          fixed inset-y-0 left-0 z-50 flex flex-col border-r border-slate-200 bg-white transition-all duration-200
           lg:sticky lg:top-0 lg:h-screen ${sidebarWidth}
-          ${isMobileOpen ? "translate-x-0 w-64" : "-translate-x-full lg:translate-x-0"}
+          ${isMobileOpen ? "translate-x-0 w-60" : "-translate-x-full lg:translate-x-0"}
         `}
       >
-        {/* Header / Logo (Fixed) */}
-        <div className={`flex h-16 flex-shrink-0 items-center border-b border-slate-100 ${isCollapsed ? "justify-center px-3" : "justify-between px-5"}`}>
+        {/* Header / Logo */}
+        <div className={`flex h-14 flex-shrink-0 items-center border-b border-slate-100 ${isCollapsed ? "justify-center px-2.5" : "justify-between px-4"}`}>
           {!isCollapsed ? (
-            <Link to="/admin/dashboard" className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 text-white">
-                <BusFront size={16} />
+            <Link to="/admin/dashboard" className="flex items-center gap-2">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-900 text-white">
+                <BusFront size={14} />
               </div>
-              <span className="text-base font-bold tracking-tight text-slate-900">
-                Boneh<span className="font-normal text-slate-400"> Star</span>
+              <span className="text-sm font-semibold tracking-tight text-slate-900">
+                Boneh<span className="font-normal text-slate-400">Star</span>
               </span>
             </Link>
           ) : (
             <Link to="/admin/dashboard">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900 text-white">
-                <BusFront size={17} />
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 text-white">
+                <BusFront size={15} />
               </div>
             </Link>
           )}
@@ -153,9 +147,9 @@ export default function DahsbordLayout() {
           {!isCollapsed && (
             <button
               onClick={() => setCollapsed(true)}
-              className="hidden rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 lg:flex"
+              className="hidden rounded-md p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 lg:flex transition-colors"
             >
-              <Menu size={16} />
+              <Menu size={15} />
             </button>
           )}
           {isCollapsed && (
@@ -163,16 +157,16 @@ export default function DahsbordLayout() {
               onClick={() => setCollapsed(false)}
               className="absolute -right-3 top-1/2 z-10 hidden -translate-y-1/2 rounded-full border border-slate-200 bg-white p-1 text-slate-500 shadow-sm hover:bg-slate-50 lg:flex"
             >
-              <ChevronRight size={12} />
+              <ChevronRight size={11} />
             </button>
           )}
-          <button onClick={() => setMobileOpen(false)} className="flex rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 lg:hidden">
-            <X size={16} />
+          <button onClick={() => setMobileOpen(false)} className="flex rounded-md p-1.5 text-slate-400 hover:bg-slate-100 lg:hidden">
+            <X size={15} />
           </button>
         </div>
 
-        {/* ── AREA MENU (SCROLLABLE) ────────────────────────── */}
-        <nav className="flex-1 overflow-y-auto px-3 py-4 custom-scrollbar">
+        {/* ── NAV MENU (SCROLLABLE) ────────────────────────── */}
+        <nav className="flex-1 overflow-y-auto px-2.5 py-4">
           <SidebarGroup label="Overview" collapsed={isCollapsed}>
             <SidebarItem to="/admin/dashboard" icon={LayoutDashboard} label="Dashboard" collapsed={isCollapsed} />
           </SidebarGroup>
@@ -216,21 +210,31 @@ export default function DahsbordLayout() {
         </nav>
 
         {/* User Profile (Fixed at bottom) */}
-        <div className={`flex-shrink-0 border-t border-slate-100 p-3 ${isCollapsed ? "flex justify-center" : ""}`}>
+        <div className={`flex-shrink-0 border-t border-slate-100 p-2.5 ${isCollapsed ? "flex justify-center" : ""}`}>
           {isCollapsed ? (
-            <button onClick={handleLogout} title="Logout" className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition-colors">
-              <LogOut size={16} />
+            <button
+              onClick={handleLogout}
+              title="Logout"
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-500 transition-colors"
+            >
+              <LogOut size={15} />
             </button>
           ) : (
-            <div className="rounded-xl border border-slate-100 bg-slate-50 p-3">
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-slate-200 text-slate-600"><UserCircle size={18} /></div>
+            <div className="rounded-lg border border-slate-100 bg-slate-50 p-2.5">
+              <div className="flex items-center gap-2">
+                <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md bg-slate-200 text-slate-500">
+                  <UserCircle size={15} />
+                </div>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-xs font-semibold text-slate-800">{user?.name || "Admin User"}</p>
+                  <p className="truncate text-xs font-medium text-slate-800">{user?.name || "Admin User"}</p>
                   <p className="truncate text-[11px] text-slate-400">{user?.role?.name || "Administrator"}</p>
                 </div>
-                <button onClick={handleLogout} title="Logout" className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition-colors">
-                  <LogOut size={14} />
+                <button
+                  onClick={handleLogout}
+                  title="Logout"
+                  className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md text-slate-400 hover:bg-rose-50 hover:text-rose-500 transition-colors"
+                >
+                  <LogOut size={13} />
                 </button>
               </div>
             </div>
@@ -239,31 +243,57 @@ export default function DahsbordLayout() {
       </aside>
 
       {/* ── MAIN CONTENT ─────────────────────────────────── */}
-      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
-        <header className="sticky top-0 z-30 flex h-16 flex-shrink-0 items-center justify-between border-b border-slate-200 bg-white/95 px-4 backdrop-blur-sm lg:px-6">
-          <div className="flex items-center gap-3">
+      <div className="flex min-w-0 flex-1 flex-col h-full overflow-hidden">
+        {/* Top Header */}
+        <header className="sticky top-0 z-30 flex h-14 flex-shrink-0 items-center justify-between border-b border-slate-200 bg-white/90 px-4 backdrop-blur-sm lg:px-6">
+          <div className="flex items-center gap-2.5">
             {isCollapsed && (
-              <button onClick={() => setCollapsed(false)} className="hidden rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:flex"><Menu size={18} /></button>
+              <button onClick={() => setCollapsed(false)} className="hidden rounded-md p-1.5 text-slate-500 hover:bg-slate-100 lg:flex">
+                <Menu size={16} />
+              </button>
             )}
-            <button className="flex rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:hidden" onClick={() => setMobileOpen(true)}><Menu size={18} /></button>
-          </div>
-          <div className="flex items-center gap-2">
-            <button onClick={() => setIsNotificationOpen(true)} className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-700">
-              <Bell size={16} />
-              {unreadCount > 0 && <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white ring-2 ring-white">{unreadCount > 9 ? "9+" : unreadCount}</span>}
+            <button className="flex rounded-md p-1.5 text-slate-500 hover:bg-slate-100 lg:hidden" onClick={() => setMobileOpen(true)}>
+              <Menu size={16} />
             </button>
-            <div className="mx-1 h-6 w-px bg-slate-200" />
-            <div className="flex items-center gap-2 rounded-lg border border-slate-200 px-2.5 py-1.5 bg-white">
-              <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md bg-slate-100 text-slate-500"><UserCircle size={15} /></div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {/* Notification Bell */}
+            <button
+              onClick={() => setIsNotificationOpen(true)}
+              className="relative flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition-colors hover:border-slate-300 hover:bg-slate-50 hover:text-slate-700"
+            >
+              <Bell size={15} />
+              {unreadCount > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-semibold text-white ring-2 ring-white">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
+            </button>
+
+            <div className="mx-0.5 h-5 w-px bg-slate-200" />
+
+            {/* User badge */}
+            <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5">
+              <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-md bg-slate-100 text-slate-500">
+                <UserCircle size={13} />
+              </div>
               <div className="hidden sm:block">
-                <p className="text-xs font-semibold leading-none text-slate-800">{user?.name || "Admin"}</p>
+                <p className="text-xs font-medium leading-none text-slate-800">{user?.name || "Admin"}</p>
                 <p className="mt-0.5 text-[10px] text-slate-400">{user?.role?.name || "Administrator"}</p>
               </div>
             </div>
           </div>
         </header>
-        <main className="flex-1 overflow-y-auto p-4 lg:p-6"><div className="mx-auto max-w-7xl"><Outlet /></div></main>
+
+        {/* Page Content */}
+        <main className="flex-1 overflow-y-auto p-4 lg:p-6">
+          <div className="mx-auto max-w-7xl">
+            <Outlet />
+          </div>
+        </main>
       </div>
+
       <NotificationDrawer isOpen={isNotificationOpen} onClose={() => setIsNotificationOpen(false)} />
     </div>
   );

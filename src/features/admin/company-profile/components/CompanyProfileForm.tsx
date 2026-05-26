@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Textarea";
+import { DialogFooter } from "@/components/ui/Dialog";
 import { 
   Building2, 
   MapPin, 
@@ -473,7 +474,7 @@ export default function CompanyProfileForm() {
         </div>
       </section>
 
-      <div className="mt-6 flex justify-end border-t border-slate-100 pt-10">
+      <DialogFooter>
         <Button 
           type="submit" 
           variant="primary" 
@@ -484,7 +485,7 @@ export default function CompanyProfileForm() {
         >
           Perbarui Profil Perusahaan
         </Button>
-      </div>
+      </DialogFooter>
     </form>
   );
 }
