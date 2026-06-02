@@ -13,7 +13,9 @@ import {
   Receipt,
   Info,
   Save,
-  Calculator
+  Calculator,
+  XCircle,
+  ClipboardList
 } from "lucide-react";
 
 interface TransactionFormProps {
@@ -61,7 +63,7 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
           price: q.proposed_price
         })));
       } catch (err: any) {
-        setError("Failed to fetch required data.");
+        setError("Gagal mengambil data pendukung.");
       } finally {
         setFetchingData(false);
       }
@@ -84,7 +86,6 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
     }
   }, [transaction]);
 
-  // Handle Quotation Selection and auto-fill total amount
   const handleQuotationChange = (val: string) => {
     const selected = quotations.find(q => q.value === val);
     if (selected) {
@@ -100,7 +101,6 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
     }
   };
 
-  // Recalculate remaining amount when DP changes
   useEffect(() => {
     const remaining = formData.total_amount - formData.dp_paid;
     setFormData(prev => ({
@@ -122,99 +122,116 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
       }
       onSuccess();
     } catch (err: any) {
-      setError(err.response?.data?.message || "Something went wrong.");
+      setError(err.response?.data?.message || "Terjadi kesalahan saat menyimpan data.");
     } finally {
       setLoading(false);
     }
   };
 
   const statusOptions = [
-    { label: "Waiting Payment", value: "waiting" },
-    { label: "DP Paid", value: "dp_paid" },
-    { label: "Fully Paid", value: "fully_paid" },
-    { label: "Overdue", value: "overdue" },
+    { label: "Menunggu Pembayaran", value: "waiting" },
+    { label: "DP Dibayar", value: "dp_paid" },
+    { label: "Lunas", value: "fully_paid" },
+    { label: "Terlambat", value: "overdue" },
   ];
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-10">
       {error && (
-        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-          {error}
+        <div className="rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-bold text-red-700 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="flex items-center gap-3">
+            <XCircle size={18} className="text-red-500" />
+            {error}
+          </div>
         </div>
       )}
 
-      <div className="grid gap-5 md:grid-cols-2">
-        <Input
-          label="Invoice Number (Optional)"
-          placeholder="Auto-generated if left empty"
-          icon={Receipt}
-          value={formData.invoice_number}
-          onChange={(e) => setFormData({ ...formData, invoice_number: e.target.value })}
-        />
+      <div className="flex flex-col gap-8">
+        <div className="flex items-center gap-3 border-b border-platinum-tint/50 pb-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cloud-mist text-action-blue shadow-sm">
+            <ClipboardList size={20} strokeWidth={2.5} />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-midnight-indigo tracking-tight">Detail Transaksi</h3>
+            <p className="text-xs font-medium text-slate-blue opacity-70">Kelola rincian tagihan dan status pembayaran</p>
+          </div>
+        </div>
 
-        <Select
-          label="Booking"
-          options={bookings}
-          icon={FileText}
-          value={formData.booking_id}
-          onChange={(value) => setFormData({ ...formData, booking_id: value })}
-          placeholder={fetchingData ? "Loading..." : "Select booking"}
-          required
-        />
+        <div className="grid gap-6 md:grid-cols-2">
+          <Input
+            label="Nomor Invoice (Opsional)"
+            placeholder="Otomatis jika dikosongkan"
+            icon={Receipt}
+            value={formData.invoice_number}
+            onChange={(e) => setFormData({ ...formData, invoice_number: e.target.value })}
+          />
 
-        <Select
-          label="Quotation Reference"
-          options={quotations}
-          icon={Calculator}
-          value={formData.quotation_id}
-          onChange={handleQuotationChange}
-          placeholder={fetchingData ? "Loading..." : "Select quotation"}
-          required
-        />
+          <Select
+            label="Pesanan (Booking)"
+            options={bookings}
+            icon={FileText}
+            value={formData.booking_id}
+            onChange={(value) => setFormData({ ...formData, booking_id: value })}
+            placeholder={fetchingData ? "Memuat..." : "Pilih pesanan"}
+            required
+          />
 
-        <Select
-          label="Transaction Status"
-          options={statusOptions}
-          icon={Info}
-          value={formData.status}
-          onChange={(value) => setFormData({ ...formData, status: value as TransactionStatus })}
-          required
-        />
+          <Select
+            label="Referensi Penawaran"
+            options={quotations}
+            icon={Calculator}
+            value={formData.quotation_id}
+            onChange={handleQuotationChange}
+            placeholder={fetchingData ? "Memuat..." : "Pilih penawaran"}
+            required
+          />
 
-        <Input
-          label="Total Amount (IDR)"
-          type="number"
-          min="0"
-          icon={Banknote}
-          value={formData.total_amount.toString()}
-          onChange={(e) => setFormData({ ...formData, total_amount: parseFloat(e.target.value) })}
-          required
-        />
+          <Select
+            label="Status Transaksi"
+            options={statusOptions}
+            icon={Info}
+            value={formData.status}
+            onChange={(value) => setFormData({ ...formData, status: value as TransactionStatus })}
+            required
+          />
 
-        <Input
-          label="DP Paid (IDR)"
-          type="number"
-          min="0"
-          icon={Banknote}
-          value={formData.dp_paid.toString()}
-          onChange={(e) => setFormData({ ...formData, dp_paid: parseFloat(e.target.value) })}
-          required
-        />
+          <Input
+            label="Total Tagihan (Rp)"
+            type="number"
+            min="0"
+            icon={Banknote}
+            value={formData.total_amount.toString()}
+            onChange={(e) => setFormData({ ...formData, total_amount: parseFloat(e.target.value) })}
+            required
+          />
 
-        <Input
-          label="Remaining Amount (IDR)"
-          type="number"
-          icon={Banknote}
-          value={formData.remaining_amount.toString()}
-          disabled
-          className="bg-slate-50 opacity-80"
-        />
+          <Input
+            label="DP Dibayarkan (Rp)"
+            type="number"
+            min="0"
+            icon={Banknote}
+            value={formData.dp_paid.toString()}
+            onChange={(e) => setFormData({ ...formData, dp_paid: parseFloat(e.target.value) })}
+            required
+          />
+
+          <div className="md:col-span-2">
+            <Input
+              label="Sisa Tagihan (Rp)"
+              type="number"
+              icon={Banknote}
+              value={formData.remaining_amount.toString()}
+              disabled
+              className="bg-cloud-mist/50 font-bold text-midnight-indigo"
+            />
+          </div>
+        </div>
       </div>
 
-      <DialogFooter>
-        <Button type="button" variant="ghost" onClick={onCancel} className="px-10">Cancel</Button>
-        <Button type="submit" variant="primary" className="flex-1" loading={loading} icon={Save}>
-          {isEdit ? "Update Transaction" : "Create Invoice"}
+      <DialogFooter className="mt-4 border-t border-platinum-tint/40 pt-8">
+        <Button type="button" variant="ghost" onClick={onCancel} className="px-10 font-bold text-slate-blue hover:text-midnight-indigo">Batal</Button>
+        <Button type="submit" variant="primary" className="flex-1 font-bold h-14 rounded-xl shadow-button" loading={loading} icon={Save}>
+          {isEdit ? "Update Transaksi" : "Terbitkan Invoice"}
         </Button>
       </DialogFooter>
     </form>

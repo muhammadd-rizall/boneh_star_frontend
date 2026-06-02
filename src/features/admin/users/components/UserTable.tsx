@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button"
 import { Modal } from "@/components/ui/Modal"
 import type { User } from "@/features/admin/users/types/User"
 import { Edit, Trash2, Shield, Mail, User as UserIcon, RotateCcw, Key } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface UserTableProps {
   data: User[]
@@ -37,15 +38,15 @@ export default function UserTable({ data, onDelete, onEdit, onRestore, loading, 
 
   const columns: Column<User>[] = [
     {
-      header: "User Information",
+      header: "Identitas Pengguna",
       accessor: (row) => (
-        <div className="flex items-center gap-4 text-left">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-500">
-            <UserIcon size={20} />
+        <div className="flex items-center gap-4 text-left py-1">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-platinum-tint bg-cloud-mist text-slate-blue shadow-sm">
+            <UserIcon size={24} strokeWidth={2.5} className="text-action-blue" />
           </div>
           <div className="flex min-w-0 flex-col">
-            <span className="truncate leading-tight font-semibold text-slate-800">{row.name}</span>
-            <div className="mt-0.5 flex items-center gap-1.5 text-xs font-medium text-slate-400">
+            <span className="truncate leading-tight font-bold text-midnight-indigo">{row.name}</span>
+            <div className="mt-1 flex items-center gap-1.5 text-[11px] font-medium text-slate-blue opacity-60">
               <Mail size={12} className="shrink-0" />
               <span className="truncate">{row.email}</span>
             </div>
@@ -54,7 +55,7 @@ export default function UserTable({ data, onDelete, onEdit, onRestore, loading, 
       ),
     },
     {
-      header: "Role Access",
+      header: "Hak Akses",
       accessor: (row) => {
         const roles = row.roles ?? []
         const MAX_VISIBLE_ROLES = 1
@@ -62,36 +63,36 @@ export default function UserTable({ data, onDelete, onEdit, onRestore, loading, 
         const hiddenRolesCount = roles.length - MAX_VISIBLE_ROLES
 
         return (
-          <div className="flex flex-wrap items-center gap-1">
+          <div className="flex flex-wrap items-center gap-2">
             {roles.length > 0 ? (
               <>
                 {visibleRoles.map((role) => (
                   <div
                     key={role.id}
-                    className="flex items-center gap-1.5 whitespace-nowrap rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-600"
+                    className="flex items-center gap-2 whitespace-nowrap rounded-lg border border-blue-100 bg-blue-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-action-blue shadow-sm"
                   >
-                    <Shield size={10} />
+                    <Shield size={10} strokeWidth={3} />
                     <span>{role.name}</span>
                   </div>
                 ))}
                 {hiddenRolesCount > 0 && (
                   <button 
                     onClick={() => handleShowDetail(row)}
-                    className="flex items-center whitespace-nowrap rounded-full border border-slate-300 bg-slate-200 px-2.5 py-1 text-[10px] font-bold text-slate-600 hover:bg-slate-300 transition-colors"
+                    className="flex items-center whitespace-nowrap rounded-lg border border-platinum-tint bg-cloud-mist px-2 py-1 text-[10px] font-bold text-slate-blue hover:bg-platinum-tint transition-all"
                   >
                     +{hiddenRolesCount}
                   </button>
                 )}
               </>
             ) : (
-              <span className="text-[10px] italic text-slate-400">No Role</span>
+              <span className="text-[10px] font-bold text-slate-blue opacity-40 italic">Tanpa Role</span>
             )}
           </div>
         )
       },
     },
     {
-      header: "Permissions",
+      header: "Izin Sistem",
       accessor: (row) => {
         const permissions = getUserPermissions(row)
         const MAX_VISIBLE = 2
@@ -99,13 +100,13 @@ export default function UserTable({ data, onDelete, onEdit, onRestore, loading, 
         const hiddenPermsCount = permissions.length - MAX_VISIBLE
 
         return (
-          <div className="flex flex-wrap items-center gap-1">
+          <div className="flex flex-wrap items-center gap-2">
             {permissions.length > 0 ? (
               <>
                 {visiblePerms.map((permission) => (
                   <span
                     key={permission.id}
-                    className="whitespace-nowrap rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500"
+                    className="whitespace-nowrap rounded-lg border border-platinum-tint bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-blue opacity-70"
                   >
                     {permission.name}
                   </span>
@@ -113,74 +114,75 @@ export default function UserTable({ data, onDelete, onEdit, onRestore, loading, 
                 {hiddenPermsCount > 0 && (
                   <button 
                     onClick={() => handleShowDetail(row)}
-                    className="flex items-center whitespace-nowrap rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-1 text-[10px] font-bold text-indigo-600 hover:bg-indigo-100 transition-colors"
+                    className="flex items-center whitespace-nowrap rounded-lg border border-indigo-100 bg-indigo-50 px-2 py-1 text-[10px] font-bold text-royal-amethyst hover:bg-indigo-100 transition-all"
                   >
-                    +{hiddenPermsCount} more
+                    +{hiddenPermsCount} lagi
                   </button>
                 )}
               </>
             ) : (
-              <span className="text-[10px] italic text-slate-400">No Permission</span>
+              <span className="text-[10px] font-bold text-slate-blue opacity-40 italic">Tanpa Izin</span>
             )}
           </div>
         )
       },
     },
     {
-      header: "Account Status",
+      header: "Status Akun",
       accessor: (row) => (
         <span
-          className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] ${
+          className={cn(
+            "inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] border shadow-sm",
             row.is_active
-              ? "border border-emerald-200 bg-emerald-50 text-emerald-700"
-              : "border border-slate-200 bg-slate-100 text-slate-500"
-          }`}
+              ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+              : "border-slate-200 bg-slate-100 text-slate-500"
+          )}
         >
-          <span className={`h-1.5 w-1.5 rounded-full ${row.is_active ? "bg-emerald-500" : "bg-slate-400"}`} />
-          {row.is_active ? "Active" : "Inactive"}
+          <span className={cn("h-1.5 w-1.5 rounded-full", row.is_active ? "bg-emerald-500 animate-pulse" : "bg-slate-400")} />
+          {row.is_active ? "Aktif" : "Nonaktif"}
         </span>
       ),
     },
     {
-      header: "Actions",
+      header: "Aksi",
       accessor: (row) => (
         <div className="flex items-center gap-2">
           {isTrash ? (
             <>
               <Button
-                size="sm"
+                size="icon-sm"
                 variant="outline"
                 icon={RotateCcw}
-                className="h-9 w-9 rounded-full p-0"
+                className="h-9 w-9 rounded-xl shadow-sm hover:border-blue-500 hover:text-blue-500"
                 onClick={() => onRestore?.(row.id)}
-                title="Restore User"
+                title="Pulihkan Pengguna"
               />
               <Button
-                size="sm"
+                size="icon-sm"
                 variant="danger"
                 icon={Trash2}
-                className="h-9 w-9 rounded-full p-0"
+                className="h-9 w-9 rounded-xl shadow-sm"
                 onClick={() => onDelete(row)}
-                title="Permanently Delete"
+                title="Hapus Permanen"
               />
             </>
           ) : (
             <>
               <Button
-                size="sm"
+                size="icon-sm"
                 variant="outline"
                 icon={Edit}
-                className="h-9 w-9 rounded-full p-0"
+                className="h-9 w-9 rounded-xl shadow-sm hover:border-action-blue hover:text-action-blue"
                 onClick={() => onEdit(row)}
-                title="Edit User"
+                title="Edit Pengguna"
               />
               <Button
-                size="sm"
+                size="icon-sm"
                 variant="danger"
                 icon={Trash2}
-                className="h-9 w-9 rounded-full p-0"
+                className="h-9 w-9 rounded-xl shadow-sm"
                 onClick={() => onDelete(row)}
-                title="Delete User"
+                title="Hapus Pengguna"
               />
             </>
           )}
@@ -201,17 +203,17 @@ export default function UserTable({ data, onDelete, onEdit, onRestore, loading, 
         size="lg"
       >
         {selectedUser && (
-          <div className="flex flex-col gap-8 py-2">
+          <div className="flex flex-col gap-10 py-2">
             {/* Roles Section */}
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
-                <Shield size={18} className="text-slate-400" />
-                <h4 className="text-sm font-bold uppercase tracking-wider text-slate-500">Roles</h4>
+            <div className="flex flex-col gap-6">
+              <div className="flex items-center gap-3 border-b border-platinum-tint/50 pb-3">
+                <Shield size={20} strokeWidth={2.5} className="text-action-blue" />
+                <h4 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-steel-gray">Role Sistem</h4>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-3">
                 {selectedUser.roles?.map(role => (
-                  <div key={role.id} className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-bold text-slate-700">
-                    <Shield size={14} className="text-slate-400" />
+                  <div key={role.id} className="flex items-center gap-2.5 rounded-xl border border-platinum-tint bg-white px-5 py-3 text-sm font-semibold text-midnight-indigo shadow-sm transition-all hover:border-action-blue/30">
+                    <Shield size={16} className="text-action-blue" />
                     {role.name}
                   </div>
                 ))}
@@ -219,20 +221,20 @@ export default function UserTable({ data, onDelete, onEdit, onRestore, loading, 
             </div>
 
             {/* Permissions Section */}
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
-                <Key size={18} className="text-slate-400" />
-                <h4 className="text-sm font-bold uppercase tracking-wider text-slate-500">
-                  Full Permissions ({getUserPermissions(selectedUser).length})
+            <div className="flex flex-col gap-6">
+              <div className="flex items-center gap-3 border-b border-platinum-tint/50 pb-3">
+                <Key size={20} strokeWidth={2.5} className="text-action-blue" />
+                <h4 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-steel-gray">
+                  Daftar Izin Sistem ({getUserPermissions(selectedUser).length})
                 </h4>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[400px] overflow-y-auto pr-3 [scrollbar-width:none]">
                 {getUserPermissions(selectedUser).map(permission => (
-                  <div key={permission.id} className="flex items-center gap-2.5 rounded-xl border border-slate-100 bg-white p-3 shadow-sm transition-all hover:border-indigo-200 hover:bg-indigo-50/30 group">
-                    <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-slate-50 text-slate-400 group-hover:bg-indigo-100 group-hover:text-indigo-500">
+                  <div key={permission.id} className="flex items-center gap-3 rounded-xl border border-platinum-tint/40 bg-white p-4 shadow-sm transition-all hover:shadow-md hover:border-action-blue/20 group">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-cloud-mist text-slate-blue group-hover:bg-blue-50 group-hover:text-action-blue">
                       <div className="h-1.5 w-1.5 rounded-full bg-current" />
                     </div>
-                    <span className="text-[11px] font-semibold text-slate-600 group-hover:text-indigo-700">
+                    <span className="text-xs font-semibold text-midnight-indigo opacity-80 group-hover:opacity-100">
                       {permission.name}
                     </span>
                   </div>

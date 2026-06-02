@@ -22,31 +22,31 @@ const config: Record<
 > = {
   success: {
     icon: CheckCircle2,
-    bg: "bg-emerald-50/50",
-    border: "border-emerald-100",
-    text: "text-emerald-900",
-    iconColor: "text-emerald-600",
+    bg: "bg-glacier-blue/5",
+    border: "border-glacier-blue/20",
+    text: "text-glacier-blue",
+    iconColor: "text-glacier-blue",
   },
   error: {
     icon: AlertCircle,
-    bg: "bg-rose-50/50",
-    border: "border-rose-100",
-    text: "text-rose-900",
-    iconColor: "text-rose-600",
+    bg: "bg-red-500/5",
+    border: "border-red-500/20",
+    text: "text-red-600",
+    iconColor: "text-red-600",
   },
   warning: {
     icon: AlertTriangle,
-    bg: "bg-orange-50/50",
-    border: "border-orange-100",
-    text: "text-orange-900",
-    iconColor: "text-orange-600",
+    bg: "bg-sunset-gold/5",
+    border: "border-sunset-gold/20",
+    text: "text-sunset-gold",
+    iconColor: "text-sunset-gold",
   },
   info: {
     icon: Info,
-    bg: "bg-slate-50",
-    border: "border-slate-100",
-    text: "text-slate-900",
-    iconColor: "text-slate-600",
+    bg: "bg-cloud-mist",
+    border: "border-platinum-tint",
+    text: "text-midnight-indigo",
+    iconColor: "text-action-blue",
   },
 }
 
@@ -57,20 +57,20 @@ export default function Alert({ message, variant = "info", dismissible = false, 
   const { icon: Icon, bg, border, text, iconColor } = config[variant]
 
   return (
-    <div className={`flex items-start gap-4 rounded-2xl border ${bg} ${border} p-4 animate-in fade-in slide-in-from-top-2 duration-300`}>
-      <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm ${iconColor}`}>
-        <Icon size={18} strokeWidth={2.5} />
+    <div className={`flex items-start gap-4 rounded-xl border ${bg} ${border} p-5 animate-in fade-in slide-in-from-top-2 duration-300 shadow-sm`}>
+      <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm ${iconColor}`}>
+        <Icon size={20} strokeWidth={2.5} />
       </div>
       <div className="flex-1 min-w-0 py-0.5">
-        {title && <p className={`text-sm font-black uppercase tracking-widest ${text} mb-1`}>{title}</p>}
-        <p className={`text-sm font-semibold leading-relaxed ${text} opacity-70`}>{message}</p>
+        {title && <p className={`text-sm font-bold uppercase tracking-wider ${text} mb-1`}>{title}</p>}
+        <p className={`text-sm font-medium leading-relaxed ${text} opacity-80`}>{message}</p>
       </div>
       {dismissible && (
         <button
           onClick={() => setVisible(false)}
-          className={`flex-shrink-0 rounded-xl p-1.5 transition-all ${text} opacity-40 hover:bg-white hover:opacity-100 active:scale-90`}
+          className={`flex-shrink-0 rounded-lg p-2 transition-all ${text} opacity-40 hover:bg-white hover:opacity-100 active:scale-95`}
         >
-          <X size={16} />
+          <X size={18} />
         </button>
       )}
     </div>

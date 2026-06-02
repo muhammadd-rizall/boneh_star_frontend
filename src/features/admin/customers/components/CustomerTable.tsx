@@ -3,6 +3,7 @@ import type { Column } from "@/components/ui/DataTable"
 import { Button } from "@/components/ui/Button"
 import type { Customer } from "@/features/admin/customers/types/Customer"
 import { Edit, Trash2, Mail, Phone, MapPin, User as UserIcon, RotateCcw } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface CustomerTableProps {
   data: Customer[]
@@ -23,26 +24,26 @@ export default function CustomerTable({
 }: CustomerTableProps) {
   const columns: Column<Customer>[] = [
     { 
-      header: "Customer Information", 
+      header: "Identitas Pelanggan", 
       accessor: (row) => (
-        <div className="flex items-center gap-4 text-left">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-500 overflow-hidden">
+        <div className="flex items-center gap-4 text-left py-1">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-platinum-tint bg-cloud-mist text-slate-blue overflow-hidden shadow-sm">
             {row.profile_picture ? (
               <img 
                 src={row.profile_picture} 
                 alt={row.name} 
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cover transition-transform hover:scale-110 duration-500"
                 onError={(e) => {
-                  (e.target as HTMLImageElement).src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(row.name);
+                  (e.target as HTMLImageElement).src = 'https://ui-avatars.com/api/?background=0B3558&color=fff&name=' + encodeURIComponent(row.name);
                 }}
               />
             ) : (
-              <UserIcon size={20} />
+              <UserIcon size={24} strokeWidth={2.5} className="text-action-blue" />
             )}
           </div>
           <div className="flex flex-col">
-            <span className="leading-tight font-semibold text-slate-800">{row.name}</span>
-            <div className="mt-0.5 flex items-center gap-1.5 text-xs font-medium text-slate-400">
+            <span className="leading-tight font-bold text-midnight-indigo">{row.name}</span>
+            <div className="mt-1 flex items-center gap-1.5 text-[11px] font-medium text-slate-blue opacity-60">
               <Mail size={12} />
               <span>{row.email}</span>
             </div>
@@ -51,81 +52,86 @@ export default function CustomerTable({
       )
     },
     { 
-      header: "Contact", 
+      header: "Kontak & Alamat", 
       accessor: (row) => (
-        <div className="flex flex-col gap-1 text-xs text-slate-600">
-          <div className="flex items-center gap-1.5">
-            <Phone size={12} className="text-slate-400" />
-            <span>{row.phone || "N/A"}</span>
+        <div className="flex flex-col gap-1.5 text-[11px] font-semibold text-slate-blue">
+          <div className="flex items-center gap-2 opacity-80">
+            <Phone size={14} className="text-action-blue" />
+            <span>{row.phone || "—"}</span>
           </div>
-          <div className="flex items-center gap-1.5 max-w-[200px] truncate">
-            <MapPin size={12} className="text-slate-400" />
-            <span>{row.address || "N/A"}</span>
+          <div className="flex items-center gap-2 max-w-[200px] truncate opacity-70">
+            <MapPin size={14} className="text-action-blue" />
+            <span>{row.address || "—"}</span>
           </div>
         </div>
       )
     },
     {
-      header: "Status",
+      header: "Status Akun",
       accessor: (row) => (
-        <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] ${
+        <span className={cn(
+          "inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] border shadow-sm",
           row.is_active 
-            ? "border border-emerald-200 bg-emerald-50 text-emerald-700" 
-            : "border border-slate-200 bg-slate-100 text-slate-500"
-        }`}>
-          <span className={`h-1.5 w-1.5 rounded-full ${row.is_active ? "bg-emerald-500" : "bg-slate-400"}`}></span>
-          {row.is_active ? "Active" : "Inactive"}
+            ? "border-emerald-200 bg-emerald-50 text-emerald-700" 
+            : "border-slate-200 bg-slate-100 text-slate-500"
+        )}>
+          <span className={cn("h-1.5 w-1.5 rounded-full", row.is_active ? "bg-emerald-500 animate-pulse" : "bg-slate-400")} />
+          {row.is_active ? "Aktif" : "Nonaktif"}
         </span>
       )
     },
     {
-      header: "Joined At",
+      header: "Bergabung",
       accessor: (row) => (
-        <span className="text-xs text-slate-500">
-          {new Date(row.created_at).toLocaleDateString()}
+        <span className="text-xs text-slate-blue font-semibold opacity-70">
+          {new Date(row.created_at).toLocaleDateString('id-ID', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric'
+          })}
         </span>
       )
     },
     {
-      header: "Actions",
+      header: "Aksi",
       accessor: (row) => (
         <div className="flex items-center gap-2">
           {isTrash ? (
             <>
               <Button 
-                size="sm" 
+                size="icon-sm" 
                 variant="outline" 
                 icon={RotateCcw} 
-                className="h-9 w-9 rounded-full p-0" 
+                className="h-9 w-9 rounded-xl shadow-sm hover:border-blue-500 hover:text-blue-500" 
                 onClick={() => onRestore?.(row.id)}
-                title="Restore Customer" 
+                title="Pulihkan Pelanggan" 
               />
               <Button 
-                size="sm" 
+                size="icon-sm" 
                 variant="danger" 
                 icon={Trash2} 
-                className="h-9 w-9 rounded-full p-0" 
+                className="h-9 w-9 rounded-xl shadow-sm" 
                 onClick={() => onDelete(row)}
-                title="Permanently Delete"
+                title="Hapus Permanen"
               />
             </>
           ) : (
             <>
               <Button 
-                size="sm" 
+                size="icon-sm" 
                 variant="outline" 
                 icon={Edit} 
-                className="h-9 w-9 rounded-full p-0" 
+                className="h-9 w-9 rounded-xl shadow-sm hover:border-action-blue hover:text-action-blue" 
                 onClick={() => onEdit(row)}
-                title="Edit Customer" 
+                title="Edit Pelanggan" 
               />
               <Button 
-                size="sm" 
+                size="icon-sm" 
                 variant="danger" 
                 icon={Trash2} 
-                className="h-9 w-9 rounded-full p-0" 
+                className="h-9 w-9 rounded-xl shadow-sm" 
                 onClick={() => onDelete(row)}
-                title="Delete Customer"
+                title="Hapus Pelanggan"
               />
             </>
           )}

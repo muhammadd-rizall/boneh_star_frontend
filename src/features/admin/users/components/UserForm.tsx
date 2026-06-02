@@ -7,7 +7,8 @@ import { userService } from "../services/UserService";
 import type { User, UserFormData } from "../types/User";
 import { roleService } from "@/features/admin/roles";
 import type { Role } from "@/features/admin/roles";
-import { User as UserIcon, Mail, Lock, ShieldCheck, Save } from "lucide-react";
+import { User as UserIcon, Mail, Lock, ShieldCheck, Save, XCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface UserFormProps {
   user?: User | null;
@@ -57,7 +58,7 @@ export default function UserForm({ user, onSuccess, onCancel }: UserFormProps) {
           }));
         }
       } catch (err: any) {
-        setError(err.message || "Failed to fetch roles.");
+        setError("Gagal mengambil data hak akses.");
       } finally {
         setRolesLoading(false);
       }
@@ -79,7 +80,7 @@ export default function UserForm({ user, onSuccess, onCancel }: UserFormProps) {
       }
       onSuccess();
     } catch (err: any) {
-      setError(err.response?.data?.message || "Something went wrong.");
+      setError(err.response?.data?.message || "Terjadi kesalahan saat menyimpan data.");
     } finally {
       setLoading(false);
     }
@@ -91,17 +92,20 @@ export default function UserForm({ user, onSuccess, onCancel }: UserFormProps) {
   }));
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-10">
       {error && (
-        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-          {error}
+        <div className="rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-bold text-red-700 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="flex items-center gap-3">
+            <XCircle size={18} className="text-red-500" />
+            {error}
+          </div>
         </div>
       )}
 
-      <div className="grid gap-5 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-2">
         <Input
-          label="Full Name"
-          placeholder="Enter full name"
+          label="Nama Lengkap"
+          placeholder="Masukkan nama lengkap"
           icon={UserIcon}
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -109,9 +113,9 @@ export default function UserForm({ user, onSuccess, onCancel }: UserFormProps) {
         />
 
         <Input
-          label="Email Address"
+          label="Alamat Email"
           type="email"
-          placeholder="name@example.com"
+          placeholder="nama@contoh.com"
           icon={Mail}
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -119,7 +123,7 @@ export default function UserForm({ user, onSuccess, onCancel }: UserFormProps) {
         />
 
         <Input
-          label={isEdit ? "Password (Kosongkan jika tidak diubah)" : "Password"}
+          label={isEdit ? "Kata Sandi (Kosongkan jika tidak diubah)" : "Kata Sandi"}
           type="password"
           placeholder="••••••••"
           icon={Lock}
@@ -129,35 +133,38 @@ export default function UserForm({ user, onSuccess, onCancel }: UserFormProps) {
         />
 
         <Select
-          label="System Role"
+          label="Hak Akses Sistem"
           options={roleOptions}
           icon={ShieldCheck}
           value={formData.role_ids[0] || ""}
           onChange={(value) => setFormData({ ...formData, role_ids: [value] })}
-          placeholder={rolesLoading ? "Loading roles..." : "Select a role"}
+          placeholder={rolesLoading ? "Memuat hak akses..." : "Pilih hak akses"}
         />
       </div>
 
-      <div className="rounded-[24px] border border-slate-200 bg-slate-50 px-4 py-4">
-        <label htmlFor="is_active" className="flex cursor-pointer items-start gap-3">
-          <input
-            type="checkbox"
-            id="is_active"
-            className="mt-0.5 h-4 w-4 cursor-pointer rounded border-slate-300 text-slate-900 focus:ring-slate-400"
-            checked={formData.is_active}
-            onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-          />
-          <span>
-            <span className="block text-sm font-medium text-slate-800">Account is active</span>
-            <span className="text-sm text-slate-500">User dapat masuk dan menggunakan akses yang diberikan.</span>
-          </span>
+      <div className="rounded-[24px] border border-platinum-tint bg-cloud-mist/30 px-6 py-6 transition-all hover:bg-cloud-mist/50">
+        <label htmlFor="is_active" className="flex cursor-pointer items-start gap-4">
+          <div className="relative flex items-center justify-center h-6 w-6 shrink-0 mt-0.5">
+            <input
+              type="checkbox"
+              id="is_active"
+              className="peer h-6 w-6 cursor-pointer appearance-none rounded-lg border-2 border-platinum-tint bg-white transition-all checked:bg-action-blue checked:border-action-blue focus:ring-4 focus:ring-action-blue/10"
+              checked={formData.is_active}
+              onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+            />
+            <Save size={14} className="absolute text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-base font-bold text-midnight-indigo">Akun Aktif</span>
+            <span className="text-sm font-medium text-slate-blue opacity-70">Pengguna dapat masuk dan menggunakan akses yang diberikan.</span>
+          </div>
         </label>
       </div>
 
-      <DialogFooter>
-        <Button type="button" variant="ghost" onClick={onCancel} className="px-10">Cancel</Button>
-        <Button type="submit" variant="primary" className="flex-1" loading={loading} icon={Save}>
-          {isEdit ? "Update User" : "Create User"}
+      <DialogFooter className="mt-4 border-t border-platinum-tint/40 pt-8">
+        <Button type="button" variant="ghost" onClick={onCancel} className="px-10 font-bold text-slate-blue hover:text-midnight-indigo">Batal</Button>
+        <Button type="submit" variant="primary" className="flex-1 font-bold h-14 rounded-xl shadow-button" loading={loading} icon={Save}>
+          {isEdit ? "Update Pengguna" : "Daftarkan Pengguna"}
         </Button>
       </DialogFooter>
     </form>

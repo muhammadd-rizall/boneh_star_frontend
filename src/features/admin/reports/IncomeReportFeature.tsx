@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useIncomeReport } from "./hooks/useIncomeReport";
 import IncomeReportFilters from "./components/IncomeReportFilters";
 import IncomeReportSummary from "./components/IncomeReportSummary";
@@ -25,6 +25,20 @@ const IncomeReportFeature = () => {
     exportPdf 
   } = useIncomeReport();
   const [showExportOptions, setShowExportOptions] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowExportOptions(false);
+      }
+    };
+
+    if (showExportOptions) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showExportOptions]);
 
   if (error) return <ErrorState message={error} onRetry={refetch} />;
 
@@ -39,52 +53,58 @@ const IncomeReportFeature = () => {
         subtitle={data ? `Periode Laporan: ${periodText}` : "Analisis pendapatan dan penagihan"}
         badge="Keuangan"
         actions={
-          <div className="flex items-center gap-3">
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
             <Button 
               variant="outline" 
               icon={RefreshCw} 
               onClick={refetch}
               loading={loading}
-              size="sm"
-              className="rounded-xl"
+              size="md"
+              className="h-11 rounded-xl border-platinum-tint bg-white px-4 text-sm font-semibold text-slate-blue shadow-sm hover:bg-cloud-mist hover:text-midnight-indigo"
             >
               Update
             </Button>
-            <div className="relative">
+            <div className="relative w-full sm:w-auto" ref={dropdownRef}>
               <Button 
                 variant="primary" 
                 icon={Download}
                 onClick={() => setShowExportOptions(!showExportOptions)}
                 loading={exporting}
                 suffix={ChevronDown}
-                size="sm"
-                className="rounded-xl shadow-lg shadow-slate-200"
+                size="md"
+                className="h-11 w-full justify-between rounded-xl px-4 text-sm font-semibold shadow-button sm:w-auto sm:justify-center"
               >
-                Export Report
+                Export
               </Button>
               
               {showExportOptions && (
-                <div className="absolute right-0 mt-2 w-48 rounded-2xl bg-white py-2 shadow-xl ring-1 ring-black/5 z-20 border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                  <button
-                    onClick={() => {
-                      exportExcel();
-                      setShowExportOptions(false);
-                    }}
-                    className="flex w-full items-center px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
-                  >
-                    <FileSpreadsheet size={16} className="mr-3 text-emerald-600" />
-                    Excel (.xlsx)
-                  </button>
-                  <button
-                    onClick={() => {
-                      exportPdf();
-                      setShowExportOptions(false);
-                    }}
-                    className="flex w-full items-center px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
-                  >
-                    <FileText size={16} className="mr-3 text-rose-600" />
-                    PDF (.pdf)
-                  </button>
+                <div className="absolute right-0 z-50 mt-2 min-w-[240px] overflow-hidden rounded-xl border border-platinum-tint bg-white shadow-xl ring-1 ring-black/5 animate-in fade-in slide-in-from-top-1 duration-200">
+                  <div className="p-1.5 flex flex-col gap-1">
+                    <button
+                      onClick={() => {
+                        exportExcel();
+                        setShowExportOptions(false);
+                      }}
+                      className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left transition-colors hover:bg-cloud-mist"
+                    >
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+                        <FileSpreadsheet size={20} />
+                      </div>
+                      <span className="text-sm font-bold text-midnight-indigo whitespace-nowrap">Excel Spreadsheet</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        exportPdf();
+                        setShowExportOptions(false);
+                      }}
+                      className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left transition-colors hover:bg-cloud-mist"
+                    >
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-600">
+                        <FileText size={20} />
+                      </div>
+                      <span className="text-sm font-bold text-midnight-indigo whitespace-nowrap">PDF Document</span>
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

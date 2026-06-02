@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { DialogFooter } from "@/components/ui/Dialog";
-import { User as UserIcon, Mail, Lock, Phone, MapPin, Save } from "lucide-react";
+import { User as UserIcon, Mail, Lock, Phone, MapPin, Save, XCircle } from "lucide-react";
 import type { Customer, CustomerFormData } from "../types/Customer";
 import { customerService } from "../services/CustomerService";
+import { Textarea } from "@/components/ui/Textarea";
 
 interface CustomerFormProps {
   customer?: Customer | null;
@@ -57,24 +58,27 @@ export default function CustomerForm({ customer, onSuccess, onCancel }: Customer
       }
       onSuccess();
     } catch (err: any) {
-      setError(err.response?.data?.message || "Something went wrong.");
+      setError(err.response?.data?.message || "Terjadi kesalahan saat menyimpan data.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-10">
       {error && (
-        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-          {error}
+        <div className="rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-bold text-red-700 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="flex items-center gap-3">
+            <XCircle size={18} className="text-red-500" />
+            {error}
+          </div>
         </div>
       )}
 
-      <div className="grid gap-5 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-2">
         <Input
-          label="Full Name"
-          placeholder="Enter customer name"
+          label="Nama Lengkap"
+          placeholder="Masukkan nama pelanggan"
           icon={UserIcon}
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -82,9 +86,9 @@ export default function CustomerForm({ customer, onSuccess, onCancel }: Customer
         />
 
         <Input
-          label="Email Address"
+          label="Alamat Email"
           type="email"
-          placeholder="customer@example.com"
+          placeholder="customer@contoh.com"
           icon={Mail}
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -92,7 +96,7 @@ export default function CustomerForm({ customer, onSuccess, onCancel }: Customer
         />
 
         <Input
-          label={isEdit ? "Password (Leave blank to keep current)" : "Password"}
+          label={isEdit ? "Kata Sandi (Kosongkan jika tidak diubah)" : "Kata Sandi"}
           type="password"
           placeholder="••••••••"
           icon={Lock}
@@ -102,49 +106,46 @@ export default function CustomerForm({ customer, onSuccess, onCancel }: Customer
         />
 
         <Input
-          label="Phone Number"
-          placeholder="e.g. 08123456789"
+          label="Nomor Telepon"
+          placeholder="Contoh: 08123456789"
           icon={Phone}
           value={formData.phone || ""}
           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
         />
       </div>
 
-      <div className="w-full">
-        <label className="ml-1 mb-1.5 block text-sm font-medium text-slate-700">Address</label>
-        <div className="relative group">
-          <div className="absolute left-4 top-4 text-slate-400 group-focus-within:text-indigo-600 transition-colors">
-            <MapPin size={18} />
-          </div>
-          <textarea
-            className="w-full rounded-2xl border border-slate-200 bg-white pl-11 pr-4 py-3 text-slate-900 placeholder:text-slate-400 outline-none transition-all duration-200 focus:border-slate-400 focus:ring-4 focus:ring-slate-100 min-h-[100px]"
-            placeholder="Enter customer address"
-            value={formData.address || ""}
-            onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-          />
-        </div>
-      </div>
+      <Textarea
+        label="Alamat Lengkap"
+        placeholder="Masukkan alamat lengkap pelanggan"
+        icon={MapPin}
+        value={formData.address || ""}
+        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+        rows={3}
+      />
 
-      <div className="rounded-[24px] border border-slate-200 bg-slate-50 px-4 py-4">
-        <label htmlFor="is_active" className="flex cursor-pointer items-start gap-3">
-          <input
-            type="checkbox"
-            id="is_active"
-            className="mt-0.5 h-4 w-4 cursor-pointer rounded border-slate-300 text-slate-900 focus:ring-slate-400"
-            checked={formData.is_active}
-            onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-          />
-          <span>
-            <span className="block text-sm font-medium text-slate-800">Customer is active</span>
-            <span className="text-sm text-slate-500">Customer can access the platform and make bookings.</span>
-          </span>
+      <div className="rounded-[24px] border border-platinum-tint bg-cloud-mist/30 px-6 py-6 transition-all hover:bg-cloud-mist/50">
+        <label htmlFor="is_active" className="flex cursor-pointer items-start gap-4">
+          <div className="relative flex items-center justify-center h-6 w-6 shrink-0 mt-0.5">
+            <input
+              type="checkbox"
+              id="is_active"
+              className="peer h-6 w-6 cursor-pointer appearance-none rounded-lg border-2 border-platinum-tint bg-white transition-all checked:bg-action-blue checked:border-action-blue focus:ring-4 focus:ring-action-blue/10"
+              checked={formData.is_active}
+              onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+            />
+            <Save size={14} className="absolute text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-base font-bold text-midnight-indigo">Akun Aktif</span>
+            <span className="text-sm font-medium text-slate-blue opacity-70">Pelanggan dapat mengakses platform dan melakukan pemesanan.</span>
+          </div>
         </label>
       </div>
 
-      <DialogFooter>
-        <Button type="button" variant="ghost" onClick={onCancel} className="px-10">Cancel</Button>
-        <Button type="submit" variant="primary" className="flex-1" loading={loading} icon={Save}>
-          {isEdit ? "Update Customer" : "Create Customer"}
+      <DialogFooter className="mt-4 border-t border-platinum-tint/40 pt-8">
+        <Button type="button" variant="ghost" onClick={onCancel} className="px-10 font-bold text-slate-blue hover:text-midnight-indigo">Batal</Button>
+        <Button type="submit" variant="primary" className="flex-1 font-bold h-14 rounded-xl shadow-button" loading={loading} icon={Save}>
+          {isEdit ? "Update Pelanggan" : "Daftarkan Pelanggan"}
         </Button>
       </DialogFooter>
     </form>

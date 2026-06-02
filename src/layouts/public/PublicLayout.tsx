@@ -12,7 +12,7 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
   const { profile } = usePublicCompanyProfile();
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 selection:bg-orange-100 selection:text-orange-900">
+    <div className="min-h-screen bg-white text-slate-900 selection:bg-slate-200 selection:text-slate-900">
       <div className="relative flex min-h-screen flex-col">
         <Header companyProfile={profile} />
         <main className="flex-1">{children}</main>

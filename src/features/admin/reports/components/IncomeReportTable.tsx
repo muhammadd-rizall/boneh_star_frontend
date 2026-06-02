@@ -27,7 +27,7 @@ export default function IncomeReportTable({ data, loading }: IncomeReportTablePr
     {
       header: "Type",
       accessor: (row) => (
-        <span className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${
+        <span className={`rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-wider ${
           row.payment_type === 'dp' 
             ? 'bg-blue-100 text-blue-600' 
             : 'bg-emerald-100 text-emerald-600'
@@ -39,7 +39,7 @@ export default function IncomeReportTable({ data, loading }: IncomeReportTablePr
     {
       header: "Amount",
       accessor: (row) => (
-        <span className="font-bold text-slate-900">
+        <span className="font-semibold text-slate-900">
           {formatCurrency(row.amount)}
         </span>
       ),

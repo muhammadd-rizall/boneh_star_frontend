@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Textarea";
-import { DialogFooter } from "@/components/ui/Dialog";
 import { 
   Building2, 
   MapPin, 
@@ -12,9 +11,10 @@ import {
   Save, 
   Plus, 
   Trash2,
-  Globe,
   Share2,
-  Link as LinkIcon
+  Link as LinkIcon,
+  Smartphone,
+  Upload,
 } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useCompanyProfile } from "../hooks/useCompanyProfile";
@@ -27,6 +27,7 @@ import {
   resolveMediaUrl,
   SOCIAL_PLATFORMS,
 } from "../utils/companyProfileUtils";
+import { cn } from "@/lib/utils";
 
 export default function CompanyProfileForm() {
   const { profile, loading, error, updateProfile, refetch, mapToFormData } = useCompanyProfile();
@@ -46,7 +47,6 @@ export default function CompanyProfileForm() {
     remove_logo: false,
   });
 
-  // Sinkronisasi data dari global store ke local state form
   useEffect(() => {
     if (profile && profile.company_name) {
       setFormData(mapToFormData(profile));
@@ -59,27 +59,19 @@ export default function CompanyProfileForm() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Validasi ukuran file (misal maks 2MB)
       if (file.size > 2 * 1024 * 1024) {
         setFormError("Ukuran logo tidak boleh lebih dari 2MB");
         return;
       }
-      
       setFormError(null);
       setFormData({ ...formData, logo: file, remove_logo: false });
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
+      reader.onloadend = () => setImagePreview(reader.result as string);
       reader.readAsDataURL(file);
     }
   };
 
-  const handleArrayChange = (
-    index: number,
-    value: string
-  ) => {
-    // Validasi hanya angka untuk WhatsApp
+  const handleArrayChange = (index: number, value: string) => {
     const numericValue = value.replace(/\D/g, "");
     const newArray = [...formData.whatsapp];
     newArray[index] = numericValue;
@@ -124,35 +116,10 @@ export default function CompanyProfileForm() {
     });
   };
 
-  const validateForm = () => {
-    if (!formData.company_name.trim()) return "Nama perusahaan wajib diisi";
-    if (!formData.address.trim()) return "Alamat kantor wajib diisi";
-    
-    // Validasi email jika diisi
-    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      return "Format email tidak valid";
-    }
-
-    // Validasi Social Media URL
-    for (const sm of normalizeSocialMedia(formData.social_media)) {
-      if (sm.platform && !sm.url) return `URL untuk platform ${sm.platform} wajib diisi`;
-      if (sm.url && !sm.url.startsWith("http")) return `URL untuk ${sm.platform || "media sosial"} harus diawali dengan http:// atau https://`;
-    }
-
-    return null;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSuccessMessage(null);
     setFormError(null);
-
-    const validationError = validateForm();
-    if (validationError) {
-      setFormError(validationError);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
-    }
 
     setIsSaving(true);
     try {
@@ -165,7 +132,6 @@ export default function CompanyProfileForm() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       setTimeout(() => setSuccessMessage(null), 5000);
     } catch (err: unknown) {
-      console.error("Gagal memperbarui profil", err);
       setFormError(err instanceof Error ? err.message : "Terjadi kesalahan saat menyimpan data");
     } finally {
       setIsSaving(false);
@@ -174,14 +140,14 @@ export default function CompanyProfileForm() {
 
   if (loading && !profile?.company_name) {
     return (
-      <div className="flex h-64 items-center justify-center">
-        <Loader />
+      <div className="flex h-[60vh] items-center justify-center">
+        <Loader text="Memuat profil perusahaan..." />
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-10">
+    <div className="flex flex-col gap-10">
       {(error || formError) && (
         <Alert variant="error" title="Perhatian" message={formError || error || ""} />
       )}
@@ -190,302 +156,164 @@ export default function CompanyProfileForm() {
         <Alert variant="success" title="Berhasil" message={successMessage} />
       )}
 
-      {/* Logo Section */}
-      <section className="flex flex-col gap-6">
-        <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
-            <ImageIcon size={18} />
+      <form onSubmit={handleSubmit} className="flex flex-col gap-12">
+        {/* Logo Section */}
+        <section className="flex flex-col gap-8">
+          <div className="flex items-center gap-3 border-b border-platinum-tint/50 pb-3">
+            <h3 className="text-lg font-semibold text-midnight-indigo">Logo Perusahaan</h3>
           </div>
-          <h4 className="text-sm font-bold uppercase tracking-wider text-slate-500">Logo Perusahaan</h4>
-        </div>
-        <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
-          <div className="relative group h-36 w-36 flex items-center justify-center rounded-[2rem] border-2 border-dashed border-slate-200 bg-slate-50 text-slate-400 overflow-hidden transition-all hover:border-indigo-300 hover:bg-indigo-50/30">
-            {imagePreview ? (
-              <img src={imagePreview} alt="Logo Preview" className="h-full w-full object-contain p-3" />
-            ) : (
-              <ImageIcon size={40} className="opacity-20" />
-            )}
-            <input
-              type="file"
-              className="absolute inset-0 opacity-0 cursor-pointer"
-              onChange={handleImageChange}
-              accept="image/*"
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <h5 className="font-semibold text-slate-800">Identitas Visual</h5>
-            <p className="text-sm text-slate-500 max-w-xs leading-relaxed">Maksimal ukuran file 2MB.</p>
-            <div className="mt-2 flex gap-2">
-              <Button 
-                type="button" 
-                variant="outline" 
-                size="sm" 
-                className="rounded-xl"
-                onClick={() => document.querySelector<HTMLInputElement>('input[type="file"]')?.click()}
-              >
-                Pilih File
-              </Button>
+
+          <div className="flex flex-col sm:flex-row items-start gap-12">
+            <div className="relative shrink-0">
+              <div className={cn(
+                "h-80 w-80 flex items-center justify-center rounded-[40px] overflow-hidden transition-all bg-white border-2 shadow-sm",
+                imagePreview ? "border-platinum-tint p-2" : "border-dashed border-platinum-tint/60 bg-cloud-mist/30"
+              )}>
+                {imagePreview ? (
+                  <img 
+                    src={imagePreview} 
+                    alt="Logo Preview" 
+                    className="h-full w-full object-contain transition-transform duration-500 hover:scale-105" 
+                  />
+                ) : (
+                  <div className="flex flex-col items-center gap-4 opacity-20 text-midnight-indigo">
+                    <ImageIcon size={64} strokeWidth={1} />
+                    <p className="text-xs font-black uppercase tracking-widest text-center">Belum Ada<br/>Logo</p>
+                  </div>
+                )}
+                <input 
+                  type="file" 
+                  className="absolute inset-0 opacity-0 cursor-pointer z-10" 
+                  onChange={handleImageChange} 
+                  accept="image/*" 
+                />
+              </div>
+              
               {imagePreview && (
+                <div className="absolute -bottom-3 -right-3 flex gap-2 z-20">
+                  <button
+                    type="button"
+                    onClick={() => { setImagePreview(null); setFormData({ ...formData, logo: null, remove_logo: true }); }}
+                    className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white border border-red-100 text-red-500 shadow-xl transition-all hover:bg-red-500 hover:text-white active:scale-95"
+                    title="Hapus Logo"
+                  >
+                    <Trash2 size={20} strokeWidth={2} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => document.querySelector<HTMLInputElement>('input[type="file"]')?.click()}
+                    className="flex h-11 w-11 items-center justify-center rounded-2xl bg-action-blue text-white shadow-xl transition-all hover:bg-glacier-blue active:scale-95"
+                    title="Ganti Logo"
+                  >
+                    <Upload size={20} strokeWidth={2} />
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div className="flex-1 flex flex-col gap-4 py-4">
+              <div className="space-y-1">
+                <h5 className="text-xl font-bold text-midnight-indigo tracking-tight">Identitas Visual</h5>
+                <p className="text-sm font-medium text-slate-blue opacity-60 leading-relaxed max-w-sm">
+                  Gunakan gambar resolusi tinggi dengan latar belakang transparan (PNG) untuk hasil terbaik.
+                </p>
+              </div>
+              <ul className="space-y-2 mt-2">
+                <li className="flex items-center gap-2 text-[11px] font-bold text-slate-blue opacity-50 uppercase tracking-wider">
+                  <div className="h-1 w-1 rounded-full bg-action-blue" /> Maksimal Ukuran: 2 MB
+                </li>
+                <li className="flex items-center gap-2 text-[11px] font-bold text-slate-blue opacity-50 uppercase tracking-wider">
+                  <div className="h-1 w-1 rounded-full bg-action-blue" /> Format File: PNG, JPG, WEBP
+                </li>
+              </ul>
+              {!imagePreview && (
                 <Button 
                   type="button" 
                   variant="outline" 
-                  size="sm" 
-                  className="rounded-xl text-rose-500 border-rose-100 hover:bg-rose-50"
-                  onClick={() => {
-                    setImagePreview(null);
-                    setFormData({ ...formData, logo: null, remove_logo: true });
-                  }}
+                  size="md" 
+                  className="rounded-xl font-bold w-fit mt-3 border-platinum-tint hover:border-action-blue"
+                  icon={Upload}
+                  onClick={() => document.querySelector<HTMLInputElement>('input[type="file"]')?.click()}
                 >
-                  Hapus
+                  Pilih Logo
                 </Button>
               )}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Basic Info */}
-      <section className="flex flex-col gap-6">
-        <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
-            <Building2 size={18} />
+        {/* Basic Info */}
+        <section className="flex flex-col gap-6">
+          <h3 className="text-lg font-semibold text-midnight-indigo border-b border-platinum-tint/50 pb-2">Informasi Umum</h3>
+          <div className="grid gap-6 md:grid-cols-2">
+            <Input label="Nama Perusahaan" value={formData.company_name} onChange={(e) => setFormData({ ...formData, company_name: e.target.value })} required icon={Building2} />
+            <Input label="Email Resmi" type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} icon={Mail} />
           </div>
-          <h4 className="text-sm font-bold uppercase tracking-wider text-slate-500">Informasi Umum</h4>
-        </div>
-        <div className="grid gap-6 md:grid-cols-2">
-          <Input
-            label="Nama Perusahaan"
-            placeholder="Contoh: Boneh Star Transport"
-            icon={Building2}
-            value={formData.company_name}
-            onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
-            required
-          />
-          <Input
-            label="Alamat Email"
-            type="email"
-            placeholder="Contoh: hello@bonehstar.com"
-            icon={Mail}
-            value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          />
-        </div>
-        <div className="grid gap-6 md:grid-cols-2">
-          <Textarea
-            label="Alamat Lengkap"
-            placeholder="Masukkan alamat kantor pusat..."
-            icon={MapPin}
-            value={formData.address}
-            onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-            required
-            rows={4}
-          />
-          <Textarea
-            label="Deskripsi Singkat (Opsional)"
-            placeholder="Buatkan Deskripsi Singkat..."
-            icon={Info}
-            value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            rows={4}
-          />
-        </div>
-      </section>
+          <div className="grid gap-6 md:grid-cols-2">
+            <Textarea label="Alamat Kantor" placeholder="masukkan alamat kantor" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} required icon={MapPin} rows={3} />
+            <Textarea label="Deskripsi Perusahaan (opsional)" placeholder="masukkan deskripsi...(opsional)" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} icon={Info} rows={3} />
+          </div>
+        </section>
 
-      {/* Contact Info */}
-      <section className="flex flex-col gap-6">
-        <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
-            <Globe size={18} />
+        {/* Contact Info */}
+        <section className="flex flex-col gap-6">
+          <div className="flex items-center justify-between border-b border-platinum-tint/50 pb-2">
+            <h3 className="text-lg font-semibold text-midnight-indigo">Nomor WhatsApp</h3>
+            <Button type="button" variant="outline" size="xs" className="rounded-lg font-bold" icon={Plus} onClick={addArrayItem}>Tambah</Button>
           </div>
-          <h4 className="text-sm font-bold uppercase tracking-wider text-slate-500">Saluran Komunikasi</h4>
-        </div>
-        
-        <div className="rounded-[2rem] border border-slate-200/80 bg-gradient-to-br from-white to-slate-50 p-6 shadow-[0_18px_40px_-32px_rgba(15,23,42,0.28)]">
-          <div className="mb-5 flex items-start justify-between gap-4">
-            <div>
-              <p className="text-sm font-semibold text-slate-800">Nomor WhatsApp Aktif</p>
-              <p className="mt-1 text-xs leading-6 text-slate-500">
-                Tambahkan semua nomor yang dapat dihubungi pelanggan. Nomor bisa dihapus langsung dari daftar.
-              </p>
-            </div>
-            <Button 
-              type="button" 
-              variant="outline" 
-              size="sm" 
-              className="rounded-xl border-dashed"
-              icon={Plus}
-              onClick={addArrayItem}
-            >
-              Tambah Nomor
-            </Button>
-          </div>
-
-          {formData.whatsapp.length === 0 ? (
-            <div className="rounded-[1.5rem] border border-dashed border-slate-200 bg-white/70 px-5 py-8 text-center">
-              <p className="text-sm font-medium text-slate-600">Belum ada nomor komunikasi</p>
-              <p className="mt-1 text-xs text-slate-400">
-                Klik `Tambah Nomor` jika ingin menambahkan WhatsApp perusahaan.
-              </p>
-            </div>
-          ) : (
-            <div className="grid gap-4">
-              {formData.whatsapp.map((num, index) => (
-                <div
-                  key={`ws-${index}`}
-                  className="rounded-[1.5rem] border border-slate-200 bg-white p-4 shadow-[0_14px_32px_-28px_rgba(15,23,42,0.35)]"
-                >
-                  <div className="mb-3 flex items-center justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-semibold text-slate-800">Nomor {index + 1}</p>
-                      <p className="text-xs text-slate-400">Format Indonesia tanpa simbol tambahan.</p>
-                    </div>
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      size="sm" 
-                      className="rounded-xl border-rose-100 text-rose-500 hover:bg-rose-50"
-                      onClick={() => removeArrayItem(index)}
-                      icon={Trash2}
-                    >
-                      Hapus
-                    </Button>
-                  </div>
-                  <div className="relative">
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-medium text-slate-400">
-                      +62
-                    </div>
-                    <Input
-                      className="rounded-2xl pl-12"
-                      placeholder="8123456789"
-                      value={num}
-                      onChange={(e) => handleArrayChange(index, e.target.value)}
-                      hint="Contoh: 8123456789"
-                    />
-                  </div>
+          <div className="grid gap-6 sm:grid-cols-2">
+            {formData.whatsapp.map((num, index) => (
+              <div key={index} className="flex items-end gap-3 group animate-in fade-in duration-200">
+                <div className="flex-1">
+                  <Input 
+                    label={`WhatsApp ${index + 1}`} 
+                    value={num} 
+                    onChange={(e) => handleArrayChange(index, e.target.value)} 
+                    placeholder="0812..." 
+                    icon={Smartphone}
+                    className="pl-10" 
+                  />
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Social Media Section */}
-      <section className="flex flex-col gap-6">
-        <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
-            <Share2 size={18} />
+                <button type="button" onClick={() => removeArrayItem(index)} className="flex h-11 w-11 items-center justify-center rounded-xl text-slate-blue opacity-0 group-hover:opacity-100 transition-all hover:bg-red-50 hover:text-red-500 border border-platinum-tint/50 mb-0.5"><Trash2 size={16} /></button>
+              </div>
+            ))}
           </div>
-          <h4 className="text-sm font-bold uppercase tracking-wider text-slate-500">Kehadiran Digital (Sosial Media)</h4>
-        </div>
-        
-        <div className="flex flex-col gap-6">
-          <div>
-            <p className="text-sm font-medium text-slate-700">Pilih ikon media sosial</p>
-            <p className="mt-1 text-xs text-slate-400">
-              Setelah ikon dipilih, kolom URL untuk platform tersebut akan muncul di bawah.
-            </p>
-          </div>
+        </section>
 
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+        {/* Social Media */}
+        <section className="flex flex-col gap-6">
+          <h3 className="text-lg font-semibold text-midnight-indigo border-b border-platinum-tint/50 pb-2">Media Sosial</h3>
+          <div className="flex flex-wrap gap-2">
             {SOCIAL_PLATFORMS.map((platform) => {
-              const isSelected = formData.social_media.some(
-                (item) => item.platform === platform.id
-              );
-
+              const isSelected = formData.social_media.some(item => item.platform === platform.id);
               return (
-                <button
-                  key={platform.id}
-                  type="button"
-                  onClick={() => toggleSocialPlatform(platform.id)}
-                  className={`flex flex-col items-center justify-center gap-3 rounded-[1.75rem] border px-4 py-5 text-sm transition ${
-                    isSelected
-                      ? "border-slate-900 bg-slate-900 text-white shadow-lg shadow-slate-900/10"
-                      : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"
-                  }`}
-                >
-                  <span
-                    className={`flex h-11 w-11 items-center justify-center rounded-2xl ${
-                      isSelected ? "bg-white/10" : "bg-slate-100"
-                    }`}
-                  >
-                    <FontAwesomeIcon icon={platform.icon} className="text-lg" />
-                  </span>
-                  <span className="font-medium">{platform.label}</span>
+                <button key={platform.id} type="button" onClick={() => toggleSocialPlatform(platform.id)} className={cn("px-4 py-2 rounded-lg border text-sm font-medium transition-all flex items-center gap-2", isSelected ? "bg-midnight-indigo border-midnight-indigo text-white shadow-sm" : "bg-white border-platinum-tint text-slate-blue hover:border-action-blue")}>
+                  <FontAwesomeIcon icon={platform.icon} /> {platform.label}
                 </button>
               );
             })}
           </div>
-
-          {formData.social_media.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-[2.5rem] border-2 border-dashed border-slate-200 bg-slate-50/50 py-10 text-slate-400">
-              <div className="mb-4 rounded-full bg-white p-4 shadow-sm">
-                <Share2 size={32} className="opacity-20" />
-              </div>
-              <p className="text-sm font-semibold text-slate-600">Belum ada platform dipilih</p>
-              <p className="mt-1 text-xs text-slate-400">
-                Klik ikon media sosial di atas untuk menghubungkan akun perusahaan.
-              </p>
-            </div>
-          ) : (
-            <div className="grid gap-4">
-              {formData.social_media.map((social) => {
-                const platform = SOCIAL_PLATFORMS.find((item) => item.id === social.platform);
-                if (!platform) return null;
-
-                return (
-                  <div
-                    key={social.platform}
-                    className="rounded-[2rem] border border-slate-100 bg-slate-50/40 p-6"
-                  >
-                    <div className="mb-4 flex items-start justify-between gap-4">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-900 text-white">
-                          <FontAwesomeIcon icon={platform.icon} className="text-lg" />
-                        </div>
-                        <div>
-                          <p className="font-semibold text-slate-900">{platform.label}</p>
-                          <p className="text-xs text-slate-400">Masukkan URL profil resmi</p>
-                        </div>
-                      </div>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="rounded-xl border-rose-100 text-rose-500 hover:bg-rose-50"
-                        icon={Trash2}
-                        onClick={() => toggleSocialPlatform(social.platform)}
-                      >
-                        Hapus
-                      </Button>
-                    </div>
-                    <Input
-                      label={`URL ${platform.label}`}
-                      placeholder="https://..."
-                      icon={LinkIcon}
-                      value={social.url}
-                      onChange={(e) => handleSocialUrlChange(social.platform, e.target.value)}
-                      required
-                    />
+          <div className="grid gap-4 sm:grid-cols-2 mt-2">
+            {formData.social_media.map((social) => {
+              const platform = SOCIAL_PLATFORMS.find(item => item.id === social.platform);
+              return (
+                <div key={social.platform} className="flex items-end gap-2 group animate-in fade-in duration-200">
+                  <div className="flex-1">
+                    <Input label={`URL ${platform?.label}`} value={social.url} onChange={(e) => handleSocialUrlChange(social.platform, e.target.value)} icon={LinkIcon} />
                   </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </section>
+                  <button type="button" onClick={() => toggleSocialPlatform(social.platform)} className="flex h-11 w-11 items-center justify-center rounded-xl text-slate-blue hover:bg-red-50 hover:text-red-500 active:scale-90 border border-platinum-tint/50 mb-0.5"><Trash2 size={16} /></button>
+                </div>
+              );
+            })}
+          </div>
+        </section>
 
-      <DialogFooter>
-        <Button 
-          type="submit" 
-          variant="primary" 
-          size="lg" 
-          className="w-full md:w-72 h-14 rounded-2xl text-base shadow-xl shadow-indigo-200" 
-          loading={isSaving} 
-          icon={Save}
-        >
-          Perbarui Profil Perusahaan
-        </Button>
-      </DialogFooter>
-    </form>
+        <div className="flex justify-end mt-4 pt-10 border-t border-platinum-tint/50">
+          <Button type="submit" variant="primary" size="lg" className="rounded-xl font-medium px-16 h-14 shadow-button" loading={isSaving} icon={Save}>
+            Simpan Perubahan
+          </Button>
+        </div>
+      </form>
+    </div>
   );
 }

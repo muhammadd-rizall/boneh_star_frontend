@@ -1,4 +1,3 @@
-
 import { CustomSelect as Select } from "@/components/ui/CustomSelect";
 import { Calendar, Filter } from "lucide-react";
 import type { IncomeReportFilters as FiltersType } from "../types/IncomeReport";
@@ -15,53 +14,50 @@ export default function IncomeReportFilters({ filters, onFilterChange }: IncomeR
   }));
 
   const months = [
-    { label: "All Months", value: "" },
-    { label: "January", value: "1" },
-    { label: "February", value: "2" },
-    { label: "March", value: "3" },
+    { label: "Semua Bulan", value: "" },
+    { label: "Januari", value: "1" },
+    { label: "Februari", value: "2" },
+    { label: "Maret", value: "3" },
     { label: "April", value: "4" },
-    { label: "May", value: "5" },
-    { label: "June", value: "6" },
-    { label: "July", value: "7" },
-    { label: "August", value: "8" },
+    { label: "Mei", value: "5" },
+    { label: "Juni", value: "6" },
+    { label: "Juli", value: "7" },
+    { label: "Agustus", value: "8" },
     { label: "September", value: "9" },
-    { label: "October", value: "10" },
+    { label: "Oktober", value: "10" },
     { label: "November", value: "11" },
-    { label: "December", value: "12" },
+    { label: "Desember", value: "12" },
   ];
 
   const statusOptions = [
-    { label: "All Status", value: "" },
-    { label: "Fully Paid", value: "fully_paid" },
-    { label: "Down Payment", value: "dp" },
-    { label: "Unpaid", value: "unpaid" },
+    { label: "Semua Status", value: "" },
+    { label: "Lunas", value: "fully_paid" },
+    { label: "DP (Uang Muka)", value: "dp" },
+    { label: "Belum Bayar", value: "unpaid" },
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-4 rounded-[2.5rem] border border-slate-200/80 bg-white/90 p-6 shadow-xl shadow-slate-200/50 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-6 rounded-[24px] border border-platinum-tint bg-white p-8 shadow-card sm:grid-cols-2 lg:grid-cols-3">
       <Select
-        label="Report Year"
+        label="Tahun Laporan"
         icon={Calendar}
         value={filters.year}
         options={years}
         onChange={(value) => onFilterChange({ year: value })}
-        className="rounded-2xl"
       />
       <Select
-        label="Report Month"
+        label="Bulan Laporan"
         icon={Calendar}
         value={filters.month || ""}
         options={months}
         onChange={(value) => onFilterChange({ month: value || undefined })}
-        className="rounded-2xl"
       />
       <Select
-        label="Payment Status"
+        label="Status Pembayaran"
         icon={Filter}
         value={filters.status || ""}
         options={statusOptions}
         onChange={(value) => onFilterChange({ status: (value as any) || undefined })}
-        className="rounded-2xl"
       />
     </div>
   );

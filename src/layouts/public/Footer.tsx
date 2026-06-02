@@ -38,15 +38,15 @@ export default function Footer({ companyProfile }: FooterProps) {
   return (
     <footer
       id="contact"
-      className="bg-slate-950 text-slate-200 selection:bg-orange-500 selection:text-white"
+      className="bg-slate-950 text-slate-300"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="py-16 lg:py-20">
           <div className="grid gap-14 lg:grid-cols-12">
             {/* Brand Section */}
-            <div className="lg:col-span-5 flex flex-col gap-8">
-              <div className="flex items-center gap-3 group">
-                <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl bg-white text-slate-950 shadow-lg transition-all duration-500 group-hover:rotate-3">
+            <div className="lg:col-span-5 flex flex-col gap-7">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg bg-white text-slate-950">
                   {logoUrl ? (
                     <img
                       src={logoUrl}
@@ -54,20 +54,20 @@ export default function Footer({ companyProfile }: FooterProps) {
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <BusFront size={22} />
+                    <BusFront size={20} />
                   )}
                 </div>
-                <span className="text-2xl font-bold tracking-tight text-white">
+                <span className="text-xl font-semibold tracking-tight text-white">
                   {companyProfile.company_name}
                 </span>
               </div>
               
-              <p className="text-base font-medium leading-relaxed text-slate-400 max-w-md">
+              <p className="text-sm leading-relaxed text-slate-400 max-w-md">
                 {companyProfile.description ||
                   "Memberikan standar baru dalam perjalanan rombongan dengan kenyamanan maksimal dan keamanan terjamin."}
               </p>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5">
                 {socialMedias.map((social, idx) => {
                   const icon = getSocialIcon(social.platform);
                   return (
@@ -76,10 +76,10 @@ export default function Footer({ companyProfile }: FooterProps) {
                       href={social.url}
                       target="_blank"
                       rel="noreferrer"
-                      className="group flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 border border-white/10 text-slate-400 transition-all duration-300 hover:bg-orange-600 hover:text-white hover:border-orange-500 hover:-translate-y-0.5"
+                      className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/5 text-slate-500 transition-colors duration-200 hover:bg-white/10 hover:text-white"
                       aria-label={social.platform}
                     >
-                      <FontAwesomeIcon icon={icon} className="text-sm transition-transform group-hover:scale-110" />
+                      <FontAwesomeIcon icon={icon} className="text-sm" />
                     </a>
                   );
                 })}
@@ -89,9 +89,9 @@ export default function Footer({ companyProfile }: FooterProps) {
             {/* Links Grid */}
             <div className="lg:col-span-7 grid gap-12 sm:grid-cols-3">
               {/* Navigation */}
-              <div className="flex flex-col gap-6">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-orange-500">Navigasi</h4>
-                <ul className="flex flex-col gap-4">
+              <div className="flex flex-col gap-5">
+                <h4 className="text-[11px] font-medium uppercase tracking-wider text-slate-500">Navigasi</h4>
+                <ul className="flex flex-col gap-3.5">
                   {quickLinks.map((item) => {
                     const isHash = item.href.startsWith("#");
                     const toPath = isHash ? `/${item.href}` : item.href;
@@ -100,9 +100,8 @@ export default function Footer({ companyProfile }: FooterProps) {
                       <li key={item.label}>
                         <Link
                           to={toPath}
-                          className="group inline-flex items-center text-sm font-semibold text-slate-400 hover:text-white transition-colors duration-300"
+                          className="text-sm text-slate-400 hover:text-white transition-colors duration-200"
                         >
-                          <span className="mr-0 opacity-0 group-hover:mr-2 group-hover:opacity-100 transition-all duration-300 text-orange-500">→</span>
                           {item.label}
                         </Link>
                       </li>
@@ -112,12 +111,12 @@ export default function Footer({ companyProfile }: FooterProps) {
               </div>
 
               {/* Contact Info */}
-              <div className="flex flex-col gap-6">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-orange-500">Hubungi Kami</h4>
-                <div className="flex flex-col gap-5 text-sm font-medium text-slate-400">
-                  <div className="flex items-start gap-3 group">
-                    <MapPin size={16} className="mt-0.5 text-slate-600 shrink-0 group-hover:text-orange-500 transition-colors" />
-                    <span className="leading-relaxed group-hover:text-white transition-colors">{companyProfile.address}</span>
+              <div className="flex flex-col gap-5">
+                <h4 className="text-[11px] font-medium uppercase tracking-wider text-slate-500">Hubungi Kami</h4>
+                <div className="flex flex-col gap-4 text-sm text-slate-400">
+                  <div className="flex items-start gap-3">
+                    <MapPin size={15} className="mt-0.5 text-slate-600 shrink-0" />
+                    <span className="leading-relaxed">{companyProfile.address}</span>
                   </div>
                   
                   <div className="flex flex-col gap-2.5">
@@ -127,12 +126,12 @@ export default function Footer({ companyProfile }: FooterProps) {
                         href={buildWhatsAppHref(whatsapp)}
                         target="_blank"
                         rel="noreferrer"
-                        className="flex items-center gap-3 group"
+                        className="flex items-center gap-3 hover:text-white transition-colors duration-200"
                       >
-                        <div className="flex h-6 w-6 items-center justify-center rounded-md bg-emerald-500/10 text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300">
-                          <FontAwesomeIcon icon={faWhatsapp} size="xs" />
+                        <div className="flex h-5 w-5 items-center justify-center rounded text-emerald-500">
+                          <FontAwesomeIcon icon={faWhatsapp} size="sm" />
                         </div>
-                        <span className="group-hover:text-white transition-colors">{whatsapp}</span>
+                        <span>{whatsapp}</span>
                       </a>
                     ))}
                   </div>
@@ -140,28 +139,28 @@ export default function Footer({ companyProfile }: FooterProps) {
                   {companyProfile.email && (
                     <a
                       href={`mailto:${companyProfile.email}`}
-                      className="flex items-center gap-3 group"
+                      className="flex items-center gap-3 hover:text-white transition-colors duration-200"
                     >
-                      <Mail size={16} className="text-slate-600 shrink-0 group-hover:text-orange-500 transition-colors" />
-                      <span className="group-hover:text-white transition-colors">{companyProfile.email}</span>
+                      <Mail size={15} className="text-slate-600 shrink-0" />
+                      <span>{companyProfile.email}</span>
                     </a>
                   )}
                 </div>
               </div>
 
               {/* Portal Info */}
-              <div className="flex flex-col gap-6">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-orange-500">Internal Access</h4>
+              <div className="flex flex-col gap-5">
+                <h4 className="text-[11px] font-medium uppercase tracking-wider text-slate-500">Internal Access</h4>
                 <Link
                   to="/admin/login"
-                  className="group relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 p-5 transition-all duration-400 hover:border-orange-500/50 hover:bg-white/[0.07]"
+                  className="group rounded-xl bg-white/5 border border-white/5 p-5 transition-colors duration-200 hover:bg-white/[0.08] hover:border-white/10"
                 >
-                  <div className="relative z-10 flex flex-col gap-1.5">
-                    <span className="text-xs font-bold text-white group-hover:text-orange-500 transition-colors">Portal Admin</span>
-                    <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Management System</span>
-                  </div>
-                  <div className="absolute bottom-4 right-4 translate-y-2 opacity-0 text-orange-500 transition-all duration-400 group-hover:translate-y-0 group-hover:opacity-100">
-                    <ArrowUpRight size={16} />
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col gap-1">
+                      <span className="text-xs font-medium text-white">Portal Admin</span>
+                      <span className="text-[10px] text-slate-500 uppercase tracking-wider">Management System</span>
+                    </div>
+                    <ArrowUpRight size={14} className="text-slate-600 group-hover:text-white transition-colors" />
                   </div>
                 </Link>
               </div>
@@ -171,13 +170,13 @@ export default function Footer({ companyProfile }: FooterProps) {
 
         {/* Bottom Bar */}
         <div className="py-8 border-t border-white/5">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <p className="text-xs font-semibold text-slate-600">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-xs text-slate-600">
               © {new Date().getFullYear()} {companyProfile.company_name}. All rights reserved.
             </p>
             <div className="flex items-center gap-8">
-              <span className="text-xs font-semibold text-slate-600 hover:text-orange-500 cursor-pointer transition-colors">Privacy Policy</span>
-              <span className="text-xs font-semibold text-slate-600 hover:text-orange-500 cursor-pointer transition-colors">Terms of Service</span>
+              <span className="text-xs text-slate-600 hover:text-slate-400 cursor-pointer transition-colors">Privacy Policy</span>
+              <span className="text-xs text-slate-600 hover:text-slate-400 cursor-pointer transition-colors">Terms of Service</span>
             </div>
           </div>
         </div>

@@ -4,8 +4,8 @@ import { cn } from "@/lib/utils"
 const paddingMap = {
   none: "",
   sm: "p-4",
-  md: "p-5",
-  lg: "p-6",
+  md: "p-6",
+  lg: "p-8",
 }
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -18,7 +18,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       ref={ref}
       data-slot="card"
       className={cn(
-        "rounded-xl border border-slate-200 bg-white shadow-sm",
+        "rounded-xl border border-platinum-tint bg-white shadow-card",
         paddingMap[padding],
         className
       )}
@@ -33,7 +33,7 @@ const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
     <div
       ref={ref}
       data-slot="card-header"
-      className={cn("flex flex-col space-y-1 p-5", className)}
+      className={cn("flex flex-col space-y-1.5 p-6", className)}
       {...props}
     />
   )
@@ -45,7 +45,7 @@ const CardTitle = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivE
     <div
       ref={ref}
       data-slot="card-title"
-      className={cn("text-lg leading-none font-semibold tracking-tight text-slate-900", className)}
+      className={cn("text-heading font-semibold tracking-tight text-midnight-indigo", className)}
       {...props}
     />
   )
@@ -57,7 +57,7 @@ const CardDescription = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HT
     <div
       ref={ref}
       data-slot="card-description"
-      className={cn("text-sm text-slate-500", className)}
+      className={cn("text-sm text-slate-blue", className)}
       {...props}
     />
   )
@@ -66,7 +66,7 @@ CardDescription.displayName = "CardDescription"
 
 const CardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} data-slot="card-content" className={cn("p-5 pt-0", className)} {...props} />
+    <div ref={ref} data-slot="card-content" className={cn("p-6 pt-0", className)} {...props} />
   )
 )
 CardContent.displayName = "CardContent"
@@ -76,7 +76,7 @@ const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
     <div
       ref={ref}
       data-slot="card-footer"
-      className={cn("flex items-center p-5 pt-0", className)}
+      className={cn("flex items-center p-6 pt-0", className)}
       {...props}
     />
   )

@@ -1,65 +1,55 @@
 import type { Review } from "@/features/admin/reviews/types/Review";
 import { Star, MessageSquare, Quote } from "lucide-react";
+import { useInView } from "@/hooks/useAnimations";
 
 interface TestimonialsSectionProps {
   reviews: Review[];
 }
 
 export default function TestimonialsSection({ reviews }: TestimonialsSectionProps) {
+  const { ref, inView } = useInView(0.1);
+
   if (reviews.length === 0) return null;
 
   return (
-    <section id="testimonials" className="py-20 bg-white">
+    <section id="testimonials" ref={ref} className="py-24 bg-transparent">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-14 text-center flex flex-col items-center">
-          <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-50 text-orange-600 text-[11px] font-semibold uppercase tracking-wider border border-orange-100 mb-5">
-            <MessageSquare size={13} />
+        <div className={"mb-16 text-center flex flex-col items-center reveal " + (inView ? "in-view" : "")}>
+          <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white text-glacier-blue text-[11px] font-bold uppercase tracking-wider border border-platinum-tint mb-6 shadow-sm">
+            <MessageSquare size={14} />
             Suara Pelanggan
           </span>
-          <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl leading-tight">
+          <h2 className="text-display-sm font-bold tracking-tight text-midnight-indigo leading-tight">
             Apa Kata Mereka{" "}
             <br className="hidden sm:block" />
-            <span className="text-orange-500">Tentang Layanan Kami.</span>
+            <span className="text-action-blue">Tentang Layanan Kami.</span>
           </h2>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {reviews.map((review, i) => (
             <div
               key={review.id}
-              className="group flex flex-col animate-in fade-in slide-in-from-bottom-6 duration-700"
-              style={{ animationDelay: `${i * 100}ms` }}
+              className={"group flex flex-col reveal " + (inView ? "in-view" : "")}
+              style={{ "--delay": (i * 100) + "ms" } as React.CSSProperties}
             >
-              <div className="relative flex flex-col rounded-2xl bg-slate-50/70 p-7 transition-all duration-400 hover:bg-white hover:shadow-lg hover:shadow-slate-100 border border-transparent hover:border-slate-100">
-                {/* Quote Icon */}
-                <Quote size={20} className="text-orange-200 mb-5" />
-
-                {/* Stars */}
+              <div className="relative flex flex-col rounded-xl bg-white p-8 transition-all duration-500 hover:shadow-card hover:-translate-y-2 border border-platinum-tint hover:border-action-blue/30 shadow-sm">
+                <Quote size={24} className="text-action-blue/10 mb-6 group-hover:text-action-blue/20 transition-colors" />
                 <div className="mb-4 flex gap-1">
                   {[...Array(5)].map((_, idx) => (
-                    <Star
-                      key={idx}
-                      size={13}
-                      className={idx < review.rating ? "fill-orange-400 text-orange-400" : "text-slate-200"}
-                    />
+                    <Star key={idx} size={14} className={idx < review.rating ? "fill-sunset-gold text-sunset-gold" : "text-platinum-tint"} />
                   ))}
                 </div>
-
-                {/* Comment */}
-                <blockquote className="flex-1 text-sm font-medium leading-relaxed text-slate-600">
+                <blockquote className="flex-1 text-base font-medium leading-relaxed text-midnight-indigo/80 italic">
                   "{review.comment || "Layanan sangat memuaskan, armada bersih dan driver sangat profesional."}"
                 </blockquote>
-
-                {/* Author */}
-                <div className="mt-7 flex items-center gap-3 pt-6 border-t border-slate-100">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white shadow-sm border border-slate-100 text-xs font-bold text-slate-700 group-hover:bg-slate-900 group-hover:text-white transition-all duration-300">
+                <div className="mt-8 flex items-center gap-4 pt-6 border-t border-platinum-tint/50">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-cloud-mist border border-platinum-tint text-sm font-bold text-action-blue shadow-sm">
                     {review.customer?.name?.charAt(0) || "C"}
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-slate-900">{review.customer?.name || "Pelanggan Setia"}</p>
-                    <p className="mt-0.5 text-xs font-medium text-slate-400">
-                      {review.booking?.activity?.name || "Verified Customer"}
-                    </p>
+                    <p className="text-base font-bold text-midnight-indigo">{review.customer?.name || "Pelanggan Setia"}</p>
+                    <p className="mt-0.5 text-xs font-bold text-slate-blue uppercase tracking-wider opacity-60">{review.booking?.activity?.name || "Verified Customer"}</p>
                   </div>
                 </div>
               </div>

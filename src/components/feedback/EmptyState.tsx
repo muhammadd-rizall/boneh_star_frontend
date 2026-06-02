@@ -8,17 +8,17 @@ type Props = {
 
 export default function EmptyState({
   title = "Tidak ada data",
-  description = "Data belum tersedia atau tidak ditemukan",
+  description = "Data belum tersedia atau tidak ditemukan dalam pencarian Anda",
   icon: Icon = InboxIcon,
 }: Props) {
   return (
-    <div className="flex flex-col items-center justify-center py-20 text-center animate-in fade-in duration-700">
-      <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-[2rem] bg-slate-50 shadow-inner">
-        <Icon size={40} strokeWidth={1.5} className="text-slate-300" />
+    <div className="flex flex-col items-center justify-center py-24 text-center animate-in fade-in zoom-in-95 duration-700">
+      <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-[32px] bg-cloud-mist border border-platinum-tint shadow-sm">
+        <Icon size={48} strokeWidth={1.5} className="text-platinum-tint" />
       </div>
-      <h3 className="text-lg font-black tracking-tight text-slate-900">{title}</h3>
+      <h3 className="text-xl font-bold tracking-tight text-midnight-indigo">{title}</h3>
       {description && (
-        <p className="mt-2 text-sm font-semibold text-slate-400 max-w-xs leading-relaxed">{description}</p>
+        <p className="mt-3 text-base font-medium text-slate-blue opacity-60 max-w-sm leading-relaxed">{description}</p>
       )}
     </div>
   )

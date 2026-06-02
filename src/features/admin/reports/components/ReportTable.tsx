@@ -1,7 +1,7 @@
-
 import { DataTable } from "@/components/ui/DataTable";
 import type { Column } from "@/components/ui/DataTable";
-import type { Booking } from "@/types/Database";
+import type { Booking } from "@/features/admin/bookings/types/Booking";
+import { cn } from "@/lib/utils";
 
 interface ReportTableProps {
   data: Booking[];
@@ -11,54 +11,69 @@ interface ReportTableProps {
 export default function ReportTable({ data, loading }: ReportTableProps) {
   const columns: Column<Booking>[] = [
     {
-      header: "Booking Code",
+      header: "Kode Booking",
       accessor: (row) => (
-        <span className="font-semibold text-slate-900">{row.booking_code}</span>
+        <span className="font-bold text-midnight-indigo">{row.booking_code}</span>
       ),
     },
     {
-      header: "Customer",
+      header: "Pelanggan",
       accessor: (row) => (
         <div className="flex flex-col">
-          <span className="text-sm font-medium text-slate-700">{row.customer?.name}</span>
-          <span className="text-xs text-slate-500">{row.customer?.phone}</span>
+          <span className="text-sm font-bold text-midnight-indigo">{row.customer?.name}</span>
+          <span className="text-[11px] font-bold text-slate-blue opacity-50">{row.customer?.phone}</span>
         </div>
       ),
     },
     {
-      header: "Departure",
+      header: "Keberangkatan",
       accessor: (row) => (
-        <span className="text-sm text-slate-600">
-          {new Date(row.departure_date).toLocaleDateString()}
+        <span className="text-xs font-bold text-slate-blue opacity-80">
+          {new Date(row.departure_date).toLocaleDateString('id-ID', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+          })}
         </span>
       ),
     },
     {
-      header: "Origin",
+      header: "Asal",
       accessor: (row) => (
-        <span className="text-sm text-slate-600">{row.origin}</span>
+        <span className="text-xs font-bold text-midnight-indigo">{row.origin}</span>
       ),
     },
     {
-      header: "Passengers",
+      header: "Penumpang",
       accessor: (row) => (
-        <span className="text-sm font-medium text-slate-700">{row.passenger_count}</span>
+        <span className="text-xs font-bold text-midnight-indigo">{row.passenger_count} Orang</span>
       ),
     },
     {
       header: "Status",
       accessor: (row) => {
         const statusColors = {
-          pending: "bg-amber-100 text-amber-800",
-          quoted: "bg-blue-100 text-blue-800",
-          confirmed: "bg-indigo-100 text-indigo-800",
-          ongoing: "bg-purple-100 text-purple-800",
-          completed: "bg-green-100 text-green-800",
-          cancelled: "bg-red-100 text-red-800",
+          pending: "border-amber-200 bg-amber-50 text-amber-700",
+          quoted: "border-blue-200 bg-blue-50 text-blue-700",
+          confirmed: "border-emerald-200 bg-emerald-50 text-emerald-700",
+          ongoing: "border-indigo-200 bg-indigo-50 text-indigo-700",
+          completed: "border-slate-200 bg-slate-50 text-slate-700",
+          cancelled: "border-rose-200 bg-rose-50 text-rose-700",
+        };
+        const statusLabels = {
+          pending: "Tertunda",
+          quoted: "Ditawarkan",
+          confirmed: "Dikonfirmasi",
+          ongoing: "Sedang Jalan",
+          completed: "Selesai",
+          cancelled: "Dibatalkan",
         };
         return (
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[row.status]}`}>
-            {row.status.charAt(0).toUpperCase() + row.status.slice(1)}
+          <span className={cn(
+            "inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border",
+            statusColors[row.status]
+          )}>
+            {statusLabels[row.status]}
           </span>
         );
       },
@@ -66,10 +81,10 @@ export default function ReportTable({ data, loading }: ReportTableProps) {
   ];
 
   return (
-    <div className="rounded-[28px] border border-slate-200/80 bg-white/90 overflow-hidden shadow-sm">
-      <div className="p-6 border-b border-slate-100">
-        <h3 className="text-lg font-semibold text-slate-900">Detailed Report Items</h3>
-        <p className="text-sm text-slate-500 mt-1">Full list of bookings within selected range</p>
+    <div className="rounded-[32px] border border-platinum-tint bg-white overflow-hidden shadow-card">
+      <div className="p-8 border-b border-platinum-tint/50">
+        <h3 className="text-xl font-bold text-midnight-indigo tracking-tight">Rincian Item Laporan</h3>
+        <p className="text-sm font-medium text-slate-blue opacity-60 mt-1">Daftar lengkap transaksi dalam rentang waktu yang dipilih</p>
       </div>
       <DataTable columns={columns} data={data} loading={loading} paginated />
     </div>

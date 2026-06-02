@@ -1,4 +1,3 @@
-
 import { Input } from "@/components/ui/Input";
 import { CustomSelect as Select } from "@/components/ui/CustomSelect";
 import { Calendar, Filter, Map } from "lucide-react";
@@ -11,54 +10,50 @@ interface ReportFiltersProps {
 
 export default function ReportFilters({ filters, onFilterChange }: ReportFiltersProps) {
   const statusOptions = [
-    { label: "All Status", value: "" },
-    { label: "Pending", value: "pending" },
-    { label: "Quoted", value: "quoted" },
-    { label: "Confirmed", value: "confirmed" },
-    { label: "Ongoing", value: "ongoing" },
-    { label: "Completed", value: "completed" },
-    { label: "Cancelled", value: "cancelled" },
+    { label: "Semua Status", value: "" },
+    { label: "Tertunda (Pending)", value: "pending" },
+    { label: "Ditawarkan", value: "quoted" },
+    { label: "Dikonfirmasi", value: "confirmed" },
+    { label: "Dalam Perjalanan", value: "ongoing" },
+    { label: "Selesai", value: "completed" },
+    { label: "Dibatalkan", value: "cancelled" },
   ];
 
   const scopeOptions = [
-    { label: "All Scopes", value: "" },
-    { label: "Inside (Internal)", value: "internal" },
-    { label: "Outside (External)", value: "external" },
+    { label: "Semua Cakupan", value: "" },
+    { label: "Dalam Kota", value: "internal" },
+    { label: "Luar Kota", value: "external" },
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-4 rounded-[2.5rem] border border-slate-200/80 bg-white/90 p-6 shadow-xl shadow-slate-200/50 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-1 gap-6 rounded-[24px] border border-platinum-tint bg-white p-8 shadow-card sm:grid-cols-2 lg:grid-cols-4">
       <Input
-        label="Start Date"
+        label="Tanggal Mulai"
         type="date"
         icon={Calendar}
         value={filters.start_date}
         onChange={(e) => onFilterChange({ start_date: e.target.value })}
-        className="rounded-2xl"
       />
       <Input
-        label="End Date"
+        label="Tanggal Selesai"
         type="date"
         icon={Calendar}
         value={filters.end_date}
         onChange={(e) => onFilterChange({ end_date: e.target.value })}
-        className="rounded-2xl"
       />
       <Select
-        label="Booking Status"
+        label="Status Pesanan"
         icon={Filter}
         value={filters.status || ""}
         options={statusOptions}
         onChange={(value) => onFilterChange({ status: value || undefined })}
-        className="rounded-2xl"
       />
       <Select
-        label="Trip Scope"
+        label="Cakupan Rute"
         icon={Map}
         value={filters.scope || ""}
         options={scopeOptions}
         onChange={(value) => onFilterChange({ scope: (value as any) || undefined })}
-        className="rounded-2xl"
       />
     </div>
   );

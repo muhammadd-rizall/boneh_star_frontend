@@ -15,7 +15,9 @@ import {
   StickyNote, 
   Info,
   Save,
-  MessageSquare
+  MessageSquare,
+  XCircle,
+  ClipboardList
 } from "lucide-react";
 
 interface QuotationFormProps {
@@ -34,17 +36,6 @@ export default function QuotationForm({ quotation, onSuccess, onCancel }: Quotat
 
   const [bookings, setBookings] = useState<{label: string, value: string}[]>([]);
 
-  const [formData, setFormData] = useState<QuotationFormData>({
-    booking_id: "",
-    user_id: user?.id || "",
-    proposed_price: 0,
-    dp_amount: 0,
-    note_to_customer: "",
-    status: "draft",
-    valid_until: "",
-    revision_note: "",
-  });
-
   useEffect(() => {
     const fetchBookings = async () => {
       try {
@@ -55,7 +46,7 @@ export default function QuotationForm({ quotation, onSuccess, onCancel }: Quotat
           value: b.id 
         })));
       } catch (err: any) {
-        setError("Failed to fetch bookings.");
+        setError("Gagal mengambil data pesanan.");
       } finally {
         setFetchingData(false);
       }
@@ -79,6 +70,17 @@ export default function QuotationForm({ quotation, onSuccess, onCancel }: Quotat
     }
   }, [quotation]);
 
+  const [formData, setFormData] = useState<QuotationFormData>({
+    booking_id: "",
+    user_id: user?.id || "",
+    proposed_price: 0,
+    dp_amount: 0,
+    note_to_customer: "",
+    status: "draft",
+    valid_until: "",
+    revision_note: "",
+  });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -92,7 +94,7 @@ export default function QuotationForm({ quotation, onSuccess, onCancel }: Quotat
       }
       onSuccess();
     } catch (err: any) {
-      setError(err.response?.data?.message || "Something went wrong.");
+      setError(err.response?.data?.message || "Terjadi kesalahan saat menyimpan data.");
     } finally {
       setLoading(false);
     }
@@ -100,94 +102,123 @@ export default function QuotationForm({ quotation, onSuccess, onCancel }: Quotat
 
   const statusOptions = [
     { label: "Draft", value: "draft" },
-    { label: "Sent", value: "sent" },
-    { label: "Accepted", value: "accepted" },
-    { label: "Revision", value: "revision" },
-    { label: "Expired", value: "expired" },
-    { label: "Rejected", value: "rejected" },
+    { label: "Terkirim", value: "sent" },
+    { label: "Diterima", value: "accepted" },
+    { label: "Revisi", value: "revision" },
+    { label: "Kedaluwarsa", value: "expired" },
+    { label: "Ditolak", value: "rejected" },
   ];
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-10">
       {error && (
-        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-          {error}
+        <div className="rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-bold text-red-700 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="flex items-center gap-3">
+            <XCircle size={18} className="text-red-500" />
+            {error}
+          </div>
         </div>
       )}
 
-      <div className="grid gap-5 md:grid-cols-2">
-        <Select
-          label="Booking"
-          options={bookings}
-          icon={FileText}
-          value={formData.booking_id}
-          onChange={(value) => setFormData({ ...formData, booking_id: value })}
-          placeholder={fetchingData ? "Loading bookings..." : "Select booking"}
-          required
-        />
+      <div className="flex flex-col gap-8">
+        <div className="flex items-center gap-3 border-b border-platinum-tint/50 pb-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cloud-mist text-action-blue shadow-sm">
+            <ClipboardList size={20} strokeWidth={2.5} />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-midnight-indigo tracking-tight">Detail Penawaran</h3>
+            <p className="text-xs font-medium text-slate-blue opacity-70">Atur rincian harga dan validitas penawaran</p>
+          </div>
+        </div>
 
-        <Select
-          label="Quotation Status"
-          options={statusOptions}
-          icon={Info}
-          value={formData.status}
-          onChange={(value) => setFormData({ ...formData, status: value as QuotationStatus })}
-          required
-        />
+        <div className="grid gap-6 md:grid-cols-2">
+          <Select
+            label="Pesanan (Booking)"
+            options={bookings}
+            icon={FileText}
+            value={formData.booking_id}
+            onChange={(value) => setFormData({ ...formData, booking_id: value })}
+            placeholder={fetchingData ? "Memuat data pesanan..." : "Pilih pesanan"}
+            required
+          />
 
-        <Input
-          label="Proposed Price (IDR)"
-          type="number"
-          min="0"
-          icon={Banknote}
-          value={formData.proposed_price.toString()}
-          onChange={(e) => setFormData({ ...formData, proposed_price: parseFloat(e.target.value) })}
-          required
-        />
+          <Select
+            label="Status Penawaran"
+            options={statusOptions}
+            icon={Info}
+            value={formData.status}
+            onChange={(value) => setFormData({ ...formData, status: value as QuotationStatus })}
+            required
+          />
 
-        <Input
-          label="DP Amount (IDR)"
-          type="number"
-          min="0"
-          icon={Banknote}
-          value={formData.dp_amount.toString()}
-          onChange={(e) => setFormData({ ...formData, dp_amount: parseFloat(e.target.value) })}
-          required
-        />
+          <Input
+            label="Harga Penawaran (Rp)"
+            type="number"
+            min="0"
+            icon={Banknote}
+            value={formData.proposed_price.toString()}
+            onChange={(e) => setFormData({ ...formData, proposed_price: parseFloat(e.target.value) })}
+            required
+          />
 
-        <Input
-          label="Valid Until"
-          type="date"
-          icon={Calendar}
-          value={formData.valid_until}
-          onChange={(e) => setFormData({ ...formData, valid_until: e.target.value })}
-          required
-        />
+          <Input
+            label="Jumlah DP (Rp)"
+            type="number"
+            min="0"
+            icon={Banknote}
+            value={formData.dp_amount.toString()}
+            onChange={(e) => setFormData({ ...formData, dp_amount: parseFloat(e.target.value) })}
+            required
+          />
+
+          <Input
+            label="Berlaku Hingga"
+            type="date"
+            icon={Calendar}
+            value={formData.valid_until}
+            onChange={(e) => setFormData({ ...formData, valid_until: e.target.value })}
+            required
+          />
+        </div>
       </div>
 
-      <Textarea
-        label="Note to Customer"
-        placeholder="Detailed explanation of the price, facilities included, etc."
-        icon={MessageSquare}
-        value={formData.note_to_customer}
-        onChange={(e) => setFormData({ ...formData, note_to_customer: e.target.value })}
-        required
-      />
+      <div className="flex flex-col gap-8">
+        <div className="flex items-center gap-3 border-b border-platinum-tint/50 pb-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cloud-mist text-action-blue shadow-sm">
+            <MessageSquare size={20} strokeWidth={2.5} />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-midnight-indigo tracking-tight">Pesan & Catatan</h3>
+            <p className="text-xs font-medium text-slate-blue opacity-70">Informasi tambahan untuk pelanggan</p>
+          </div>
+        </div>
 
-      {(formData.status === 'revision' || isEdit) && (
         <Textarea
-          label="Revision Note"
-          placeholder="Reason for revision or rejected note..."
-          icon={StickyNote}
-          value={formData.revision_note || ""}
-          onChange={(e) => setFormData({ ...formData, revision_note: e.target.value })}
+          label="Catatan untuk Pelanggan"
+          placeholder="Jelaskan detail harga, fasilitas yang termasuk, dsb."
+          icon={MessageSquare}
+          value={formData.note_to_customer}
+          onChange={(e) => setFormData({ ...formData, note_to_customer: e.target.value })}
+          required
+          rows={4}
         />
-      )}
 
-      <DialogFooter>
-        <Button type="button" variant="ghost" onClick={onCancel} className="px-10">Cancel</Button>
-        <Button type="submit" variant="primary" className="flex-1" loading={loading} icon={Save}>
-          {isEdit ? "Update Quotation" : "Create Quotation"}
+        {(formData.status === 'revision' || isEdit) && (
+          <Textarea
+            label="Catatan Revisi"
+            placeholder="Alasan revisi atau catatan penolakan..."
+            icon={StickyNote}
+            value={formData.revision_note || ""}
+            onChange={(e) => setFormData({ ...formData, revision_note: e.target.value })}
+            rows={3}
+          />
+        )}
+      </div>
+
+      <DialogFooter className="mt-4 border-t border-platinum-tint/40 pt-8">
+        <Button type="button" variant="ghost" onClick={onCancel} className="px-10 font-bold text-slate-blue hover:text-midnight-indigo">Batal</Button>
+        <Button type="submit" variant="primary" className="flex-1 font-bold h-14 rounded-xl shadow-button" loading={loading} icon={Save}>
+          {isEdit ? "Simpan Perubahan" : "Buat Penawaran"}
         </Button>
       </DialogFooter>
     </form>

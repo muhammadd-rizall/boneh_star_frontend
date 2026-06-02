@@ -3,6 +3,7 @@ import type { Column } from "@/components/ui/DataTable"
 import { Button } from "@/components/ui/Button"
 import type { Driver } from "@/features/admin/drivers/types/Driver"
 import { Edit, Trash2, UserCircle, RotateCcw, Phone } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface DriverTableProps {
   data: Driver[]
@@ -23,36 +24,36 @@ export default function DriverTable({
 }: DriverTableProps) {
   const columns: Column<Driver>[] = [
     { 
-      header: "Driver", 
+      header: "Identitas Supir", 
       accessor: (row) => (
-        <div className="flex items-center gap-4 text-left">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-500 overflow-hidden">
+        <div className="flex items-center gap-4 text-left py-1">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-platinum-tint bg-cloud-mist text-slate-blue overflow-hidden shadow-sm">
             {row.photo ? (
               <img 
                 src={row.photo} 
                 alt={row.name} 
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cover transition-transform hover:scale-110 duration-500"
                 onError={(e) => {
-                  (e.target as HTMLImageElement).src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(row.name);
+                  (e.target as HTMLImageElement).src = 'https://ui-avatars.com/api/?background=0B3558&color=fff&name=' + encodeURIComponent(row.name);
                 }}
               />
             ) : (
-              <UserCircle size={20} />
+              <UserCircle size={24} className="text-platinum-tint" />
             )}
           </div>
           <div className="flex flex-col">
-            <span className="leading-tight font-semibold text-slate-800">{row.name}</span>
-            <span className="text-xs text-slate-500 line-clamp-1">{row.address}</span>
+            <span className="leading-tight font-bold text-midnight-indigo">{row.name}</span>
+            <span className="text-[11px] font-medium text-slate-blue opacity-60 line-clamp-1 max-w-[180px]">{row.address}</span>
           </div>
         </div>
       )
     },
     {
-      header: "Contact",
+      header: "Kontak",
       accessor: (row) => (
-        <div className="flex items-center gap-2 text-slate-600">
-          <Phone size={14} className="text-slate-400" />
-          <span className="text-sm font-medium">{row.phone}</span>
+        <div className="flex items-center gap-2.5 text-slate-blue font-semibold opacity-85">
+          <Phone size={14} className="text-action-blue" />
+          <span className="text-sm tracking-tight">{row.phone}</span>
         </div>
       )
     },
@@ -60,26 +61,29 @@ export default function DriverTable({
       header: "Status",
       accessor: (row) => {
         const styles = {
-          available: 'bg-emerald-50 text-emerald-600 border-emerald-100',
-          on_duty: 'bg-indigo-50 text-indigo-600 border-indigo-100',
-          inactive: 'bg-slate-50 text-slate-500 border-slate-100'
+          available: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+          on_duty: 'bg-blue-50 text-blue-700 border-blue-200',
+          inactive: 'bg-slate-50 text-slate-500 border-slate-200'
         }
         const labels = {
-          available: 'Available',
-          on_duty: 'On Duty',
-          inactive: 'Inactive'
+          available: 'Tersedia',
+          on_duty: 'Bertugas',
+          inactive: 'Nonaktif'
         }
         return (
-          <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${styles[row.status]}`}>
-            {labels[row.status]}
+          <span className={cn(
+            "inline-flex items-center px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-[0.16em] border shadow-sm",
+            styles[row.status] || styles.inactive
+          )}>
+            {labels[row.status] || row.status}
           </span>
         )
       }
     },
     {
-      header: "Created At",
+      header: "Terdaftar",
       accessor: (row) => (
-        <span className="text-xs text-slate-500 font-medium">
+        <span className="text-xs text-slate-blue font-semibold opacity-70">
           {new Date(row.created_at).toLocaleDateString('id-ID', {
             day: 'numeric',
             month: 'short',
@@ -89,45 +93,45 @@ export default function DriverTable({
       )
     },
     {
-      header: "Actions",
+      header: "Aksi",
       accessor: (row) => (
         <div className="flex items-center gap-2">
           {isTrash ? (
             <>
               <Button 
-                size="sm" 
+                size="icon-sm" 
                 variant="outline" 
                 icon={RotateCcw} 
-                className="h-9 w-9 rounded-full p-0" 
+                className="h-9 w-9 rounded-xl shadow-sm hover:border-blue-500 hover:text-blue-500" 
                 onClick={() => onRestore?.(row.id)}
-                title="Restore Driver" 
+                title="Pulihkan Supir" 
               />
               <Button 
-                size="sm" 
+                size="icon-sm" 
                 variant="danger" 
                 icon={Trash2} 
-                className="h-9 w-9 rounded-full p-0" 
+                className="h-9 w-9 rounded-xl shadow-sm" 
                 onClick={() => onDelete(row)}
-                title="Permanently Delete"
+                title="Hapus Permanen"
               />
             </>
           ) : (
             <>
               <Button 
-                size="sm" 
+                size="icon-sm" 
                 variant="outline" 
                 icon={Edit} 
-                className="h-9 w-9 rounded-full p-0" 
+                className="h-9 w-9 rounded-xl shadow-sm hover:border-action-blue hover:text-action-blue" 
                 onClick={() => onEdit(row)}
-                title="Edit Driver" 
+                title="Edit Supir" 
               />
               <Button 
-                size="sm" 
+                size="icon-sm" 
                 variant="danger" 
                 icon={Trash2} 
-                className="h-9 w-9 rounded-full p-0" 
+                className="h-9 w-9 rounded-xl shadow-sm" 
                 onClick={() => onDelete(row)}
-                title="Delete Driver"
+                title="Hapus Supir"
               />
             </>
           )}

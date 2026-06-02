@@ -26,7 +26,8 @@ import {
   Save,
   Plus,
   Trash2,
-  Contact
+  Contact,
+  ClipboardList
 } from "lucide-react";
 
 interface BookingFormProps {
@@ -82,7 +83,7 @@ export default function BookingForm({ booking, onSuccess, onCancel }: BookingFor
         setRouteTypes(routeTypesRes.routeTypes.map(r => ({ label: r.name, value: r.id })));
         setAvailableBuses(busesRes.buses
           .filter(b => b.status === 'available' || (isEdit && booking?.booking_buses?.some(bb => bb.bus_id === b.id)))
-          .map(b => ({ label: `${b.name} (${b.plat_number}) - ${b.seat_count} seats`, value: b.id, seats: b.seat_count })));
+          .map(b => ({ label: `${b.name} (${b.plat_number})`, value: b.id, seats: b.seat_count })));
         setAvailableDrivers(driversRes.drivers
           .filter(d => d.status === 'available' || (isEdit && booking?.booking_buses?.some(bb => bb.driver_id === d.id)))
           .map(d => ({ label: d.name, value: d.id })));
@@ -143,7 +144,6 @@ export default function BookingForm({ booking, onSuccess, onCancel }: BookingFor
     const updatedBuses = [...(formData.buses || [])];
     updatedBuses[index] = { ...updatedBuses[index], [field]: value };
     
-    // Auto-fill seat count if bus is selected
     if (field === 'bus_id') {
       const selectedBus = availableBuses.find(b => b.value === value);
       if (selectedBus) {
@@ -206,63 +206,68 @@ export default function BookingForm({ booking, onSuccess, onCancel }: BookingFor
   ];
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-8">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-10">
       {error && (
-        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-          {error}
+        <div className="rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-semibold text-midnight-indigo shadow-sm">
+          <div className="flex items-center gap-3">
+            <XCircle size={18} className="text-red-500" />
+            {error}
+          </div>
         </div>
       )}
 
-      {/* Main Information Section */}
-      <section className="flex flex-col gap-6">
-        <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-500">
-            <Info size={18} />
+      <section className="flex flex-col gap-8">
+        <div className="flex items-center gap-3 border-b border-platinum-tint/50 pb-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cloud-mist text-action-blue shadow-sm">
+            <ClipboardList size={20} strokeWidth={2.5} />
           </div>
-          <h3 className="text-lg font-bold text-slate-800 tracking-tight">Booking Information</h3>
+          <div>
+            <h3 className="text-xl font-bold text-midnight-indigo tracking-tight">Informasi Pesanan</h3>
+            <p className="text-xs font-medium text-slate-blue opacity-70">Detail utama mengenai perjalanan customer</p>
+          </div>
         </div>
 
-        <div className="grid gap-5 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2">
           <Input
-            label="Booking Code (Optional)"
-            placeholder="Auto-generated if left empty"
+            label="Kode Booking (Opsional)"
+            placeholder="Otomatis jika dikosongkan"
             icon={Hash}
             value={formData.booking_code}
             onChange={(e) => setFormData({ ...formData, booking_code: e.target.value })}
           />
 
           <Select
-            label="Customer"
+            label="Pelanggan"
             options={customers}
             icon={UserIcon}
             value={formData.customer_id}
             onChange={(value) => setFormData({ ...formData, customer_id: value })}
-            placeholder={fetchingData ? "Loading..." : "Select customer"}
+            placeholder={fetchingData ? "Memuat..." : "Pilih pelanggan"}
             required
           />
 
           <Select
-            label="Activity Type"
+            label="Jenis Aktivitas"
             options={activities}
             icon={Activity}
             value={formData.activity_id}
             onChange={(value) => setFormData({ ...formData, activity_id: value })}
-            placeholder={fetchingData ? "Loading..." : "Select activity type"}
+            placeholder={fetchingData ? "Memuat..." : "Pilih jenis aktivitas"}
             required
           />
 
           <Select
-            label="Route Type"
+            label="Jenis Rute"
             options={routeTypes}
             icon={MapIcon}
             value={formData.route_type_id}
             onChange={(value) => setFormData({ ...formData, route_type_id: value })}
-            placeholder={fetchingData ? "Loading..." : "Select route type"}
+            placeholder={fetchingData ? "Memuat..." : "Pilih jenis rute"}
             required
           />
 
           <Input
-            label="Departure Date"
+            label="Tanggal Keberangkatan"
             type="date"
             icon={Calendar}
             value={formData.departure_date}
@@ -271,7 +276,7 @@ export default function BookingForm({ booking, onSuccess, onCancel }: BookingFor
           />
 
           <Input
-            label="Return Date (Optional)"
+            label="Tanggal Pulang (Opsional)"
             type="date"
             icon={Calendar}
             value={formData.return_date || ""}
@@ -279,8 +284,8 @@ export default function BookingForm({ booking, onSuccess, onCancel }: BookingFor
           />
 
           <Input
-            label="Origin"
-            placeholder="e.g. Jakarta"
+            label="Titik Penjemputan"
+            placeholder="Contoh: Jakarta"
             icon={MapPin}
             value={formData.origin}
             onChange={(e) => setFormData({ ...formData, origin: e.target.value })}
@@ -288,15 +293,15 @@ export default function BookingForm({ booking, onSuccess, onCancel }: BookingFor
           />
 
           <Input
-            label="Full Route"
-            placeholder="e.g. Jakarta - Bandung - Jakarta"
+            label="Rute Lengkap"
+            placeholder="Contoh: Jakarta - Bandung - Jakarta"
             icon={MapPin}
             value={formData.full_route || ""}
             onChange={(e) => setFormData({ ...formData, full_route: e.target.value })}
           />
 
           <Input
-            label="Passenger Count"
+            label="Jumlah Penumpang"
             type="number"
             min="1"
             icon={Users}
@@ -306,7 +311,7 @@ export default function BookingForm({ booking, onSuccess, onCancel }: BookingFor
           />
 
           <Input
-            label="Bus Count Requested"
+            label="Jumlah Bus Diminta"
             type="number"
             min="1"
             icon={BusIcon}
@@ -316,7 +321,7 @@ export default function BookingForm({ booking, onSuccess, onCancel }: BookingFor
           />
 
           <Select
-            label="Booking Status"
+            label="Status Pesanan"
             options={statusOptions}
             icon={Info}
             value={formData.status}
@@ -326,57 +331,82 @@ export default function BookingForm({ booking, onSuccess, onCancel }: BookingFor
         </div>
       </section>
 
-      {/* Bus Assignments Section */}
-      <section className="flex flex-col gap-6">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-500">
-              <BusIcon size={18} />
+      <section className="flex flex-col gap-8">
+        <div className="flex items-center justify-between border-b border-platinum-tint/50 pb-3">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cloud-mist text-action-blue shadow-sm">
+              <BusIcon size={20} strokeWidth={2.5} />
             </div>
-            <h3 className="text-lg font-bold text-slate-800 tracking-tight">Bus & Driver Assignments</h3>
+            <div>
+              <h3 className="text-xl font-bold text-midnight-indigo tracking-tight">Penugasan Bus & Supir</h3>
+              <p className="text-xs font-medium text-slate-blue opacity-70">Alokasikan unit dan kru untuk pesanan ini</p>
+            </div>
           </div>
-          <Button type="button" size="sm" variant="outline" icon={Plus} onClick={handleAddBus}>
-            Add Assignment
+          <Button 
+            type="button" 
+            size="md" 
+            variant="primary" 
+            icon={Plus} 
+            onClick={handleAddBus}
+            className="rounded-xl font-semibold shadow-button"
+          >
+            Tambah Penugasan
           </Button>
         </div>
 
         {(!formData.buses || formData.buses.length === 0) ? (
-          <div className="rounded-[24px] border border-dashed border-slate-200 p-8 text-center text-slate-400 bg-slate-50/50">
-            No buses assigned yet.
+          <div className="rounded-[24px] border border-dashed border-platinum-tint p-12 text-center text-slate-blue bg-cloud-mist/30 transition-all hover:bg-cloud-mist/50">
+            <div className="flex flex-col items-center gap-4">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white shadow-sm border border-platinum-tint/50">
+                <BusIcon size={32} className="text-platinum-tint" />
+              </div>
+              <div>
+                <p className="text-base font-semibold text-midnight-indigo">Belum ada armada yang ditugaskan.</p>
+                <p className="text-sm font-medium opacity-60">Klik tombol di atas untuk menambah penugasan unit.</p>
+              </div>
+              <button 
+                type="button" 
+                onClick={handleAddBus}
+                className="text-sm font-bold text-action-blue hover:text-glacier-blue transition-colors uppercase tracking-widest mt-2 px-6 py-2 rounded-lg hover:bg-action-blue/5"
+              >
+                Tugaskan Sekarang
+              </button>
+            </div>
           </div>
         ) : (
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-6">
             {formData.buses.map((bus, index) => (
-              <div key={index} className="relative rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
+              <div key={index} className="relative rounded-[24px] border border-platinum-tint bg-white p-8 shadow-sm transition-all hover:shadow-card hover:border-action-blue/20 group">
                 <button 
                   type="button" 
                   onClick={() => handleRemoveBus(index)}
-                  className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-rose-50 text-rose-500 transition-colors hover:bg-rose-100"
+                  className="absolute right-6 top-6 flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 text-red-500 transition-all opacity-0 group-hover:opacity-100 hover:bg-red-500 hover:text-white shadow-sm z-10"
+                  title="Hapus Penugasan"
                 >
-                  <Trash2 size={16} />
+                  <Trash2 size={18} strokeWidth={2.5} />
                 </button>
                 
-                <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                   <Select
-                    label="Bus"
+                    label="Unit Bus"
                     options={availableBuses}
                     icon={BusIcon}
                     value={bus.bus_id}
                     onChange={(value) => handleBusChange(index, 'bus_id', value)}
-                    placeholder="Select Bus"
+                    placeholder="Pilih unit armada"
                     required
                   />
                   <Select
-                    label="Driver"
+                    label="Pilih Supir"
                     options={availableDrivers}
                     icon={Contact}
                     value={bus.driver_id}
                     onChange={(value) => handleBusChange(index, 'driver_id', value)}
-                    placeholder="Select Driver"
+                    placeholder="Pilih kru supir"
                     required
                   />
                   <Input
-                    label="Seat Count"
+                    label="Jumlah Kursi"
                     type="number"
                     min="1"
                     icon={Users}
@@ -385,10 +415,10 @@ export default function BookingForm({ booking, onSuccess, onCancel }: BookingFor
                     required
                   />
                 </div>
-                <div className="mt-4">
+                <div className="mt-6">
                   <Input
-                    label="Assignment Notes"
-                    placeholder="e.g. Backup bus, specific requirement..."
+                    label="Catatan Penugasan"
+                    placeholder="Contoh: Unit cadangan, permintaan spesifik kru..."
                     icon={StickyNote}
                     value={bus.assignment_notes || ""}
                     onChange={(e) => handleBusChange(index, 'assignment_notes', e.target.value)}
@@ -400,18 +430,20 @@ export default function BookingForm({ booking, onSuccess, onCancel }: BookingFor
         )}
       </section>
 
-      {/* Cancellation Section */}
       {formData.status === 'cancelled' && (
-        <section className="flex flex-col gap-6">
-          <div className="flex items-center gap-2 border-b border-rose-100 pb-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-100 text-rose-500">
-              <XCircle size={18} />
+        <section className="flex flex-col gap-8 animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="flex items-center gap-3 border-b border-red-100 pb-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 text-red-600 shadow-sm">
+              <XCircle size={20} strokeWidth={2.5} />
             </div>
-            <h3 className="text-lg font-bold text-rose-800 tracking-tight">Cancellation Details</h3>
+            <div>
+              <h3 className="text-xl font-bold text-red-700 tracking-tight">Detail Pembatalan</h3>
+              <p className="text-xs font-medium text-red-600/70">Alasan dan pihak yang melakukan pembatalan</p>
+            </div>
           </div>
-          <div className="grid gap-5 rounded-[24px] border border-rose-100 bg-rose-50/50 p-6 md:grid-cols-2">
+          <div className="grid gap-6 rounded-[24px] border border-red-100 bg-red-50/20 p-8 md:grid-cols-2 shadow-sm">
             <Select
-              label="Cancelled By"
+              label="Dibatalkan Oleh"
               options={cancelledByOptions}
               icon={XCircle}
               value={formData.cancelled_by || ""}
@@ -419,8 +451,8 @@ export default function BookingForm({ booking, onSuccess, onCancel }: BookingFor
               required
             />
             <Input
-              label="Cancellation Reason"
-              placeholder="Reason for cancellation"
+              label="Alasan Pembatalan"
+              placeholder="Berikan alasan yang jelas..."
               icon={StickyNote}
               value={formData.cancelled_reason || ""}
               onChange={(e) => setFormData({ ...formData, cancelled_reason: e.target.value })}
@@ -430,29 +462,45 @@ export default function BookingForm({ booking, onSuccess, onCancel }: BookingFor
         </section>
       )}
 
-      {/* Special Notes Section */}
-      <section className="flex flex-col gap-6">
-        <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-500">
-            <StickyNote size={18} />
+      <section className="flex flex-col gap-8">
+        <div className="flex items-center gap-3 border-b border-platinum-tint/50 pb-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cloud-mist text-action-blue shadow-sm">
+            <StickyNote size={20} strokeWidth={2.5} />
           </div>
-          <h3 className="text-lg font-bold text-slate-800 tracking-tight">Additional Notes</h3>
+          <div>
+            <h3 className="text-xl font-bold text-midnight-indigo tracking-tight">Catatan Tambahan</h3>
+            <p className="text-xs font-medium text-slate-blue opacity-70">Permintaan khusus atau detail lainnya</p>
+          </div>
         </div>
         <Textarea
-          label="Special Requirements"
-          placeholder="Enter any special requests or notes..."
+          label="Persyaratan Khusus"
+          placeholder="Tuliskan permintaan khusus atau catatan lainnya di sini..."
           icon={StickyNote}
           value={formData.special_notes || ""}
           onChange={(e) => setFormData({ ...formData, special_notes: e.target.value })}
         />
       </section>
 
-      <DialogFooter>
-        <Button type="button" variant="ghost" onClick={onCancel} className="px-10">Discard Changes</Button>
-        <Button type="submit" variant="primary" className="flex-1" loading={loading} icon={Save}>
-          {isEdit ? "Update Booking" : "Finalize Booking"}
+      <DialogFooter className="mt-6 border-t border-platinum-tint/40 pt-8">
+        <Button 
+          type="button" 
+          variant="ghost" 
+          onClick={onCancel} 
+          className="px-10 font-semibold text-slate-blue hover:text-midnight-indigo transition-all"
+        >
+          Batal
+        </Button>
+        <Button 
+          type="submit" 
+          variant="primary" 
+          className="flex-1 font-semibold h-14 rounded-xl shadow-button" 
+          loading={loading} 
+          icon={Save}
+        >
+          {isEdit ? "Update Pesanan" : "Simpan Pesanan"}
         </Button>
       </DialogFooter>
     </form>
   );
 }
+

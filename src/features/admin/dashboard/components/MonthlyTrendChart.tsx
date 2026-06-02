@@ -1,6 +1,5 @@
-
-import React from 'react';
 import { Card } from '@/components/ui/Card';
+import { TrendingUp } from 'lucide-react';
 
 interface MonthlyTrendChartProps {
   data: { month: string; count: number }[];
@@ -11,38 +10,57 @@ export default function MonthlyTrendChart({ data, loading }: MonthlyTrendChartPr
   const maxCount = Math.max(...data.map(m => m.count), 1);
 
   return (
-    <Card className="p-6 border-slate-200/80 bg-white shadow-sm">
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h3 className="text-sm font-bold text-slate-900">Grafik Pemesanan Bulanan</h3>
-          <p className="text-xs text-slate-400">Tren pemesanan armada 6 bulan terakhir</p>
+    <Card className="border-platinum-tint bg-white p-6 shadow-sm sm:p-8 rounded-2xl">
+      <div className="mb-8 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cloud-mist text-action-blue shadow-sm">
+            <TrendingUp size={24} />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-midnight-indigo tracking-tight">Grafik Pemesanan Bulanan</h3>
+            <p className="text-sm font-medium text-slate-blue opacity-70">Tren pemesanan armada 6 bulan terakhir</p>
+          </div>
         </div>
       </div>
 
-      <div className="flex h-40 items-end gap-2 px-1">
+      <div className="flex h-60 items-stretch gap-3 px-1 sm:h-72 sm:gap-4">
         {loading ? (
-          <div className="flex w-full h-full items-center justify-center">
-            <div className="h-8 w-full animate-pulse rounded-lg bg-slate-50" />
+          <div className="flex w-full h-full items-end gap-3">
+             {[1, 2, 3, 4, 5, 6].map(i => (
+               <div key={i} className="flex-1 h-full animate-pulse rounded-t-2xl bg-cloud-mist" />
+             ))}
           </div>
         ) : (
           data.map((item, i) => (
-            <div key={i} className="group relative flex flex-1 flex-col items-center gap-2">
-              <div 
-                className="w-full rounded-t-md bg-indigo-100 transition-all duration-300 group-hover:bg-indigo-600"
-                style={{ height: `${(item.count / maxCount) * 100}%`, minHeight: '4px' }}
-              >
-                <div className="absolute -top-8 left-1/2 -translate-x-1/2 rounded bg-slate-900 px-2 py-1 text-[10px] font-bold text-white opacity-0 transition-opacity group-hover:opacity-100 whitespace-nowrap z-10">
-                  {item.count} Booking
+            <div key={`${item.month}-${i}`} className="group relative flex min-w-0 flex-1 flex-col items-center gap-4">
+              <div className="relative flex w-full flex-1 items-end rounded-t-2xl bg-cloud-mist/40 transition-colors group-hover:bg-cloud-mist/60 overflow-hidden">
+                <div
+                  className="w-full rounded-t-2xl bg-action-blue/20 transition-all duration-700 ease-out group-hover:bg-action-blue group-hover:shadow-[0_0_20px_rgba(0,107,255,0.4)]"
+                  style={{ height: `${(item.count / maxCount) * 100}%`, minHeight: '8px' }}
+                />
+                
+                {/* Tooltip */}
+                <div className="absolute -top-10 left-1/2 z-20 -translate-x-1/2 rounded-xl border border-white/20 bg-midnight-indigo/95 backdrop-blur-sm px-4 py-2 text-[12px] font-bold whitespace-nowrap text-white opacity-0 shadow-2xl transition-all duration-300 group-hover:-translate-y-2 group-hover:opacity-100 flex flex-col items-center">
+                  <span className="text-[10px] text-white/60 font-medium uppercase tracking-wider mb-0.5">
+                    {new Date(item.month).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}
+                  </span>
+                  <span>{item.count} Pemesanan</span>
                 </div>
               </div>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
-                {new Date(item.month).toLocaleDateString('id-ID', { month: 'short' })}
-              </span>
+              
+              <div className="flex flex-col items-center gap-1">
+                <span className="text-[11px] font-bold text-midnight-indigo uppercase tracking-wider">
+                  {new Date(item.month).toLocaleDateString('id-ID', { month: 'short' })}
+                </span>
+                <span className="text-[10px] font-medium text-steel-gray">
+                  {new Date(item.month).getFullYear()}
+                </span>
+              </div>
             </div>
           ))
         )}
         {!loading && data.length === 0 && (
-          <div className="flex w-full h-full items-center justify-center text-xs text-slate-400 italic">
+          <div className="flex w-full h-full items-center justify-center text-sm font-medium text-slate-blue italic">
             Belum ada data bulanan
           </div>
         )}

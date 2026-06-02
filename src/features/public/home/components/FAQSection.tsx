@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Plus, Minus, HelpCircle } from "lucide-react";
+import { useInView } from "@/hooks/useAnimations";
 
 const faqs = [
   {
@@ -26,53 +27,59 @@ const faqs = [
 
 export default function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const { ref, inView } = useInView(0.1);
 
   return (
-    <section className="py-20 bg-white">
+    <section ref={ref} className="py-24 bg-white">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-14 text-center flex flex-col items-center">
-          <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-50 text-slate-500 text-[11px] font-semibold uppercase tracking-wider border border-slate-100 mb-5">
-            <HelpCircle size={13} />
+        <div className={"mb-16 text-center flex flex-col items-center reveal " + (inView ? "in-view" : "")}>
+          <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cloud-mist text-glacier-blue text-[11px] font-bold uppercase tracking-wider border border-platinum-tint mb-6 shadow-sm">
+            <HelpCircle size={14} />
             Bantuan & FAQ
           </span>
-          <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl leading-tight">
+          <h2 className="text-display-sm font-bold tracking-tight text-midnight-indigo leading-tight">
             Informasi Penting{" "}
             <br className="hidden sm:block" />
-            <span className="text-slate-400">Untuk Perjalanan Anda.</span>
+            <span className="text-action-blue">Untuk Perjalanan Anda.</span>
           </h2>
         </div>
 
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-4">
           {faqs.map((faq, index) => (
-            <div 
-              key={index} 
-              className={`rounded-xl transition-all duration-400 border ${
-                openIndex === index 
-                  ? "border-orange-100 bg-orange-50/30 shadow-md shadow-orange-50" 
-                  : "border-slate-100 bg-white hover:border-slate-200"
-              }`}
+            <div
+              key={index}
+              className={"rounded-xl transition-all duration-300 border reveal " + (inView ? "in-view " : "") + (
+                openIndex === index
+                  ? "border-action-blue/30 bg-cloud-mist shadow-sm"
+                  : "border-platinum-tint bg-white hover:border-action-blue/50"
+              )}
+              style={{ "--delay": (index * 60) + "ms" } as React.CSSProperties}
             >
               <button
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                className="flex w-full items-center justify-between p-6 text-left outline-none"
+                className="flex w-full items-center justify-between p-6 text-left outline-none group"
               >
-                <span className={`text-sm sm:text-base font-bold pr-4 ${openIndex === index ? "text-slate-900" : "text-slate-600"}`}>
+                <span className={`text-base sm:text-lg font-bold pr-4 transition-colors ${openIndex === index ? "text-midnight-indigo" : "text-slate-blue group-hover:text-midnight-indigo"}`}>
                   {faq.question}
                 </span>
-                <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-all duration-300 ${
-                  openIndex === index ? "bg-orange-500 text-white" : "bg-slate-50 text-slate-400"
+                <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-all duration-300 shadow-sm ${
+                  openIndex === index ? "bg-action-blue text-white rotate-0" : "bg-cloud-mist text-slate-blue group-hover:bg-platinum-tint"
                 }`}>
-                  {openIndex === index ? <Minus size={15} /> : <Plus size={15} />}
+                  {openIndex === index ? <Minus size={16} /> : <Plus size={16} />}
                 </div>
               </button>
-              
-              {openIndex === index && (
-                <div className="px-6 pb-6 animate-in fade-in slide-in-from-top-2 duration-300">
-                  <p className="text-slate-500 leading-relaxed font-medium text-sm">
-                    {faq.answer}
-                  </p>
+
+              <div
+                className="overflow-hidden transition-all duration-300"
+                style={{
+                  maxHeight: openIndex === index ? "300px" : "0px",
+                  opacity: openIndex === index ? 1 : 0,
+                }}
+              >
+                <div className="px-6 pb-6">
+                  <p className="text-slate-blue leading-relaxed font-medium">{faq.answer}</p>
                 </div>
-              )}
+              </div>
             </div>
           ))}
         </div>

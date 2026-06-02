@@ -1,4 +1,3 @@
-
 import { Wallet, Clock, TrendingUp } from "lucide-react";
 import { formatCurrency } from "@/utils/formatter";
 import type { IncomeReportSummary as SummaryType } from "../types/IncomeReport";
@@ -12,21 +11,21 @@ export default function IncomeReportSummary({ summary }: IncomeReportSummaryProp
   return (
     <StatGrid columns={3}>
       <StatCard
-        label="Total Verified Income"
+        label="Total Pendapatan Terverifikasi"
         value={formatCurrency(summary.total_verified_income)}
         note="Seluruh pembayaran terverifikasi"
         icon={TrendingUp}
         color="emerald"
       />
       <StatCard
-        label="Total Outstanding"
+        label="Total Piutang (Outstanding)"
         value={formatCurrency(summary.total_outstanding)}
         note="Piutang yang belum dilunasi"
         icon={Clock}
         color="amber"
       />
       <StatCard
-        label="Potential Total"
+        label="Total Potensi"
         value={formatCurrency(summary.total_verified_income + summary.total_outstanding)}
         note="Akumulasi pendapatan & piutang"
         icon={Wallet}

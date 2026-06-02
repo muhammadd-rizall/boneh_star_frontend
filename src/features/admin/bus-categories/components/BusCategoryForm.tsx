@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { DialogFooter } from "@/components/ui/Dialog";
-import { Layout, Users, FileText, Save } from "lucide-react";
+import { Layout, Users, FileText, Save, XCircle } from "lucide-react";
 import type { BusCategory, BusCategoryFormData } from "../types/BusCategory";
 import { busCategoryService } from "../services/BusCategoryService";
+import { Textarea } from "@/components/ui/Textarea";
 
 interface BusCategoryFormProps {
   category?: BusCategory | null;
@@ -59,7 +60,7 @@ export default function BusCategoryForm({ category, onSuccess, onCancel }: BusCa
       onSuccess();
     } catch (err: any) {
       console.error("Form submission error:", err);
-      const errorMessage = err.response?.data?.message || err.message || "Something went wrong.";
+      const errorMessage = err.response?.data?.message || err.message || "Terjadi kesalahan saat menyimpan data.";
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -67,67 +68,64 @@ export default function BusCategoryForm({ category, onSuccess, onCancel }: BusCa
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-10">
       {error && (
-        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-          {error}
+        <div className="rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-bold text-red-700 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="flex items-center gap-3">
+            <XCircle size={18} className="text-red-500" />
+            {error}
+          </div>
         </div>
       )}
 
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-8">
         <Input
-          label="Category Name"
-          placeholder="e.g. Big Bus"
+          label="Nama Kategori"
+          placeholder="Contoh: Big Bus, Medium Bus"
           icon={Layout}
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           required
         />
 
-        <div className="grid gap-5 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2">
           <Input
-            label="Min Capacity"
+            label="Kapasitas Minimum"
             type="number"
-            placeholder="e.g. 30"
+            placeholder="Contoh: 30"
             icon={Users}
-            value={formData.min_capacity}
+            value={formData.min_capacity.toString()}
             onChange={(e) => setFormData({ ...formData, min_capacity: Number(e.target.value) })}
             required
             min={1}
           />
 
           <Input
-            label="Max Capacity"
+            label="Kapasitas Maksimum"
             type="number"
-            placeholder="e.g. 50"
+            placeholder="Contoh: 50"
             icon={Users}
-            value={formData.max_capacity}
+            value={formData.max_capacity.toString()}
             onChange={(e) => setFormData({ ...formData, max_capacity: Number(e.target.value) })}
             required
             min={1}
           />
         </div>
 
-        <div className="w-full">
-          <label className="ml-1 mb-1.5 block text-sm font-medium text-slate-700">Description</label>
-          <div className="relative group">
-            <div className="absolute left-4 top-4 text-slate-400 group-focus-within:text-indigo-600 transition-colors">
-              <FileText size={18} />
-            </div>
-            <textarea
-              className="w-full rounded-2xl border border-slate-200 bg-white pl-11 pr-4 py-3 text-slate-900 placeholder:text-slate-400 outline-none transition-all duration-200 focus:border-slate-400 focus:ring-4 focus:ring-slate-100 min-h-[100px]"
-              placeholder="Enter category description"
-              value={formData.description || ""}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            />
-          </div>
-        </div>
+        <Textarea
+          label="Deskripsi Kategori"
+          placeholder="Jelaskan karakteristik bus dalam kategori ini..."
+          icon={FileText}
+          value={formData.description || ""}
+          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+          rows={4}
+        />
       </div>
 
-      <DialogFooter>
-        <Button type="button" variant="ghost" onClick={onCancel} className="px-10">Cancel</Button>
-        <Button type="submit" variant="primary" className="flex-1" loading={loading} icon={Save}>
-          {isEdit ? "Update Category" : "Create Category"}
+      <DialogFooter className="mt-4 border-t border-platinum-tint/40 pt-8">
+        <Button type="button" variant="ghost" onClick={onCancel} className="px-10 font-bold text-slate-blue hover:text-midnight-indigo">Batal</Button>
+        <Button type="submit" variant="primary" className="flex-1 font-bold h-14 rounded-xl shadow-button" loading={loading} icon={Save}>
+          {isEdit ? "Update Kategori" : "Simpan Kategori"}
         </Button>
       </DialogFooter>
     </form>

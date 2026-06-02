@@ -23,12 +23,12 @@ const BusAvailabilityReportFeature = () => {
         subtitle={data ? `Periode Laporan: ${data.period.start_date} s/d ${data.period.end_date}` : "Monitoring ketersediaan unit armada"}
         badge="Operasional"
         actions={
-          <div className="flex items-center gap-3">
-            <div className="flex items-center rounded-xl bg-slate-100 p-1">
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+            <div className="flex items-center rounded-xl border border-platinum-tint bg-white p-1 shadow-sm">
               <button
                 onClick={() => setView('table')}
-                className={`flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
-                  view === 'table' ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
+                className={`flex h-9 flex-1 items-center justify-center gap-2 rounded-lg px-3 text-xs font-semibold transition-all sm:flex-none ${
+                  view === 'table' ? "bg-midnight-indigo text-white shadow-sm" : "text-slate-blue hover:bg-cloud-mist hover:text-midnight-indigo"
                 }`}
               >
                 <LayoutList size={14} />
@@ -36,8 +36,8 @@ const BusAvailabilityReportFeature = () => {
               </button>
               <button
                 onClick={() => setView('timeline')}
-                className={`flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
-                  view === 'timeline' ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
+                className={`flex h-9 flex-1 items-center justify-center gap-2 rounded-lg px-3 text-xs font-semibold transition-all sm:flex-none ${
+                  view === 'timeline' ? "bg-midnight-indigo text-white shadow-sm" : "text-slate-blue hover:bg-cloud-mist hover:text-midnight-indigo"
                 }`}
               >
                 <CalendarIcon size={14} />
@@ -49,8 +49,8 @@ const BusAvailabilityReportFeature = () => {
               icon={RefreshCw} 
               onClick={refetch}
               loading={loading}
-              size="sm"
-              className="rounded-xl"
+              size="md"
+              className="h-11 rounded-xl border-platinum-tint bg-white px-4 text-sm font-semibold text-slate-blue shadow-sm hover:bg-cloud-mist hover:text-midnight-indigo"
             >
               Update
             </Button>

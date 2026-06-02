@@ -8,7 +8,6 @@ import {
   SelectValue,
 } from "@/components/ui/Select"
 import { cn } from "@/lib/utils"
-import { ChevronDown } from "lucide-react"
 
 type Option = {
   label: string
@@ -45,13 +44,17 @@ export function CustomSelect({
   disabled,
 }: SelectProps) {
   const selectId = id || (label ? label.toLowerCase().replace(/\s+/g, "-") : undefined)
+  
+  // Find the label for the current value to ensure it's displayed correctly
+  const selectedOption = options.find(opt => String(opt.value) === String(value));
+  const displayLabel = selectedOption ? selectedOption.label : "";
 
   return (
     <div className={cn("flex flex-col gap-2 w-full text-left", className)}>
       {label && (
         <label
           htmlFor={selectId}
-          className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1"
+          className="text-[13px] font-bold text-midnight-indigo ml-0.5 uppercase tracking-wider opacity-90"
         >
           {label}
         </label>
@@ -59,7 +62,7 @@ export function CustomSelect({
 
       <div className="relative group">
         {Icon && (
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-orange-500 transition-colors pointer-events-none z-10">
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-blue group-focus-within:text-action-blue transition-colors pointer-events-none z-10">
             <Icon size={18} strokeWidth={2} />
           </div>
         )}
@@ -68,14 +71,16 @@ export function CustomSelect({
           <SelectTrigger
             id={selectId}
             className={cn(
-              "w-full appearance-none rounded-2xl border bg-white py-3.5 pr-11 text-sm font-bold text-slate-700 outline-none transition-all duration-200 cursor-pointer h-auto",
+              "w-full rounded-lg border bg-white py-3 pr-11 text-sm font-medium text-midnight-indigo shadow-sm outline-none transition-all duration-150 h-auto",
               Icon ? "pl-11" : "pl-4",
               error
-                ? "border-rose-200 bg-rose-50/20 focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10"
-                : "border-slate-100 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 focus:bg-white"
+                ? "border-red-300 bg-red-50/20 focus:border-red-500 focus:ring-4 focus:ring-red-500/10"
+                : "border-platinum-tint focus:border-action-blue focus:ring-4 focus:ring-action-blue/10 focus:bg-white hover:border-slate-blue/30"
             )}
           >
-            <SelectValue placeholder={placeholder} />
+            <SelectValue placeholder={placeholder}>
+              {displayLabel}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
@@ -90,13 +95,13 @@ export function CustomSelect({
       </div>
 
       {error && (
-        <p className="text-[10px] font-bold text-rose-500 flex items-center gap-1.5 ml-1">
-          <span className="inline-block h-1.5 w-1.5 rounded-full bg-rose-500" />
+        <p className="text-xs font-bold text-red-500 flex items-center gap-1.5 ml-0.5">
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-red-500" />
           {error}
         </p>
       )}
       {!error && hint && (
-        <p className="text-[10px] font-bold text-slate-400 ml-1">{hint}</p>
+        <p className="text-xs font-medium text-slate-blue ml-0.5 opacity-70">{hint}</p>
       )}
     </div>
   )

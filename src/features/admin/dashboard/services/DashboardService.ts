@@ -5,6 +5,7 @@ export interface DashboardData {
     label: string;
     value: string;
     sub: string;
+    icon?: string;
     trendLabel?: string;
     trend?: 'up' | 'down';
     color: 'emerald' | 'violet' | 'sky' | 'amber' | 'slate' | 'rose';

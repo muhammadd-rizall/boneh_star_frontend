@@ -4,7 +4,7 @@ import { Textarea } from "@/components/ui/Textarea";
 import { CustomSelect as Select } from "@/components/ui/CustomSelect";
 import { Button } from "@/components/ui/Button";
 import { DialogFooter } from "@/components/ui/Dialog";
-import { User, Save, Phone, MapPin, Image as ImageIcon, Info, X, Camera } from "lucide-react";
+import { User, Save, Phone, MapPin, Image as ImageIcon, Info, X, Camera, StickyNote } from "lucide-react";
 import type { Driver } from "../types/Driver";
 import { driverService } from "../services/DriverService";
 
@@ -90,7 +90,7 @@ export default function DriverForm({ driver, onSuccess, onCancel }: DriverFormPr
       }
       onSuccess();
     } catch (err: any) {
-      const errorMessage = err.response?.data?.message || err.message || "Something went wrong.";
+      const errorMessage = err.response?.data?.message || err.message || "Terjadi kesalahan saat menyimpan data.";
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -98,22 +98,22 @@ export default function DriverForm({ driver, onSuccess, onCancel }: DriverFormPr
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-10">
       {error && (
-        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+        <div className="rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-bold text-red-700 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
           {error}
         </div>
       )}
 
       <div className="flex flex-col items-center gap-4 mb-2">
         <div className="relative group">
-          <div className="h-28 w-28 rounded-3xl border-2 border-dashed border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden transition-all group-hover:border-indigo-300 group-hover:bg-slate-100">
+          <div className="h-32 w-32 rounded-[32px] border-2 border-dashed border-platinum-tint bg-cloud-mist flex items-center justify-center overflow-hidden transition-all group-hover:border-action-blue group-hover:bg-cloud-mist/50 shadow-sm">
             {photoPreview ? (
               <img src={photoPreview} alt="Preview" className="h-full w-full object-cover" />
             ) : (
-              <div className="flex flex-col items-center gap-1 text-slate-400">
-                <Camera size={28} />
-                <span className="text-[10px] font-bold uppercase tracking-wider">Photo</span>
+              <div className="flex flex-col items-center gap-2 text-slate-blue opacity-50">
+                <Camera size={32} strokeWidth={2.5} />
+                <span className="text-[10px] font-bold uppercase tracking-[0.15em]">Foto</span>
               </div>
             )}
           </div>
@@ -126,34 +126,34 @@ export default function DriverForm({ driver, onSuccess, onCancel }: DriverFormPr
             className="hidden"
           />
 
-          <div className="absolute -bottom-2 -right-2 flex gap-1">
+          <div className="absolute -bottom-2 -right-2 flex gap-2">
             {photoPreview && (
               <button
                 type="button"
                 onClick={removePhoto}
-                className="flex h-8 w-8 items-center justify-center rounded-xl border border-rose-200 bg-rose-50 text-rose-600 shadow-sm transition-all hover:bg-rose-100"
+                className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-500 text-white shadow-lg transition-all hover:bg-red-600 hover:scale-105 active:scale-95 border-4 border-white"
               >
-                <X size={16} />
+                <X size={18} strokeWidth={3} />
               </button>
             )}
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="flex h-8 w-8 items-center justify-center rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-600 shadow-sm transition-all hover:bg-indigo-100"
+              className="flex h-10 w-10 items-center justify-center rounded-xl bg-action-blue text-white shadow-lg transition-all hover:bg-glacier-blue hover:scale-105 active:scale-95 border-4 border-white"
             >
-              <ImageIcon size={16} />
+              <ImageIcon size={18} strokeWidth={2.5} />
             </button>
           </div>
         </div>
-        <p className="text-xs text-slate-400 font-medium text-center">
-          Format: JPG, PNG. Max 2MB.
+        <p className="text-xs text-slate-blue font-medium opacity-60">
+          Format: JPG, PNG. Maksimal 2MB.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Input
-          label="Full Name"
-          placeholder="e.g. John Doe"
+          label="Nama Lengkap"
+          placeholder="Contoh: Budi Santoso"
           icon={User}
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -161,8 +161,8 @@ export default function DriverForm({ driver, onSuccess, onCancel }: DriverFormPr
         />
         
         <Input
-          label="Phone Number"
-          placeholder="e.g. 08123456789"
+          label="Nomor Telepon"
+          placeholder="Contoh: 08123456789"
           icon={Phone}
           value={formData.phone}
           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
@@ -171,8 +171,8 @@ export default function DriverForm({ driver, onSuccess, onCancel }: DriverFormPr
 
         <div className="md:col-span-2">
           <Input
-            label="Address"
-            placeholder="Complete address"
+            label="Alamat Lengkap"
+            placeholder="Masukkan alamat domisili supir"
             icon={MapPin}
             value={formData.address}
             onChange={(e) => setFormData({ ...formData, address: e.target.value })}
@@ -182,14 +182,14 @@ export default function DriverForm({ driver, onSuccess, onCancel }: DriverFormPr
 
         <div className="md:col-span-2">
           <Select
-            label="Status"
+            label="Status Operasional"
             icon={Info}
             value={formData.status}
             onChange={(value) => setFormData({ ...formData, status: value as any })}
             options={[
-              { value: "available", label: "Available" },
-              { value: "on_duty", label: "On Duty" },
-              { value: "inactive", label: "Inactive" },
+              { value: "available", label: "Tersedia" },
+              { value: "on_duty", label: "Bertugas" },
+              { value: "inactive", label: "Nonaktif" },
             ]}
             required
           />
@@ -197,20 +197,20 @@ export default function DriverForm({ driver, onSuccess, onCancel }: DriverFormPr
 
         <div className="md:col-span-2">
           <Textarea
-            label="Notes"
-            placeholder="Additional notes about the driver..."
-            icon={Info}
+            label="Catatan Supir"
+            placeholder="Informasi tambahan mengenai supir ini..."
+            icon={StickyNote}
             value={formData.notes}
             onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-            rows={3}
+            rows={4}
           />
         </div>
       </div>
 
-      <DialogFooter>
-        <Button type="button" variant="ghost" onClick={onCancel} className="px-10">Cancel</Button>
-        <Button type="submit" variant="primary" className="flex-1" loading={loading} icon={Save}>
-          {isEdit ? "Update Driver" : "Create Driver"}
+      <DialogFooter className="mt-4 border-t border-platinum-tint/40 pt-8">
+        <Button type="button" variant="ghost" onClick={onCancel} className="px-10 font-bold text-slate-blue hover:text-midnight-indigo">Batal</Button>
+        <Button type="submit" variant="primary" className="flex-1 font-bold h-14 rounded-xl shadow-button" loading={loading} icon={Save}>
+          {isEdit ? "Simpan Perubahan" : "Daftarkan Supir"}
         </Button>
       </DialogFooter>
     </form>

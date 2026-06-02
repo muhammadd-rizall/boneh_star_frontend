@@ -1,5 +1,4 @@
 import * as React from "react"
-import { X } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -23,8 +22,8 @@ const sizeMap = {
   sm: "sm:max-w-sm",
   md: "sm:max-w-lg",
   lg: "sm:max-w-2xl",
-  xl: "sm:max-w-3xl",
-  "2xl": "sm:max-w-5xl",
+  xl: "sm:max-w-4xl",
+  "2xl": "sm:max-w-6xl",
 }
 
 export function Modal({
@@ -38,22 +37,26 @@ export function Modal({
 }: ModalProps) {
   return (
     <Dialog open={open} onOpenChange={(val) => !val && onClose()}>
-      <DialogContent className={cn("rounded-xl px-8 pb-8 pt-3 max-h-[92vh] overflow-y-auto", sizeMap[size], className)}>
+      <DialogContent className={cn("rounded-[24px] p-0 max-h-[90vh] overflow-hidden flex flex-col border-none shadow-2xl", sizeMap[size], className)}>
         {(title || subtitle) && (
-          <DialogHeader className="px-0 pt-5 pb-1 text-left">
+          <DialogHeader className="px-10 pt-10 pb-6 text-left border-b border-platinum-tint/40 bg-white sticky top-0 z-10">
             {title && (
-              <DialogTitle className="text-xl font-semibold tracking-tight text-slate-900">
+              <DialogTitle className="text-3xl font-semibold tracking-tight text-midnight-indigo leading-tight">
                 {title}
               </DialogTitle>
             )}
             {subtitle && (
-              <DialogDescription className="text-sm text-slate-500 mt-0.5">
+              <DialogDescription className="text-lg font-medium text-slate-blue mt-2 leading-relaxed opacity-80">
                 {subtitle}
               </DialogDescription>
             )}
           </DialogHeader>
         )}
-        {children}
+        <div className="flex-1 overflow-y-auto px-10 py-8 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+          <div className="relative">
+            {children}
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   )

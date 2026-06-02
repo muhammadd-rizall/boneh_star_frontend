@@ -1,6 +1,6 @@
-
 import { Card } from "@/components/ui/Card";
 import type { BookingReportStatistics } from "../types/BookingReport";
+import { cn } from "@/lib/utils";
 
 interface ReportChartsProps {
   statistics: BookingReportStatistics;
@@ -12,44 +12,50 @@ export default function ReportCharts({ statistics }: ReportChartsProps) {
   const maxMonthlyCount = Math.max(...statistics.monthly_chart.map(m => m.count), 1);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8">
       {/* Monthly Trend - Full Width */}
-      <Card className="p-6 border-slate-200/80 bg-white/90 shadow-sm">
-        <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-8">Monthly Booking Trend</h3>
-        <div className="flex h-48 items-end gap-3 px-2">
+      <Card className="p-8 border-platinum-tint bg-white shadow-card">
+        <div className="mb-10 border-l-4 border-action-blue pl-4">
+          <h3 className="text-[11px] font-semibold uppercase tracking-[0.25em] text-slate-blue">Tren Bulanan</h3>
+          <p className="text-xl font-bold text-midnight-indigo mt-1">Grafik Performa Pesanan</p>
+        </div>
+        <div className="flex h-56 items-end gap-3 px-2">
           {statistics.monthly_chart.map((month) => (
-            <div key={month.month} className="group relative flex flex-1 flex-col items-center gap-2">
+            <div key={month.month} className="group relative flex flex-1 flex-col items-center gap-3">
               <div 
-                className="w-full rounded-t-lg bg-indigo-100 transition-all duration-300 group-hover:bg-indigo-500"
-                style={{ height: `${(month.count / maxMonthlyCount) * 100}%`, minHeight: '4px' }}
+                className="w-full rounded-t-xl bg-cloud-mist transition-all duration-500 group-hover:bg-action-blue group-hover:shadow-button"
+                style={{ height: `${(month.count / maxMonthlyCount) * 100}%`, minHeight: '6px' }}
               >
-                <div className="absolute -top-8 left-1/2 -translate-x-1/2 rounded bg-slate-800 px-2 py-1 text-[10px] font-bold text-white opacity-0 transition-opacity group-hover:opacity-100">
-                  {month.count}
+                <div className="absolute -top-10 left-1/2 -translate-x-1/2 rounded-lg bg-midnight-indigo px-3 py-1.5 text-[11px] font-semibold text-white opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:-translate-y-1 whitespace-nowrap z-10 shadow-lg">
+                  {month.count} Pesanan
                 </div>
               </div>
-              <span className="text-[10px] font-medium text-slate-400">{month.month}</span>
+              <span className="text-[10px] font-semibold text-steel-gray uppercase tracking-widest">{month.month}</span>
             </div>
           ))}
           {statistics.monthly_chart.length === 0 && (
-            <div className="flex w-full items-center justify-center text-sm text-slate-400">No monthly data available</div>
+            <div className="flex w-full items-center justify-center text-sm font-medium text-slate-blue italic py-10">Data bulanan belum tersedia</div>
           )}
         </div>
       </Card>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         {/* Status Chart */}
-        <Card className="p-6 border-slate-200/80 bg-white/90 shadow-sm">
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-6">Status Distribution</h3>
-          <div className="flex flex-col gap-4">
+        <Card className="p-8 border-platinum-tint bg-white shadow-card">
+          <div className="mb-8 border-l-4 border-royal-amethyst pl-4">
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.25em] text-slate-blue">Status</h3>
+            <p className="text-lg font-bold text-midnight-indigo mt-1">Distribusi Status Pesanan</p>
+          </div>
+          <div className="flex flex-col gap-6">
             {statistics.status_chart.map((status) => (
-              <div key={status.status} className="flex flex-col gap-1.5">
+              <div key={status.status} className="flex flex-col gap-2">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="font-medium text-slate-700 capitalize">{status.status}</span>
-                  <span className="text-slate-500 font-semibold">{status.count}</span>
+                  <span className="font-semibold text-midnight-indigo capitalize">{status.status}</span>
+                  <span className="text-slate-blue font-semibold opacity-60">{status.count}</span>
                 </div>
-                <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                <div className="h-2.5 w-full rounded-full bg-cloud-mist overflow-hidden">
                   <div 
-                    className="h-full bg-indigo-500 rounded-full transition-all duration-500"
+                    className="h-full bg-royal-amethyst rounded-full transition-all duration-700"
                     style={{ width: `${(status.count / maxStatusCount) * 100}%` }}
                   />
                 </div>
@@ -59,23 +65,29 @@ export default function ReportCharts({ statistics }: ReportChartsProps) {
         </Card>
 
         {/* Activity Chart */}
-        <Card className="p-6 border-slate-200/80 bg-slate-900 text-white shadow-lg">
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-6">Activity Distribution</h3>
-          <div className="flex flex-col gap-4">
-            {statistics.activity_chart.map((activity) => (
-              <div key={activity.activity_type_id} className="flex flex-col gap-1.5">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="font-medium text-slate-300">{activity.activity?.name || "Unknown"}</span>
-                  <span className="text-white font-semibold">{activity.count}</span>
+        <Card className="p-8 border-platinum-tint bg-midnight-indigo text-white shadow-card relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+          <div className="relative z-10">
+            <div className="mb-8 border-l-4 border-emerald-400 pl-4">
+              <h3 className="text-[11px] font-semibold uppercase tracking-[0.25em] text-white/40">Aktivitas</h3>
+              <p className="text-lg font-bold text-white mt-1">Distribusi Jenis Perjalanan</p>
+            </div>
+            <div className="flex flex-col gap-6">
+              {statistics.activity_chart.map((activity) => (
+                <div key={activity.activity_type_id} className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="font-semibold text-white/80">{activity.activity?.name || "Lainnya"}</span>
+                    <span className="text-white font-bold">{activity.count}</span>
+                  </div>
+                  <div className="h-2.5 w-full rounded-full bg-white/10 overflow-hidden">
+                    <div 
+                      className="h-full bg-emerald-400 rounded-full transition-all duration-700 shadow-[0_0_12px_rgba(52,211,153,0.5)]"
+                      style={{ width: `${(activity.count / maxActivityCount) * 100}%` }}
+                    />
+                  </div>
                 </div>
-                <div className="h-2 w-full rounded-full bg-white/10 overflow-hidden">
-                  <div 
-                    className="h-full bg-emerald-400 rounded-full transition-all duration-500 shadow-[0_0_8px_rgba(52,211,153,0.5)]"
-                    style={{ width: `${(activity.count / maxActivityCount) * 100}%` }}
-                  />
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </Card>
       </div>
