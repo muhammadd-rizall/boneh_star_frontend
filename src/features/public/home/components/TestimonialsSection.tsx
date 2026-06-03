@@ -12,7 +12,7 @@ export default function TestimonialsSection({ reviews }: TestimonialsSectionProp
   if (reviews.length === 0) return null;
 
   return (
-    <section id="testimonials" ref={ref} className="py-24 bg-transparent">
+    <div ref={ref} className="py-24 bg-transparent">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className={"mb-16 text-center flex flex-col items-center reveal " + (inView ? "in-view" : "")}>
           <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white text-glacier-blue text-[11px] font-bold uppercase tracking-wider border border-platinum-tint mb-6 shadow-sm">
@@ -57,6 +57,6 @@ export default function TestimonialsSection({ reviews }: TestimonialsSectionProp
           ))}
         </div>
       </div>
-    </section>
+    </div>
   );
 }

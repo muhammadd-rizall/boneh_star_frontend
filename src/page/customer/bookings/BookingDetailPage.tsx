@@ -113,7 +113,7 @@ export default function BookingDetailPage() {
       <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
         <button 
           onClick={() => navigate('/customer/bookings')} 
-          className="group flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-slate-950 transition-colors"
+          className="group flex items-center gap-2 text-sm font-bold text-slate-blue hover:text-midnight-indigo transition-colors"
         >
           <ArrowLeft size={16} className="transition-transform group-hover:-translate-x-1" /> 
           Kembali ke Riwayat
@@ -125,7 +125,7 @@ export default function BookingDetailPage() {
               size="sm" 
               icon={FileDown} 
               onClick={handleDownloadInvoice}
-              className="rounded-xl font-bold border-slate-100"
+              className="rounded-xl font-bold border-platinum-tint/80 hover:bg-cloud-mist hover:text-midnight-indigo text-slate-blue"
             >
               Download Invoice
             </Button>
@@ -151,10 +151,10 @@ export default function BookingDetailPage() {
           <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="flex flex-col gap-4">
               <div className="flex flex-wrap items-center gap-3">
-                <h1 className="text-3xl font-black tracking-tighter text-slate-950">#{booking.booking_code}</h1>
+                <h1 className="text-3xl font-black tracking-tighter text-midnight-indigo">#{booking.booking_code}</h1>
                 <BookingStatusBadge status={booking.status} />
               </div>
-              <p className="text-sm font-semibold text-slate-400">
+              <p className="text-sm font-semibold text-slate-blue/70">
                 Pemesanan dibuat pada {formatDate(booking.created_at)}
               </p>
             </div>
@@ -166,14 +166,14 @@ export default function BookingDetailPage() {
               <DetailItem icon={Bus} label="Armada" value={`${booking.bus_count_requested} Unit Bus`} />
             </div>
 
-            <div className="rounded-3xl bg-slate-50 p-6 border border-slate-100/50">
+            <div className="rounded-[16px] bg-cloud-mist p-6 border border-platinum-tint/50">
               <div className="flex items-start gap-4">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm text-slate-400">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm text-slate-blue">
                   <Info size={16} />
                 </div>
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Catatan Tambahan</p>
-                  <p className="text-sm font-bold text-slate-600 leading-relaxed italic">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-blue/60 mb-1">Catatan Tambahan</p>
+                  <p className="text-sm font-bold text-midnight-indigo leading-relaxed italic">
                     {booking.special_notes || 'Tidak ada catatan khusus untuk perjalanan ini.'}
                   </p>
                 </div>
@@ -181,12 +181,12 @@ export default function BookingDetailPage() {
             </div>
           </div>
 
-          <div className="h-px bg-slate-100" />
+          <div className="h-px bg-platinum-tint/50" />
 
           {/* Quotation Section */}
           {booking.quotation && (
             <div className="flex flex-col gap-5 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
-              <h2 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Penawaran Harga</h2>
+              <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-blue/60 ml-1">Penawaran Harga</h2>
               <QuotationSection 
                 quotation={booking.quotation as any} 
                 whatsappNumber={companyProfile?.whatsapp?.[0]}
@@ -200,7 +200,7 @@ export default function BookingDetailPage() {
           {/* Payment Section */}
           {booking.transaction && (
             <div className="flex flex-col gap-5 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
-              <h2 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Manajemen Pembayaran</h2>
+              <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-blue/60 ml-1">Manajemen Pembayaran</h2>
               <PaymentSection 
                 transaction={booking.transaction as any} 
                 paymentMethods={paymentMethods}
@@ -213,16 +213,16 @@ export default function BookingDetailPage() {
           {/* Review Section */}
           {booking.status === 'completed' && (
             <div className="flex flex-col gap-5 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300">
-              <h2 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Bagikan Pengalaman</h2>
-              <Card className="border-none shadow-xl shadow-slate-100/50 p-8 sm:p-10">
+              <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-blue/60 ml-1">Bagikan Pengalaman</h2>
+              <Card className="border border-platinum-tint shadow-sm hover:shadow-card transition-shadow p-8 sm:p-10 rounded-[16px]">
                 {(booking as any).review ? (
                   <div className="flex flex-col items-center text-center gap-4">
                     <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
                       <Star className="fill-emerald-600" size={32} />
                     </div>
                     <div>
-                      <h3 className="text-lg font-black text-slate-950">Terima kasih atas ulasan Anda!</h3>
-                      <p className="mt-2 text-sm font-medium text-slate-500 max-w-sm">
+                      <h3 className="text-lg font-black text-midnight-indigo">Terima kasih atas ulasan Anda!</h3>
+                      <p className="mt-2 text-sm font-medium text-slate-blue max-w-sm">
                         Ulasan Anda telah kami terima dan sangat berarti bagi kami untuk terus meningkatkan kualitas layanan.
                       </p>
                     </div>
@@ -244,14 +244,14 @@ export default function BookingDetailPage() {
 
         {/* Right Column: Summary */}
         <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-right-4 duration-500 delay-150">
-          <Card className="flex flex-col gap-8 border-none shadow-xl shadow-slate-100/50 sticky top-32">
-            <div className="flex items-center gap-4 border-b border-slate-50 pb-6">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-50 text-orange-600">
+          <Card className="flex flex-col gap-8 border border-platinum-tint shadow-sm p-6 rounded-[16px] sticky top-32 bg-white">
+            <div className="flex items-center gap-4 border-b border-platinum-tint/40 pb-6">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cloud-mist text-slate-blue">
                 <FileText size={24} />
               </div>
               <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Kategori Kegiatan</p>
-                <h3 className="text-sm font-black text-slate-950">{booking.activity?.name}</h3>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-blue/60 mb-0.5">Kategori Kegiatan</p>
+                <h3 className="text-sm font-black text-midnight-indigo">{booking.activity?.name}</h3>
               </div>
             </div>
             
@@ -261,14 +261,14 @@ export default function BookingDetailPage() {
               
               {booking.transaction && (
                 <>
-                  <div className="my-2 h-px bg-slate-50" />
+                  <div className="my-2 h-px bg-platinum-tint/30" />
                   <SummaryRow 
                     label="Total Biaya" 
-                    value={<span className="text-base font-black text-slate-950">{formatCurrency(booking.transaction.total_amount)}</span>} 
+                    value={<span className="text-base font-black text-midnight-indigo">{formatCurrency(booking.transaction.total_amount)}</span>} 
                   />
                   <SummaryRow 
                     label="Sisa Tagihan" 
-                    value={<span className="text-sm font-black text-orange-600">{formatCurrency(booking.transaction.remaining_amount)}</span>} 
+                    value={<span className="text-sm font-black text-action-blue">{formatCurrency(booking.transaction.remaining_amount)}</span>} 
                   />
                 </>
               )}
@@ -281,10 +281,10 @@ export default function BookingDetailPage() {
               </div>
             )}
 
-            <div className="h-px bg-slate-100" />
+            <div className="h-px bg-platinum-tint/50" />
             
             <div className="flex flex-col gap-5">
-              <h2 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Timeline</h2>
+              <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-blue/60 ml-1">Timeline</h2>
               {loadingTimeline ? (
                 <div className="flex justify-center py-4"><Loader size="sm" /></div>
               ) : (
@@ -302,13 +302,13 @@ export default function BookingDetailPage() {
         title="Batalkan Pemesanan"
       >
         <div className="flex flex-col gap-6">
-          <p className="text-sm font-semibold text-slate-500 leading-relaxed">
+          <p className="text-sm font-semibold text-slate-blue leading-relaxed">
             Apakah Anda yakin ingin membatalkan pemesanan ini? Berikan alasan singkat untuk membantu kami mengevaluasi layanan kami.
           </p>
           <div className="flex flex-col gap-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Alasan Pembatalan</label>
+            <label className="text-[10px] font-black uppercase tracking-widest text-slate-blue/60 ml-1">Alasan Pembatalan</label>
             <textarea 
-              className="w-full rounded-2xl border border-slate-100 bg-slate-50/50 p-4 text-sm font-semibold focus:border-rose-500 focus:ring-1 focus:ring-rose-500 outline-none transition-all" 
+              className="w-full rounded-2xl border border-platinum-tint bg-cloud-mist/50 p-4 text-sm font-semibold focus:border-action-blue focus:ring-1 focus:ring-action-blue outline-none transition-all text-midnight-indigo placeholder:text-slate-blue/40" 
               rows={4} 
               placeholder="Contoh: Perubahan jadwal rencana kegiatan atau masalah lainnya..."
               value={cancelReason}
@@ -342,12 +342,12 @@ export default function BookingDetailPage() {
 function DetailItem({ icon: Icon, label, value }: { icon: any, label: string, value: string }) {
   return (
     <div className="flex flex-col gap-2.5">
-      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-slate-400">
+      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cloud-mist text-slate-blue">
         <Icon size={18} strokeWidth={2} />
       </div>
       <div>
-        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">{label}</p>
-        <p className="text-xs font-black text-slate-900 leading-snug">{value}</p>
+        <p className="text-[10px] font-black uppercase tracking-widest text-slate-blue/60 mb-0.5">{label}</p>
+        <p className="text-xs font-black text-midnight-indigo leading-snug">{value}</p>
       </div>
     </div>
   );
@@ -356,8 +356,8 @@ function DetailItem({ icon: Icon, label, value }: { icon: any, label: string, va
 function SummaryRow({ label, value }: { label: string, value: React.ReactNode }) {
   return (
     <div className="flex items-center justify-between gap-4">
-      <span className="text-[11px] font-black uppercase tracking-widest text-slate-400">{label}</span>
-      <div className="font-bold text-slate-950 text-right">{value}</div>
+      <span className="text-[11px] font-black uppercase tracking-widest text-slate-blue/60">{label}</span>
+      <div className="font-bold text-midnight-indigo text-right">{value}</div>
     </div>
   );
 }

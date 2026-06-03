@@ -7,11 +7,10 @@ import { resolveMediaUrl } from '@/features/admin/company-profile/utils/companyP
 
 interface Props {
   profile: CustomerProfile;
-  onEdit: () => void;
   onUpload: (file: File) => void;
 }
 
-export default function ProfileInfo({ profile, onEdit, onUpload }: Props) {
+export default function ProfileInfo({ profile, onUpload }: Props) {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,7 +39,7 @@ export default function ProfileInfo({ profile, onEdit, onUpload }: Props) {
           </div>
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="absolute -bottom-1 -right-1 flex h-10 w-10 items-center justify-center rounded-2xl bg-orange-600 text-white shadow-lg shadow-orange-600/20 transition-all hover:bg-orange-500 active:scale-90"
+            className="absolute -bottom-1 -right-1 flex h-10 w-10 items-center justify-center rounded-2xl bg-action-blue text-white shadow-lg shadow-action-blue/20 transition-all hover:bg-midnight-indigo active:scale-90"
           >
             <Camera size={18} />
           </button>
@@ -54,47 +53,11 @@ export default function ProfileInfo({ profile, onEdit, onUpload }: Props) {
         </div>
 
         <div className="flex flex-1 flex-col items-center gap-2 text-center sm:items-start sm:text-left">
-          <h2 className="text-3xl font-black tracking-tighter text-slate-950">{profile.name}</h2>
-          <p className="text-sm font-semibold text-slate-400">Customer @ Boneh Star</p>
-          <div className="mt-4 flex flex-wrap justify-center gap-4 sm:justify-start">
-            <Button onClick={onEdit} size="sm" variant="outline" className="rounded-xl border-slate-100">
-              Edit Profil
-            </Button>
-          </div>
+          <h2 className="text-3xl font-black tracking-tighter text-midnight-indigo">{profile.name}</h2>
+          <p className="text-sm font-semibold text-slate-blue">Customer @ Boneh Star</p>
         </div>
       </div>
 
-      <div className="grid gap-8 border-t border-slate-50 pt-10 sm:grid-cols-2">
-        <div className="flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-slate-400">
-            <Mail size={20} strokeWidth={1.5} />
-          </div>
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Email</p>
-            <p className="text-sm font-bold text-slate-700">{profile.email}</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-slate-400">
-            <Phone size={20} strokeWidth={1.5} />
-          </div>
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Telepon</p>
-            <p className="text-sm font-bold text-slate-700">{profile.phone}</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-4 sm:col-span-2">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-slate-400">
-            <MapPin size={20} strokeWidth={1.5} />
-          </div>
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Alamat Lengkap</p>
-            <p className="text-sm font-bold text-slate-700 leading-relaxed">{profile.address || 'Alamat belum diatur'}</p>
-          </div>
-        </div>
-      </div>
     </Card>
   );
 }

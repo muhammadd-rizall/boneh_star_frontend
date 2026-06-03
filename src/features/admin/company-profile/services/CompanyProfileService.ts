@@ -55,7 +55,9 @@ export const companyProfileService = {
 
       formData.append('email', data.email || '');
       formData.append('description', data.description || '');
-      formData.append('remove_logo', data.remove_logo ? '1' : '0');
+      if (data.remove_logo) {
+        formData.append('remove_logo', '1');
+      }
 
       const whatsappList = data.whatsapp
         .map((num) => num.trim())

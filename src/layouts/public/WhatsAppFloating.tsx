@@ -17,17 +17,17 @@ export default function WhatsAppFloating({ whatsapp }: WhatsAppFloatingProps) {
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
       {/* Popover */}
       {isOpen && (
-        <div className="mb-1 w-72 rounded-2xl bg-white p-5 shadow-xl border border-slate-100">
+        <div className="mb-1 w-72 rounded-2xl bg-white p-5 shadow-card border border-platinum-tint">
           <div className="mb-3 flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-slate-900">Chat Admin</h3>
+            <h3 className="text-sm font-bold text-midnight-indigo">Chat Admin</h3>
             <button 
               onClick={() => setIsOpen(false)}
-              className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 hover:text-slate-900 hover:bg-slate-50 transition-colors"
+              className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-blue hover:text-midnight-indigo hover:bg-cloud-mist transition-colors"
             >
               <X size={14} />
             </button>
           </div>
-          <p className="mb-5 text-xs text-slate-400 leading-relaxed">
+          <p className="mb-5 text-xs text-slate-blue leading-relaxed">
             Tim support kami siap membantu Anda 24/7 untuk setiap kebutuhan perjalanan.
           </p>
           <div className="flex flex-col gap-2">

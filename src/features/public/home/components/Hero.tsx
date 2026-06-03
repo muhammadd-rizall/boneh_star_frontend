@@ -1,6 +1,6 @@
 import { usePublicCompanyProfile } from '@/features/admin/company-profile/hooks/usePublicCompanyProfile';
 import { Bus as BusIcon, Calendar, Users, ArrowRight, Play, CheckCircle2, XCircle, ChevronDown, AlertCircle, Search } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
 import type { Bus } from '@/features/admin/buses/types/Bus';
 import type { BusCategory } from '@/features/admin/bus-categories/types/BusCategory';
@@ -12,16 +12,33 @@ interface HeroProps {
   onSearch: (results: Bus[]) => void;
 }
 
+// GANTI NILAI INI DENGAN PATH GAMBAR LOKAL ANDA NANTI (contoh: '/assets/images/hero-bg.jpg')
+const HERO_BACKGROUND_IMAGE = "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=2000&auto=format&fit=crop";
+
 export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
   const { profile } = usePublicCompanyProfile();
   const [checking, setChecking] = useState(false);
   const [result, setResult] = useState<{ available: Bus[]; message: string; isSuggestion?: boolean } | null>(null);
+  const resultTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [formData, setFormData] = useState({
     jenisBus: '',
     departureDate: '',
     returnDate: '',
     penumpang: ''
   });
+
+  const [isBusDropdownOpen, setIsBusDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsBusDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleCheckAvailability = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,6 +85,13 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
     onSearch(filtered);
     setChecking(false);
     
+    if (resultTimeoutRef.current) {
+      clearTimeout(resultTimeoutRef.current);
+    }
+    resultTimeoutRef.current = setTimeout(() => {
+      setResult(null);
+    }, 4000);
+    
     if (filtered.length > 0) {
       setTimeout(() => {
         document.getElementById('armada')?.scrollIntoView({ behavior: 'smooth' });
@@ -76,34 +100,52 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
   };
 
   return (
-    <section className='relative min-h-[95vh] w-full overflow-hidden flex flex-col bg-white pt-40 pb-28'>
-      {/* Background Abstract Shapes */}
-      <div className='absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[800px] h-[800px] bg-lavender-glow/5 rounded-full blur-[120px] animate-in fade-in duration-1000' />
-      <div className='absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-[700px] h-[700px] bg-skybound-blue/5 rounded-full blur-[120px] animate-in fade-in duration-1000' />
+    <section className='relative min-h-[95vh] w-full flex flex-col justify-center bg-midnight-indigo pt-48 lg:pt-56 pb-28'>
+      {/* Full Background Image */}
+      <div className='absolute inset-0 z-0'>
+        <img 
+          src={HERO_BACKGROUND_IMAGE} 
+          alt="Boneh Star Premium Bus Background" 
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-midnight-indigo/75" />
+      </div>
 
-      <div className='relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 text-center'>
-        <div className='max-w-4xl mx-auto'>
-          <div className='mb-10 inline-flex items-center gap-2 rounded-full bg-cloud-mist border border-platinum-tint px-5 py-2.5 animate-in fade-in slide-in-from-bottom-4 duration-700 shadow-sm'>
+      <div className='relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col items-center mt-8 lg:mt-12'>
+        {/* Center Content */}
+        <div className='text-center max-w-3xl flex flex-col items-center'>
+          <div className='mb-8 inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 px-5 py-2.5 animate-in fade-in slide-in-from-bottom-4 duration-700 shadow-sm'>
             <span className='flex h-2 w-2 rounded-full bg-action-blue shadow-[0_0_10px_rgba(0,107,255,0.6)] animate-pulse' />
-            <span className='text-[12px] font-bold tracking-[0.2em] text-midnight-indigo uppercase'>Premium Charter Service</span>
+            <span className='text-[12px] font-bold tracking-[0.2em] text-white uppercase'>Premium Charter Service</span>
           </div>
           
-          <h1 className='text-display md:text-display-lg font-bold tracking-tight text-midnight-indigo leading-[1.05] mb-10 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100'>
+          <h1 className='text-5xl lg:text-[64px] font-bold tracking-tight text-white leading-[1.1] mb-6 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100'>
             Easy scheduling for your <br />
             <span className='text-action-blue'>Premium Journey.</span>
           </h1>
           
-          <p className='mt-10 max-w-2xl mx-auto text-subheading font-medium leading-relaxed text-slate-blue animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200'>
+          <p className='text-lg font-medium leading-relaxed text-white/80 mb-10 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200 max-w-2xl mx-auto'>
             {profile.description || 'Solusi transportasi rombongan terbaik dengan armada modern dan layanan profesional untuk kenyamanan maksimal Anda.'}
           </p>
           
-          <div className='mt-14 flex flex-wrap items-center justify-center gap-8 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300'>
-            <Button size='lg' className='rounded-full px-12 h-16 text-lg font-bold shadow-button' onClick={() => document.getElementById('inquiry-bar')?.scrollIntoView({ behavior: 'smooth' })} suffix={ArrowRight}>
+          <div className='flex flex-wrap items-center justify-center gap-6 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300'>
+            <Button 
+              size='lg' 
+              className='rounded-full px-10 py-4 h-auto text-lg font-bold bg-action-blue text-white shadow-lg shadow-action-blue/30 ring-4 ring-action-blue/10 transition-all hover:scale-[1.03] hover:shadow-action-blue/40 active:scale-95' 
+              onClick={() => {
+                const el = document.getElementById('inquiry-bar');
+                if (el) {
+                  const y = el.getBoundingClientRect().top + window.scrollY - 150;
+                  window.scrollTo({ top: y, behavior: 'smooth' });
+                }
+              }}
+              suffix={ArrowRight}
+            >
               Cek Ketersediaan
             </Button>
-            <a href='#armada' className='group inline-flex items-center gap-4 text-lg font-bold text-midnight-indigo hover:text-action-blue transition-colors'>
-              <span className='flex h-14 w-14 items-center justify-center rounded-full border-2 border-platinum-tint bg-white group-hover:border-action-blue group-hover:bg-cloud-mist transition-all duration-300 shadow-sm'>
-                <Play size={18} className='ml-1 fill-midnight-indigo group-hover:fill-action-blue group-hover:text-action-blue transition-all' />
+            <a href='#armada' className='group inline-flex items-center gap-3 text-lg font-bold text-white hover:text-action-blue transition-colors'>
+              <span className='flex h-14 w-14 items-center justify-center rounded-full border-2 border-white/20 bg-white/10 backdrop-blur-sm group-hover:border-action-blue group-hover:bg-action-blue/20 transition-all duration-300 shadow-sm'>
+                <Play size={18} className='ml-1 fill-white group-hover:fill-action-blue transition-all' />
               </span>
               Lihat Armada
             </a>
@@ -111,51 +153,126 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
         </div>
 
         {/* Availability Bar */}
-        <div className='mt-28 mx-auto max-w-6xl animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500'>
-          <div className='rounded-3xl bg-white border border-platinum-tint shadow-card p-3'>
-            <form id='inquiry-bar' onSubmit={handleCheckAvailability} className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-0'>
-              <div className='flex items-center gap-4 px-8 py-6 hover:bg-cloud-mist transition-colors cursor-pointer lg:border-r lg:border-platinum-tint group rounded-l-2xl'>
-                <BusIcon className='text-action-blue group-hover:scale-110 transition-transform' size={24} />
-                <div className='flex flex-col text-left min-w-0 flex-1'>
-                  <span className='text-[11px] font-bold uppercase tracking-widest text-slate-blue mb-1.5'>Tipe Bus</span>
-                  <div className='relative flex items-center'>
-                    <select className='bg-transparent text-[15px] font-bold text-midnight-indigo focus:outline-none w-full appearance-none cursor-pointer' value={formData.jenisBus} onChange={e => setFormData({...formData, jenisBus: e.target.value})}>
-                      <option value=''>Semua Jenis</option>
-                      {categories.map(cat => (<option key={cat.id} value={cat.name}>{cat.name}</option>))}
-                    </select>
-                    <ChevronDown className='absolute right-0 text-platinum-tint pointer-events-none' size={16} />
+        <div className='mt-12 mx-auto max-w-[1000px] animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500 relative z-30'>
+          <div className='bg-white rounded-[32px] lg:rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-platinum-tint p-2'>
+            <form id='inquiry-bar' onSubmit={handleCheckAvailability} className='flex flex-col lg:flex-row items-center divide-y lg:divide-y-0 lg:divide-x divide-platinum-tint/60 w-full'>
+              
+              <div 
+                ref={dropdownRef}
+                className='relative flex items-center gap-3 px-6 py-3.5 hover:bg-cloud-mist/50 transition-colors cursor-pointer rounded-t-[24px] lg:rounded-l-full lg:rounded-tr-none w-full lg:w-auto flex-1 group'
+                onClick={() => setIsBusDropdownOpen(!isBusDropdownOpen)}
+              >
+                <BusIcon className='text-action-blue shrink-0 group-hover:scale-110 transition-transform' size={20} />
+                <div className='flex flex-col text-left w-full min-w-0'>
+                  <span className='text-[10px] font-bold uppercase tracking-widest text-slate-blue mb-0.5'>Tipe Bus</span>
+                  <div className='flex items-center gap-2'>
+                    <span className='text-[14px] font-bold text-midnight-indigo truncate'>
+                      {formData.jenisBus || 'Semua Jenis'}
+                    </span>
+                    <ChevronDown className={cn('text-platinum-tint shrink-0 transition-transform duration-300', isBusDropdownOpen && 'rotate-180')} size={16} />
                   </div>
                 </div>
+
+                {isBusDropdownOpen && (
+                  <div className='absolute top-full left-0 mt-3 w-[240px] bg-white rounded-[20px] shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-platinum-tint/60 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200'>
+                    <div className='py-2 max-h-[180px] overflow-y-auto'>
+                      <div 
+                        className={cn('px-5 py-3 text-[14px] font-semibold transition-colors hover:bg-cloud-mist/60 cursor-pointer flex items-center justify-between', !formData.jenisBus ? 'text-action-blue bg-action-blue/5' : 'text-slate-blue')}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setFormData({...formData, jenisBus: ''});
+                          setIsBusDropdownOpen(false);
+                        }}
+                      >
+                        Semua Jenis
+                        {!formData.jenisBus && <CheckCircle2 size={16} className="text-action-blue" />}
+                      </div>
+                      {categories.map(cat => (
+                        <div 
+                          key={cat.id} 
+                          className={cn('px-5 py-3 text-[14px] font-semibold transition-colors hover:bg-cloud-mist/60 cursor-pointer flex items-center justify-between', formData.jenisBus === cat.name ? 'text-action-blue bg-action-blue/5' : 'text-slate-blue')}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setFormData({...formData, jenisBus: cat.name});
+                            setIsBusDropdownOpen(false);
+                          }}
+                        >
+                          {cat.name}
+                          {formData.jenisBus === cat.name && <CheckCircle2 size={16} className="text-action-blue" />}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
               
-              <div className='flex items-center gap-4 px-8 py-6 hover:bg-cloud-mist transition-colors cursor-pointer lg:border-r lg:border-platinum-tint group'>
-                <Calendar className='text-action-blue group-hover:scale-110 transition-transform' size={24} />
-                <div className='flex flex-col text-left min-w-0 flex-1'>
-                  <span className='text-[11px] font-bold uppercase tracking-widest text-slate-blue mb-1.5'>Pergi</span>
-                  <input type='date' className='bg-transparent text-[15px] font-bold text-midnight-indigo focus:outline-none w-full cursor-pointer' value={formData.departureDate} onChange={e => setFormData({...formData, departureDate: e.target.value})} />
+              <label 
+                className='flex items-center gap-3 px-6 py-3.5 hover:bg-cloud-mist/50 transition-colors cursor-pointer w-full lg:w-auto flex-1 group'
+                onClick={(e) => {
+                  const input = e.currentTarget.querySelector('input');
+                  if (input) {
+                    if (input.type !== 'date') input.type = 'date';
+                    try { input.showPicker(); } catch (err) {}
+                  }
+                }}
+              >
+                <Calendar className='text-action-blue shrink-0 group-hover:scale-110 transition-transform' size={20} />
+                <div className='flex flex-col text-left w-full min-w-0'>
+                  <span className='text-[10px] font-bold uppercase tracking-widest text-slate-blue mb-0.5'>Pergi</span>
+                  <input 
+                    type='text' 
+                    onFocus={(e) => { e.target.type = 'date'; }}
+                    onBlur={(e) => !e.target.value && (e.target.type = 'text')}
+                    placeholder='Pilih Tanggal'
+                    className='bg-transparent text-[14px] font-bold text-midnight-indigo focus:outline-none w-full cursor-pointer placeholder:font-medium placeholder:text-platinum-tint' 
+                    value={formData.departureDate} 
+                    onChange={e => setFormData({...formData, departureDate: e.target.value})} 
+                  />
                 </div>
-              </div>
+              </label>
               
-              <div className='flex items-center gap-4 px-8 py-6 hover:bg-cloud-mist transition-colors cursor-pointer lg:border-r lg:border-platinum-tint group'>
-                <Calendar className='text-action-blue group-hover:scale-110 transition-transform' size={24} />
-                <div className='flex flex-col text-left min-w-0 flex-1'>
-                  <span className='text-[11px] font-bold uppercase tracking-widest text-slate-blue mb-1.5'>Pulang</span>
-                  <input type='date' className='bg-transparent text-[15px] font-bold text-midnight-indigo focus:outline-none w-full cursor-pointer' value={formData.returnDate} onChange={e => setFormData({...formData, returnDate: e.target.value})} />
+              <label 
+                className='flex items-center gap-3 px-6 py-3.5 hover:bg-cloud-mist/50 transition-colors cursor-pointer w-full lg:w-auto flex-1 group'
+                onClick={(e) => {
+                  const input = e.currentTarget.querySelector('input');
+                  if (input) {
+                    if (input.type !== 'date') input.type = 'date';
+                    try { input.showPicker(); } catch (err) {}
+                  }
+                }}
+              >
+                <Calendar className='text-action-blue shrink-0 group-hover:scale-110 transition-transform' size={20} />
+                <div className='flex flex-col text-left w-full min-w-0'>
+                  <span className='text-[10px] font-bold uppercase tracking-widest text-slate-blue mb-0.5'>Pulang</span>
+                  <input 
+                    type='text' 
+                    onFocus={(e) => { e.target.type = 'date'; }}
+                    onBlur={(e) => !e.target.value && (e.target.type = 'text')}
+                    placeholder='Pilih Tanggal'
+                    className='bg-transparent text-[14px] font-bold text-midnight-indigo focus:outline-none w-full cursor-pointer placeholder:font-medium placeholder:text-platinum-tint' 
+                    value={formData.returnDate} 
+                    onChange={e => setFormData({...formData, returnDate: e.target.value})} 
+                  />
                 </div>
-              </div>
+              </label>
               
-              <div className='flex items-center gap-4 px-8 py-6 hover:bg-cloud-mist transition-colors cursor-pointer lg:border-r lg:border-platinum-tint group'>
-                <Users className='text-action-blue group-hover:scale-110 transition-transform' size={24} />
-                <div className='flex flex-col text-left min-w-0 flex-1'>
-                  <span className='text-[11px] font-bold uppercase tracking-widest text-slate-blue mb-1.5'>Kapasitas</span>
-                  <input type='number' min='1' placeholder='Orang' className='bg-transparent text-[15px] font-bold text-midnight-indigo placeholder:text-platinum-tint focus:outline-none w-full' value={formData.penumpang} onChange={e => setFormData({...formData, penumpang: e.target.value})} />
+              <label className='flex items-center gap-3 px-6 py-3.5 hover:bg-cloud-mist/50 transition-colors cursor-pointer w-full lg:w-auto flex-1 group'>
+                <Users className='text-action-blue shrink-0 group-hover:scale-110 transition-transform' size={20} />
+                <div className='flex flex-col text-left w-full min-w-0'>
+                  <span className='text-[10px] font-bold uppercase tracking-widest text-slate-blue mb-0.5'>Kapasitas</span>
+                  <input type='number' min='1' placeholder='Jumlah Orang' className='bg-transparent text-[14px] font-bold text-midnight-indigo placeholder:text-platinum-tint placeholder:font-medium focus:outline-none w-full' value={formData.penumpang} onChange={e => setFormData({...formData, penumpang: e.target.value})} />
                 </div>
-              </div>
+              </label>
               
-              <div className='p-3'>
-                <button type='submit' disabled={checking} className='h-full w-full rounded-2xl bg-action-blue hover:bg-action-blue/90 text-white font-bold flex items-center justify-center gap-3 transition-all shadow-button active:scale-[0.98] text-base'>
-                  {checking ? (<div className='h-6 w-6 border-2 border-white/30 border-t-white rounded-full animate-spin' />) : (<><Search size={20} /><span>Cari Armada</span></>)}
-                </button>
+              <div className='p-2 w-full lg:w-auto lg:shrink-0'>
+                <Button 
+                  type='submit' 
+                  loading={checking} 
+                  icon={Search}
+                  className='h-[54px] w-full lg:w-auto px-10 rounded-[24px] lg:rounded-full bg-action-blue text-white font-bold shadow-button text-[15px] transition-all hover:scale-[1.02] active:scale-[0.98]'
+                >
+                  Cari Armada
+                </Button>
               </div>
             </form>
             
@@ -172,10 +289,10 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
             )}
           </div>
           
-          <div className='mt-14 flex flex-wrap items-center justify-center gap-x-16 gap-y-8 opacity-40 grayscale hover:grayscale-0 transition-all duration-700'>
-            <div className='flex items-center gap-3'><CheckCircle2 size={18} className='text-action-blue' /><span className='text-[12px] font-bold tracking-widest uppercase text-midnight-indigo'>Trusted Service</span></div>
-            <div className='flex items-center gap-3'><CheckCircle2 size={18} className='text-action-blue' /><span className='text-[12px] font-bold tracking-widest uppercase text-midnight-indigo'>Safe & Secure</span></div>
-            <div className='flex items-center gap-3'><CheckCircle2 size={18} className='text-action-blue' /><span className='text-[12px] font-bold tracking-widest uppercase text-midnight-indigo'>24/7 Support</span></div>
+          <div className='mt-14 flex flex-wrap items-center justify-center gap-x-16 gap-y-8 opacity-60 hover:opacity-100 transition-all duration-700'>
+            <div className='flex items-center gap-3'><CheckCircle2 size={18} className='text-action-blue' /><span className='text-[12px] font-bold tracking-widest uppercase text-white'>Trusted Service</span></div>
+            <div className='flex items-center gap-3'><CheckCircle2 size={18} className='text-action-blue' /><span className='text-[12px] font-bold tracking-widest uppercase text-white'>Safe & Secure</span></div>
+            <div className='flex items-center gap-3'><CheckCircle2 size={18} className='text-action-blue' /><span className='text-[12px] font-bold tracking-widest uppercase text-white'>24/7 Support</span></div>
           </div>
         </div>
       </div>

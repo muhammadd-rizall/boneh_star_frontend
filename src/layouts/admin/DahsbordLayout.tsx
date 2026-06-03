@@ -28,7 +28,7 @@ import {
   TrendingUp,
   CalendarRange,
   X,
-  Building2,
+  Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -52,7 +52,7 @@ const pageTitles: Record<string, string> = {
   "/admin/users": "Pengguna",
   "/admin/customers": "Pelanggan",
   "/admin/roles": "Hak Akses",
-  "/admin/settings": "Profil Perusahaan",
+  "/admin/settings": "Pengaturan",
 };
 
 const SidebarItem = ({ to, icon: Icon, label, collapsed, onNavigate }: { to: string; icon: React.ElementType; label: string; collapsed: boolean; onNavigate: () => void }) => (
@@ -64,8 +64,8 @@ const SidebarItem = ({ to, icon: Icon, label, collapsed, onNavigate }: { to: str
       cn(
         "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all duration-200",
         isActive
-          ? "bg-action-blue text-white shadow-sm font-semibold"
-          : "text-slate-blue hover:bg-cloud-mist hover:text-action-blue font-medium",
+          ? "bg-gradient-to-r from-midnight-indigo to-slate-blue text-white shadow-button font-semibold"
+          : "text-slate-blue hover:bg-cloud-mist hover:text-midnight-indigo font-medium",
         collapsed ? "justify-center px-0" : "justify-start"
       )
     }
@@ -157,7 +157,7 @@ export default function DahsbordLayout() {
 
         <div className={cn("flex h-[72px] shrink-0 items-center border-b border-platinum-tint/60", collapsed ? "justify-center px-3" : "justify-between px-5")}>
           <Link to="/admin/dashboard" className="flex items-center gap-3 overflow-hidden">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-action-blue text-white shadow-button">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-midnight-indigo to-slate-blue text-white shadow-button">
               <BusFront size={18} />
             </div>
             {!collapsed && (
@@ -212,7 +212,7 @@ export default function DahsbordLayout() {
           </SidebarGroup>
 
           <SidebarGroup label="Sistem" collapsed={collapsed}>
-            <SidebarItem to="/admin/settings" icon={Building2} label="Profil Perusahaan" collapsed={collapsed} onNavigate={() => setMobileOpen(false)} />
+            <SidebarItem to="/admin/settings" icon={Settings} label="Pengaturan" collapsed={collapsed} onNavigate={() => setMobileOpen(false)} />
           </SidebarGroup>
         </nav>
 

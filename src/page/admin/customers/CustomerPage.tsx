@@ -56,7 +56,7 @@ export default function CustomerPage() {
       </StatGrid>
 
       <div className="flex justify-end">
-        <ViewToggle view={view} onViewChange={setView} activeLabel="Pelanggan Aktif" trashLabel="Sampah" />
+        <ViewToggle view={view} onViewChange={setView} activeLabel="Aktif" trashLabel="Sampah" />
       </div>
 
       {error ? (

@@ -11,6 +11,8 @@ import {
   ChevronRight
 } from "lucide-react";
 
+import WhatsAppFloating from "../public/WhatsAppFloating";
+
 interface CustomerLayoutProps {
   children: ReactNode;
 }
@@ -30,45 +32,46 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <Header companyProfile={profile} />
       
-      <main className="mx-auto max-w-7xl px-4 pt-32 pb-20 sm:px-6 lg:px-8">
-        <div className="flex flex-col gap-8 lg:flex-row">
+      <main className="mx-auto w-full max-w-7xl px-4 pt-[120px] pb-20 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-8 lg:flex-row items-start">
           {/* Sidebar */}
-          <aside className="w-full lg:w-64 flex-shrink-0">
-            <nav className="flex flex-col gap-1 rounded-3xl bg-white p-2 border border-slate-100 shadow-sm">
+          <aside className="w-full lg:w-64 lg:min-w-[256px] flex-shrink-0">
+            <nav className="flex flex-col gap-2 rounded-[16px] bg-white p-4 shadow-card">
               {sidebarNavigation.map((item) => (
                 <NavLink
                   key={item.to}
                   to={item.to}
                   className={({ isActive }) =>
-                    `flex items-center justify-between rounded-2xl px-4 py-3 text-sm font-semibold transition-all group ${
+                    `flex items-center justify-between px-4 py-3 text-[16px] font-semibold transition-colors group ${
                       isActive 
-                        ? "bg-slate-950 text-white shadow-md shadow-slate-200" 
-                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                        ? "text-action-blue" 
+                        : "text-midnight-indigo hover:text-action-blue"
                     }`
                   }
                 >
                   <div className="flex items-center gap-3">
-                    <item.icon size={18} />
+                    <item.icon size={20} strokeWidth={location.pathname === item.to ? 2.5 : 2} />
                     {item.label}
                   </div>
-                  <ChevronRight size={14} className={`opacity-0 transition-all group-hover:opacity-100 ${location.pathname === item.to ? "hidden" : ""}`} />
+                  <ChevronRight size={16} className={`opacity-0 transition-transform group-hover:opacity-100 group-hover:translate-x-1 ${location.pathname === item.to ? "hidden" : ""}`} />
                 </NavLink>
               ))}
             </nav>
             
-            <div className="mt-6 rounded-3xl bg-orange-600 p-6 text-white shadow-xl shadow-orange-600/20">
-              <h4 className="font-bold">Butuh Bantuan?</h4>
-              <p className="mt-2 text-xs font-medium text-orange-100 leading-relaxed">
+            <div className="mt-8 rounded-[16px] bg-white p-6 shadow-card relative overflow-hidden group">
+              <div className="absolute -top-10 -right-10 w-32 h-32 bg-cloud-mist rounded-full blur-2xl group-hover:bg-platinum-tint/50 transition-colors duration-700" />
+              <h4 className="font-bold text-[18px] text-midnight-indigo relative z-10 tracking-tight">Butuh Bantuan?</h4>
+              <p className="mt-2 text-[14px] font-medium text-slate-blue leading-[1.71] relative z-10">
                 Tim support kami siap membantu Anda 24/7 untuk urusan pemesanan.
               </p>
-              <button className="mt-4 w-full rounded-xl bg-white px-4 py-2 text-xs font-bold text-orange-600 transition-colors hover:bg-orange-50">
+              <button className="mt-6 w-full rounded-[8px] bg-action-blue px-4 py-3 text-[14px] font-bold text-white shadow-button transition-all hover:bg-action-blue/90 hover:scale-[1.02] active:scale-95 relative z-10">
                 Hubungi Kami
               </button>
             </div>
           </aside>
 
           {/* Content Area */}
-          <div className="flex-1">
+          <div className="flex-1 min-w-0 w-full">
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
               {children}
             </div>
@@ -76,6 +79,7 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
         </div>
       </main>
 
+      <WhatsAppFloating whatsapp={profile?.whatsapp || []} />
       <Footer companyProfile={profile} />
     </div>
   );

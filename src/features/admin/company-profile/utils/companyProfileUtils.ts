@@ -59,11 +59,20 @@ export const getSocialIcon = (platform: string) => {
 
 export function normalizeWhatsApp(list: unknown): string[] {
   if (!list) return [];
-  if (Array.isArray(list)) return list;
+  if (Array.isArray(list)) {
+    return list.map(item => {
+      if (typeof item === 'object' && item !== null && 'number' in item) {
+        return String((item as any).number);
+      }
+      return String(item);
+    });
+  }
   if (typeof list === 'string') {
     try {
       const parsed = JSON.parse(list);
-      return Array.isArray(parsed) ? parsed : [list];
+      return Array.isArray(parsed) 
+        ? parsed.map(item => typeof item === 'object' && item !== null && 'number' in item ? String((item as any).number) : String(item))
+        : [list];
     } catch {
       return [list];
     }
@@ -118,7 +127,8 @@ export function resolveMediaUrl(path: string | null | undefined): string {
 }
 
 export function buildWhatsAppHref(whatsapp: string): string {
-  const cleanNumber = whatsapp.replace(/\D/g, "");
+  if (!whatsapp) return "#";
+  const cleanNumber = String(whatsapp).replace(/\D/g, "");
   const formattedNumber = cleanNumber.startsWith("0") 
     ? "62" + cleanNumber.slice(1) 
     : cleanNumber.startsWith("62") ? cleanNumber : "62" + cleanNumber;

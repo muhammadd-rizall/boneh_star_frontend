@@ -120,9 +120,9 @@ export default function Footer({ companyProfile }: FooterProps) {
                   </div>
                   
                   <div className="flex flex-col gap-2.5">
-                    {whatsappNumbers.map((whatsapp) => (
+                    {whatsappNumbers.map((whatsapp, idx) => (
                       <a
-                        key={whatsapp}
+                        key={idx}
                         href={buildWhatsAppHref(whatsapp)}
                         target="_blank"
                         rel="noreferrer"

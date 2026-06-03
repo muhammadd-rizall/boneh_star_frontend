@@ -117,7 +117,7 @@ export default function Header({ companyProfile }: HeaderProps) {
   return (
     <header
       className={"fixed top-0 inset-x-0 z-50 transition-all duration-300 " + (
-        isScrolled
+        isScrolled || !isHome
           ? "bg-white/95 backdrop-blur-xl border-b border-platinum-tint py-3 shadow-sm"
           : "bg-transparent py-5"
       )}
@@ -142,9 +142,10 @@ export default function Header({ companyProfile }: HeaderProps) {
             )}
           </div>
           <span
-            className={"text-lg font-bold tracking-tight transition-colors duration-300 " + (
-              isTransparentDark ? "text-white" : "text-midnight-indigo"
-            )}
+            className={
+              "text-lg font-bold tracking-tight transition-colors duration-300 " +
+              (isTransparentDark ? "text-white" : "text-midnight-indigo")
+            }
           >
             {companyProfile.company_name}
           </span>
@@ -217,11 +218,12 @@ export default function Header({ companyProfile }: HeaderProps) {
             <>
               <NavLink
                 to="/auth/login"
-                className={"px-4 py-2 text-[14px] font-semibold transition-colors rounded-lg " + (
-                  isTransparentDark
-                    ? "text-white/80 hover:text-white"
-                    : "text-midnight-indigo hover:text-action-blue"
-                )}
+                className={
+                  "px-4 py-2 text-[14px] font-semibold transition-colors rounded-lg " +
+                  (isTransparentDark
+                    ? "text-white/90 hover:text-white"
+                    : "text-midnight-indigo hover:text-action-blue")
+                }
               >
                 Masuk
               </NavLink>

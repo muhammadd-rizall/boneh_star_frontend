@@ -70,7 +70,7 @@ export default function HistoryDetailPage() {
       <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
         <button 
           onClick={() => navigate('/customer/bookings')} 
-          className="group flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-slate-950 transition-colors"
+          className="group flex items-center gap-2 text-sm font-bold text-slate-blue hover:text-midnight-indigo transition-colors"
         >
           <ArrowLeft size={16} className="transition-transform group-hover:-translate-x-1" /> 
           Kembali ke Riwayat
@@ -80,40 +80,40 @@ export default function HistoryDetailPage() {
           size="sm" 
           icon={FileDown} 
           onClick={handleDownloadInvoice}
-          className="rounded-xl font-bold border-slate-100"
+          className="rounded-xl font-bold border-platinum-tint hover:bg-cloud-mist text-slate-blue hover:text-midnight-indigo"
         >
           Download Invoice
         </Button>
       </div>
 
       <div className="flex flex-col gap-10">
-        <Card className="border-none shadow-xl shadow-slate-100/50">
-          <div className="flex flex-col gap-8">
+        <Card className="border border-platinum-tint shadow-sm rounded-[16px]">
+          <div className="flex flex-col gap-8 p-8">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
-                <h1 className="text-3xl font-black tracking-tighter text-slate-950">#{data.booking.booking_code}</h1>
-                <p className="text-sm font-semibold text-slate-400 mt-1">Dibuat pada {formatDate(data.booking.created_at)}</p>
+                <h1 className="text-3xl font-black tracking-tighter text-midnight-indigo">#{data.booking.booking_code}</h1>
+                <p className="text-sm font-semibold text-slate-blue/70 mt-1">Dibuat pada {formatDate(data.booking.created_at)}</p>
               </div>
               <BookingStatusBadge status={data.booking.status} />
             </div>
             
-            <div className="grid gap-6 sm:grid-cols-2 border-t border-slate-50 pt-8">
+            <div className="grid gap-6 sm:grid-cols-2 border-t border-platinum-tint/50 pt-8">
               <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-slate-400">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cloud-mist text-slate-blue">
                   <Calendar size={20} strokeWidth={1.5} />
                 </div>
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Jadwal Perjalanan</p>
-                  <p className="text-sm font-bold text-slate-700">{formatDate(data.booking.departure_date)}</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-blue/60 mb-0.5">Jadwal Perjalanan</p>
+                  <p className="text-sm font-bold text-midnight-indigo">{formatDate(data.booking.departure_date)}</p>
                 </div>
               </div>
               <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-slate-400">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cloud-mist text-slate-blue">
                   <MapPin size={20} strokeWidth={1.5} />
                 </div>
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Rute Perjalanan</p>
-                  <p className="text-sm font-bold text-slate-700">{data.booking.origin} • {data.booking.full_route}</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-blue/60 mb-0.5">Rute Perjalanan</p>
+                  <p className="text-sm font-bold text-midnight-indigo">{data.booking.origin} • {data.booking.full_route}</p>
                 </div>
               </div>
             </div>
@@ -121,8 +121,8 @@ export default function HistoryDetailPage() {
         </Card>
 
         <div className="flex flex-col gap-6">
-          <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Timeline & Status Perjalanan</h3>
-          <Card className="border-none shadow-xl shadow-slate-100/50 p-8 sm:p-12">
+          <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-blue/60 ml-1">Timeline & Status Perjalanan</h3>
+          <Card className="border border-platinum-tint shadow-sm p-8 sm:p-12 rounded-[16px]">
             <BookingTimeline timeline={data.timeline} />
           </Card>
         </div>

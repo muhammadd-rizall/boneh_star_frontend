@@ -46,6 +46,14 @@ export function useProfile() {
     }
   };
 
+  const updatePassword = async (data: any) => {
+    try {
+      await profileService.updatePassword(data);
+    } catch (err: any) {
+      throw err;
+    }
+  };
+
   useEffect(() => {
     const init = async () => {
       setLoading(true);
@@ -61,6 +69,7 @@ export function useProfile() {
     loading,
     error,
     updateProfile,
+    updatePassword,
     uploadPicture,
     refresh: () => {
       fetchProfile();

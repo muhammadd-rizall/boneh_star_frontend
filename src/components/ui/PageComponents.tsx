@@ -160,8 +160,8 @@ export function ViewToggle({
         className={cn(
           "flex items-center gap-2.5 rounded-xl px-6 py-2.5 text-xs font-medium uppercase tracking-widest transition-all",
           view === "active"
-            ? "bg-midnight-indigo text-white shadow-button"
-            : "text-slate-blue hover:bg-cloud-mist hover:text-midnight-indigo"
+            ? "bg-action-blue text-white shadow-button"
+            : "text-slate-blue hover:bg-cloud-mist hover:text-action-blue"
         )}
       >
         <List size={14} strokeWidth={3} />

@@ -10,23 +10,25 @@ interface StatsSectionProps {
   };
 }
 
-function AnimatedStat({ value, label, sub, icon: Icon }: { value: number; label: string; sub: string; icon: React.ElementType }) {
+function AnimatedStat({ value, label, icon: Icon, delay }: { value: number; label: string; icon: React.ElementType; delay: number }) {
   const { ref, inView } = useInView(0.3);
   const count = useCounter(value, 1400, inView);
 
   return (
-    <div ref={ref} className="flex flex-col items-center text-center px-4">
-      <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-cloud-mist text-action-blue shadow-sm">
-        <Icon size={20} strokeWidth={2} />
+    <div 
+      ref={ref} 
+      className={"flex flex-col items-center justify-center p-8 relative group reveal " + (inView ? "in-view" : "")}
+      style={{ "--delay": delay + "ms" } as React.CSSProperties}
+    >
+      <div className="absolute inset-4 rounded-2xl bg-cloud-mist/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0" />
+      <div className="relative z-10 mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-action-blue/10 text-action-blue transition-transform duration-300 group-hover:scale-110 group-hover:bg-action-blue group-hover:text-white">
+        <Icon size={24} strokeWidth={2} />
       </div>
-      <p className="text-3xl font-bold tracking-tight text-midnight-indigo sm:text-4xl tabular-nums">
+      <p className="relative z-10 text-4xl font-black tracking-tight text-midnight-indigo tabular-nums mb-1">
         {count}<span className="text-action-blue">+</span>
       </p>
-      <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.2em] text-slate-blue">
+      <p className="relative z-10 text-xs font-bold uppercase tracking-wider text-slate-blue">
         {label}
-      </p>
-      <p className="mt-1 text-xs font-medium text-platinum-tint">
-        {sub}
       </p>
     </div>
   );
@@ -37,18 +39,18 @@ export default function StatsSection({ stats }: StatsSectionProps) {
   const experienceYears = currentYear - stats.founded;
 
   const cards = [
-    { label: "Armada Bus", value: stats.buses, sub: "Unit terbaik", icon: Bus },
-    { label: "Trip Selesai", value: stats.bookings, sub: "Perjalanan sukses", icon: CheckCircle2 },
-    { label: "Rute Layanan", value: stats.routes, sub: "Destinasi tersedia", icon: MapPin },
-    { label: "Tahun Beroperasi", value: experienceYears, sub: `Sejak ${stats.founded}`, icon: Calendar },
+    { label: "Armada Bus", value: stats.buses, icon: Bus },
+    { label: "Trip Selesai", value: stats.bookings, icon: CheckCircle2 },
+    { label: "Rute Layanan", value: stats.routes, icon: MapPin },
+    { label: "Tahun Beroperasi", value: experienceYears, icon: Calendar },
   ];
 
   return (
-    <section className="relative py-20 bg-white">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 gap-y-12 md:grid-cols-4 md:divide-x md:divide-platinum-tint/50">
+    <section className="relative z-20 -mt-16 sm:-mt-24 mb-16 px-4">
+      <div className="mx-auto max-w-5xl">
+        <div className="grid grid-cols-2 md:grid-cols-4 bg-white rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-platinum-tint overflow-hidden divide-x divide-y md:divide-y-0 divide-platinum-tint/50">
           {cards.map((card, i) => (
-            <AnimatedStat key={i} {...card} />
+            <AnimatedStat key={i} {...card} delay={i * 100} />
           ))}
         </div>
       </div>

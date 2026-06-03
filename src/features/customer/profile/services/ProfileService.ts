@@ -23,6 +23,10 @@ export const profileService = {
     return response.data.data;
   },
 
+  updatePassword: async (data: any): Promise<void> => {
+    await axios.patch(`${ENDPOINTS.PROFILE}/password`, data);
+  },
+
   uploadPicture: async (file: File): Promise<CustomerProfile> => {
     const formData = new FormData();
     formData.append('profile_picture', file);

@@ -1,11 +1,11 @@
 import PublicLayout from "@/layouts/public/PublicLayout";
-import ContactFeature from "@/features/public/Contact/ContactFeature";
+import { ContactSection } from "@/features/public";
 
 export default function ContactPage() {
   return (
     <PublicLayout>
-      <div className="pt-20">
-        <ContactFeature />
+      <div className="pt-24">
+        <ContactSection />
       </div>
     </PublicLayout>
   );

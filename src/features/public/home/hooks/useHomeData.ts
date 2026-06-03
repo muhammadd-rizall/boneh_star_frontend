@@ -4,6 +4,7 @@ import type { Bus } from '@/features/admin/buses/types/Bus';
 import type { ActivityType } from '@/features/admin/activity-types/types/ActivityType';
 import type { Review } from '@/features/admin/reviews/types/Review';
 import type { BusCategory } from '@/features/admin/bus-categories/types/BusCategory';
+import type { RouteType } from '@/features/admin/route-types/types/RouteType';
 
 export function useHomeData() {
   const [data, setData] = useState<{
@@ -13,6 +14,7 @@ export function useHomeData() {
       routes: number;
       founded: number;
     };
+    routeTypes: RouteType[];
     activityTypes: ActivityType[];
     featuredBuses: Bus[];
     allBuses: Bus[];
@@ -22,6 +24,7 @@ export function useHomeData() {
     error: string | null;
   }>({
     stats: { buses: 0, bookings: 0, routes: 0, founded: 2018 },
+    routeTypes: [],
     activityTypes: [],
     featuredBuses: [],
     allBuses: [],
@@ -43,7 +46,7 @@ export function useHomeData() {
       ]);
       const busRes = busPage.data;
       const reviewRes = reviewPage.data;
-      const featured = busRes.filter((b: Bus) => b.status === 'available' && b.images && b.images.length > 0).slice(0, 4);
+      const featured = busRes.slice(0, 6);
       const totalBuses = busPage.meta?.total || busRes.length;
       const totalRoutes = routeRes.length;
       const totalBookings = reviewPage.meta?.total || reviewRes.length;
@@ -54,6 +57,7 @@ export function useHomeData() {
           routes: totalRoutes,
           founded: 2018,
         },
+        routeTypes: routeRes,
         activityTypes: activityRes,
         featuredBuses: featured,
         allBuses: busRes,
