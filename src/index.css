@@ -153,6 +153,36 @@ a {
   }
 }
 
+@keyframes auth-slide-from-left {
+  from {
+    opacity: 0;
+    transform: translateX(-28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes auth-slide-from-right {
+  from {
+    opacity: 0;
+    transform: translateX(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.auth-slide-left {
+  animation: auth-slide-from-left 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.auth-slide-right {
+  animation: auth-slide-from-right 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
 /* ── Scroll-triggered animations ─────────────────────────── */
 .reveal {
   opacity: 0;

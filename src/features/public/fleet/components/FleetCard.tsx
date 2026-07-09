@@ -1,46 +1,88 @@
-import { Bus as BusIcon } from "lucide-react";
+import { 
+  Wind, 
+  Armchair, 
+  Briefcase, 
+  ArrowRight, 
+  Users, 
+  Shield, 
+  Wifi, 
+  Tv, 
+  Usb, 
+  Music, 
+  Sparkles 
+} from "lucide-react";
 import { resolveMediaUrl } from "@/features/admin/company-profile/utils/companyProfileUtils";
 import type { Bus } from "@/features/admin/buses/types/Bus";
 import { cn } from "@/lib/utils";
-import { getBusStatusMeta, getCapacityLabel } from "../utils/fleetCardUtils";
+import { getCapacityLabel } from "../utils/fleetCardUtils";
+import { usePublicCompanyProfile } from "@/features/admin/company-profile/hooks/usePublicCompanyProfile";
 
 export interface FleetCardProps {
   bus: Bus;
   index?: number;
   inView?: boolean;
   className?: string;
+  onViewDetail?: (bus: Bus) => void;
 }
+
+const getFacilityIcon = (name: string) => {
+  const lower = name.toLowerCase();
+  if (lower.includes("ac")) return Wind;
+  if (lower.includes("toilet")) return Shield;
+  if (lower.includes("seat") || lower.includes("kursi") || lower.includes("reclining")) return Armchair;
+  if (lower.includes("bagasi") || lower.includes("baggage") || lower.includes("koper")) return Briefcase;
+  if (lower.includes("wifi") || lower.includes("internet")) return Wifi;
+  if (lower.includes("tv") || lower.includes("lcd") || lower.includes("monitor")) return Tv;
+  if (lower.includes("usb") || lower.includes("charger") || lower.includes("cas")) return Usb;
+  if (lower.includes("karaoke") || lower.includes("musik") || lower.includes("audio")) return Music;
+  return Sparkles;
+};
 
 export default function FleetCard({
   bus,
   index = 0,
   inView = true,
   className,
+  onViewDetail,
 }: FleetCardProps) {
+  const { profile } = usePublicCompanyProfile();
+  
   const primaryImage = bus.images?.find((img) => img.is_primary) || bus.images?.[0];
   const imageUrl = resolveMediaUrl(primaryImage?.url);
   const facilities = bus.facilities ?? [];
-
-  const status = getBusStatusMeta(bus.status);
   const capacityLabel = getCapacityLabel(bus);
 
-  const detailParts = [
-    capacityLabel,
-    bus.production_year ? `Tahun ${bus.production_year}` : null,
-    bus.plat_number ? bus.plat_number : null,
-  ].filter(Boolean);
+  const defaultDesc = bus.description || (
+    bus.category?.name.toLowerCase().includes("big")
+      ? "Cocok untuk perjalanan jarak jauh dengan kenyamanan ekstra."
+      : bus.category?.name.toLowerCase().includes("medium")
+      ? "Ukuran ideal untuk rombongan sedang dengan fasilitas lengkap."
+      : "Cocok untuk rombongan kecil dan perjalanan dalam kota."
+  );
+
+  const whatsappUrl = profile.whatsapp?.[0]
+    ? `https://wa.me/${profile.whatsapp[0].replace(/[^0-9]/g, "")}?text=Halo%20Admin%20Boneh%20Star,%20saya%20tertarik%20ingin%20tanya%20detail%20menyewa%20armada%20${encodeURIComponent(bus.name)}`
+    : `https://wa.me/62821XXXXXXXX?text=Halo%20Admin%20Boneh%20Star,%20saya%20tertarik%20ingin%20tanya%20detail%20menyewa%20armada%20${encodeURIComponent(bus.name)}`;
+
+  const handleDetailClick = (e: React.MouseEvent) => {
+    if (onViewDetail) {
+      e.preventDefault();
+      onViewDetail(bus);
+    }
+  };
 
   return (
     <article
       className={cn(
         "group flex h-full flex-col overflow-hidden rounded-[24px] border border-platinum-tint bg-white reveal",
-        "transition-all duration-300 hover:border-action-blue/25 hover:shadow-card hover:-translate-y-1",
+        "transition-all duration-300 hover:border-action-blue/25 hover:shadow-card hover:-translate-y-1.5",
         inView && "in-view",
         className
       )}
       style={{ "--delay": `${index * 80}ms` } as React.CSSProperties}
     >
-      <div className="relative h-[200px] w-full shrink-0 overflow-hidden bg-cloud-mist">
+      {/* Image Area with Badge */}
+      <div className="relative h-[220px] w-full shrink-0 overflow-hidden bg-cloud-mist">
         {imageUrl ? (
           <img
             src={imageUrl}
@@ -50,46 +92,87 @@ export default function FleetCard({
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-slate-blue/30">
-            <BusIcon size={40} strokeWidth={1.5} />
+            <Users size={40} strokeWidth={1.5} />
+          </div>
+        )}
+        
+        {/* Category Badge */}
+        {bus.category?.name && (
+          <div className="absolute top-4 left-4 z-10">
+            <span className="inline-flex items-center px-3 py-1 rounded-full bg-action-blue/15 text-action-blue text-[10px] font-extrabold uppercase tracking-wider border border-action-blue/10 backdrop-blur-md shadow-sm">
+              {bus.category.name}
+            </span>
           </div>
         )}
       </div>
 
+      {/* Content Area */}
       <div className="flex flex-1 flex-col p-6">
-        <div className="mb-3 flex items-center justify-between gap-3">
-          <span className="text-sm font-medium text-slate-blue">
-            {bus.category?.name || "Armada"}
-          </span>
-          <span className={cn("text-sm font-medium", status.textClass)}>
-            {status.label}
-          </span>
-        </div>
-
-        <h3 className="text-xl font-bold leading-snug text-midnight-indigo transition-colors group-hover:text-action-blue line-clamp-2">
+        <h3 className="text-lg font-bold text-midnight-indigo transition-colors group-hover:text-action-blue leading-snug">
           {bus.name}
         </h3>
+        
+        {/* Seat Capacity */}
+        <div className="flex items-center gap-1.5 mt-1.5 text-xs font-bold text-slate-blue/80">
+          <Users size={14} className="text-action-blue shrink-0" />
+          <span>{capacityLabel.replace("kursi", "Seat")}</span>
+        </div>
 
-        {bus.brand && (
-          <p className="mt-1.5 text-sm leading-relaxed text-slate-blue">{bus.brand}</p>
-        )}
+        {/* Description */}
+        <p className="mt-3.5 text-sm font-medium text-slate-blue leading-relaxed opacity-85 line-clamp-2">
+          {defaultDesc}
+        </p>
 
-        {detailParts.length > 0 && (
-          <p className="mt-4 text-sm leading-relaxed text-slate-blue">
-            {detailParts.join(" · ")}
-          </p>
-        )}
+        {/* Dynamic Facilities Grid */}
+        <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-2.5 border-t border-slate-100 pt-4 text-[11px] font-bold text-slate-blue/70">
+          {facilities.length > 0 ? (
+            <>
+              {facilities.slice(0, 3).map((f) => {
+                const Icon = getFacilityIcon(f.name);
+                return (
+                  <span key={f.id} className="flex items-center gap-1.5 truncate" title={f.name}>
+                    <Icon size={13} className="text-action-blue shrink-0" />
+                    <span className="truncate">{f.name}</span>
+                  </span>
+                );
+              })}
+              {facilities.length > 3 && (
+                <span className="flex items-center gap-1.5 text-action-blue font-extrabold">
+                  <Sparkles size={13} className="shrink-0" />
+                  <span>+{facilities.length - 3} Lainnya</span>
+                </span>
+              )}
+            </>
+          ) : (
+            // Fallback default facilities
+            <>
+              <span className="flex items-center gap-1.5">
+                <Wind size={13} className="text-slate-blue/60 shrink-0" /> AC
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Shield size={13} className="text-slate-blue/60 shrink-0" /> Toilet
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Armchair size={13} className="text-slate-blue/60 shrink-0" /> Reclining Seat
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Briefcase size={13} className="text-slate-blue/60 shrink-0" /> Bagasi Luas
+              </span>
+            </>
+          )}
+        </div>
 
-        {facilities.length > 0 && (
-          <p className="mt-4 border-t border-platinum-tint/80 pt-4 text-sm leading-relaxed text-slate-blue line-clamp-3">
-            {facilities.map((f) => f.name).join(" · ")}
-          </p>
-        )}
-
-        {bus.notes?.trim() && !facilities.length && (
-          <p className="mt-4 border-t border-platinum-tint/80 pt-4 text-sm leading-relaxed text-slate-blue line-clamp-2">
-            {bus.notes.trim()}
-          </p>
-        )}
+        {/* Action Button */}
+        <div className="mt-auto pt-6">
+          <a
+            href={whatsappUrl}
+            onClick={handleDetailClick}
+            className="flex items-center justify-center gap-2 w-full py-3.5 border border-action-blue/20 hover:border-action-blue text-action-blue hover:bg-action-blue hover:text-white rounded-xl text-xs font-bold transition-all duration-300 shadow-sm cursor-pointer"
+          >
+            Lihat Detail 
+            <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />
+          </a>
+        </div>
       </div>
     </article>
   );

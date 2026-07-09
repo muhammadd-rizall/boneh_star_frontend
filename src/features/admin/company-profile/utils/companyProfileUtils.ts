@@ -1,14 +1,12 @@
 import type { CompanyProfile, SocialMedia } from "@/features/admin/company-profile/types/CompanyProfile";
-import { 
-  faInstagram, 
-  faFacebook, 
-  faYoutube, 
-  faTiktok, 
-  faThreads,
-  faWhatsapp, 
-  faXTwitter
-} from "@fortawesome/free-brands-svg-icons";
-import { faGlobe } from "@fortawesome/free-solid-svg-icons";
+import Instagram from "@thesvg/react/instagram";
+import Facebook from "@thesvg/react/facebook";
+import Youtube from "@thesvg/react/youtube";
+import Tiktok from "@thesvg/react/tiktok";
+import Threads from "@thesvg/react/threads";
+import Whatsapp from "@thesvg/react/whatsapp";
+import X from "@thesvg/react/x";
+import { Globe } from "lucide-react";
 
 export const defaultCompanyProfile: CompanyProfile = {
   id: "",
@@ -24,12 +22,12 @@ export const defaultCompanyProfile: CompanyProfile = {
 };
 
 export const SOCIAL_PLATFORMS = [
-  { id: "instagram", label: "Instagram", icon: faInstagram },
-  { id: "facebook", label: "Facebook", icon: faFacebook },
-  { id: "twitter", label: "Twitter / X", icon: faXTwitter },
-  { id: "youtube", label: "YouTube", icon: faYoutube },
-  { id: "tiktok", label: "TikTok", icon: faTiktok },
-  { id: "threads", label: "Threads", icon: faThreads },
+  { id: "instagram", label: "Instagram", icon: Instagram },
+  { id: "facebook", label: "Facebook", icon: Facebook },
+  { id: "twitter", label: "Twitter / X", icon: X },
+  { id: "youtube", label: "YouTube", icon: Youtube },
+  { id: "tiktok", label: "TikTok", icon: Tiktok },
+  { id: "threads", label: "Threads", icon: Threads },
 ];
 
 export function normalizeSocialPlatform(platform: string): string {
@@ -47,14 +45,14 @@ export function normalizeSocialPlatform(platform: string): string {
 
 export const getSocialIcon = (platform: string) => {
   const p = platform.toLowerCase();
-  if (p.includes("instagram")) return faInstagram;
-  if (p.includes("facebook")) return faFacebook;
-  if (p.includes("twitter") || p.includes("x.com")) return faXTwitter;
-  if (p.includes("youtube")) return faYoutube;
-  if (p.includes("tiktok")) return faTiktok;
-  if (p.includes("threads")) return faThreads;
-  if (p.includes("whatsapp")) return faWhatsapp;
-  return faGlobe;
+  if (p.includes("instagram")) return Instagram;
+  if (p.includes("facebook")) return Facebook;
+  if (p.includes("twitter") || p.includes("x.com")) return X;
+  if (p.includes("youtube")) return Youtube;
+  if (p.includes("tiktok")) return Tiktok;
+  if (p.includes("threads")) return Threads;
+  if (p.includes("whatsapp")) return Whatsapp;
+  return Globe;
 };
 
 export function normalizeWhatsApp(list: unknown): string[] {

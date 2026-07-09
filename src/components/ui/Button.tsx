@@ -67,13 +67,10 @@ function Button({
       disabled={loading || props.disabled}
       {...props}
     >
-      {loading ? (
-        <Loader2 className="animate-spin" />
-      ) : (
-        Icon && <Icon className="shrink-0" />
-      )}
+      {loading && <Loader2 key="loader" className="animate-spin" />}
+      {!loading && Icon && <Icon key="icon" className="shrink-0" />}
       {children}
-      {!loading && SuffixIcon && <SuffixIcon className="shrink-0" />}
+      {!loading && SuffixIcon && <SuffixIcon key="suffix" className="shrink-0" />}
     </ButtonPrimitive>
   )
 }

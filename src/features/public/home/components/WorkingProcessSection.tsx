@@ -1,58 +1,104 @@
-import { Search, MousePointerClick, CalendarCheck, Bus } from "lucide-react";
+import { Calendar, FileText, UserCheck, CreditCard, Bus } from "lucide-react";
 import { useInView } from "@/hooks/useAnimations";
+
+const steps = [
+  { 
+    id: "01",
+    icon: Calendar, 
+    title: "Cek Ketersediaan", 
+    desc: "Pilih tanggal dan armada yang sesuai kebutuhan Anda" 
+  },
+  { 
+    id: "02",
+    icon: FileText, 
+    title: "Isi Formulir", 
+    desc: "Lengkapi data perjalanan secara mudah" 
+  },
+  { 
+    id: "03",
+    icon: UserCheck, 
+    title: "Konfirmasi Admin", 
+    desc: "Tim kami akan menghubungi untuk konfirmasi" 
+  },
+  { 
+    id: "04",
+    icon: CreditCard, 
+    title: "Pembayaran", 
+    desc: "Lakukan pembayaran sesuai kesepakatan" 
+  },
+  { 
+    id: "05",
+    icon: Bus, 
+    title: "Berangkat", 
+    desc: "Perjalanan nyaman siap dimulai" 
+  }
+];
 
 export default function WorkingProcessSection() {
   const { ref, inView } = useInView(0.1);
 
-  const steps = [
-    { icon: Search, title: "Pencarian", desc: "Temukan armada bus" },
-    { icon: MousePointerClick, title: "Pemilihan", desc: "Pilih sesuai kebutuhan" },
-    { icon: CalendarCheck, title: "Pemesanan", desc: "Tentukan jadwal & rute" },
-    { icon: Bus, title: "Perjalanan", desc: "Nikmati perjalanan Anda" },
-  ];
-
   return (
-    <section ref={ref} className="bg-white py-24">
+    <section ref={ref} className="py-16 bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className={"text-center mb-16 flex flex-col items-center reveal " + (inView ? "in-view" : "")}>
-          <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cloud-mist text-glacier-blue text-[11px] font-bold uppercase tracking-wider border border-platinum-tint mb-6 shadow-sm">
-            Cara Pesan
-          </span>
-          <h2 className="text-display-sm font-bold tracking-tight text-midnight-indigo leading-tight">
-            Proses <span className="text-action-blue">Pemesanan.</span>
-          </h2>
-          <p className="mt-6 text-lg font-medium text-slate-blue max-w-2xl opacity-80">
-            Empat langkah mudah untuk merencanakan perjalanan sempurna Anda bersama kami.
-          </p>
-        </div>
+        
+        {/* Soft Container Card */}
+        <div className={`bg-[#FAF9F6]/50 rounded-[32px] border border-slate-100 p-8 sm:p-12 relative overflow-hidden reveal ${
+          inView ? "in-view" : ""
+        }`}>
+          
+          <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
+            
+            {/* Left Header Info (3 cols) */}
+            <div className="lg:col-span-3 text-left">
+              <span className="text-xs font-bold uppercase tracking-[0.2em] text-action-blue block mb-3">
+                ALUR PEMESANAN
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-midnight-indigo leading-tight">
+                Mudah, Cepat <br className="hidden sm:block" />& Praktis
+              </h2>
+            </div>
 
-        <div className="relative mt-16">
-          {/* Dashed Line Background */}
-          <div className="hidden md:block absolute top-[48px] left-[15%] right-[15%] border-t-[3px] border-dashed border-platinum-tint/80 z-0" />
+            {/* Right Steps Timeline (9 cols) */}
+            <div className="lg:col-span-9 relative">
+              
+              {/* Dashed Line on Desktop */}
+              <div className="hidden lg:block absolute top-10 left-[10%] right-[10%] border-t-2 border-dashed border-slate-200 z-0" />
 
-          <div className="relative z-10 grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-4">
-            {steps.map((step, i) => (
-              <div
-                key={i}
-                className={"flex flex-col items-center text-center reveal " + (inView ? "in-view" : "")}
-                style={{ "--delay": i * 150 + "ms" } as React.CSSProperties}
-              >
-                {/* Icon Circle */}
-                <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-white text-action-blue mb-6 shadow-md border-[3px] border-cloud-mist transition-all duration-300 hover:scale-110 hover:border-action-blue hover:shadow-xl hover:text-glacier-blue">
-                  <step.icon size={44} strokeWidth={1.5} />
+              {/* Steps Wrapper */}
+              <div className="relative z-10 grid gap-8 sm:grid-cols-5">
+                {steps.map((step, i) => {
+                  const Icon = step.icon;
+                  return (
+                    <div key={i} className="flex flex-col items-center text-center group">
+                      
+                      {/* Circle Icon Container */}
+                      <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-white text-action-blue mb-4 shadow-sm border border-slate-100 transition-all duration-300 group-hover:scale-105 group-hover:border-action-blue/30 group-hover:shadow-md">
+                        <Icon size={26} strokeWidth={1.5} className="group-hover:scale-110 transition-transform duration-300" />
+                      </div>
 
-                  {/* Number Badge */}
-                  <div className="absolute -top-2 -right-2 flex h-9 w-9 items-center justify-center rounded-full bg-midnight-indigo text-white text-[15px] font-black border-4 border-white shadow-sm">
-                    {i + 1}
-                  </div>
-                </div>
+                      {/* Step Number */}
+                      <span className="text-xs font-extrabold text-action-blue/80 tracking-wider mb-2 block">
+                        {step.id}
+                      </span>
 
-                <h3 className="text-[22px] font-bold text-midnight-indigo mb-2">{step.title}</h3>
-                <p className="text-sm font-medium text-slate-blue max-w-[160px] opacity-80">{step.desc}</p>
+                      {/* Titles & Desc */}
+                      <h4 className="text-sm font-bold text-midnight-indigo mb-1.5 px-1 leading-snug">
+                        {step.title}
+                      </h4>
+                      <p className="text-[11px] font-medium text-slate-blue/70 leading-relaxed max-w-[140px] px-2">
+                        {step.desc}
+                      </p>
+                    </div>
+                  );
+                })}
               </div>
-            ))}
+
+            </div>
+
           </div>
+
         </div>
+
       </div>
     </section>
   );

@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Button } from "@/components/ui/Button";
 import { DialogFooter } from "@/components/ui/Dialog";
-import { Tag, Save, AlignLeft, XCircle } from "lucide-react";
+import { Tag, Save, AlignLeft, XCircle, ImagePlus, Trash2 } from "lucide-react";
 import type { ActivityType, ActivityTypeFormData } from "../types/ActivityType";
 import { activityTypeService } from "../services/ActivityTypeService";
 
@@ -21,7 +21,10 @@ export default function ActivityTypeForm({ activityType, onSuccess, onCancel }: 
   const [formData, setFormData] = useState<ActivityTypeFormData>({
     name: "",
     description: "",
+    image: null,
   });
+  
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   useEffect(() => {
     if (activityType) {
@@ -29,6 +32,9 @@ export default function ActivityTypeForm({ activityType, onSuccess, onCancel }: 
         name: activityType.name,
         description: activityType.description,
       });
+      if (activityType.image_url) {
+        setImagePreview(activityType.image_url);
+      }
     }
   }, [activityType]);
 
@@ -72,6 +78,45 @@ export default function ActivityTypeForm({ activityType, onSuccess, onCancel }: 
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           required
         />
+
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-bold text-midnight-indigo">Gambar / Ikon (Opsional)</label>
+          {imagePreview ? (
+            <div className="relative w-full h-48 rounded-xl overflow-hidden border border-platinum-tint group">
+              <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-midnight-indigo/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  icon={Trash2}
+                  onClick={() => {
+                    setImagePreview(null);
+                    setFormData({ ...formData, image: null });
+                  }}
+                >
+                  Hapus Gambar
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <Input
+              type="file"
+              accept="image/*"
+              icon={ImagePlus}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  setFormData({ ...formData, image: file });
+                  setImagePreview(URL.createObjectURL(file));
+                }
+              }}
+            />
+          )}
+          <p className="text-xs font-medium text-slate-blue mt-1">
+            Format: JPG, PNG, WEBP. Maks 5MB.
+          </p>
+        </div>
         
         <Textarea
           label="Deskripsi (Opsional)"

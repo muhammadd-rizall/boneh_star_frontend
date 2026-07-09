@@ -36,7 +36,14 @@ export function usePublicData() {
           publicService.getActivityTypes(),
           publicService.getRouteTypes(),
         ]);
-        setData({ profile, buses, facilities, reviews, activityTypes, routeTypes });
+        setData({
+          profile,
+          buses,
+          facilities,
+          reviews,
+          activityTypes: activityTypes.filter(a => !a.deleted_at),
+          routeTypes: routeTypes.filter(r => !r.deleted_at),
+        });
       } catch (err) {
         console.error("Gagal memuat data publik:", err);
       } finally {

@@ -108,7 +108,7 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
           alt="Boneh Star Premium Bus Background" 
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-midnight-indigo/75" />
+        <div className="absolute inset-0" />
       </div>
 
       <div className='relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col items-center mt-8 lg:mt-12'>
@@ -120,8 +120,8 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
           </div>
           
           <h1 className='text-5xl lg:text-[64px] font-bold tracking-tight text-white leading-[1.1] mb-6 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100'>
-            Easy scheduling for your <br />
-            <span className='text-action-blue'>Premium Journey.</span>
+            Kemudahan Reservasi untuk <br />
+            <span className='text-action-blue'>Perjalanan Premium Anda.</span>
           </h1>
           
           <p className='text-lg font-medium leading-relaxed text-white/80 mb-10 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200 max-w-2xl mx-auto'>
@@ -277,8 +277,8 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
             </form>
             
             {result && (
-              <div className={cn('mt-5 mx-3 mb-3 flex items-center gap-6 rounded-2xl px-8 py-5 border animate-in slide-in-from-top-4 duration-300 shadow-sm', result.isSuggestion ? 'bg-sunset-gold/5 border-sunset-gold/20 text-sunset-gold' : (result.available.length > 0 ? 'bg-glacier-blue/5 border-glacier-blue/20 text-glacier-blue' : 'bg-red-500/5 border-red-500/20 text-red-600'))}>
-                <div className={cn('flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl shadow-sm', result.isSuggestion ? 'bg-sunset-gold/10' : (result.available.length > 0 ? 'bg-glacier-blue/10' : 'bg-red-500/10'))}>
+              <div className={cn('mt-5 mx-3 mb-3 flex items-center gap-6 rounded-2xl px-8 py-5 border animate-in slide-in-from-top-4 duration-300 shadow-sm', result.isSuggestion ? 'bg-sunset-gold/5 border-sunset-gold/20 text-sunset-gold' : (result.available.length > 0 ? 'bg-action-blue/5 border-action-blue/20 text-action-blue' : 'bg-red-500/5 border-red-500/20 text-red-600'))}>
+                <div className={cn('flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl shadow-sm', result.isSuggestion ? 'bg-sunset-gold/10' : (result.available.length > 0 ? 'bg-action-blue/10' : 'bg-red-500/10'))}>
                   {result.isSuggestion ? <AlertCircle size={28} /> : (result.available.length > 0 ? <CheckCircle2 size={28} /> : <XCircle size={28} />)}
                 </div>
                 <div className='text-left flex-1'>
@@ -288,12 +288,7 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
               </div>
             )}
           </div>
-          
-          <div className='mt-14 flex flex-wrap items-center justify-center gap-x-16 gap-y-8 opacity-60 hover:opacity-100 transition-all duration-700'>
-            <div className='flex items-center gap-3'><CheckCircle2 size={18} className='text-action-blue' /><span className='text-[12px] font-bold tracking-widest uppercase text-white'>Trusted Service</span></div>
-            <div className='flex items-center gap-3'><CheckCircle2 size={18} className='text-action-blue' /><span className='text-[12px] font-bold tracking-widest uppercase text-white'>Safe & Secure</span></div>
-            <div className='flex items-center gap-3'><CheckCircle2 size={18} className='text-action-blue' /><span className='text-[12px] font-bold tracking-widest uppercase text-white'>24/7 Support</span></div>
-          </div>
+          {/* Removed checklist elements to reduce visual clutter and make the homepage cleaner */}
         </div>
       </div>
     </section>

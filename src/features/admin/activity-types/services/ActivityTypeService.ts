@@ -57,7 +57,14 @@ export const activityTypeService = {
 
   create: async (data: ActivityTypeFormData): Promise<ActivityType> => {
     try {
-      const response = await axios.post<ActivityTypeApiResponse>(ENDPOINTS.BASE, data);
+      const formData = new FormData();
+      formData.append('name', data.name);
+      if (data.description) formData.append('description', data.description);
+      if (data.image) formData.append('image', data.image);
+
+      const response = await axios.post<ActivityTypeApiResponse>(ENDPOINTS.BASE, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
       return response.data.data as ActivityType;
     } catch (error) {
       console.error('Error creating activity type:', error);
@@ -67,7 +74,18 @@ export const activityTypeService = {
 
   update: async (id: string, data: ActivityTypeFormData): Promise<ActivityType> => {
     try {
-      const response = await axios.put<ActivityTypeApiResponse>(ENDPOINTS.DETAIL(id), data);
+      const formData = new FormData();
+      formData.append('_method', 'PUT');
+      formData.append('name', data.name);
+      if (data.description !== undefined) formData.append('description', data.description || '');
+      if (data.image !== undefined) {
+        if (data.image) formData.append('image', data.image);
+        else formData.append('image', '');
+      }
+
+      const response = await axios.post<ActivityTypeApiResponse>(ENDPOINTS.DETAIL(id), formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
       return response.data.data as ActivityType;
     } catch (error) {
       console.error(`Error updating activity type ${id}:`, error);

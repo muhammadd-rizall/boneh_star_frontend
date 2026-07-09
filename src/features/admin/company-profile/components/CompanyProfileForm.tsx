@@ -16,7 +16,6 @@ import {
   Smartphone,
   Upload,
 } from "lucide-react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useCompanyProfile } from "../hooks/useCompanyProfile";
 import type { CompanyProfileFormData } from "../types/CompanyProfile";
 import Loader from "@/components/feedback/Loader";
@@ -286,9 +285,30 @@ export default function CompanyProfileForm() {
           <div className="flex flex-wrap gap-2">
             {SOCIAL_PLATFORMS.map((platform) => {
               const isSelected = formData.social_media.some(item => item.platform === platform.id);
+              const IconComponent = platform.icon;
+              
+              // Only apply fill-current to icons that are monochrome by nature or need clear visibility
+              const needsMonochrome = ["facebook", "twitter", "threads"].includes(platform.id);
+              
               return (
-                <button key={platform.id} type="button" onClick={() => toggleSocialPlatform(platform.id)} className={cn("px-4 py-2 rounded-lg border text-sm font-medium transition-all flex items-center gap-2", isSelected ? "bg-midnight-indigo border-midnight-indigo text-white shadow-sm" : "bg-white border-platinum-tint text-slate-blue hover:border-action-blue")}>
-                  <FontAwesomeIcon icon={platform.icon} /> {platform.label}
+                <button 
+                  key={platform.id} 
+                  type="button" 
+                  onClick={() => toggleSocialPlatform(platform.id)} 
+                  className={cn(
+                    "px-4 py-2 rounded-lg border text-sm font-medium transition-all flex items-center gap-2", 
+                    isSelected 
+                      ? "bg-midnight-indigo border-midnight-indigo text-white shadow-sm" 
+                      : "bg-white border-platinum-tint text-slate-blue hover:border-action-blue"
+                  )}
+                >
+                  <IconComponent 
+                    className={cn(
+                      "size-4 shrink-0", 
+                      needsMonochrome && "fill-current [&_path]:fill-current"
+                    )} 
+                  /> 
+                  {platform.label}
                 </button>
               );
             })}

@@ -10,6 +10,7 @@ export interface ActivityTypeStatistics {
 export interface ActivityTypeFormData {
   name: string;
   description?: string;
+  image?: File | null;
 }
 
 export interface ActivityTypeApiResponse {

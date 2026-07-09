@@ -34,12 +34,12 @@ export default function ActivityTypePage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        title="Jenis Kegiatan"
-        subtitle="Kelola tipe dan kategori kegiatan bus"
+        title="Jenis Aktivitas"
+        subtitle="Kelola tipe dan kategori aktivitas bus"
         badge="Operasional"
         actions={
           <PageToolbar
-            searchValue={searchTerm} onSearchChange={setSearchTerm} searchPlaceholder="Cari jenis kegiatan..."
+            searchValue={searchTerm} onSearchChange={setSearchTerm} searchPlaceholder="Cari jenis aktivitas..."
             onCreate={() => { setSelectedType(null); setIsModalOpen(true) }} createLabel="Tambah Jenis" createIcon={Plus}
             extraActions={<Button variant="outline" icon={RefreshCcw} className="h-11 rounded-xl px-5" onClick={view === "active" ? () => refetchActive(searchTerm) : refetchTrash} loading={loading}>Refresh</Button>}
           />
@@ -47,7 +47,7 @@ export default function ActivityTypePage() {
       />
 
       <StatGrid columns={3}>
-        <StatCard label="Total Jenis" value={statistics?.total ?? 0} icon={Tag} loading={activeLoading} />
+        <StatCard label="Total Aktivitas" value={statistics?.total ?? 0} icon={Tag} loading={activeLoading} />
         <StatCard label="Aktif" value={statistics?.total ?? 0} icon={CheckCircle2} loading={activeLoading} color="emerald" />
         <StatCard label="Tong Sampah" value={statistics?.trashed ?? 0} icon={Trash2} loading={activeLoading} color="rose" />
       </StatGrid>
@@ -73,11 +73,11 @@ export default function ActivityTypePage() {
         />
       )}
 
-      <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedType ? "Edit Jenis Kegiatan" : "Tambah Jenis Kegiatan"}>
+      <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedType ? "Edit Jenis Aktivitas" : "Tambah Jenis Aktivitas"}>
         <ActivityTypeForm activityType={selectedType} onSuccess={() => { setIsModalOpen(false); refetchActive(searchTerm); refetchTrash() }} onCancel={() => setIsModalOpen(false)} />
       </Modal>
 
-      <Confirmation open={isDeleteOpen} onClose={() => setIsDeleteOpen(false)} onConfirm={async () => { if (typeToAction) { await deleteActivityType(typeToAction.id); setIsDeleteOpen(false); setTypeToAction(null); refetchActive(searchTerm) } }} title="Hapus Jenis Kegiatan?" message={`"${typeToAction?.name}" akan dipindahkan ke sampah.`} variant="warning" confirmText="Ya, Hapus" />
+      <Confirmation open={isDeleteOpen} onClose={() => setIsDeleteOpen(false)} onConfirm={async () => { if (typeToAction) { await deleteActivityType(typeToAction.id); setIsDeleteOpen(false); setTypeToAction(null); refetchActive(searchTerm) } }} title="Hapus Jenis Aktivitas?" message={`"${typeToAction?.name}" akan dipindahkan ke sampah.`} variant="warning" confirmText="Ya, Hapus" />
       <Confirmation open={isRestoreOpen} onClose={() => setIsRestoreOpen(false)} onConfirm={async () => { if (typeToAction) { await restoreActivityType(typeToAction.id); setIsRestoreOpen(false); setTypeToAction(null); refetchActive(searchTerm) } }} title="Pulihkan?" message={`"${typeToAction?.name}" akan dipulihkan.`} variant="info" confirmText="Ya, Pulihkan" />
       <Confirmation open={isForceDeleteOpen} onClose={() => setIsForceDeleteOpen(false)} onConfirm={async () => { if (typeToAction) { await forceDeleteActivityType(typeToAction.id); setIsForceDeleteOpen(false); setTypeToAction(null); refetchActive(searchTerm) } }} title="Hapus Permanen?" message={`"${typeToAction?.name}" akan dihapus permanen.`} variant="danger" confirmText="Ya, Hapus" />
     </div>

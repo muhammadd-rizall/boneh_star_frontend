@@ -5,9 +5,10 @@ import {
   Clock,
   MessageSquare,
 } from "lucide-react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getSocialIcon, buildWhatsAppHref } from "@/features/admin/company-profile/utils/companyProfileUtils";
 import { usePublicCompanyProfile } from "@/features/admin/company-profile/hooks/usePublicCompanyProfile";
+import Whatsapp from "@thesvg/react/whatsapp";
+import { cn } from "@/lib/utils";
 
 export default function ContactSection() {
   const { profile } = usePublicCompanyProfile();
@@ -84,18 +85,32 @@ export default function ContactSection() {
               <p className="text-xs font-bold uppercase tracking-wider text-slate-blue mr-1">
                 Ikuti Kami:
               </p>
-              {profile.social_media?.map((social, i) => (
-                <a
-                  key={i}
-                  href={social.url || "#"}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex h-10 w-10 items-center justify-center rounded-xl bg-cloud-mist text-slate-blue border border-platinum-tint hover:bg-action-blue hover:text-white hover:border-action-blue transition-colors duration-300"
-                  title={social.platform}
-                >
-                  <FontAwesomeIcon icon={getSocialIcon(social.platform)} />
-                </a>
-              ))}
+              {profile.social_media?.map((social, i) => {
+                const Icon = getSocialIcon(social.platform);
+                const platformId = social.platform.toLowerCase();
+                const needsMonochrome = platformId.includes("facebook") || 
+                                       platformId.includes("threads") || 
+                                       platformId.includes("twitter") || 
+                                       platformId === "x";
+                
+                return (
+                  <a
+                    key={i}
+                    href={social.url || "#"}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex h-10 w-10 items-center justify-center rounded-xl bg-cloud-mist text-slate-blue border border-platinum-tint hover:bg-action-blue hover:text-white hover:border-action-blue transition-colors duration-300"
+                    title={social.platform}
+                  >
+                    <Icon 
+                      className={cn(
+                        "size-4 shrink-0",
+                        needsMonochrome && "fill-current [&_path]:fill-current"
+                      )} 
+                    />
+                  </a>
+                );
+              })}
               {(!profile.social_media || profile.social_media.length === 0) && (
                 <p className="text-xs font-medium text-slate-blue">Belum ada media sosial</p>
               )}

@@ -138,6 +138,8 @@ export interface BusFacility extends TimestampedEntity {
 export interface ActivityType extends TimestampedEntity {
   name: string
   description: string
+  image?: string | null
+  image_url?: string | null
 }
 
 /**

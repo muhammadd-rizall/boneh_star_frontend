@@ -1,23 +1,41 @@
 import { useState, useEffect, useMemo } from "react";
 import PublicLayout from "@/layouts/public/PublicLayout";
 import { useFleetData } from "@/features/public/fleet/hooks/useFleetData";
-import { Bus as BusIcon, Armchair, SlidersHorizontal, X, ChevronDown } from "lucide-react";
+import { 
+  Bus as BusIcon, 
+  Armchair, 
+  X, 
+  ChevronDown, 
+  ShieldCheck, 
+  Users, 
+  Phone,
+  ArrowRight,
+  Sparkles,
+  Search as SearchIcon
+} from "lucide-react";
 import Loader from "@/components/feedback/Loader";
-import Search from "@/components/ui/Search";
-import { FleetCard } from "@/features/public/fleet";
+import { FleetCard, FleetDetailModal } from "@/features/public/fleet";
+import type { Bus } from "@/features/admin/buses/types/Bus";
 import { Button } from "@/components/ui/Button";
+import { usePublicCompanyProfile } from "@/features/admin/company-profile/hooks/usePublicCompanyProfile";
+import { buildWhatsAppHref } from "@/features/admin/company-profile/utils/companyProfileUtils";
 
 const PER_PAGE = 9;
 
 export default function FleetPage() {
   const { buses, categories, loading } = useFleetData();
+  const { profile } = usePublicCompanyProfile();
+  
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [minSeats, setMinSeats] = useState("");
+  const [selectedBus, setSelectedBus] = useState<Bus | null>(null);
+  const [sortBy, setSortBy] = useState("latest");
   const [visibleCount, setVisibleCount] = useState(PER_PAGE);
 
   const filtered = useMemo(() => {
     let result = [...buses];
+    
+    // Search filter
     if (search) {
       const q = search.toLowerCase();
       result = result.filter(
@@ -27,30 +45,43 @@ export default function FleetPage() {
           b.plat_number?.toLowerCase().includes(q)
       );
     }
+    
+    // Category filter
     if (selectedCategory) {
       result = result.filter((b) => b.category?.name === selectedCategory);
     }
-    if (minSeats) {
-      const count = parseInt(minSeats, 10);
-      if (!isNaN(count) && count > 0) result = result.filter((b) => b.seat_count >= count);
+    
+    // Sorting
+    if (sortBy === "latest") {
+      result.sort((a, b) => b.id - a.id);
+    } else if (sortBy === "seats-asc") {
+      result.sort((a, b) => a.seat_count - b.seat_count);
+    } else if (sortBy === "seats-desc") {
+      result.sort((a, b) => b.seat_count - a.seat_count);
     }
+    
     return result;
-  }, [buses, search, selectedCategory, minSeats]);
+  }, [buses, search, selectedCategory, sortBy]);
 
   useEffect(() => {
     setVisibleCount(PER_PAGE);
-  }, [search, selectedCategory, minSeats]);
+  }, [search, selectedCategory, sortBy]);
 
   const visibleBuses = filtered.slice(0, visibleCount);
   const remaining = filtered.length - visibleCount;
   const hasMore = remaining > 0;
 
-  const hasFilters = !!(search || selectedCategory || minSeats);
+  const hasFilters = !!(search || selectedCategory);
+  
   const clearFilters = () => {
     setSearch("");
     setSelectedCategory("");
-    setMinSeats("");
+    setSortBy("latest");
   };
+
+  const whatsappHref = profile.whatsapp?.[0]
+    ? buildWhatsAppHref(profile.whatsapp[0], "Halo Admin Boneh Star, saya ingin tanya ketersediaan sewa armada.")
+    : "#";
 
   if (loading) {
     return (
@@ -65,124 +96,226 @@ export default function FleetPage() {
   return (
     <PublicLayout>
       <div className="bg-white min-h-screen">
-        <div className="pt-28 pb-8 px-4 sm:px-6 lg:px-8 bg-cloud-mist/40 border-b border-platinum-tint/50">
-          <div className="mx-auto max-w-7xl">
-            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white text-glacier-blue text-[11px] font-bold uppercase tracking-wider border border-platinum-tint mb-6 shadow-sm">
-              Katalog Armada
-            </span>
-            <h1 className="text-display-sm font-bold tracking-tight text-midnight-indigo leading-tight">
-              Jelajahi Armada <span className="text-action-blue">Premium Kami.</span>
-            </h1>
-            <p className="mt-4 text-lg font-medium text-slate-blue max-w-xl opacity-80">
-              Gunakan filter untuk menemukan unit yang sesuai dengan kebutuhan perjalanan Anda.
-            </p>
-          </div>
-        </div>
+        {/* Hero Section */}
+        <section className="relative pt-32 pb-20 bg-white overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
+              {/* Text Column */}
+              <div className="flex flex-col gap-6 text-left">
+                <div>
+                  <span className="text-xs font-extrabold uppercase tracking-[0.2em] text-action-blue mb-4 block">
+                    Armada Kami
+                  </span>
+                  <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-midnight-indigo leading-tight">
+                    Armada Nyaman <br />
+                    Untuk <span className="text-action-blue">Perjalanan Anda</span>
+                  </h1>
+                  <p className="mt-6 text-base sm:text-lg font-medium text-slate-blue leading-relaxed opacity-85">
+                    Kami menyediakan berbagai pilihan armada terbaik dengan fasilitas lengkap untuk setiap kebutuhan perjalanan Anda.
+                  </p>
+                </div>
 
-        <div className="sticky top-[64px] z-30 bg-white/95 backdrop-blur-xl border-b border-platinum-tint">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3">
-            <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3">
-              <div className="flex-1">
-                <Search
-                  value={search}
-                  onChange={setSearch}
-                  placeholder="Cari nama bus, brand, atau plat nomor..."
-                />
-              </div>
-              <div className="flex flex-wrap items-center gap-2.5">
-                <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-cloud-mist border border-platinum-tint hover:border-action-blue/30 transition-colors focus-within:border-action-blue/50 min-w-[170px] flex-1 sm:flex-none relative">
-                  <SlidersHorizontal size={15} className="text-action-blue shrink-0" />
-                  <div className="flex flex-col flex-1">
-                    <span className="text-[9px] font-bold uppercase tracking-wider text-slate-blue leading-none mb-0.5">
-                      Kategori
-                    </span>
-                    <div className="relative flex items-center">
-                      <select
-                        className="bg-transparent text-sm font-bold text-midnight-indigo focus:outline-none appearance-none cursor-pointer w-full pr-5"
-                        value={selectedCategory}
-                        onChange={(e) => setSelectedCategory(e.target.value)}
-                      >
-                        <option value="">Semua</option>
-                        {categories.map((cat) => (
-                          <option key={cat.id} value={cat.name}>
-                            {cat.name}
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronDown size={12} className="absolute right-0 text-slate-blue pointer-events-none" />
+                {/* 3 highlights items */}
+                <div className="grid gap-4 sm:grid-cols-3 mt-4">
+                  <div className="flex flex-col gap-2 p-5 rounded-2xl bg-slate-50 border border-slate-100 hover:border-action-blue/20 transition-colors">
+                    <div className="text-action-blue">
+                      <ShieldCheck size={20} strokeWidth={2} />
                     </div>
+                    <h4 className="text-xs font-extrabold text-midnight-indigo uppercase tracking-wider">Aman & Terawat</h4>
+                    <p className="text-[11px] font-medium text-slate-blue opacity-80 leading-normal">
+                      Armada selalu dalam kondisi prima dan terawat.
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-2 p-5 rounded-2xl bg-slate-50 border border-slate-100 hover:border-action-blue/20 transition-colors">
+                    <div className="text-action-blue">
+                      <Sparkles size={20} strokeWidth={2} />
+                    </div>
+                    <h4 className="text-xs font-extrabold text-midnight-indigo uppercase tracking-wider">Fasilitas Lengkap</h4>
+                    <p className="text-[11px] font-medium text-slate-blue opacity-80 leading-normal">
+                      Dilengkapi fasilitas terbaik untuk kenyamanan Anda.
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-2 p-5 rounded-2xl bg-slate-50 border border-slate-100 hover:border-action-blue/20 transition-colors">
+                    <div className="text-action-blue">
+                      <Users size={20} strokeWidth={2} />
+                    </div>
+                    <h4 className="text-xs font-extrabold text-midnight-indigo uppercase tracking-wider">Driver Profesional</h4>
+                    <p className="text-[11px] font-medium text-slate-blue opacity-80 leading-normal">
+                      Pengemudi berpengalaman dan ramah.
+                    </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-cloud-mist border border-platinum-tint hover:border-action-blue/30 transition-colors focus-within:border-action-blue/50 min-w-[120px] flex-1 sm:flex-none">
-                  <Armchair size={15} className="text-action-blue shrink-0" />
-                  <div className="flex flex-col flex-1">
-                    <span className="text-[9px] font-bold uppercase tracking-wider text-slate-blue leading-none mb-0.5">
-                      Min. Kursi
-                    </span>
-                    <input
-                      type="number"
-                      placeholder="0"
-                      className="bg-transparent text-sm font-bold text-midnight-indigo placeholder:text-platinum-tint focus:outline-none w-full"
-                      value={minSeats}
-                      onChange={(e) => setMinSeats(e.target.value)}
-                    />
-                  </div>
+              </div>
+
+              {/* Image Column */}
+              <div className="relative">
+                <div className="absolute inset-0 bg-action-blue/5 rounded-[36px] blur-3xl pointer-events-none -z-10" />
+                <div className="rounded-[32px] overflow-hidden border border-slate-100 shadow-xl aspect-[16/10] bg-cloud-mist">
+                  <img
+                    src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=1200&auto=format&fit=crop"
+                    alt="Boneh Star Fleet Pariwisata"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Filter and Content section */}
+        <section className="bg-slate-50/50 py-16 border-t border-slate-100">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            {/* Filter Bar (Card) */}
+            <div className="bg-white rounded-3xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] p-4 mb-10 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+              
+              {/* Category tabs */}
+              <div className="flex flex-wrap items-center gap-1.5">
+                <button
+                  onClick={() => setSelectedCategory("")}
+                  className={`px-5 py-2.5 rounded-2xl text-xs font-bold transition-all ${
+                    selectedCategory === ""
+                      ? "bg-action-blue text-white shadow-md shadow-action-blue/15"
+                      : "text-slate-blue hover:text-action-blue bg-slate-50 hover:bg-slate-100"
+                  }`}
+                >
+                  Semua Armada
+                </button>
+                {categories.map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => setSelectedCategory(cat.name)}
+                    className={`px-5 py-2.5 rounded-2xl text-xs font-bold transition-all ${
+                      selectedCategory === cat.name
+                        ? "bg-action-blue text-white shadow-md shadow-action-blue/15"
+                        : "text-slate-blue hover:text-action-blue bg-slate-50 hover:bg-slate-100"
+                    }`}
+                  >
+                    {cat.name}
+                  </button>
+                ))}
+              </div>
+
+              {/* Search & Sort combo */}
+              <div className="flex flex-wrap items-center gap-3">
+                {/* Search Input */}
+                <div className="relative flex items-center bg-slate-50 border border-slate-150 rounded-2xl px-4 py-2.5 focus-within:border-action-blue/50 focus-within:bg-white transition-all w-full sm:w-[240px]">
+                  <SearchIcon size={14} className="text-slate-blue shrink-0 mr-2.5" />
+                  <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Cari armada..."
+                    className="bg-transparent text-xs font-bold text-midnight-indigo placeholder:text-slate-blue/45 focus:outline-none w-full"
+                  />
+                  {search && (
+                    <button onClick={() => setSearch("")} className="text-slate-blue hover:text-action-blue">
+                      <X size={13} />
+                    </button>
+                  )}
+                </div>
+
+                {/* Sort selector */}
+                <div className="relative flex items-center bg-slate-50 border border-slate-150 rounded-2xl px-4 py-2.5 w-full sm:w-auto min-w-[150px]">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-blue/60 mr-2 shrink-0">
+                    Urutkan:
+                  </span>
+                  <select
+                    className="bg-transparent text-xs font-bold text-midnight-indigo focus:outline-none appearance-none cursor-pointer pr-5 w-full"
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                  >
+                    <option value="latest">Terbaru</option>
+                    <option value="seats-asc">Kursi Terkecil</option>
+                    <option value="seats-desc">Kursi Terbesar</option>
+                  </select>
+                  <ChevronDown size={13} className="absolute right-4 text-slate-blue pointer-events-none" />
+                </div>
+
                 {hasFilters && (
                   <button
                     onClick={clearFilters}
-                    className="flex items-center justify-center h-10 w-10 rounded-xl text-slate-blue hover:bg-cloud-mist hover:text-action-blue transition-colors border border-platinum-tint"
+                    className="flex items-center justify-center h-10 w-10 rounded-2xl text-slate-blue hover:bg-slate-100 hover:text-action-blue transition-colors border border-slate-200"
                     title="Reset Filter"
                   >
-                    <X size={16} />
+                    <X size={14} />
                   </button>
                 )}
               </div>
             </div>
-          </div>
-        </div>
 
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-          <p className="text-sm font-medium text-slate-blue mb-6">
-            Menampilkan {visibleBuses.length} dari {filtered.length} armada
-          </p>
-
-          {filtered.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-24 text-center bg-cloud-mist/50 rounded-2xl border border-dashed border-platinum-tint">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-slate-blue/30 mb-4 border border-platinum-tint shadow-sm">
-                <BusIcon size={24} strokeWidth={1.5} />
-              </div>
-              <h3 className="text-lg font-bold text-midnight-indigo mb-2">Unit Tidak Ditemukan</h3>
-              <p className="text-sm font-medium text-slate-blue max-w-sm mb-6">
-                Tidak ada bus yang sesuai dengan filter Anda.
+            {/* Content Results */}
+            <div className="mb-6 flex justify-between items-center px-1">
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-blue/60">
+                Menampilkan {visibleBuses.length} dari {filtered.length} armada
               </p>
-              <Button onClick={clearFilters} className="rounded-full px-8 font-bold">
-                Hapus Semua Filter
-              </Button>
             </div>
-          ) : (
-            <>
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
-                {visibleBuses.map((bus, i) => (
-                  <FleetCard key={bus.id} bus={bus} index={i} inView />
-                ))}
-              </div>
 
-              {hasMore && (
-                <div className="mt-12 flex justify-center">
-                  <Button
-                    variant="outline"
-                    onClick={() => setVisibleCount((prev) => prev + PER_PAGE)}
-                    className="rounded-full px-10 h-12 font-bold border-platinum-tint hover:border-action-blue hover:text-action-blue"
-                  >
-                    Muat Lebih Banyak ({remaining > PER_PAGE ? PER_PAGE : remaining} lagi)
-                  </Button>
+            {filtered.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-20 text-center bg-white rounded-3xl border border-dashed border-slate-200 p-8">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50 text-slate-blue/30 mb-4 border border-slate-100 shadow-sm">
+                  <BusIcon size={24} strokeWidth={1.5} />
                 </div>
-              )}
-            </>
-          )}
-        </div>
+                <h3 className="text-base font-bold text-midnight-indigo mb-2">Unit Tidak Ditemukan</h3>
+                <p className="text-xs font-medium text-slate-blue max-w-sm mb-6">
+                  Tidak ada bus yang sesuai dengan kriteria filter Anda saat ini.
+                </p>
+                <Button onClick={clearFilters} className="rounded-full px-8 font-bold">
+                  Hapus Semua Filter
+                </Button>
+              </div>
+            ) : (
+              <>
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+                  {visibleBuses.map((bus, i) => (
+                    <FleetCard key={bus.id} bus={bus} index={i} inView onViewDetail={setSelectedBus} />
+                  ))}
+                </div>
+
+                {hasMore && (
+                  <div className="mt-12 flex justify-center">
+                    <Button
+                      variant="outline"
+                      onClick={() => setVisibleCount((prev) => prev + PER_PAGE)}
+                      className="rounded-full px-10 h-12 text-xs font-bold border-slate-200 hover:border-action-blue hover:text-action-blue bg-white shadow-sm"
+                    >
+                      Muat Lebih Banyak ({remaining > PER_PAGE ? PER_PAGE : remaining} lagi)
+                    </Button>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* Bottom CTA Banner */}
+            <div className="mt-20 bg-white rounded-3xl border border-slate-100 p-8 sm:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.02)] flex flex-col sm:flex-row items-center justify-between gap-6">
+              <div className="flex items-center gap-5">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-cloud-mist text-action-blue border border-platinum-tint shadow-sm">
+                  <Phone size={20} />
+                </div>
+                <div className="text-left">
+                  <h4 className="text-lg font-bold text-midnight-indigo">Belum menemukan armada yang sesuai?</h4>
+                  <p className="mt-1.5 text-sm font-medium text-slate-blue/80 max-w-xl leading-relaxed">
+                    Hubungi kami untuk konsultasi dan rekomendasi armada terbaik sesuai kebutuhan perjalanan Anda.
+                  </p>
+                </div>
+              </div>
+              <a
+                href={whatsappHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-action-blue hover:bg-action-blue-dark px-8 py-4 text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-action-blue/20 transition-all hover:scale-[1.02] active:scale-[0.98] shrink-0"
+              >
+                Hubungi Kami
+                <Phone size={14} />
+              </a>
+            </div>
+
+          </div>
+        </section>
       </div>
+      {selectedBus && (
+        <FleetDetailModal bus={selectedBus} onClose={() => setSelectedBus(null)} />
+      )}
     </PublicLayout>
   );
 }

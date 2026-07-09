@@ -34,8 +34,8 @@ export default function BookingRequestPage() {
       publicService.getActivityTypes(),
       publicService.getRouteTypes(),
     ]).then(([actData, routeData]) => {
-      setActivities(actData);
-      setRouteTypes(routeData);
+      setActivities(actData.filter(a => !a.deleted_at));
+      setRouteTypes(routeData.filter(r => !r.deleted_at));
     });
   }, []);
 

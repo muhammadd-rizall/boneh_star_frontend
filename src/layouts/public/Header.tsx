@@ -7,9 +7,9 @@ import { useCustomerAuthStore } from "@/features/auth/public";
 import { Button } from "@/components/ui/Button";
 
 const navigation = [
+  { label: "Home", href: "/" },
   { label: "Armada", href: "/armada" },
-  { label: "Layanan", href: "/#services" },
-  { label: "Testimoni", href: "/#testimonials" },
+  { label: "Tentang Kami", href: "/tentang-kami" },
   { label: "Kontak", href: "/contact" },
 ];
 
@@ -133,12 +133,13 @@ export default function Header({ companyProfile }: HeaderProps) {
           >
             {logoUrl ? (
               <img
+                key="header-logo-img"
                 src={logoUrl}
                 alt={companyProfile.company_name}
                 className="h-full w-full object-cover"
               />
             ) : (
-              <BusFront size={20} />
+              <BusFront key="header-logo-icon" size={20} />
             )}
           </div>
           <span

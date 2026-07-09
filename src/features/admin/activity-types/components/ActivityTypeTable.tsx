@@ -2,7 +2,7 @@ import { DataTable } from "@/components/ui/DataTable"
 import type { Column } from "@/components/ui/DataTable"
 import { Button } from "@/components/ui/Button"
 import type { ActivityType } from "@/features/admin/activity-types/types/ActivityType"
-import { Edit, Trash2, Tag, RotateCcw } from "lucide-react"
+import { Edit, FileText, ImageIcon, RotateCcw, Tag, Trash2 } from "lucide-react"
 
 interface ActivityTypeTableProps {
   data: ActivityType[]
@@ -23,28 +23,47 @@ export default function ActivityTypeTable({
 }: ActivityTypeTableProps) {
   const columns: Column<ActivityType>[] = [
     { 
-      header: "Activity Type", 
+      header: "Jenis Aktivitas",
       accessor: (row) => (
         <div className="flex items-center gap-4 text-left">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-500 overflow-hidden">
-            <Tag size={20} />
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-platinum-tint bg-cloud-mist text-slate-blue">
+            {row.image_url ? (
+              <img src={row.image_url} alt={row.name} className="h-full w-full object-cover" />
+            ) : (
+              <Tag size={20} />
+            )}
           </div>
-          <span className="leading-tight font-semibold text-slate-800">{row.name}</span>
+          <div className="min-w-0">
+            <span className="block truncate leading-tight font-semibold text-midnight-indigo">
+              {row.name}
+            </span>
+            {row.description && (
+              <div className="mt-1 flex max-w-[360px] items-center gap-1.5 text-xs font-medium text-slate-blue">
+                <FileText size={12} className="shrink-0 text-steel-gray" />
+                <span className="line-clamp-1">{row.description}</span>
+              </div>
+            )}
+          </div>
         </div>
       )
     },
     {
-      header: "Description",
+      header: "Media",
       accessor: (row) => (
-        <span className="text-xs text-slate-500 font-medium line-clamp-2 max-w-[300px]">
-          {row.description || <span className="italic text-slate-400">No description</span>}
+        <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${
+          row.image_url
+            ? "border-emerald-100 bg-emerald-50 text-emerald-600"
+            : "border-slate-200 bg-slate-50 text-slate-500"
+        }`}>
+          <ImageIcon size={12} />
+          {row.image_url ? "Ada Gambar" : "Tanpa Gambar"}
         </span>
       )
     },
     {
-      header: "Created At",
+      header: "Dibuat",
       accessor: (row) => (
-        <span className="text-xs text-slate-500 font-medium">
+        <span className="whitespace-nowrap text-xs font-medium text-slate-blue">
           {new Date(row.created_at).toLocaleDateString('id-ID', {
             day: 'numeric',
             month: 'short',
@@ -54,7 +73,7 @@ export default function ActivityTypeTable({
       )
     },
     {
-      header: "Actions",
+      header: "Aksi",
       accessor: (row) => (
         <div className="flex items-center gap-2">
           {isTrash ? (
@@ -65,7 +84,7 @@ export default function ActivityTypeTable({
                 icon={RotateCcw} 
                 className="h-9 w-9 rounded-full p-0" 
                 onClick={() => onRestore?.(row.id)}
-                title="Restore Activity Type" 
+                title="Pulihkan jenis aktivitas"
               />
               <Button 
                 size="sm" 
@@ -73,7 +92,7 @@ export default function ActivityTypeTable({
                 icon={Trash2} 
                 className="h-9 w-9 rounded-full p-0" 
                 onClick={() => onDelete(row)}
-                title="Permanently Delete"
+                title="Hapus permanen"
               />
             </>
           ) : (
@@ -84,7 +103,7 @@ export default function ActivityTypeTable({
                 icon={Edit} 
                 className="h-9 w-9 rounded-full p-0" 
                 onClick={() => onEdit(row)}
-                title="Edit Activity Type" 
+                title="Edit jenis aktivitas"
               />
               <Button 
                 size="sm" 
@@ -92,7 +111,7 @@ export default function ActivityTypeTable({
                 icon={Trash2} 
                 className="h-9 w-9 rounded-full p-0" 
                 onClick={() => onDelete(row)}
-                title="Delete Activity Type"
+                title="Hapus jenis aktivitas"
               />
             </>
           )}
@@ -101,5 +120,13 @@ export default function ActivityTypeTable({
     }
   ]
 
-  return <DataTable columns={columns} data={data} loading={loading} paginated />
+  return (
+    <DataTable
+      columns={columns}
+      data={data}
+      loading={loading}
+      emptyMessage={isTrash ? "Tidak ada jenis aktivitas di sampah" : "Belum ada jenis aktivitas"}
+      paginated
+    />
+  )
 }

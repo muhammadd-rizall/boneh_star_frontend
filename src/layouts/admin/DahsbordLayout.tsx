@@ -29,6 +29,7 @@ import {
   CalendarRange,
   X,
   Settings,
+  Image as ImageIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -48,6 +49,7 @@ const pageTitles: Record<string, string> = {
   "/admin/bus-facilities": "Fasilitas Bus",
   "/admin/activity-types": "Jenis Aktivitas",
   "/admin/route-types": "Jenis Rute",
+  "/admin/galleries": "Galeri Perjalanan",
   "/admin/drivers": "Pengemudi",
   "/admin/users": "Pengguna",
   "/admin/customers": "Pelanggan",
@@ -202,6 +204,7 @@ export default function DahsbordLayout() {
             <SidebarItem to="/admin/bus-facilities" icon={Wrench} label="Fasilitas Bus" collapsed={collapsed} onNavigate={() => setMobileOpen(false)} />
             <SidebarItem to="/admin/activity-types" icon={Tag} label="Jenis Aktivitas" collapsed={collapsed} onNavigate={() => setMobileOpen(false)} />
             <SidebarItem to="/admin/route-types" icon={Map} label="Jenis Rute" collapsed={collapsed} onNavigate={() => setMobileOpen(false)} />
+            <SidebarItem to="/admin/galleries" icon={ImageIcon} label="Galeri Perjalanan" collapsed={collapsed} onNavigate={() => setMobileOpen(false)} />
           </SidebarGroup>
 
           <SidebarGroup label="Manajemen" collapsed={collapsed}>

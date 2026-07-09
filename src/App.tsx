@@ -21,11 +21,13 @@ import BookingReportPage from "@/page/admin/reports/BookingReportPage";
 import IncomeReportPage from "@/page/admin/reports/IncomeReportPage";
 import BusAvailabilityReportPage from "@/page/admin/reports/BusAvailabilityReportPage";
 import CompanyProfilePage from "@/page/admin/company-profile/CompanyProfilePage";
+import GalleryPage from "@/features/admin/galleries/pages/GalleryPage";
 import "./App.css";
 import BusPage from "./page/admin/buses/BusPage";
 import Home from "@/page/public/home";
 import ContactPage from "@/page/public/contact";
 import FleetPage from "@/page/public/fleet";
+import AboutPage from "@/page/public/about";
 import CustomerProfilePage from "@/page/customer/profile";
 import BookingIndexPage from "@/page/customer/bookings";
 import BookingDetailPage from "@/page/customer/bookings/BookingDetailPage";
@@ -65,6 +67,8 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/armada" element={<FleetPage />} />
+      <Route path="/galery" element={<Navigate to="/tentang-kami" replace />} />
+      <Route path="/tentang-kami" element={<AboutPage />} />
       <Route
         path="/customer/profile"
         element={
@@ -155,6 +159,7 @@ function App() {
         <Route path="buses" element={<BusPage />} />
         <Route path="bus-categories" element={<BusCategoryPage />} />
         <Route path="bus-facilities" element={<BusFacilityPage />} />
+        <Route path="galleries" element={<GalleryPage />} />
         <Route path="activity-types" element={<ActivityTypePage />} />
         <Route path="route-types" element={<RouteTypePage />} />
         <Route path="drivers" element={<DriverPage />} />
