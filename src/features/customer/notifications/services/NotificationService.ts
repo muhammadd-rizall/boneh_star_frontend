@@ -15,7 +15,7 @@ export const notificationService = {
   },
 
   markAsRead: async (id: string) => {
-    await axios.patch(ENDPOINTS.READ(id));
+    await axios.post(ENDPOINTS.READ(id));
   },
 
   markAllAsRead: async () => {

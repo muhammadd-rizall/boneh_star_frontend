@@ -110,7 +110,8 @@ export default function DahsbordLayout() {
 
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
-  const { unreadCount } = useNotifications();
+  const notificationState = useNotifications();
+  const { unreadCount } = notificationState;
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -244,7 +245,7 @@ export default function DahsbordLayout() {
             <button aria-label="Buka notifikasi" onClick={() => setIsNotificationOpen(true)} className="group relative flex h-10 w-10 items-center justify-center rounded-xl border border-platinum-tint/70 bg-white text-slate-blue shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-action-blue hover:text-action-blue hover:shadow-button active:translate-y-0 active:scale-95">
               <Bell size={18} className={cn("origin-top transition-transform duration-300 group-hover:rotate-12", unreadCount > 0 && "animate-[admin-bell-ring_2.8s_ease-in-out_infinite]")} />
               {unreadCount > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-5 w-5 animate-[admin-notification-pulse_2s_ease-in-out_infinite] items-center justify-center rounded-full bg-action-blue text-[10px] font-bold text-white ring-4 ring-white shadow-sm">
+                <span className="absolute -right-1 -top-1 flex h-5 w-5 animate-[admin-notification-pulse_2s_ease-in-out_infinite] items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-4 ring-white shadow-sm">
                   {unreadCount > 9 ? "9+" : unreadCount}
                 </span>
               )}
@@ -267,7 +268,7 @@ export default function DahsbordLayout() {
         </main>
       </div>
 
-      <NotificationDrawer isOpen={isNotificationOpen} onClose={() => setIsNotificationOpen(false)} />
+      <NotificationDrawer isOpen={isNotificationOpen} onClose={() => setIsNotificationOpen(false)} state={notificationState} />
     </div>
   );
 }

@@ -16,8 +16,16 @@ export const quotationService = {
         params: { search }
       });
       const data = response.data.data;
+      
+      let quotations: Quotation[] = [];
+      if (data && typeof data === 'object' && 'data' in data && Array.isArray((data as any).data)) {
+        quotations = (data as any).data;
+      } else if (Array.isArray(data)) {
+        quotations = data;
+      }
+
       return {
-        quotations: Array.isArray(data) ? data : [],
+        quotations,
         statistics: response.data.statistics || null
       };
     } catch (error) {

@@ -2,6 +2,7 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import CustomerLayout from '@/layouts/customer/CustomerLayout';
 import { useBookingDetail } from '@/features/customer/bookings/hooks/useBookings';
+import { useProfile } from '@/features/customer/profile/hooks/useProfile';
 import { bookingService } from '@/features/customer/bookings/services/BookingService';
 import { historyService } from '@/features/customer/bookings/services/HistoryService';
 import { reviewService } from '@/features/customer/reviews/services/ReviewService';
@@ -11,45 +12,50 @@ import QuotationSection from '@/features/customer/bookings/components/QuotationS
 import PaymentSection from '@/features/customer/bookings/components/PaymentSection';
 import BookingTimeline from '@/features/customer/bookings/components/BookingTimeline';
 import ReviewForm from '@/features/customer/reviews/components/ReviewForm';
-import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import Loader from '@/components/feedback/Loader';
 import ErrorState from '@/components/feedback/ErrorState';
 import { Modal } from '@/components/ui/Modal';
-import { 
-  Calendar, 
-  MapPin, 
-  Users, 
-  Bus, 
-  ArrowLeft, 
-  Info, 
-  FileText, 
-  XCircle,
-  FileDown,
-  Star
+import {
+  Calendar, MapPin, Users, Bus, ArrowLeft, Info,
+  FileText, XCircle, FileDown, Star, Route, Hash,
+  CheckCircle2, Clock, Shield, Compass, CircleDollarSign,
+  MessageCircle, ClipboardList, Check, Quote, Paperclip
 } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/utils/formatter';
+
+function Section({ title, icon: Icon, children }: { title: string; icon: React.ElementType; children: React.ReactNode }) {
+  return (
+    <div className="bg-white border border-pale-gray rounded-2xl p-5 shadow-sm">
+      <div className="flex items-center gap-2.5 border-b border-pale-gray pb-3 mb-4">
+        <div className="text-action-blue">
+          <Icon size={16} />
+        </div>
+        <h3 className="text-sm font-black text-gray-900">{title}</h3>
+      </div>
+      {children}
+    </div>
+  );
+}
 
 export default function BookingDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { 
-    booking, 
-    paymentMethods,
-    companyProfile,
-    loading, 
-    error, 
-    refresh, 
-    acceptQuotation, 
-    reviseQuotation,
-    cancelBooking 
+  
+  const {
+    booking, paymentMethods, companyProfile,
+    loading: detailLoading, error, refresh,
+    acceptQuotation, reviseQuotation, cancelBooking
   } = useBookingDetail(id!);
+
+  const { profile, loading: profileLoading } = useProfile();
 
   const [showCancelModal, setShowCancelModal] = React.useState(false);
   const [cancelReason, setCancelReason] = React.useState('');
   const [cancelLoading, setCancelLoading] = React.useState(false);
   const [timeline, setTimeline] = React.useState<any[]>([]);
   const [loadingTimeline, setLoadingTimeline] = React.useState(false);
+  const [activeTab, setActiveTab] = React.useState<'info' | 'fleet' | 'quotation' | 'history' | 'document'>('info');
 
   React.useEffect(() => {
     if (id) {
@@ -87,277 +93,691 @@ export default function BookingDetailPage() {
     }
   };
 
-  if (loading) {
-    return (
-      <CustomerLayout>
-        <div className="flex min-h-[40vh] items-center justify-center">
-          <Loader />
-        </div>
-      </CustomerLayout>
-    );
-  }
+  const handleWhatsApp = () => {
+    if (!companyProfile?.whatsapp?.[0] || !booking) return;
+    const msg = `Halo Admin Boneh Star, saya ingin menanyakan mengenai detail pemesanan #${booking.booking_code}.`;
+    window.open(`https://wa.me/${companyProfile.whatsapp[0].replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
+  };
 
-  if (error || !booking) {
-    return (
-      <CustomerLayout>
-        <div className="flex min-h-[40vh] items-center justify-center">
-          <ErrorState message={error || 'Pemesanan tidak ditemukan'} onRetry={refresh} />
-        </div>
-      </CustomerLayout>
-    );
-  }
+  if (detailLoading || profileLoading) return (
+    <CustomerLayout>
+      <div className="flex min-h-[40vh] items-center justify-center"><Loader /></div>
+    </CustomerLayout>
+  );
+
+  if (error || !booking) return (
+    <CustomerLayout>
+      <div className="flex min-h-[40vh] items-center justify-center">
+        <ErrorState message={error || 'Pemesanan tidak ditemukan'} onRetry={refresh} />
+      </div>
+    </CustomerLayout>
+  );
+
+  const canCancel = ['pending', 'quoted'].includes(booking.status);
+
+  // Helper date formatting
+  const formatDateWithDay = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const dayName = date.toLocaleDateString('id-ID', { weekday: 'long' });
+    const formattedDate = date.toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+    return `${formattedDate} (${dayName})`;
+  };
+
+  // Helper date/time formatting for submitted date
+  const formatDateTime = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const datePart = date.toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+    const timePart = date.toLocaleTimeString('id-ID', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    return `${datePart}, ${timePart} WIB`;
+  };
+
+  // Helper duration calculation
+  const calculateDuration = (depDate: string, retDate: string | null) => {
+    if (!retDate) return '1 Hari';
+    const dep = new Date(depDate);
+    const ret = new Date(retDate);
+    const diffTime = Math.abs(ret.getTime() - dep.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+    return `${diffDays} Hari`;
+  };
+
+  const getDestinationImage = (activityName: string) => {
+    const name = activityName.toLowerCase();
+    if (name.includes('wisata') || name.includes('liburan') || name.includes('pantai')) {
+      return 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=80';
+    }
+    if (name.includes('ziarah') || name.includes('masjid') || name.includes('agama')) {
+      return 'https://images.unsplash.com/photo-1597838816882-4551b0304a63?auto=format&fit=crop&w=400&q=80';
+    }
+    if (name.includes('study') || name.includes('sekolah') || name.includes('edukasi')) {
+      return 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=400&q=80';
+    }
+    return 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=400&q=80';
+  };
+
+  // Extract selected bus preferences if stored in notes
+  const preferredBus = (() => {
+    if (!booking.special_notes) return null;
+    const match = booking.special_notes.match(/\[Armada Pilihan Customer: (.*?)\]/);
+    return match ? match[1] : null;
+  })();
+
+  const cleanSpecialNotes = (() => {
+    if (!booking.special_notes) return '';
+    return booking.special_notes.replace(/\[Armada Pilihan Customer: .*?\]/, '').trim();
+  })();
 
   return (
     <CustomerLayout>
-      {/* Header Actions */}
-      <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-        <button 
-          onClick={() => navigate('/customer/bookings')} 
-          className="group flex items-center gap-2 text-sm font-bold text-slate-blue hover:text-midnight-indigo transition-colors"
-        >
-          <ArrowLeft size={16} className="transition-transform group-hover:-translate-x-1" /> 
-          Kembali ke Riwayat
-        </button>
-        <div className="flex items-center gap-3">
-          {booking.transaction && (
-            <Button 
-              variant="outline" 
-              size="sm" 
-              icon={FileDown} 
-              onClick={handleDownloadInvoice}
-              className="rounded-xl font-bold border-platinum-tint/80 hover:bg-cloud-mist hover:text-midnight-indigo text-slate-blue"
-            >
-              Download Invoice
-            </Button>
-          )}
-          {['pending', 'quoted'].includes(booking.status) && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="text-rose-600 hover:bg-rose-50 font-bold" 
-              onClick={() => setShowCancelModal(true)}
-              icon={XCircle}
-            >
-              Batalkan Pesanan
-            </Button>
-          )}
-        </div>
-      </div>
+      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
 
-      <div className="grid gap-10 lg:grid-cols-[1fr_360px]">
-        {/* Left Column: Details & Payments */}
-        <div className="flex flex-col gap-10">
-          {/* Main Info Card */}
-          <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="flex flex-col gap-4">
-              <div className="flex flex-wrap items-center gap-3">
-                <h1 className="text-3xl font-black tracking-tighter text-midnight-indigo">#{booking.booking_code}</h1>
-                <BookingStatusBadge status={booking.status} />
-              </div>
-              <p className="text-sm font-semibold text-slate-blue/70">
-                Pemesanan dibuat pada {formatDate(booking.created_at)}
-              </p>
-            </div>
-
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              <DetailItem icon={Calendar} label="Jadwal" value={booking.return_date ? `${formatDate(booking.departure_date)} - ${formatDate(booking.return_date)}` : formatDate(booking.departure_date)} />
-              <DetailItem icon={MapPin} label="Rute Perjalanan" value={`${booking.origin} (${booking.full_route || 'Rute belum diatur'})`} />
-              <DetailItem icon={Users} label="Kapasitas" value={`${booking.passenger_count} Penumpang`} />
-              <DetailItem icon={Bus} label="Armada" value={`${booking.bus_count_requested} Unit Bus`} />
-            </div>
-
-            <div className="rounded-[16px] bg-cloud-mist p-6 border border-platinum-tint/50">
-              <div className="flex items-start gap-4">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm text-slate-blue">
-                  <Info size={16} />
-                </div>
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-blue/60 mb-1">Catatan Tambahan</p>
-                  <p className="text-sm font-bold text-midnight-indigo leading-relaxed italic">
-                    {booking.special_notes || 'Tidak ada catatan khusus untuk perjalanan ini.'}
-                  </p>
-                </div>
-              </div>
+        {/* ── Breadcrumb & Title Section ── */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6 border-b border-pale-gray pb-4">
+          <div>
+            <h1 className="text-2xl font-black text-gray-900 tracking-tight">Detail Pemesanan</h1>
+            <div className="flex items-center gap-1.5 text-xs text-slate-blue mt-1">
+              <span className="cursor-pointer hover:text-action-blue transition-colors font-medium" onClick={() => navigate('/customer/bookings')}>Pemesanan</span>
+              <span className="text-steel-gray">/</span>
+              <span className="font-semibold text-gray-900">Detail Pemesanan</span>
             </div>
           </div>
-
-          <div className="h-px bg-platinum-tint/50" />
-
-          {/* Quotation Section */}
-          {booking.quotation && (
-            <div className="flex flex-col gap-5 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
-              <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-blue/60 ml-1">Penawaran Harga</h2>
-              <QuotationSection 
-                quotation={booking.quotation as any} 
-                whatsappNumber={companyProfile?.whatsapp?.[0]}
-                bookingCode={booking.booking_code}
-                onAccept={() => acceptQuotation(booking.quotation!.id)} 
-                onRevise={(note) => reviseQuotation(booking.quotation!.id, note)}
-              />
+          <div className="flex flex-col items-start sm:items-end gap-1">
+            <div className="flex items-center gap-2">
+              <BookingStatusBadge status={booking.status} />
             </div>
-          )}
+            <p className="text-[10px] text-slate-blue font-medium mt-0.5">
+              Diajukan pada {formatDateTime(booking.created_at)}
+            </p>
+          </div>
+        </div>
 
-          {/* Payment Section */}
-          {booking.transaction && (
-            <div className="flex flex-col gap-5 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
-              <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-blue/60 ml-1">Manajemen Pembayaran</h2>
-              <PaymentSection 
-                transaction={booking.transaction as any} 
-                paymentMethods={paymentMethods}
-                departureDate={booking.departure_date}
-                onUpload={(data) => bookingService.uploadPayment(booking.id, data).then(refresh)}
-              />
-            </div>
-          )}
+        {/* ── Main Layout: 2 Columns Grid ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 items-start">
 
-          {/* Review Section */}
-          {booking.status === 'completed' && (
-            <div className="flex flex-col gap-5 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300">
-              <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-blue/60 ml-1">Bagikan Pengalaman</h2>
-              <Card className="border border-platinum-tint shadow-sm hover:shadow-card transition-shadow p-8 sm:p-10 rounded-[16px]">
-                {(booking as any).review ? (
-                  <div className="flex flex-col items-center text-center gap-4">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
-                      <Star className="fill-emerald-600" size={32} />
+          {/* ── LEFT COLUMN ── */}
+          <div className="flex flex-col gap-6">
+
+            {/* Destination Highlight Header Card */}
+            <div className="bg-white border border-pale-gray rounded-2xl p-5 shadow-sm">
+              <div className="flex flex-col md:flex-row gap-5 items-stretch">
+                {/* Image */}
+                <div className="w-full md:w-[200px] h-[140px] rounded-xl overflow-hidden shrink-0 border border-pale-gray shadow-sm">
+                  <img
+                    src={getDestinationImage(booking.activity?.name ?? '')}
+                    alt={booking.activity?.name ?? 'Wisata'}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 flex flex-col justify-between">
+                  <div>
+                    <h2 className="text-xl font-black text-gray-900">{booking.activity?.name ?? 'Pemesanan Bus'}</h2>
+                    
+                    {/* Meta info row */}
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-2.5 text-xs font-bold text-slate-blue">
+                      <div className="flex items-center gap-1.5">
+                        <Calendar size={14} className="text-action-blue" />
+                        <span>{formatDate(booking.departure_date)}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Clock size={14} className="text-action-blue" />
+                        <span>{calculateDuration(booking.departure_date, booking.return_date)}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Users size={14} className="text-action-blue" />
+                        <span>{booking.passenger_count} Peserta</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Bus size={14} className="text-action-blue" />
+                        <span>{booking.route_type?.scope === 'outside' ? 'Big Bus' : 'Medium Bus'}</span>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-lg font-black text-midnight-indigo">Terima kasih atas ulasan Anda!</h3>
-                      <p className="mt-2 text-sm font-medium text-slate-blue max-w-sm">
-                        Ulasan Anda telah kami terima dan sangat berarti bagi kami untuk terus meningkatkan kualitas layanan.
-                      </p>
+
+                    <p className="text-xs text-slate-blue mt-3 leading-relaxed">
+                      Perjalanan kegiatan {booking.activity?.name.toLowerCase() ?? 'wisata'} bersama rombongan dengan rute dari {booking.origin} menuju destinasi {booking.full_route ?? 'tujuan'} dan sekitarnya.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Vertical Divider & Code Info (Desktop only) */}
+                <div className="hidden md:flex flex-col justify-between pl-5 border-l border-pale-gray w-[160px] shrink-0 text-right">
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-wider text-steel-gray">Kode Pemesanan</p>
+                    <p className="text-xs font-black text-gray-900 mt-0.5">{booking.booking_code}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-wider text-steel-gray">Status</p>
+                    <p className="text-xs font-black text-action-blue mt-0.5">
+                      {booking.status === 'pending' ? 'Menunggu Penawaran' : 
+                       booking.status === 'quoted' ? 'Negosiasi Harga' :
+                       booking.status === 'confirmed' ? 'Dikonfirmasi' :
+                       booking.status === 'ongoing' ? 'Berjalan' :
+                       booking.status === 'completed' ? 'Selesai' : 'Dibatalkan'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Tabs Navigation */}
+            <div className="border-b border-pale-gray">
+              <nav className="flex flex-wrap gap-x-6 gap-y-2">
+                <TabButton
+                  active={activeTab === 'info'}
+                  onClick={() => setActiveTab('info')}
+                  icon={ClipboardList}
+                  label="Informasi Perjalanan"
+                />
+                <TabButton
+                  active={activeTab === 'fleet'}
+                  onClick={() => setActiveTab('fleet')}
+                  icon={Bus}
+                  label="Armada & Fasilitas"
+                />
+                <TabButton
+                  active={activeTab === 'quotation'}
+                  onClick={() => setActiveTab('quotation')}
+                  icon={CircleDollarSign}
+                  label="Penawaran"
+                  badge={booking.status === 'quoted' ? 1 : undefined}
+                />
+                <TabButton
+                  active={activeTab === 'history'}
+                  onClick={() => setActiveTab('history')}
+                  icon={Clock}
+                  label="Riwayat"
+                />
+                <TabButton
+                  active={activeTab === 'document'}
+                  onClick={() => setActiveTab('document')}
+                  icon={FileText}
+                  label="Dokumen"
+                />
+              </nav>
+            </div>
+
+            {/* Tabs Content */}
+            <div className="transition-all duration-300">
+              
+              {/* TAB 1: Informasi Perjalanan */}
+              {activeTab === 'info' && (
+                <div className="flex flex-col gap-6">
+                  {/* Detailed Info Grid */}
+                  <div className="bg-white border border-pale-gray rounded-2xl p-5 shadow-sm">
+                    <h3 className="text-sm font-black text-gray-900 border-b border-pale-gray pb-3 mb-4">Informasi Perjalanan</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
+                      {/* Left Column */}
+                      <div className="flex flex-col gap-4">
+                        <DetailRow icon={Compass} label="Jenis Kegiatan" value={booking.activity?.name ?? '—'} />
+                        <DetailRow icon={MapPin} label="Tujuan / Rute" value={booking.full_route || booking.origin} />
+                        <DetailRow 
+                          icon={Calendar} 
+                          label="Tanggal Berangkat" 
+                          value={formatDateWithDay(booking.departure_date)} 
+                          badge="Keberangkatan"
+                        />
+                        <DetailRow icon={Clock} label="Waktu Berangkat" value="07:00 WIB" />
+                        <DetailRow icon={MapPin} label="Keberangkatan" value={booking.origin} />
+                      </div>
+
+                      {/* Right Column */}
+                      <div className="flex flex-col gap-4">
+                        <DetailRow 
+                          icon={Calendar} 
+                          label="Tanggal Kembali" 
+                          value={booking.return_date ? formatDateWithDay(booking.return_date) : 'Satu Hari Perjalanan'} 
+                          badge={booking.return_date ? "Kembali" : undefined}
+                        />
+                        <DetailRow icon={Clock} label="Waktu Kembali" value="17:00 WIB" />
+                        <DetailRow icon={Users} label="Jumlah Peserta" value={`${booking.passenger_count} Orang`} />
+                        <DetailRow 
+                          icon={Users} 
+                          label="Contact Person" 
+                          value={profile ? `${profile.name} - ${profile.phone}` : '—'} 
+                        />
+                      </div>
                     </div>
                   </div>
-                ) : (
-                  <ReviewForm 
-                    bookingId={booking.id} 
-                    onCancel={() => {}} 
-                    onSubmit={async (data: ReviewFormData) => {
-                      await reviewService.create(data);
-                      refresh();
-                    }}
-                  />
-                )}
-              </Card>
-            </div>
-          )}
-        </div>
 
-        {/* Right Column: Summary */}
-        <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-right-4 duration-500 delay-150">
-          <Card className="flex flex-col gap-8 border border-platinum-tint shadow-sm p-6 rounded-[16px] sticky top-32 bg-white">
-            <div className="flex items-center gap-4 border-b border-platinum-tint/40 pb-6">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cloud-mist text-slate-blue">
-                <FileText size={24} />
+                  {/* Catatan */}
+                  <div className="bg-white border border-pale-gray rounded-2xl p-5 shadow-sm">
+                    <h3 className="text-sm font-black text-gray-900 border-b border-pale-gray pb-3 mb-4">Catatan</h3>
+                    {cleanSpecialNotes ? (
+                      <div className="flex gap-3.5 p-4 rounded-xl bg-cloud-mist border border-pale-gray italic text-slate-blue text-xs font-semibold leading-relaxed">
+                        <Quote size={20} className="text-action-blue shrink-0 rotate-180 opacity-60" />
+                        <p>"{cleanSpecialNotes}"</p>
+                      </div>
+                    ) : (
+                      <p className="text-xs text-slate-blue italic font-semibold">Tidak ada catatan tambahan.</p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 2: Armada & Fasilitas */}
+              {activeTab === 'fleet' && (
+                <div className="bg-white border border-pale-gray rounded-2xl p-5 shadow-sm">
+                  <h3 className="text-sm font-black text-gray-900 border-b border-pale-gray pb-3 mb-4">Armada &amp; Fasilitas</h3>
+                  
+                  {booking.booking_buses && booking.booking_buses.length > 0 ? (
+                    <div className="flex flex-col gap-4">
+                      {booking.booking_buses.map((bb, idx) => (
+                        <div key={bb.id || idx} className="p-4 rounded-xl border border-pale-gray bg-cloud-mist flex flex-col sm:flex-row justify-between gap-4">
+                          <div className="flex items-start gap-4">
+                            <div className="h-10 w-10 rounded-xl bg-white border border-pale-gray flex items-center justify-center text-action-blue shrink-0 shadow-sm">
+                              <Bus size={20} strokeWidth={1.5} />
+                            </div>
+                            <div>
+                              <p className="text-xs font-black text-gray-900">{bb.bus?.name || 'Armada Boneh Star'}</p>
+                              <p className="text-[10px] font-bold text-slate-blue mt-0.5">{bb.bus?.plat_number || 'No Plat'}</p>
+                              <div className="flex flex-wrap gap-1.5 mt-2">
+                                {bb.bus?.facilities?.map(f => (
+                                  <span key={f.id} className="text-[9px] font-bold text-action-blue bg-action-blue/5 px-2 py-0.5 rounded-full border border-action-blue/10">
+                                    {f.name}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="sm:text-right border-t sm:border-t-0 border-pale-gray pt-3 sm:pt-0">
+                            <p className="text-[9px] font-black uppercase tracking-wider text-steel-gray">Driver Ditugaskan</p>
+                            <p className="text-xs font-bold text-gray-900 mt-0.5">{bb.driver?.name || 'Nama Driver'}</p>
+                            <p className="text-[10px] text-slate-blue font-semibold mt-0.5">{bb.driver?.phone || 'No Telp'}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="py-8 px-4 text-center">
+                      <div className="h-12 w-12 rounded-full bg-cloud-mist border border-pale-gray flex items-center justify-center text-steel-gray mx-auto mb-3">
+                        <Bus size={22} strokeWidth={1.5} />
+                      </div>
+                      <p className="text-sm font-bold text-gray-900">Armada &amp; Driver Belum Ditugaskan</p>
+                      <p className="text-xs text-slate-blue mt-1 max-w-sm mx-auto leading-relaxed">
+                        Armada bus dan driver resmi akan dialokasikan oleh admin setelah harga penawaran disetujui dan pembayaran DP dikonfirmasi.
+                      </p>
+                      {preferredBus && (
+                        <div className="mt-4 p-3.5 rounded-xl border border-amber-100 bg-amber-50/40 text-xs font-semibold text-amber-800 max-w-md mx-auto">
+                          Preferensi Pilihan Anda: <span className="font-black">{preferredBus}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* TAB 3: Penawaran */}
+              {activeTab === 'quotation' && (
+                <div className="flex flex-col gap-6">
+                  {booking.quotation ? (
+                    <Section title="Penawaran Harga" icon={FileText}>
+                      <QuotationSection
+                        quotation={booking.quotation as any}
+                        whatsappNumber={companyProfile?.whatsapp?.[0]}
+                        bookingCode={booking.booking_code}
+                        onAccept={() => acceptQuotation(booking.quotation!.id)}
+                        onRevise={(note) => reviseQuotation(booking.quotation!.id, note)}
+                      />
+                    </Section>
+                  ) : (
+                    <div className="rounded-2xl bg-cloud-mist border border-pale-gray p-8 text-center">
+                      <Clock size={28} className="text-steel-gray mx-auto mb-3" strokeWidth={1.5} />
+                      <p className="text-sm font-bold text-gray-900">Menunggu Penawaran</p>
+                      <p className="text-xs text-slate-blue mt-1 leading-relaxed max-w-sm mx-auto">
+                        Admin sedang menyiapkan penawaran harga untuk perjalanan Anda. Anda akan mendapat notifikasi setelah penawaran tersedia.
+                      </p>
+                    </div>
+                  )}
+
+                  {booking.transaction && (
+                    <Section title="Manajemen Pembayaran" icon={FileDown}>
+                      <PaymentSection
+                        transaction={booking.transaction as any}
+                        paymentMethods={paymentMethods}
+                        departureDate={booking.departure_date}
+                        onUpload={(data) => bookingService.uploadPayment(booking.id, data).then(refresh)}
+                      />
+                    </Section>
+                  )}
+
+                  {booking.status === 'completed' && (
+                    <Section title="Beri Ulasan" icon={Star}>
+                      {(booking as any).review ? (
+                        <div className="flex flex-col items-center py-6 text-center gap-3">
+                          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 border border-emerald-100">
+                            <CheckCircle2 size={24} className="text-emerald-600" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-gray-900">Ulasan Anda sudah dikirim</p>
+                            <p className="text-xs text-slate-blue mt-1">Terima kasih atas ulasan Anda!</p>
+                          </div>
+                        </div>
+                      ) : (
+                        <ReviewForm
+                          bookingId={booking.id}
+                          onCancel={() => {}}
+                          onSubmit={async (data: ReviewFormData) => {
+                            await reviewService.create(data);
+                            refresh();
+                          }}
+                        />
+                      )}
+                    </Section>
+                  )}
+                </div>
+              )}
+
+              {/* TAB 4: Riwayat */}
+              {activeTab === 'history' && (
+                <div className="rounded-2xl bg-white border border-pale-gray shadow-sm p-5">
+                  <h3 className="text-sm font-black text-gray-900 border-b border-pale-gray pb-3 mb-5">Riwayat Status</h3>
+                  {loadingTimeline ? (
+                    <div className="flex justify-center py-8"><Loader /></div>
+                  ) : timeline.length === 0 ? (
+                    <div className="py-8 text-center">
+                      <Clock size={28} className="text-steel-gray mx-auto mb-2" strokeWidth={1.5} />
+                      <p className="text-sm text-slate-blue font-medium">Belum ada riwayat status</p>
+                    </div>
+                  ) : (
+                    <BookingTimeline timeline={timeline} />
+                  )}
+                </div>
+              )}
+
+              {/* TAB 5: Dokumen */}
+              {activeTab === 'document' && (
+                <div className="bg-white border border-pale-gray rounded-2xl p-5 shadow-sm">
+                  <h3 className="text-sm font-black text-gray-900 border-b border-pale-gray pb-3 mb-4">Dokumen Pemesanan</h3>
+                  
+                  {booking.transaction ? (
+                    <div className="flex flex-col gap-3">
+                      <div className="p-4 rounded-xl border border-pale-gray bg-cloud-mist flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-xl bg-white border border-pale-gray flex items-center justify-center text-red-500 shrink-0 shadow-sm">
+                            <FileText size={20} strokeWidth={1.5} />
+                          </div>
+                          <div>
+                            <p className="text-xs font-black text-gray-900">Invoice Tagihan Sewa</p>
+                            <p className="text-[10px] font-bold text-slate-blue mt-0.5">{booking.transaction.invoice_number}</p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={handleDownloadInvoice}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-pale-gray bg-white text-xs font-bold text-action-blue hover:bg-cloud-mist transition-colors cursor-pointer shadow-sm"
+                        >
+                          <FileDown size={13} />
+                          Unduh
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="py-8 px-4 text-center">
+                      <div className="h-12 w-12 rounded-full bg-cloud-mist border border-pale-gray flex items-center justify-center text-steel-gray mx-auto mb-3">
+                        <Paperclip size={22} strokeWidth={1.5} />
+                      </div>
+                      <p className="text-sm font-bold text-gray-900">Belum Ada Dokumen</p>
+                      <p className="text-xs text-slate-blue mt-1 leading-relaxed">
+                        Dokumen invoice resmi akan diterbitkan otomatis setelah penawaran harga disetujui.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+            </div>
+
+          </div>
+
+          {/* ── RIGHT COLUMN: SIDEBAR ── */}
+          <div className="flex flex-col gap-5 w-full shrink-0 lg:sticky lg:top-24">
+
+            {/* Ringkasan Pemesanan */}
+            <div className="bg-white rounded-2xl border border-pale-gray shadow-sm overflow-hidden w-full">
+              <div className="px-4 py-3 border-b border-pale-gray">
+                <h3 className="text-xs font-black text-gray-900 tracking-wider uppercase">Ringkasan Pemesanan</h3>
               </div>
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-blue/60 mb-0.5">Kategori Kegiatan</p>
-                <h3 className="text-sm font-black text-midnight-indigo">{booking.activity?.name}</h3>
+
+              <div className="px-4 py-4 flex flex-col gap-3">
+                <SidebarItem label="Estimasi Durasi" value={calculateDuration(booking.departure_date, booking.return_date)} />
+                <SidebarItem label="Jumlah Peserta" value={`${booking.passenger_count} Orang`} />
+                <SidebarItem label="Jenis Armada" value={booking.route_type?.scope === 'outside' ? 'Big Bus' : 'Medium Bus'} />
+                
+                {/* Estimasi Harga */}
+                <div className="mt-2 pt-3 border-t border-pale-gray flex justify-between items-center">
+                  <span className="text-[11px] font-bold text-slate-blue">Estimasi Harga</span>
+                  <span className="text-sm font-black text-action-blue">
+                    {booking.quotation?.proposed_price ? formatCurrency(booking.quotation.proposed_price) : 'Menunggu Penawaran'}
+                  </span>
+                </div>
+
+                {/* Alert box */}
+                <div className="mt-2.5 p-3 rounded-xl bg-action-blue/[0.04] border border-action-blue/10 flex gap-2 items-start text-[10px] text-action-blue leading-normal font-semibold">
+                  <Info size={13} className="shrink-0 mt-0.5 text-action-blue" />
+                  <p>Harga dapat berubah sesuai penawaran resmi dari admin.</p>
+                </div>
               </div>
             </div>
-            
-            <div className="flex flex-col gap-5">
-              <SummaryRow label="Tipe Rute" value={booking.route_type?.name || '-'} />
-              <SummaryRow label="Status" value={<BookingStatusBadge status={booking.status} />} />
+
+            {/* Status Pemesanan (Vertical Timeline) */}
+            <div className="bg-white rounded-2xl border border-pale-gray shadow-sm p-4 w-full">
+              <h3 className="text-xs font-black text-gray-900 tracking-wider uppercase border-b border-pale-gray pb-2.5 mb-4">Status Pemesanan</h3>
               
-              {booking.transaction && (
-                <>
-                  <div className="my-2 h-px bg-platinum-tint/30" />
-                  <SummaryRow 
-                    label="Total Biaya" 
-                    value={<span className="text-base font-black text-midnight-indigo">{formatCurrency(booking.transaction.total_amount)}</span>} 
-                  />
-                  <SummaryRow 
-                    label="Sisa Tagihan" 
-                    value={<span className="text-sm font-black text-action-blue">{formatCurrency(booking.transaction.remaining_amount)}</span>} 
-                  />
-                </>
-              )}
-            </div>
+              <div className="flex flex-col gap-5 relative pl-4">
+                {/* Line */}
+                <div className="absolute left-[7px] top-2 bottom-2 w-[1.5px] bg-pale-gray" />
 
-            {booking.status === 'cancelled' && (
-              <div className="rounded-2xl bg-rose-50 p-5 border border-rose-100/50 mt-2">
-                <p className="text-[10px] font-black text-rose-800 uppercase tracking-widest mb-2">Alasan Pembatalan</p>
-                <p className="text-xs font-bold text-rose-600 leading-relaxed italic">"{booking.cancelled_reason || 'Tidak ada alasan spesifik.'}"</p>
+                {/* Step 1 */}
+                <TimelineStep 
+                  active={true}
+                  completed={true}
+                  title="Pengajuan"
+                  desc={formatDateTime(booking.created_at)}
+                />
+
+                {/* Step 2 */}
+                <TimelineStep 
+                  active={booking.status !== 'pending'}
+                  completed={['quoted', 'confirmed', 'ongoing', 'completed'].includes(booking.status)}
+                  title="Menunggu Penawaran"
+                  desc={booking.status === 'pending' ? 'Menunggu respon admin' : 'Penawaran disiapkan'}
+                />
+
+                {/* Step 3 */}
+                <TimelineStep 
+                  active={['quoted', 'confirmed', 'ongoing', 'completed'].includes(booking.status)}
+                  completed={['confirmed', 'ongoing', 'completed'].includes(booking.status)}
+                  title="Negosiasi"
+                  desc={booking.status === 'quoted' ? 'Menunggu persetujuan penawaran' : 'Penawaran disetujui'}
+                />
+
+                {/* Step 4 */}
+                <TimelineStep 
+                  active={booking.status === 'completed'}
+                  completed={booking.status === 'completed'}
+                  title="Selesai"
+                  desc="Pemesanan selesai"
+                />
               </div>
-            )}
-
-            <div className="h-px bg-platinum-tint/50" />
-            
-            <div className="flex flex-col gap-5">
-              <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-blue/60 ml-1">Timeline</h2>
-              {loadingTimeline ? (
-                <div className="flex justify-center py-4"><Loader size="sm" /></div>
-              ) : (
-                <BookingTimeline timeline={timeline} />
-              )}
             </div>
-          </Card>
-        </div>
-      </div>
 
-      {/* Cancel Modal */}
-      <Modal
-        open={showCancelModal}
-        onClose={() => setShowCancelModal(false)}
-        title="Batalkan Pemesanan"
-      >
-        <div className="flex flex-col gap-6">
-          <p className="text-sm font-semibold text-slate-blue leading-relaxed">
-            Apakah Anda yakin ingin membatalkan pemesanan ini? Berikan alasan singkat untuk membantu kami mengevaluasi layanan kami.
-          </p>
-          <div className="flex flex-col gap-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-slate-blue/60 ml-1">Alasan Pembatalan</label>
-            <textarea 
-              className="w-full rounded-2xl border border-platinum-tint bg-cloud-mist/50 p-4 text-sm font-semibold focus:border-action-blue focus:ring-1 focus:ring-action-blue outline-none transition-all text-midnight-indigo placeholder:text-slate-blue/40" 
-              rows={4} 
-              placeholder="Contoh: Perubahan jadwal rencana kegiatan atau masalah lainnya..."
-              value={cancelReason}
-              onChange={(e) => setCancelReason(e.target.value)}
-            />
+            {/* Action Buttons */}
+            <div className="flex flex-col gap-2">
+              {canCancel && (
+                <button
+                  onClick={() => setShowCancelModal(true)}
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-rose-100 bg-rose-50 text-xs font-bold text-rose-600 hover:bg-rose-100 transition-all cursor-pointer shadow-sm"
+                >
+                  <XCircle size={14} />
+                  Batalkan Pemesanan
+                </button>
+              )}
+
+              <button
+                onClick={handleWhatsApp}
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-emerald-200 bg-emerald-50 text-xs font-bold text-emerald-600 hover:bg-emerald-100 transition-all cursor-pointer shadow-sm"
+              >
+                <MessageCircle size={14} />
+                Hubungi Admin
+              </button>
+            </div>
+
           </div>
-          <div className="flex gap-3">
-            <Button 
-              variant="danger" 
-              className="flex-1" 
-              loading={cancelLoading}
-              onClick={handleCancel}
-            >
-              Ya, Batalkan Pesanan
-            </Button>
-            <Button 
-              variant="ghost" 
-              className="flex-1 font-bold" 
-              onClick={() => setShowCancelModal(false)}
-              disabled={cancelLoading}
-            >
-              Kembali
-            </Button>
-          </div>
+
         </div>
-      </Modal>
+
+        {/* ── Cancel Modal ── */}
+        <Modal open={showCancelModal} onClose={() => setShowCancelModal(false)} title="Batalkan Pemesanan">
+          <div className="flex flex-col gap-5">
+            <p className="text-sm text-slate-blue leading-relaxed">
+              Apakah Anda yakin ingin membatalkan pemesanan ini? Berikan alasan singkat.
+            </p>
+            <div className="flex flex-col gap-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-steel-gray">
+                Alasan Pembatalan *
+              </label>
+              <textarea
+                className="w-full rounded-xl border border-pale-gray bg-cloud-mist p-3 text-sm font-medium text-gray-800 focus:border-action-blue focus:bg-white focus:ring-2 focus:ring-action-blue/10 outline-none transition-all resize-none"
+                rows={4}
+                placeholder="Contoh: Perubahan jadwal, anggaran berubah, dll."
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+              />
+            </div>
+            <div className="flex gap-3">
+              <Button variant="danger" className="flex-1" loading={cancelLoading} onClick={handleCancel}>
+                Ya, Batalkan
+              </Button>
+              <Button
+                variant="ghost"
+                className="flex-1 text-slate-blue hover:text-gray-900"
+                onClick={() => setShowCancelModal(false)}
+                disabled={cancelLoading}
+              >
+                Kembali
+              </Button>
+            </div>
+          </div>
+        </Modal>
+
+      </div>
     </CustomerLayout>
   );
 }
 
-function DetailItem({ icon: Icon, label, value }: { icon: any, label: string, value: string }) {
+// ── Helper Components ─────────────────────────────────────────────────────────
+
+interface TabButtonProps {
+  active: boolean;
+  onClick: () => void;
+  icon: React.ElementType;
+  label: string;
+  badge?: number;
+}
+
+function TabButton({ active, onClick, icon: Icon, label, badge }: TabButtonProps) {
   return (
-    <div className="flex flex-col gap-2.5">
-      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cloud-mist text-slate-blue">
-        <Icon size={18} strokeWidth={2} />
+    <button
+      onClick={onClick}
+      className={`flex items-center gap-2 py-3 px-1 border-b-2 text-xs font-bold transition-all cursor-pointer relative ${
+        active 
+          ? 'border-action-blue text-action-blue' 
+          : 'border-transparent text-slate-blue hover:text-gray-900 hover:border-steel-gray'
+      }`}
+    >
+      <Icon size={14} />
+      <span>{label}</span>
+      {badge !== undefined && (
+        <span className="absolute top-1 -right-3 flex h-4 w-4 items-center justify-center rounded-full bg-orange-500 text-[8px] font-bold text-white shadow-sm animate-pulse">
+          {badge}
+        </span>
+      )}
+    </button>
+  );
+}
+
+function DetailRow({ icon: Icon, label, value, badge }: { icon: any; label: string; value: string; badge?: string }) {
+  return (
+    <div className="flex items-start gap-3 text-xs leading-normal">
+      <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-cloud-mist border border-pale-gray text-action-blue shrink-0">
+        <Icon size={14} />
       </div>
       <div>
-        <p className="text-[10px] font-black uppercase tracking-widest text-slate-blue/60 mb-0.5">{label}</p>
-        <p className="text-xs font-black text-midnight-indigo leading-snug">{value}</p>
+        <p className="text-[10px] font-bold text-steel-gray uppercase tracking-wider">{label}</p>
+        <div className="flex items-center gap-2 mt-0.5">
+          <p className="font-black text-gray-900">{value}</p>
+          {badge && (
+            <span className="text-[9px] font-black uppercase tracking-wider text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100">
+              {badge}
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );
 }
 
-function SummaryRow({ label, value }: { label: string, value: React.ReactNode }) {
+function ServicePill({ label }: { label: string }) {
   return (
-    <div className="flex items-center justify-between gap-4">
-      <span className="text-[11px] font-black uppercase tracking-widest text-slate-blue/60">{label}</span>
-      <div className="font-bold text-midnight-indigo text-right">{value}</div>
+    <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-emerald-100 bg-emerald-50/30 text-emerald-700 text-xs font-bold">
+      <Check size={13} className="text-emerald-600" strokeWidth={3} />
+      <span>{label}</span>
     </div>
   );
 }
+
+function SidebarItem({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between items-center text-xs font-bold">
+      <span className="text-slate-blue">{label}</span>
+      <span className="text-gray-900">{value}</span>
+    </div>
+  );
+}
+
+interface TimelineStepProps {
+  active: boolean;
+  completed: boolean;
+  title: string;
+  desc: string;
+}
+
+function TimelineStep({ active, completed, title, desc }: TimelineStepProps) {
+  return (
+    <div className="flex gap-3 relative z-10">
+      <div className="flex-shrink-0 mt-0.5">
+        <div className={`flex h-4 w-4 items-center justify-center rounded-full border ${
+          completed 
+            ? 'bg-emerald-500 border-emerald-500 text-white' 
+            : active 
+              ? 'bg-white border-action-blue text-action-blue ring-2 ring-action-blue/15' 
+              : 'bg-white border-pale-gray text-steel-gray'
+        }`}>
+          {completed ? (
+            <Check size={9} strokeWidth={4} />
+          ) : (
+            <div className={`h-1.5 w-1.5 rounded-full ${active ? 'bg-action-blue' : 'bg-steel-gray'}`} />
+          )}
+        </div>
+      </div>
+      <div>
+        <p className={`text-xs font-black leading-none ${active ? 'text-gray-900' : 'text-slate-blue'}`}>{title}</p>
+        <p className="text-[9px] font-bold text-steel-gray mt-1 leading-normal">{desc}</p>
+      </div>
+    </div>
+  );
+}
+
+
+

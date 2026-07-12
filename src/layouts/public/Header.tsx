@@ -187,7 +187,7 @@ export default function Header({ companyProfile }: HeaderProps) {
                   )}
                 >
                   <Bell size={18} />
-                  <span className="absolute top-2 right-2 flex h-2 w-2 rounded-full bg-action-blue shadow-sm" />
+                  <span className="absolute top-2 right-2 flex h-2 w-2 rounded-full bg-red-500 shadow-sm" />
                 </div>
               </NavLink>
               <div className={"h-4 w-px " + (isTransparentDark ? "bg-white/20" : "bg-platinum-tint")} />

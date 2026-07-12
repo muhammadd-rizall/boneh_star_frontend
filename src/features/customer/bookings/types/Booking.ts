@@ -26,6 +26,7 @@ export interface CustomerBooking extends TimestampedEntity {
 export interface CustomerQuotation extends TimestampedEntity {
   booking_id: string;
   proposed_price: number;
+  initial_price: number;
   dp_amount: number;
   note_to_customer: string;
   status: QuotationStatus;

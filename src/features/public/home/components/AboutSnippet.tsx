@@ -2,9 +2,12 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Compass, ShieldCheck, Heart } from "lucide-react";
 import { useInView } from "@/hooks/useAnimations";
 import { Button } from "@/components/ui/Button";
+import { usePublicCompanyProfile } from "@/features/admin/company-profile/hooks/usePublicCompanyProfile";
 
 export default function AboutSnippet() {
   const { ref, inView } = useInView(0.1);
+  const { profile } = usePublicCompanyProfile();
+
 
   return (
     <section ref={ref} className="py-24 bg-slate-50/50 scroll-mt-24">
@@ -16,19 +19,13 @@ export default function AboutSnippet() {
             <div className="relative rounded-[32px] overflow-hidden shadow-card border border-slate-100 bg-white p-2">
               <img
                 src="https://images.unsplash.com/photo-1570125909232-eb263c188f7e?q=80&w=1200&auto=format&fit=crop"
-                alt="Boneh Star Premium Fleet"
+                alt={`${profile.company_name || "Boneh Star"} Premium Fleet`}
                 className="w-full h-[380px] object-cover rounded-[24px]"
                 loading="lazy"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-midnight-indigo/20 to-transparent rounded-[24px]" />
-            </div>
-
-            {/* Floating Badge */}
-            <div className="absolute -bottom-6 -right-2 md:right-6 bg-midnight-indigo text-white p-6 rounded-2xl shadow-xl max-w-[200px] border border-white/10 backdrop-blur-md">
-              <p className="text-3xl font-extrabold text-action-blue tracking-tight">2018</p>
-              <p className="text-[10px] uppercase font-bold tracking-widest text-slate-blue/80 mt-1 leading-snug">
-                Melayani Perjalanan Indonesia
-              </p>
+              
+            
             </div>
           </div>
 
@@ -45,8 +42,10 @@ export default function AboutSnippet() {
               </h2>
             </div>
 
-            <p className="text-sm font-medium text-slate-blue leading-relaxed opacity-85">
-              Boneh Star Pariwisata hadir untuk memberikan solusi sewa armada bus premium dengan komitmen tinggi pada aspek keselamatan, kenyamanan, dan profesionalisme. Kami mendampingi setiap agenda perjalanan Anda—mulai dari wisata keluarga, acara gathering kantor, study tour sekolah, hingga kebutuhan ziarah.
+            <p className="text-sm font-medium text-slate-blue leading-relaxed opacity-85 whitespace-pre-line">
+              {profile.description || (
+                `${profile.company_name || "Boneh Star"} hadir untuk memberikan solusi sewa armada bus premium dengan komitmen tinggi pada aspek keselamatan, kenyamanan, dan profesionalisme. Kami mendampingi setiap agenda perjalanan Anda—mulai dari wisata keluarga, acara gathering kantor, study tour sekolah, hingga kebutuhan ziarah.`
+              )}
             </p>
 
             {/* Core Values List */}
@@ -76,7 +75,7 @@ export default function AboutSnippet() {
             </div>
 
             <div className="mt-4">
-              <Link to="/about">
+              <Link to="/tentang-kami">
                 <Button
                   variant="outline"
                   className="rounded-full px-8 h-12 text-xs font-extrabold border-slate-200 text-slate-700 hover:border-action-blue hover:text-action-blue bg-white shadow-sm flex items-center gap-2"

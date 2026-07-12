@@ -60,7 +60,7 @@ export default function FleetCard({
       : "Cocok untuk rombongan kecil dan perjalanan dalam kota."
   );
 
-  const whatsappUrl = profile.whatsapp?.[0]
+  const whatsappUrl = profile?.whatsapp?.[0]
     ? `https://wa.me/${profile.whatsapp[0].replace(/[^0-9]/g, "")}?text=Halo%20Admin%20Boneh%20Star,%20saya%20tertarik%20ingin%20tanya%20detail%20menyewa%20armada%20${encodeURIComponent(bus.name)}`
     : `https://wa.me/62821XXXXXXXX?text=Halo%20Admin%20Boneh%20Star,%20saya%20tertarik%20ingin%20tanya%20detail%20menyewa%20armada%20${encodeURIComponent(bus.name)}`;
 

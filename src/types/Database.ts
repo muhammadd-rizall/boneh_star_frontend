@@ -249,6 +249,7 @@ export interface Quotation extends TimestampedEntity {
   booking_id: string;
   user_id: string;
   proposed_price: number;
+  initial_price: number;
   dp_amount: number;
   note_to_customer: string;
   status: QuotationStatus;

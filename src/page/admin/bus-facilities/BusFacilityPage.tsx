@@ -22,6 +22,7 @@ export default function BusFacilityPage() {
   const [isRestoreOpen, setIsRestoreOpen] = useState(false)
   const [isForceDeleteOpen, setIsForceDeleteOpen] = useState(false)
   const [facilityToAction, setFacilityToAction] = useState<BusFacility | null>(null)
+  const [actionLoading, setActionLoading] = useState(false)
 
   useEffect(() => { if (view === "active") { const t = setTimeout(() => refetchActive(searchTerm), 500); return () => clearTimeout(t) } }, [searchTerm, view, refetchActive])
   useEffect(() => { if (view === "trash") refetchTrash() }, [view, refetchTrash])
@@ -76,9 +77,9 @@ export default function BusFacilityPage() {
         <BusFacilityForm facility={selectedFacility} onSuccess={() => { setIsModalOpen(false); refetchActive(searchTerm); refetchTrash() }} onCancel={() => setIsModalOpen(false)} />
       </Modal>
 
-      <Confirmation open={isDeleteOpen} onClose={() => setIsDeleteOpen(false)} onConfirm={async () => { if (facilityToAction) { await deleteFacility(facilityToAction.id); setIsDeleteOpen(false); setFacilityToAction(null); refetchActive(searchTerm) } }} title="Hapus Fasilitas?" message={`"${facilityToAction?.name}" akan dipindahkan ke sampah.`} variant="warning" confirmText="Ya, Hapus" />
-      <Confirmation open={isRestoreOpen} onClose={() => setIsRestoreOpen(false)} onConfirm={async () => { if (facilityToAction) { await restoreFacility(facilityToAction.id); setIsRestoreOpen(false); setFacilityToAction(null); refetchActive(searchTerm) } }} title="Pulihkan?" message={`"${facilityToAction?.name}" akan dipulihkan.`} variant="info" confirmText="Ya, Pulihkan" />
-      <Confirmation open={isForceDeleteOpen} onClose={() => setIsForceDeleteOpen(false)} onConfirm={async () => { if (facilityToAction) { await forceDeleteFacility(facilityToAction.id); setIsForceDeleteOpen(false); setFacilityToAction(null); refetchActive(searchTerm) } }} title="Hapus Permanen?" message={`"${facilityToAction?.name}" akan dihapus permanen.`} variant="danger" confirmText="Ya, Hapus" />
+      <Confirmation open={isDeleteOpen} onClose={() => setIsDeleteOpen(false)} loading={actionLoading} onConfirm={async () => { if (facilityToAction) { setActionLoading(true); try { await deleteFacility(facilityToAction.id); setIsDeleteOpen(false); setFacilityToAction(null); refetchActive(searchTerm) } catch(e){} finally { setActionLoading(false) } } }} title="Hapus Fasilitas?" message={`"${facilityToAction?.name}" akan dipindahkan ke sampah.`} variant="warning" confirmText="Ya, Hapus" />
+      <Confirmation open={isRestoreOpen} onClose={() => setIsRestoreOpen(false)} loading={actionLoading} onConfirm={async () => { if (facilityToAction) { setActionLoading(true); try { await restoreFacility(facilityToAction.id); setIsRestoreOpen(false); setFacilityToAction(null); refetchActive(searchTerm) } catch(e){} finally { setActionLoading(false) } } }} title="Pulihkan?" message={`"${facilityToAction?.name}" akan dipulihkan.`} variant="info" confirmText="Ya, Pulihkan" />
+      <Confirmation open={isForceDeleteOpen} onClose={() => setIsForceDeleteOpen(false)} loading={actionLoading} onConfirm={async () => { if (facilityToAction) { setActionLoading(true); try { await forceDeleteFacility(facilityToAction.id); setIsForceDeleteOpen(false); setFacilityToAction(null); refetchActive(searchTerm) } catch(e){} finally { setActionLoading(false) } } }} title="Hapus Permanen?" message={`"${facilityToAction?.name}" akan dihapus permanen.`} variant="danger" confirmText="Ya, Hapus" />
     </div>
   )
 }

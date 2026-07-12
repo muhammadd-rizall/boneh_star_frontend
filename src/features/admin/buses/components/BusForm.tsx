@@ -18,6 +18,7 @@ import {
   Circle,
   Upload,
   X,
+  XCircle,
   Activity,
   StickyNote,
 } from "lucide-react";

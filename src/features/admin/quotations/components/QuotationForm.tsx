@@ -76,21 +76,40 @@ export default function QuotationForm({ quotation, onSuccess, onCancel }: Quotat
     proposed_price: 0,
     dp_amount: 0,
     note_to_customer: "",
-    status: "draft",
+    status: "sent",
     valid_until: "",
     revision_note: "",
   });
+
+  const parsedRevision = (() => {
+    if (!formData.revision_note) return null;
+    try {
+      const parsed = JSON.parse(formData.revision_note);
+      if (parsed && typeof parsed === 'object' && ('proposed_price' in parsed || 'note' in parsed)) {
+        return parsed as { proposed_price?: number; note?: string };
+      }
+    } catch (e) {
+      // Fallback
+    }
+    return null;
+  })();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
+    const submitData = { ...formData };
+    // If admin is transitioning status out of revision, auto-clear the revision_note
+    if (formData.status !== 'revision' && quotation?.status === 'revision') {
+      submitData.revision_note = "";
+    }
+
     try {
       if (isEdit && quotation) {
-        await quotationService.update(quotation.id, formData);
+        await quotationService.update(quotation.id, submitData);
       } else {
-        await quotationService.create(formData);
+        await quotationService.create(submitData);
       }
       onSuccess();
     } catch (err: any) {
@@ -188,10 +207,54 @@ export default function QuotationForm({ quotation, onSuccess, onCancel }: Quotat
             <MessageSquare size={20} strokeWidth={2.5} />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-midnight-indigo tracking-tight">Pesan & Catatan</h3>
+            <h3 className="text-xl font-bold text-midnight-indigo tracking-tight">Pesan &amp; Catatan</h3>
             <p className="text-xs font-medium text-slate-blue opacity-70">Informasi tambahan untuk pelanggan</p>
           </div>
         </div>
+
+        {parsedRevision && (
+          <div className="p-5 rounded-2xl bg-amber-50/70 border border-amber-200/60 shadow-sm flex flex-col gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className="flex items-center gap-2 border-b border-amber-200/50 pb-2">
+              <MessageSquare className="text-amber-600" size={16} />
+              <h4 className="text-sm font-bold text-amber-900">Pengajuan Negosiasi Pelanggan</h4>
+            </div>
+            
+            <div className="grid gap-4 sm:grid-cols-2 items-center">
+              <div>
+                <span className="text-[10px] font-black uppercase tracking-wider text-amber-700/80">Harga yang Ditawarkan Pelanggan</span>
+                <p className="text-lg font-black text-amber-950 mt-0.5">
+                  {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(parsedRevision.proposed_price || 0)}
+                </p>
+              </div>
+              <div className="flex sm:justify-end">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="bg-amber-100 hover:bg-amber-200 text-amber-900 border-amber-300 text-xs font-bold py-2 px-4 rounded-xl shadow-sm cursor-pointer"
+                  onClick={() => {
+                    setFormData(prev => ({
+                      ...prev,
+                      proposed_price: parsedRevision.proposed_price || prev.proposed_price,
+                      dp_amount: Math.round((parsedRevision.proposed_price || 0) * 0.3),
+                    }));
+                  }}
+                >
+                  Terapkan Harga &amp; DP (30%)
+                </Button>
+              </div>
+            </div>
+
+            {parsedRevision.note && (
+              <div>
+                <span className="text-[10px] font-black uppercase tracking-wider text-amber-700/80">Catatan Pelanggan</span>
+                <p className="text-xs font-medium text-amber-950 mt-1 italic leading-relaxed bg-white/60 p-3 rounded-xl border border-amber-200/30">
+                  "{parsedRevision.note}"
+                </p>
+              </div>
+            )}
+          </div>
+        )}
 
         <Textarea
           label="Catatan untuk Pelanggan"
@@ -203,7 +266,7 @@ export default function QuotationForm({ quotation, onSuccess, onCancel }: Quotat
           rows={4}
         />
 
-        {(formData.status === 'revision' || isEdit) && (
+        {(formData.status === 'revision' || isEdit) && !parsedRevision && (
           <Textarea
             label="Catatan Revisi"
             placeholder="Alasan revisi atau catatan penolakan..."
@@ -217,7 +280,7 @@ export default function QuotationForm({ quotation, onSuccess, onCancel }: Quotat
 
       <DialogFooter className="mt-4 border-t border-platinum-tint/40 pt-8">
         <Button type="button" variant="ghost" onClick={onCancel} className="px-10 font-bold text-slate-blue hover:text-midnight-indigo">Batal</Button>
-        <Button type="submit" variant="primary" className="flex-1 font-bold h-14 rounded-xl shadow-button" loading={loading} icon={Save}>
+        <Button type="submit" variant="primary" className="flex-1 font-bold h-14 rounded-xl shadow-button cursor-pointer" loading={loading} icon={Save}>
           {isEdit ? "Simpan Perubahan" : "Buat Penawaran"}
         </Button>
       </DialogFooter>

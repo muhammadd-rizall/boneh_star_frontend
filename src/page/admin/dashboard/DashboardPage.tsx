@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/Button";
-import MonthlyTrendChart from "@/features/admin/dashboard/components/MonthlyTrendChart";
 import { useDashboard } from "@/features/admin/dashboard/hooks/useDashboard";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -232,8 +231,6 @@ export default function DashboardPage() {
           ))
         )}
       </div>
-
-      <MonthlyTrendChart data={data?.monthly_chart || []} loading={loading} />
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
         <div className="rounded-2xl border border-platinum-tint bg-white p-5 shadow-sm sm:p-6">

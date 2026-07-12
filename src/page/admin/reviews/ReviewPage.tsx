@@ -62,50 +62,46 @@ export default function ReviewPage() {
       />
 
       {/* Filters */}
-      <Card padding="sm" className="mb-2">
-        <div className="flex flex-wrap items-end gap-4">
-          <div className="w-full sm:w-48">
-            <Input 
-              label="Dari Tanggal" 
-              type="date" 
-              value={params.start_date || ''} 
-              onChange={e => updateParams({ start_date: e.target.value })}
-              icon={Calendar}
-            />
+      <Card padding="md" className="mb-4">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 items-end">
+          <Input 
+            label="Dari Tanggal" 
+            type="date" 
+            value={params.start_date || ''} 
+            onChange={e => updateParams({ start_date: e.target.value })}
+            icon={Calendar}
+          />
+          <Input 
+            label="Sampai Tanggal" 
+            type="date" 
+            value={params.end_date || ''} 
+            onChange={e => updateParams({ end_date: e.target.value })}
+            icon={Calendar}
+          />
+          <Select 
+            label="Rating"
+            placeholder="Semua Rating"
+            value={params.rating?.toString() || ''}
+            onChange={val => updateParams({ rating: val ? parseInt(val) : undefined })}
+            options={[
+              { label: '5 Bintang', value: '5' },
+              { label: '4 Bintang', value: '4' },
+              { label: '3 Bintang', value: '3' },
+              { label: '2 Bintang', value: '2' },
+              { label: '1 Bintang', value: '1' },
+            ]}
+            icon={Star}
+          />
+          <div className="flex h-11 items-center">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => updateParams({ start_date: undefined, end_date: undefined, rating: undefined })}
+              className="h-11 w-full rounded-xl border-platinum-tint bg-white px-5 text-sm font-semibold text-slate-blue shadow-sm hover:bg-cloud-mist hover:text-midnight-indigo"
+            >
+              Reset Filter
+            </Button>
           </div>
-          <div className="w-full sm:w-48">
-            <Input 
-              label="Sampai Tanggal" 
-              type="date" 
-              value={params.end_date || ''} 
-              onChange={e => updateParams({ end_date: e.target.value })}
-              icon={Calendar}
-            />
-          </div>
-          <div className="w-full sm:w-40">
-            <Select 
-              label="Rating"
-              placeholder="Semua Rating"
-              value={params.rating?.toString() || ''}
-              onChange={val => updateParams({ rating: val ? parseInt(val) : undefined })}
-              options={[
-                { label: '5 Bintang', value: '5' },
-                { label: '4 Bintang', value: '4' },
-                { label: '3 Bintang', value: '3' },
-                { label: '2 Bintang', value: '2' },
-                { label: '1 Bintang', value: '1' },
-              ]}
-              icon={Star}
-            />
-          </div>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => updateParams({ start_date: undefined, end_date: undefined, rating: undefined })}
-            className="mb-1"
-          >
-            Reset Filter
-          </Button>
         </div>
       </Card>
 

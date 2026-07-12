@@ -24,14 +24,29 @@ export default function PaymentSection({ transaction, paymentMethods, departureD
     return date.toISOString().split('T')[0];
   }, [departureDate]);
 
+  const hasPaidDp = Number(transaction.dp_paid) > 0 || transaction.status === 'dp_paid';
+  const defaultPaymentType = hasPaidDp ? 'settlement' : 'dp';
+  const defaultAmount = defaultPaymentType === 'dp' 
+    ? Math.round(Number(transaction.total_amount) * 0.3) 
+    : Number(transaction.remaining_amount);
+
   const [formData, setFormData] = React.useState({
     payment_method_id: '',
-    amount: transaction.remaining_amount,
-    payment_type: 'dp' as 'dp' | 'settlement',
+    amount: defaultAmount,
+    payment_type: defaultPaymentType as 'dp' | 'settlement',
     payment_date: new Date().toISOString().split('T')[0] > maxDate ? maxDate : new Date().toISOString().split('T')[0],
     transfer_proof: null as File | null,
   });
   const [loading, setLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      amount: prev.payment_type === 'dp' 
+        ? Math.round(Number(transaction.total_amount) * 0.3) 
+        : Number(transaction.remaining_amount)
+    }));
+  }, [formData.payment_type, transaction.total_amount, transaction.remaining_amount]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -178,9 +193,9 @@ export default function PaymentSection({ transaction, paymentMethods, departureD
                   className="rounded-2xl border border-slate-100 bg-white p-3.5 text-sm font-bold text-slate-700 focus:border-orange-500 outline-none transition-all appearance-none cursor-pointer"
                   required
                   value={formData.payment_type}
-                  onChange={(e) => setFormData({ ...formData, payment_type: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, payment_type: e.target.value as 'dp' | 'settlement' })}
                 >
-                  <option value="dp">Uang Muka (DP)</option>
+                  {!hasPaidDp && <option value="dp">Uang Muka (DP)</option>}
                   <option value="settlement">Pelunasan</option>
                 </select>
               </div>

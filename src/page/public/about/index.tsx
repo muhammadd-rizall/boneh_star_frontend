@@ -7,6 +7,7 @@ import { Compass, ChevronRight, ArrowRight, Image as ImageIcon, Calendar, Sparkl
 import { Link } from "react-router-dom";
 import { useInView } from "@/hooks/useAnimations";
 import type { CSSProperties } from "react";
+import { resolveMediaUrl } from "@/features/admin/company-profile/utils/companyProfileUtils";
 
 export default function AboutPage() {
   const { profile } = usePublicCompanyProfile();
@@ -19,6 +20,8 @@ export default function AboutPage() {
   const { ref: descRef, inView: descInView } = useInView(0.1);
   const { ref: galleryRef, inView: galleryInView } = useInView(0.1);
   const { ref: ctaRef, inView: ctaInView } = useInView(0.1);
+
+  const logoUrl = profile.logo ? resolveMediaUrl(profile.logo) : null;
 
   useEffect(() => {
     const fetchGalleries = async () => {
@@ -67,7 +70,7 @@ export default function AboutPage() {
                 </div>
 
                 <p className="text-sm sm:text-base font-semibold text-slate-blue leading-relaxed opacity-75 max-w-xl">
-                  Dedikasi tinggi untuk memberikan pelayanan transportasi terbaik. Kami hadir sebagai mitra terpercaya perjalanan Anda dengan armada modern dan kenyamanan istimewa.
+                  Dedikasi tinggi untuk memberikan pelayanan transportasi terbaik. {profile.company_name || "Boneh Star"} hadir sebagai mitra terpercaya perjalanan Anda dengan armada modern dan kenyamanan istimewa.
                 </p>
               </div>
 
@@ -76,14 +79,23 @@ export default function AboutPage() {
                 <div className="relative w-full max-w-[460px] aspect-[4/3] rounded-[32px] overflow-hidden p-2 bg-white border border-slate-100 shadow-card">
                   <img
                     src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=1000&auto=format&fit=crop"
-                    alt="Boneh Star Bus Exterior"
+                    alt={`${profile.company_name || "Boneh Star"} Bus Exterior`}
                     className="w-full h-full object-cover rounded-[24px]"
                   />
+                  {logoUrl && (
+                    <div className="absolute top-6 left-6 bg-white/90 backdrop-blur-md px-4 py-2 rounded-2xl shadow-lg border border-slate-100/50 flex items-center justify-center">
+                      <img
+                        src={logoUrl}
+                        alt={profile.company_name || "Logo"}
+                        className="h-8 w-auto object-contain"
+                      />
+                    </div>
+                  )}
                 </div>
                 <div className="absolute -bottom-8 -left-6 w-1/2 aspect-square rounded-2xl overflow-hidden p-1.5 bg-white border border-slate-100 shadow-xl hidden sm:block">
                   <img
                     src="https://images.unsplash.com/photo-1570125909232-eb263c188f7e?q=80&w=600&auto=format&fit=crop"
-                    alt="Boneh Star Bus Interior"
+                    alt={`${profile.company_name || "Boneh Star"} Bus Interior`}
                     className="w-full h-full object-cover rounded-xl"
                   />
                 </div>
@@ -117,7 +129,7 @@ export default function AboutPage() {
                     "Menyediakan solusi transportasi pariwisata terpercaya dengan standar layanan premium, armada modern, dan komitmen keselamatan tanpa kompromi untuk kenyamanan perjalanan terbaik Anda."}
                 </p>
                 <p className="text-sm sm:text-base font-medium text-slate-blue/80 leading-relaxed">
-                  Kami mengerti bahwa setiap perjalanan memiliki cerita unik tersendiri. Oleh karena itu, Boneh Star hadir dengan memadukan kesiapan kru operasional profesional, armada bus kelas eksekutif yang bersih dan terawat, serta sistem pemesanan yang mudah untuk mewujudkan liburan atau agenda penting Anda secara sempurna.
+                  Kami mengerti bahwa setiap perjalanan memiliki cerita unik tersendiri. Oleh karena itu, {profile.company_name || "Boneh Star"} hadir dengan memadukan kesiapan kru operasional profesional, armada bus kelas eksekutif yang bersih dan terawat, serta sistem pemesanan yang mudah untuk mewujudkan liburan atau agenda penting Anda secara sempurna.
                 </p>
               </div>
 
@@ -139,7 +151,7 @@ export default function AboutPage() {
                 Dokumentasi Perjalanan Kami
               </h2>
               <p className="mt-4 text-sm sm:text-base font-semibold text-slate-blue opacity-70 leading-relaxed">
-                Melihat lebih dekat keceriaan dan kenyamanan para penumpang kami dalam menikmati perjalanan bersama Boneh Star.
+                Melihat lebih dekat keceriaan dan kenyamanan para penumpang kami dalam menikmati perjalanan bersama {profile.company_name || "Boneh Star"}.
               </p>
             </div>
 
