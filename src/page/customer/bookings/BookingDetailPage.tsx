@@ -23,6 +23,7 @@ import {
   MessageCircle, ClipboardList, Check, Quote, Paperclip
 } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/utils/formatter';
+import { useToastStore } from '@/store/useToastStore';
 
 function Section({ title, icon: Icon, children }: { title: string; icon: React.ElementType; children: React.ReactNode }) {
   return (
@@ -49,6 +50,7 @@ export default function BookingDetailPage() {
   } = useBookingDetail(id!);
 
   const { profile, loading: profileLoading } = useProfile();
+  const { showSuccess, showError } = useToastStore();
 
   const [showCancelModal, setShowCancelModal] = React.useState(false);
   const [cancelReason, setCancelReason] = React.useState('');
@@ -88,8 +90,10 @@ export default function BookingDetailPage() {
       document.body.appendChild(link);
       link.click();
       link.remove();
-    } catch (err) {
+      showSuccess('Invoice berhasil diunduh');
+    } catch (err: any) {
       console.error('Failed to download invoice:', err);
+      showError('Gagal mengunduh invoice');
     }
   };
 
@@ -152,19 +156,7 @@ export default function BookingDetailPage() {
     return `${diffDays} Hari`;
   };
 
-  const getDestinationImage = (activityName: string) => {
-    const name = activityName.toLowerCase();
-    if (name.includes('wisata') || name.includes('liburan') || name.includes('pantai')) {
-      return 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=80';
-    }
-    if (name.includes('ziarah') || name.includes('masjid') || name.includes('agama')) {
-      return 'https://images.unsplash.com/photo-1597838816882-4551b0304a63?auto=format&fit=crop&w=400&q=80';
-    }
-    if (name.includes('study') || name.includes('sekolah') || name.includes('edukasi')) {
-      return 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=400&q=80';
-    }
-    return 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=400&q=80';
-  };
+
 
   // Extract selected bus preferences if stored in notes
   const preferredBus = (() => {
@@ -211,14 +203,7 @@ export default function BookingDetailPage() {
             {/* Destination Highlight Header Card */}
             <div className="bg-white border border-pale-gray rounded-2xl p-5 shadow-sm">
               <div className="flex flex-col md:flex-row gap-5 items-stretch">
-                {/* Image */}
-                <div className="w-full md:w-[200px] h-[140px] rounded-xl overflow-hidden shrink-0 border border-pale-gray shadow-sm">
-                  <img
-                    src={getDestinationImage(booking.activity?.name ?? '')}
-                    alt={booking.activity?.name ?? 'Wisata'}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+
 
                 {/* Content */}
                 <div className="flex-1 flex flex-col justify-between">
@@ -447,7 +432,16 @@ export default function BookingDetailPage() {
                         transaction={booking.transaction as any}
                         paymentMethods={paymentMethods}
                         departureDate={booking.departure_date}
-                        onUpload={(data) => bookingService.uploadPayment(booking.id, data).then(refresh)}
+                        onUpload={(data) => 
+                          bookingService.uploadPayment(booking.id, data)
+                            .then(() => {
+                              showSuccess('Bukti pembayaran berhasil diunggah');
+                              refresh();
+                            })
+                            .catch((err: any) => {
+                              showError(err.message || 'Gagal mengunggah bukti pembayaran');
+                            })
+                        }
                       />
                     </Section>
                   )}
@@ -469,8 +463,13 @@ export default function BookingDetailPage() {
                           bookingId={booking.id}
                           onCancel={() => {}}
                           onSubmit={async (data: ReviewFormData) => {
-                            await reviewService.create(data);
-                            refresh();
+                            try {
+                              await reviewService.create(data);
+                              showSuccess('Ulasan Anda berhasil dikirim');
+                              refresh();
+                            } catch (err: any) {
+                              showError(err.message || 'Gagal mengirim ulasan');
+                            }
                           }}
                         />
                       )}

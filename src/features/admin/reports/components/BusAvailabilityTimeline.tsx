@@ -46,17 +46,17 @@ export default function BusAvailabilityTimeline({ data, period }: BusAvailabilit
     <Card className="overflow-hidden border-slate-200/80 bg-white/90 shadow-sm">
       <div className="p-6 border-b border-slate-100 flex justify-between items-center">
         <div>
-          <h3 className="text-lg font-semibold text-slate-900">Fleet Timeline</h3>
-          <p className="text-sm text-slate-500 mt-1">Visual schedule of all bus units</p>
+          <h3 className="text-lg font-semibold text-slate-900">Timeline Armada</h3>
+          <p className="text-sm text-slate-500 mt-1">Jadwal visual dari semua unit bus</p>
         </div>
         <div className="flex gap-4 text-xs">
           <div className="flex items-center gap-1.5">
             <div className="w-3 h-3 rounded bg-indigo-500"></div>
-            <span className="text-slate-600 font-medium">Booked</span>
+            <span className="text-slate-600 font-medium">Dipesan</span>
           </div>
           <div className="flex items-center gap-1.5">
             <div className="w-3 h-3 rounded border border-slate-200 bg-slate-50"></div>
-            <span className="text-slate-600 font-medium">Available</span>
+            <span className="text-slate-600 font-medium">Tersedia</span>
           </div>
         </div>
       </div>
@@ -100,7 +100,7 @@ export default function BusAvailabilityTimeline({ data, period }: BusAvailabilit
                       {schedule && (
                         <div 
                           className={`absolute inset-1 rounded-md flex items-center justify-center text-[8px] font-bold text-white shadow-sm transition-all hover:scale-105 hover:z-20 cursor-help ${schedule.status === 'confirmed' ? "bg-indigo-500" : "bg-slate-400"}`}
-                          title={`${schedule.booking_code} (${schedule.status})`}
+                          title={`${schedule.booking_code} (${schedule.status === 'confirmed' ? 'Dikonfirmasi' : 'Menunggu'})`}
                         >
                           {new Date(schedule.departure_date).getDate() === date.getDate() && (
                             <span className="truncate px-1">{schedule.booking_code.split('-').pop()}</span>

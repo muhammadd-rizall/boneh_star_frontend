@@ -25,7 +25,7 @@ export default function PaymentTable({
 }: PaymentTableProps) {
   const columns: Column<Payment>[] = [
     { 
-      header: "Transaction", 
+      header: "Transaksi", 
       accessor: (row) => (
         <div className="flex items-center gap-4 text-left">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-500 overflow-hidden">
@@ -43,7 +43,7 @@ export default function PaymentTable({
       )
     },
     {
-      header: "Amount",
+      header: "Nominal",
       accessor: (row) => (
         <span className="text-sm font-bold text-slate-800">
           Rp {new Intl.NumberFormat('id-ID').format(row.amount)}
@@ -51,7 +51,7 @@ export default function PaymentTable({
       )
     },
     {
-      header: "Payment Method",
+      header: "Metode Pembayaran",
       accessor: (row) => (
         <div className="flex flex-col">
           <span className="text-sm font-medium text-slate-700">{row.payment_method?.bank_name}</span>
@@ -67,15 +67,21 @@ export default function PaymentTable({
           verified: "bg-green-100 text-green-800",
           rejected: "bg-red-100 text-red-800",
         };
+        const statusLabels = {
+          pending: "Tertunda",
+          verified: "Terverifikasi",
+          rejected: "Ditolak",
+        };
+        const currentStatus = row.status as keyof typeof statusColors;
         return (
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[row.status]}`}>
-            {row.status.charAt(0).toUpperCase() + row.status.slice(1)}
+          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[currentStatus] || "bg-slate-100 text-slate-800"}`}>
+            {statusLabels[currentStatus] || row.status}
           </span>
         );
       }
     },
     {
-      header: "Actions",
+      header: "Aksi",
       accessor: (row) => (
         <div className="flex items-center gap-2">
           {isTrash ? (
@@ -86,7 +92,7 @@ export default function PaymentTable({
                 icon={RotateCcw} 
                 className="h-9 w-9 rounded-full p-0" 
                 onClick={() => onRestore?.(row.id)}
-                title="Restore Payment" 
+                title="Pulihkan Pembayaran" 
               />
               <Button 
                 size="sm" 
@@ -94,7 +100,7 @@ export default function PaymentTable({
                 icon={Trash2} 
                 className="h-9 w-9 rounded-full p-0" 
                 onClick={() => onDelete(row)}
-                title="Permanently Delete"
+                title="Hapus Permanen"
               />
             </>
           ) : (
@@ -105,7 +111,7 @@ export default function PaymentTable({
                 icon={Eye} 
                 className="h-9 w-9 rounded-full p-0" 
                 onClick={() => onViewProof(row)}
-                title="View Proof" 
+                title="Lihat Bukti" 
               />
               {row.status === 'pending' && (
                 <Button 
@@ -114,7 +120,7 @@ export default function PaymentTable({
                   icon={CheckCircle} 
                   className="h-9 w-9 rounded-full p-0" 
                   onClick={() => onVerify(row)}
-                  title="Verify Payment" 
+                  title="Verifikasi Pembayaran" 
                 />
               )}
               <Button 
@@ -123,7 +129,7 @@ export default function PaymentTable({
                 icon={Trash2} 
                 className="h-9 w-9 rounded-full p-0" 
                 onClick={() => onDelete(row)}
-                title="Delete Payment"
+                title="Hapus Pembayaran"
               />
             </>
           )}

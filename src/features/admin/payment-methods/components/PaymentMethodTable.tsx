@@ -23,7 +23,7 @@ export default function PaymentMethodTable({
 }: PaymentMethodTableProps) {
   const columns: Column<PaymentMethod>[] = [
     { 
-      header: "Bank Information", 
+      header: "Informasi Bank", 
       accessor: (row) => (
         <div className="flex items-center gap-4 text-left">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-500 overflow-hidden">
@@ -37,7 +37,7 @@ export default function PaymentMethodTable({
       )
     },
     {
-      header: "Account Name",
+      header: "Nama Pemilik Rekening",
       accessor: (row) => (
         <span className="text-sm font-medium text-slate-700">{row.account_name}</span>
       )
@@ -48,12 +48,12 @@ export default function PaymentMethodTable({
         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
           row.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
         }`}>
-          {row.is_active ? 'Active' : 'Inactive'}
+          {row.is_active ? 'Aktif' : 'Nonaktif'}
         </span>
       )
     },
     {
-      header: "Actions",
+      header: "Aksi",
       accessor: (row) => (
         <div className="flex items-center gap-2">
           {isTrash ? (
@@ -64,7 +64,7 @@ export default function PaymentMethodTable({
                 icon={RotateCcw} 
                 className="h-9 w-9 rounded-full p-0" 
                 onClick={() => onRestore?.(row.id)}
-                title="Restore Payment Method" 
+                title="Pulihkan Metode Pembayaran" 
               />
               <Button 
                 size="sm" 
@@ -72,7 +72,7 @@ export default function PaymentMethodTable({
                 icon={Trash2} 
                 className="h-9 w-9 rounded-full p-0" 
                 onClick={() => onDelete(row)}
-                title="Permanently Delete"
+                title="Hapus Permanen"
               />
             </>
           ) : (
@@ -83,7 +83,7 @@ export default function PaymentMethodTable({
                 icon={Edit} 
                 className="h-9 w-9 rounded-full p-0" 
                 onClick={() => onEdit(row)}
-                title="Edit Payment Method" 
+                title="Edit Metode Pembayaran" 
               />
               <Button 
                 size="sm" 
@@ -91,7 +91,7 @@ export default function PaymentMethodTable({
                 icon={Trash2} 
                 className="h-9 w-9 rounded-full p-0" 
                 onClick={() => onDelete(row)}
-                title="Delete Payment Method"
+                title="Hapus Metode Pembayaran"
               />
             </>
           )}

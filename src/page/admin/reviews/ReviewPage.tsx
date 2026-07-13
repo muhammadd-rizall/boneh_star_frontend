@@ -11,6 +11,7 @@ import { Card } from "@/components/ui/Card"
 import { PageHeader, StatCard, StatGrid, ErrorBanner } from "@/components/ui/PageComponents"
 import { Star, MessageSquare, CheckCircle, EyeOff, RefreshCcw, Calendar } from "lucide-react"
 import Confirmation from "@/components/feedback/Confirmation"
+import { useToastStore } from "@/store/useToastStore"
 
 export default function ReviewPage() {
   const { 
@@ -27,16 +28,22 @@ export default function ReviewPage() {
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false)
   const [reviewToAction, setReviewToAction] = useState<Review | null>(null)
   const [actionLoading, setActionLoading] = useState(false)
+  const showSuccess = useToastStore(state => state.showSuccess)
 
-  const runAction = async (fn: () => Promise<void>, closeDialog: () => void) => {
+  const runAction = async (fn: () => Promise<void>, closeDialog: () => void, successMsg?: string) => {
     setActionLoading(true)
-    try { await fn(); closeDialog() }
+    try { 
+      await fn(); 
+      closeDialog();
+      if (successMsg) showSuccess(successMsg);
+    }
     finally { setActionLoading(false) }
   }
 
   const handleTogglePublish = async (review: Review) => {
     try {
       await togglePublishReview(review.id)
+      showSuccess(review.is_published ? "Ulasan berhasil disembunyikan!" : "Ulasan berhasil dipublikasikan!");
     } catch (err) {
       console.error("Failed to toggle publish status:", err)
     }
@@ -265,7 +272,7 @@ export default function ReviewPage() {
       <Confirmation 
         open={isDeleteConfirmOpen} 
         onClose={() => setIsDeleteConfirmOpen(false)} 
-        onConfirm={() => runAction(async () => { await deleteReview(reviewToAction!.id) }, () => setIsDeleteConfirmOpen(false))} 
+        onConfirm={() => runAction(async () => { await deleteReview(reviewToAction!.id) }, () => setIsDeleteConfirmOpen(false), "Ulasan berhasil dihapus.")} 
         loading={actionLoading} 
         title="Hapus Ulasan?" 
         message="Ulasan akan dihapus secara permanen (soft delete)." 

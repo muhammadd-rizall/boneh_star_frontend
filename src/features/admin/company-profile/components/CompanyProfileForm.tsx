@@ -27,6 +27,7 @@ import {
   SOCIAL_PLATFORMS,
 } from "../utils/companyProfileUtils";
 import { cn } from "@/lib/utils";
+import { useToastStore } from "@/store/useToastStore";
 
 export default function CompanyProfileForm() {
   const { profile, loading, error, updateProfile, refetch, mapToFormData } = useCompanyProfile();
@@ -34,6 +35,7 @@ export default function CompanyProfileForm() {
   const [formError, setFormError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const showSuccess = useToastStore(state => state.showSuccess);
 
   const [formData, setFormData] = useState<CompanyProfileFormData>({
     company_name: "",
@@ -127,6 +129,7 @@ export default function CompanyProfileForm() {
         social_media: normalizeSocialMedia(formData.social_media),
       });
       setSuccessMessage("Profil perusahaan berhasil diperbarui!");
+      showSuccess("Profil perusahaan berhasil diperbarui!");
       await refetch();
       window.scrollTo({ top: 0, behavior: 'smooth' });
       setTimeout(() => setSuccessMessage(null), 5000);

@@ -15,9 +15,17 @@ export const transactionService = {
       const response = await axios.get<TransactionApiResponse>(ENDPOINTS.BASE, {
         params: { search }
       });
-      const data = response.data.data;
+      const responseData = response.data.data;
+      
+      let transactions: Transaction[] = [];
+      if (responseData && typeof responseData === 'object' && 'data' in responseData && Array.isArray(responseData.data)) {
+        transactions = responseData.data as Transaction[];
+      } else if (Array.isArray(responseData)) {
+        transactions = responseData as Transaction[];
+      }
+
       return {
-        transactions: Array.isArray(data) ? data : [],
+        transactions,
         statistics: response.data.statistics || response.data.statistic || null
       };
     } catch (error) {
@@ -29,8 +37,16 @@ export const transactionService = {
   getTrashed: async (): Promise<Transaction[]> => {
     try {
       const response = await axios.get<TransactionApiResponse>(ENDPOINTS.TRASHED);
-      const data = response.data.data;
-      return Array.isArray(data) ? data : [];
+      const responseData = response.data.data;
+      
+      let transactions: Transaction[] = [];
+      if (responseData && typeof responseData === 'object' && 'data' in responseData && Array.isArray(responseData.data)) {
+        transactions = responseData.data as Transaction[];
+      } else if (Array.isArray(responseData)) {
+        transactions = responseData as Transaction[];
+      }
+      
+      return transactions;
     } catch (error) {
       console.error('Error fetching trashed transactions:', error);
       throw error;

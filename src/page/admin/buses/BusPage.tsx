@@ -15,12 +15,14 @@ import {
     type Bus,
 } from "@/features/admin/buses"
 import BusForm from "@/features/admin/buses/components/BusForm"
+import { useToastStore } from "@/store/useToastStore"
 import { Bus as BusIcon, LayoutGrid, Plus, RefreshCcw, ShieldCheck, Wrench } from "lucide-react"
 import { useEffect, useState } from "react"
 
 export default function BusPage() {
   const [view, setView] = useState<"active" | "trash">("active")
   const [searchTerm, setSearchTerm] = useState("")
+  const showSuccess = useToastStore(state => state.showSuccess)
 
   const { buses, statistics, loading: activeLoading, error: activeError, deleteBus, refetch: refetchActive } = useBuses()
   const { buses: trashedBuses, loading: trashLoading, error: trashError, refetch: refetchTrash, restoreBus, forceDeleteBus } = useTrashedBuses()
@@ -46,7 +48,11 @@ export default function BusPage() {
 
   const handleCreate = () => { setSelectedBus(null); setIsModalOpen(true) }
   const handleEdit = (b: Bus) => { setSelectedBus(b); setIsModalOpen(true) }
-  const handleSuccess = () => { setIsModalOpen(false); if (view === "active") refetchActive(searchTerm); else refetchTrash() }
+  const handleSuccess = () => { 
+    setIsModalOpen(false); 
+    if (view === "active") refetchActive(searchTerm); else refetchTrash();
+    showSuccess(selectedBus ? "Data bus berhasil diperbarui!" : "Bus baru berhasil ditambahkan!");
+  }
 
   const handleDeleteClick = (b: Bus) => { setBusToManage(b); setIsDeleteConfirmOpen(true) }
   const handleConfirmDelete = async () => {
@@ -54,6 +60,7 @@ export default function BusPage() {
     try { 
       await deleteBus(busToManage.id); 
       setIsDeleteConfirmOpen(false); 
+      showSuccess(`"${busToManage.name}" dipindahkan ke tempat sampah.`);
       setBusToManage(null);
       refetchActive(searchTerm);
     }
@@ -66,7 +73,13 @@ export default function BusPage() {
   }
   const handleConfirmRestore = async () => {
     if (!busToManage) return; setActionLoading(true)
-    try { await restoreBus(busToManage.id); setIsRestoreConfirmOpen(false); setBusToManage(null); refetchActive(searchTerm) }
+    try { 
+      await restoreBus(busToManage.id); 
+      setIsRestoreConfirmOpen(false); 
+      showSuccess(`"${busToManage.name}" berhasil dipulihkan.`);
+      setBusToManage(null); 
+      refetchActive(searchTerm) 
+    }
     finally { setActionLoading(false) }
   }
 
@@ -76,6 +89,7 @@ export default function BusPage() {
     try { 
       await forceDeleteBus(busToManage.id); 
       setIsForceDeleteConfirmOpen(false); 
+      showSuccess(`"${busToManage.name}" berhasil dihapus permanen.`);
       setBusToManage(null);
       refetchActive(searchTerm);
       refetchTrash();

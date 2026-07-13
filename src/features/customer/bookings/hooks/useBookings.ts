@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { bookingService } from '../services/BookingService';
 import type { CustomerBooking } from '../types/Booking';
 import type { PaymentMethod } from '@/types/Database';
+import { useToastStore } from '@/store/useToastStore';
 
 export function useBookings() {
   const [bookings, setBookings] = useState<CustomerBooking[]>([]);
@@ -33,6 +34,7 @@ export function useBookingDetail(id: string) {
   const [companyProfile, setCompanyProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { showSuccess, showError } = useToastStore();
 
   const fetchDetail = useCallback(async () => {
     if (!id) return;
@@ -58,18 +60,33 @@ export function useBookingDetail(id: string) {
   }, [fetchDetail]);
 
   const cancelBooking = async (reason: string) => {
-    await bookingService.cancel(id, reason);
-    await fetchDetail();
+    try {
+      await bookingService.cancel(id, reason);
+      showSuccess('Pemesanan berhasil dibatalkan');
+      await fetchDetail();
+    } catch (err: any) {
+      showError(err.message || 'Gagal membatalkan pemesanan');
+    }
   };
 
   const acceptQuotation = async (quotationId: string) => {
-    await bookingService.acceptQuotation(quotationId);
-    await fetchDetail();
+    try {
+      await bookingService.acceptQuotation(quotationId);
+      showSuccess('Penawaran berhasil disetujui');
+      await fetchDetail();
+    } catch (err: any) {
+      showError(err.message || 'Gagal menyetujui penawaran');
+    }
   };
 
   const reviseQuotation = async (quotationId: string, note: string) => {
-    await bookingService.reviseQuotation(quotationId, note);
-    await fetchDetail();
+    try {
+      await bookingService.reviseQuotation(quotationId, note);
+      showSuccess('Permintaan negosiasi berhasil dikirim');
+      await fetchDetail();
+    } catch (err: any) {
+      showError(err.message || 'Gagal mengirim permintaan negosiasi');
+    }
   };
 
   return { 

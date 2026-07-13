@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/Button"
 import { Modal } from "@/components/ui/Modal"
 import { ErrorBanner, PageHeader, PageToolbar, StatCard, StatGrid } from "@/components/ui/PageComponents"
 import { RoleForm, RoleTable, useRoles, type Role } from "@/features/admin/roles"
+import { useToastStore } from "@/store/useToastStore"
 import { Key, Lock, Plus, RefreshCcw, ShieldCheck } from "lucide-react"
 import { useMemo, useState } from "react"
 
@@ -14,16 +15,27 @@ export default function RolePage() {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
   const [roleToDelete, setRoleToDelete] = useState<Role | null>(null)
   const [deleteLoading, setDeleteLoading] = useState(false)
+  const showSuccess = useToastStore(state => state.showSuccess)
 
   const filteredRoles = useMemo(
     () => roles.filter(r => r.name.toLowerCase().includes(searchTerm.toLowerCase())),
     [roles, searchTerm]
   )
 
-  const handleSuccess = () => { setIsModalOpen(false); refetch() }
+  const handleSuccess = () => { 
+    setIsModalOpen(false); 
+    refetch();
+    showSuccess(selectedRole ? "Role berhasil diperbarui!" : "Role baru berhasil dibuat!");
+  }
+  
   const handleConfirmDelete = async () => {
     if (!roleToDelete) return; setDeleteLoading(true)
-    try { await deleteRole(roleToDelete.id); setIsConfirmOpen(false); setRoleToDelete(null) }
+    try { 
+      await deleteRole(roleToDelete.id); 
+      setIsConfirmOpen(false); 
+      showSuccess(`Role "${roleToDelete.name}" berhasil dihapus.`);
+      setRoleToDelete(null) 
+    }
     finally { setDeleteLoading(false) }
   }
 

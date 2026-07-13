@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-do
 import { useAuthStore } from "@/store/useAuthStore";
 import api from "@/api/Axios";
 import { useNotifications, NotificationDrawer } from "@/features/admin/notifications";
+import ToastContainer from "@/components/feedback/ToastContainer";
 import {
   LayoutDashboard,
   Users,
@@ -134,6 +135,7 @@ export default function DahsbordLayout() {
 
   return (
     <div className="flex h-dvh w-full overflow-hidden bg-white font-sans text-midnight-indigo">
+      <ToastContainer />
       {isMobileOpen && (
         <div className="fixed inset-0 z-[60] bg-midnight-indigo/40 backdrop-blur-sm lg:hidden" onClick={() => setMobileOpen(false)} />
       )}
@@ -177,7 +179,7 @@ export default function DahsbordLayout() {
         </div>
 
         <nav className={cn("flex-1 overflow-x-hidden overflow-y-auto py-5 text-midnight-indigo", collapsed ? "px-3" : "px-4")}>
-          <SidebarGroup label="Overview" collapsed={collapsed}>
+          <SidebarGroup label="Ringkasan" collapsed={collapsed}>
             <SidebarItem to="/admin/dashboard" icon={LayoutDashboard} label="Dashboard" collapsed={collapsed} onNavigate={() => setMobileOpen(false)} />
           </SidebarGroup>
 

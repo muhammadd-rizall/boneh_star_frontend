@@ -32,13 +32,13 @@ export default function TransactionTable({
     }).format(amount);
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusConfig = (status: string) => {
     switch (status) {
-      case 'waiting': return 'border-amber-200 bg-amber-50 text-amber-700';
-      case 'dp_paid': return 'border-blue-200 bg-blue-50 text-blue-700';
-      case 'fully_paid': return 'border-emerald-200 bg-emerald-50 text-emerald-700';
-      case 'overdue': return 'border-rose-200 bg-rose-50 text-rose-700';
-      default: return 'border-slate-200 bg-slate-100 text-slate-500';
+      case 'waiting': return { label: 'Menunggu', color: 'border-amber-200 bg-amber-50 text-amber-700' };
+      case 'dp_paid': return { label: 'DP Dibayar', color: 'border-blue-200 bg-blue-50 text-blue-700' };
+      case 'fully_paid': return { label: 'Lunas', color: 'border-emerald-200 bg-emerald-50 text-emerald-700' };
+      case 'overdue': return { label: 'Jatuh Tempo', color: 'border-rose-200 bg-rose-50 text-rose-700' };
+      default: return { label: status.replace('_', ' '), color: 'border-slate-200 bg-slate-100 text-slate-500' };
     }
   };
 
@@ -53,24 +53,24 @@ export default function TransactionTable({
           </div>
           <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500">
             <FileText size={12} />
-            <span>{row.booking?.booking_code || 'No Booking'}</span>
+            <span>{row.booking?.booking_code || 'Tanpa Booking'}</span>
           </div>
         </div>
       )
     },
     {
-      header: "Customer",
+      header: "Pelanggan",
       accessor: (row) => (
         <div className="flex items-center gap-2">
           <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-slate-500">
             <User size={14} />
           </div>
-          <span className="text-sm font-medium text-slate-700">{row.booking?.customer?.name || 'Unknown'}</span>
+          <span className="text-sm font-medium text-slate-700">{row.booking?.customer?.name || 'Tidak Diketahui'}</span>
         </div>
       )
     },
     {
-      header: "Payment Details",
+      header: "Rincian Pembayaran",
       accessor: (row) => (
         <div className="flex flex-col gap-1 text-left">
           <div className="flex items-center gap-1.5 text-sm font-bold text-slate-700">
@@ -80,21 +80,24 @@ export default function TransactionTable({
           <div className="flex flex-wrap gap-2 text-[10px] font-medium uppercase tracking-wider">
             <span className="text-blue-600">DP: {formatCurrency(row.dp_paid)}</span>
             <span className="text-slate-300">|</span>
-            <span className="text-amber-600">Rem: {formatCurrency(row.remaining_amount)}</span>
+            <span className="text-amber-600">Sisa: {formatCurrency(row.remaining_amount)}</span>
           </div>
         </div>
       )
     },
     {
       header: "Status",
-      accessor: (row) => (
-        <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] border ${getStatusColor(row.status)}`}>
-          {row.status.replace('_', ' ')}
-        </span>
-      )
+      accessor: (row) => {
+        const config = getStatusConfig(row.status);
+        return (
+          <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] border ${config.color}`}>
+            {config.label}
+          </span>
+        );
+      }
     },
     {
-      header: "Actions",
+      header: "Aksi",
       accessor: (row) => (
         <div className="flex items-center gap-2">
           {isTrashed ? (
@@ -105,7 +108,7 @@ export default function TransactionTable({
                 icon={RotateCcw} 
                 className="h-9 w-9 rounded-full p-0" 
                 onClick={() => onRestore?.(row)}
-                title="Restore Transaction" 
+                title="Pulihkan Transaksi" 
               />
               <Button 
                 size="sm" 
@@ -113,7 +116,7 @@ export default function TransactionTable({
                 icon={Trash2} 
                 className="h-9 w-9 rounded-full p-0" 
                 onClick={() => onForceDelete?.(row)}
-                title="Permanently Delete"
+                title="Hapus Permanen"
               />
             </>
           ) : (
@@ -124,7 +127,7 @@ export default function TransactionTable({
                 icon={Edit} 
                 className="h-9 w-9 rounded-full p-0" 
                 onClick={() => onEdit(row)}
-                title="Edit Transaction" 
+                title="Edit Transaksi" 
               />
               <Button 
                 size="sm" 
@@ -132,7 +135,7 @@ export default function TransactionTable({
                 icon={Trash2} 
                 className="h-9 w-9 rounded-full p-0" 
                 onClick={() => onDelete(row)}
-                title="Move to Trash"
+                title="Pindahkan ke Sampah"
               />
             </>
           )}

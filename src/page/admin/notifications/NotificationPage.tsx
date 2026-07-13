@@ -1,6 +1,7 @@
 import { useNotifications, NotificationList } from "@/features/admin/notifications"
 import { Button } from "@/components/ui/Button"
 import ErrorState from "@/components/feedback/ErrorState"
+import { useToastStore } from "@/store/useToastStore"
 import { Bell, CheckCheck, RefreshCw, ChevronLeft, ChevronRight } from "lucide-react"
 
 export default function NotificationPage() {
@@ -8,6 +9,28 @@ export default function NotificationPage() {
     notifications, unreadCount, loading, error, refetch,
     markAsRead, markAllAsRead, deleteNotification, page, setPage, meta,
   } = useNotifications()
+  const showSuccess = useToastStore(state => state.showSuccess)
+
+  const handleMarkAllAsRead = async () => {
+    try {
+      await markAllAsRead();
+      showSuccess("Semua notifikasi berhasil ditandai sebagai dibaca!");
+    } catch (e) {}
+  }
+
+  const handleMarkAsRead = async (id: string) => {
+    try {
+      await markAsRead(id);
+      showSuccess("Notifikasi ditandai sebagai dibaca.");
+    } catch (e) {}
+  }
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteNotification(id);
+      showSuccess("Notifikasi berhasil dihapus.");
+    } catch (e) {}
+  }
 
   if (error) return <ErrorState message={error} onRetry={refetch} />
 
@@ -37,7 +60,7 @@ export default function NotificationPage() {
             variant="outline"
             size="sm"
             icon={CheckCheck}
-            onClick={markAllAsRead}
+            onClick={handleMarkAllAsRead}
             disabled={unreadCount === 0}
           >
             Tandai Semua Dibaca
@@ -60,8 +83,8 @@ export default function NotificationPage() {
         <NotificationList
           notifications={notifications}
           loading={loading}
-          onMarkAsRead={markAsRead}
-          onDelete={deleteNotification}
+          onMarkAsRead={handleMarkAsRead}
+          onDelete={handleDelete}
         />
       </div>
 

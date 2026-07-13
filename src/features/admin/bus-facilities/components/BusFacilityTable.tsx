@@ -23,7 +23,7 @@ export default function BusFacilityTable({
 }: BusFacilityTableProps) {
   const columns: Column<BusFacility>[] = [
     { 
-      header: "Facility Name", 
+      header: "Nama Fasilitas", 
       accessor: (row) => (
         <div className="flex items-center gap-4 text-left">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-500 overflow-hidden">
@@ -36,7 +36,7 @@ export default function BusFacilityTable({
       )
     },
     {
-      header: "Created At",
+      header: "Dibuat Pada",
       accessor: (row) => (
         <span className="text-xs text-slate-500 font-medium">
           {new Date(row.created_at).toLocaleDateString('id-ID', {
@@ -48,7 +48,7 @@ export default function BusFacilityTable({
       )
     },
     {
-      header: "Actions",
+      header: "Aksi",
       accessor: (row) => (
         <div className="flex items-center gap-2">
           {isTrash ? (
@@ -59,7 +59,7 @@ export default function BusFacilityTable({
                 icon={RotateCcw} 
                 className="h-9 w-9 rounded-full p-0" 
                 onClick={() => onRestore?.(row.id)}
-                title="Restore Facility" 
+                title="Pulihkan Fasilitas" 
               />
               <Button 
                 size="sm" 
@@ -67,7 +67,7 @@ export default function BusFacilityTable({
                 icon={Trash2} 
                 className="h-9 w-9 rounded-full p-0" 
                 onClick={() => onDelete(row)}
-                title="Permanently Delete"
+                title="Hapus Permanen"
               />
             </>
           ) : (
@@ -78,7 +78,7 @@ export default function BusFacilityTable({
                 icon={Edit} 
                 className="h-9 w-9 rounded-full p-0" 
                 onClick={() => onEdit(row)}
-                title="Edit Facility" 
+                title="Edit Fasilitas" 
               />
               <Button 
                 size="sm" 
@@ -86,7 +86,7 @@ export default function BusFacilityTable({
                 icon={Trash2} 
                 className="h-9 w-9 rounded-full p-0" 
                 onClick={() => onDelete(row)}
-                title="Delete Facility"
+                title="Hapus Fasilitas"
               />
             </>
           )}

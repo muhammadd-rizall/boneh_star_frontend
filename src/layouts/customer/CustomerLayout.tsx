@@ -8,6 +8,7 @@ import { useProfile } from "@/features/customer/profile/hooks/useProfile";
 import { resolveMediaUrl } from "@/features/admin/company-profile/utils/companyProfileUtils";
 import WhatsAppFloating from "../public/WhatsAppFloating";
 import { cn } from "@/lib/utils";
+import ToastContainer from "@/components/feedback/ToastContainer";
 import {
   Home, CalendarCheck, CalendarPlus, MessageSquare, Bell,
   User, LogOut, Headphones, ChevronDown
@@ -61,6 +62,7 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
 
   return (
     <div className="min-h-screen bg-[#F5F7FA] text-gray-900 font-sans">
+      <ToastContainer />
       {/* Header Utama (Public/Customer Header) */}
       <Header companyProfile={profile || { company_name: "Boneh Star", logo: "" }} />
 

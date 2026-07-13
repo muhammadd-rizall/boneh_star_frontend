@@ -30,5 +30,5 @@ export interface TransactionApiResponse {
   message: string;
   statistics?: TransactionStatistics;
   statistic?: TransactionStatistics;
-  data: Transaction | Transaction[];
+  data: Transaction | Transaction[] | { data: Transaction[]; links?: any; meta?: any };
 }

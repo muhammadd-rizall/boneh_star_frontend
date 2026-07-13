@@ -13,7 +13,7 @@ import {
   Sparkles,
   Search as SearchIcon
 } from "lucide-react";
-import Loader from "@/components/feedback/Loader";
+import { SkeletonFleet } from "@/components/feedback/Skeleton";
 import { FleetCard, FleetDetailModal } from "@/features/public/fleet";
 import type { Bus } from "@/features/admin/buses/types/Bus";
 import { Button } from "@/components/ui/Button";
@@ -86,9 +86,7 @@ export default function FleetPage() {
   if (loading) {
     return (
       <PublicLayout>
-        <div className="flex h-[60vh] items-center justify-center bg-white">
-          <Loader />
-        </div>
+        <SkeletonFleet />
       </PublicLayout>
     );
   }

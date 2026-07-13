@@ -32,12 +32,13 @@ export default function PaymentSection({ transaction, paymentMethods, departureD
 
   const [formData, setFormData] = React.useState({
     payment_method_id: '',
-    amount: defaultAmount,
+    amount: defaultAmount as number | string,
     payment_type: defaultPaymentType as 'dp' | 'settlement',
     payment_date: new Date().toISOString().split('T')[0] > maxDate ? maxDate : new Date().toISOString().split('T')[0],
     transfer_proof: null as File | null,
   });
   const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     setFormData(prev => ({
@@ -52,9 +53,24 @@ export default function PaymentSection({ transaction, paymentMethods, departureD
     e.preventDefault();
     if (!formData.payment_method_id || !formData.transfer_proof) return;
     setLoading(true);
+    setError(null);
     try {
-      await onUpload(formData);
+      await onUpload({
+        ...formData,
+        amount: Number(formData.amount)
+      });
       setIsUploading(false);
+    } catch (err: any) {
+      const validationErrors = err.response?.data?.errors;
+      if (validationErrors) {
+        const firstErrorKey = Object.keys(validationErrors)[0];
+        const errorMessage = Array.isArray(validationErrors[firstErrorKey]) 
+          ? validationErrors[firstErrorKey][0] 
+          : validationErrors[firstErrorKey];
+        setError(errorMessage);
+      } else {
+        setError(err.response?.data?.message || "Gagal mengirim konfirmasi pembayaran.");
+      }
     } finally {
       setLoading(false);
     }
@@ -99,7 +115,7 @@ export default function PaymentSection({ transaction, paymentMethods, departureD
             size="sm" 
             variant="outline"
             icon={Upload} 
-            onClick={() => setIsUploading(true)} 
+            onClick={() => { setIsUploading(true); setError(null); }} 
             disabled={transaction.status === 'fully_paid'}
             className="rounded-xl border-slate-100 font-bold"
           >
@@ -159,8 +175,15 @@ export default function PaymentSection({ transaction, paymentMethods, departureD
                 <Upload size={20} strokeWidth={2.5} />
                 <h4 className="text-sm font-black uppercase tracking-widest">Konfirmasi Pembayaran</h4>
               </div>
-              <button type="button" onClick={() => setIsUploading(false)} className="text-[10px] font-black text-rose-500 uppercase tracking-widest hover:text-rose-600 transition-colors">Batal</button>
+              <button type="button" onClick={() => { setIsUploading(false); setError(null); }} className="text-[10px] font-black text-rose-500 uppercase tracking-widest hover:text-rose-600 transition-colors">Batal</button>
             </div>
+
+            {error && (
+              <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-xs font-bold text-red-700 shadow-sm flex items-center gap-2">
+                <XCircle size={16} className="text-red-500 shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
             
             <div className="grid gap-6 sm:grid-cols-2">
               <div className="flex flex-col gap-2">
@@ -183,7 +206,22 @@ export default function PaymentSection({ transaction, paymentMethods, departureD
                   className="rounded-2xl border border-slate-100 bg-white p-3.5 text-sm font-bold text-slate-700 focus:border-orange-500 outline-none transition-all"
                   required
                   value={formData.amount}
-                  onChange={(e) => setFormData({ ...formData, amount: Number(e.target.value) })}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setFormData({ ...formData, amount: val === '' ? '' : Number(val) });
+                  }}
+                  onFocus={(e) => {
+                    if (Number(formData.amount) === 0) {
+                      setFormData({ ...formData, amount: '' });
+                    } else {
+                      e.target.select();
+                    }
+                  }}
+                  onBlur={() => {
+                    if (formData.amount === '') {
+                      setFormData({ ...formData, amount: 0 });
+                    }
+                  }}
                 />
               </div>
 

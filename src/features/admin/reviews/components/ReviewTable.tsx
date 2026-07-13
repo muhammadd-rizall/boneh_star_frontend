@@ -23,7 +23,7 @@ export default function ReviewTable({
 }: ReviewTableProps) {
   const columns: Column<Review>[] = [
     { 
-      header: "Customer", 
+      header: "Pelanggan", 
       accessor: (row) => (
         <div className="flex items-center gap-4 text-left">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-500 overflow-hidden">
@@ -49,7 +49,7 @@ export default function ReviewTable({
               key={i} 
               size={14} 
               fill={i < row.rating ? "currentColor" : "none"} 
-              className={i < row.rating ? "text-amber-500" : "text-slate-300"}
+              className={i < row.rating ? "text-amber-500 animate-pulse" : "text-slate-300"}
             />
           ))}
           <span className="ml-1 text-xs font-bold text-slate-700">{row.rating}</span>
@@ -57,11 +57,11 @@ export default function ReviewTable({
       )
     },
     {
-      header: "Comment",
+      header: "Ulasan",
       accessor: (row) => (
         <div className="max-w-[300px]">
           <p className="text-sm text-slate-600 line-clamp-2 italic">
-            "{row.comment || "No comment provided"}"
+            "{row.comment || "Tidak ada komentar"}"
           </p>
         </div>
       )
@@ -72,12 +72,12 @@ export default function ReviewTable({
         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
           row.is_publish ? 'bg-green-100 text-green-800' : 'bg-slate-100 text-slate-600'
         }`}>
-          {row.is_publish ? 'Published' : 'Hidden'}
+          {row.is_publish ? 'Dipublikasikan' : 'Disembunyikan'}
         </span>
       )
     },
     {
-      header: "Actions",
+      header: "Aksi",
       accessor: (row) => (
         <div className="flex items-center gap-2">
           {isTrash ? (
@@ -88,7 +88,7 @@ export default function ReviewTable({
                 icon={RotateCcw} 
                 className="h-9 w-9 rounded-full p-0" 
                 onClick={() => onRestore?.(row.id)}
-                title="Restore Review" 
+                title="Pulihkan Ulasan" 
               />
               <Button 
                 size="sm" 
@@ -96,7 +96,7 @@ export default function ReviewTable({
                 icon={Trash2} 
                 className="h-9 w-9 rounded-full p-0" 
                 onClick={() => onDelete(row)}
-                title="Permanently Delete"
+                title="Hapus Permanen"
               />
             </>
           ) : (
@@ -107,7 +107,7 @@ export default function ReviewTable({
                 icon={row.is_publish ? EyeOff : Eye} 
                 className="h-9 w-9 rounded-full p-0" 
                 onClick={() => onTogglePublish(row)}
-                title={row.is_publish ? "Hide Review" : "Publish Review"} 
+                title={row.is_publish ? "Sembunyikan Ulasan" : "Tampilkan Ulasan"} 
               />
               <Button 
                 size="sm" 
@@ -115,7 +115,7 @@ export default function ReviewTable({
                 icon={Trash2} 
                 className="h-9 w-9 rounded-full p-0" 
                 onClick={() => onDelete(row)}
-                title="Delete Review"
+                title="Hapus Ulasan"
               />
             </>
           )}

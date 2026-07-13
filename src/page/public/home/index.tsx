@@ -11,7 +11,7 @@ import {
   FAQSection,
   useHomeData
 } from "@/features/public/home";
-import Loader from '@/components/feedback/Loader';
+import { SkeletonHome } from '@/components/feedback/Skeleton';
 import { RotateCcw } from 'lucide-react';
 import type { Bus } from '@/features/admin/buses/types/Bus';
 import { Button } from '@/components/ui/Button';
@@ -37,9 +37,7 @@ export default function HomePage() {
   if (loading) {
     return (
       <PublicLayout>
-        <div className='flex h-[80vh] items-center justify-center bg-white'>
-          <Loader />
-        </div>
+        <SkeletonHome />
       </PublicLayout>
     );
   }

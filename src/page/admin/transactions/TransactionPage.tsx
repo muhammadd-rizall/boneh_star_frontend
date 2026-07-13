@@ -13,6 +13,7 @@ import {
     useTransactions,
     type Transaction,
 } from "@/features/admin/transactions"
+import { useToastStore } from "@/store/useToastStore"
 import { Banknote, CheckCircle2, Clock, Plus, RefreshCcw, TrendingUp } from "lucide-react"
 import { useEffect, useState } from "react"
 
@@ -34,6 +35,7 @@ export default function TransactionPage() {
   const [isForceDeleteConfirmOpen, setIsForceDeleteConfirmOpen] = useState(false)
   const [transactionToManage, setTransactionToManage] = useState<Transaction | null>(null)
   const [actionLoading, setActionLoading] = useState(false)
+  const showSuccess = useToastStore(state => state.showSuccess)
 
   useEffect(() => {
     if (view === "trash") { fetchTrashed(); return }
@@ -45,11 +47,19 @@ export default function TransactionPage() {
 
   const handleCreate = () => { setSelectedTransaction(null); setIsModalOpen(true) }
   const handleEdit = (t: Transaction) => { setSelectedTransaction(t); setIsModalOpen(true) }
-  const handleSuccess = () => { setIsModalOpen(false); refetch(searchTerm) }
+  const handleSuccess = () => { 
+    setIsModalOpen(false); 
+    refetch(searchTerm);
+    showSuccess(selectedTransaction ? "Transaksi berhasil diperbarui!" : "Tagihan baru berhasil dibuat!");
+  }
 
-  const runAction = async (fn: () => Promise<void>, closeDialog: () => void) => {
+  const runAction = async (fn: () => Promise<void>, closeDialog: () => void, successMsg?: string) => {
     setActionLoading(true)
-    try { await fn(); closeDialog() }
+    try { 
+      await fn(); 
+      closeDialog(); 
+      if (successMsg) showSuccess(successMsg);
+    }
     finally { setActionLoading(false) }
   }
 
@@ -95,9 +105,9 @@ export default function TransactionPage() {
         <TransactionForm transaction={selectedTransaction} onSuccess={handleSuccess} onCancel={() => setIsModalOpen(false)} />
       </Modal>
 
-      <Confirmation open={isConfirmOpen} onClose={() => setIsConfirmOpen(false)} onConfirm={() => runAction(() => deleteTransaction(transactionToManage!.id), () => { setIsConfirmOpen(false); setTransactionToManage(null) })} loading={actionLoading} title="Pindah ke Sampah?" message={`Invoice ${transactionToManage?.invoice_number} akan dipindahkan ke tempat sampah.`} variant="warning" confirmText="Ya, Pindahkan" />
-      <Confirmation open={isRestoreConfirmOpen} onClose={() => setIsRestoreConfirmOpen(false)} onConfirm={() => runAction(() => restoreTransaction(transactionToManage!.id), () => { setIsRestoreConfirmOpen(false); setTransactionToManage(null) })} loading={actionLoading} title="Pulihkan Transaksi?" message={`Invoice ${transactionToManage?.invoice_number} akan dipulihkan.`} variant="info" confirmText="Ya, Pulihkan" />
-      <Confirmation open={isForceDeleteConfirmOpen} onClose={() => setIsForceDeleteConfirmOpen(false)} onConfirm={() => runAction(() => forceDeleteTransaction(transactionToManage!.id), () => { setIsForceDeleteConfirmOpen(false); setTransactionToManage(null) })} loading={actionLoading} variant="danger" title="Hapus Permanen?" message={`Invoice ${transactionToManage?.invoice_number} akan dihapus secara permanen.`} confirmText="Ya, Hapus" />
+      <Confirmation open={isConfirmOpen} onClose={() => setIsConfirmOpen(false)} onConfirm={() => runAction(() => deleteTransaction(transactionToManage!.id), () => { setIsConfirmOpen(false); setTransactionToManage(null) }, `Invoice "${transactionToManage?.invoice_number}" dipindahkan ke sampah.`)} loading={actionLoading} title="Pindah ke Sampah?" message={`Invoice ${transactionToManage?.invoice_number} akan dipindahkan ke tempat sampah.`} variant="warning" confirmText="Ya, Pindahkan" />
+      <Confirmation open={isRestoreConfirmOpen} onClose={() => setIsRestoreConfirmOpen(false)} onConfirm={() => runAction(() => restoreTransaction(transactionToManage!.id), () => { setIsRestoreConfirmOpen(false); setTransactionToManage(null) }, `Invoice "${transactionToManage?.invoice_number}" berhasil dipulihkan.`)} loading={actionLoading} title="Pulihkan Transaksi?" message={`Invoice ${transactionToManage?.invoice_number} akan dipulihkan.`} variant="info" confirmText="Ya, Pulihkan" />
+      <Confirmation open={isForceDeleteConfirmOpen} onClose={() => setIsForceDeleteConfirmOpen(false)} onConfirm={() => runAction(() => forceDeleteTransaction(transactionToManage!.id), () => { setIsForceDeleteConfirmOpen(false); setTransactionToManage(null) }, `Invoice "${transactionToManage?.invoice_number}" berhasil dihapus permanen.`)} loading={actionLoading} variant="danger" title="Hapus Permanen?" message={`Invoice ${transactionToManage?.invoice_number} akan dihapus secara permanen.`} confirmText="Ya, Hapus" />
     </div>
   )
 }

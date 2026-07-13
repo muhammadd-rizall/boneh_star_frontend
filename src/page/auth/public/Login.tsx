@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { AlertCircle, Eye, EyeOff, BusFront } from "lucide-react";
+import { AlertCircle, Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { useCustomerAuthStore } from "@/features/auth/public";
 import { useCompanyProfile } from "@/features/admin/company-profile";
@@ -45,140 +45,169 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-cloud-mist px-4 py-8 text-midnight-indigo">
-      <div className="grid w-full max-w-6xl overflow-hidden rounded-[30px] bg-white shadow-[0_24px_70px_rgba(31,35,70,0.16)] lg:min-h-[640px] lg:grid-cols-[0.92fr_1.08fr]">
-        <aside className="auth-slide-left relative overflow-hidden bg-action-blue px-8 py-9 text-white sm:px-12 lg:flex lg:flex-col lg:justify-between">
-          <Link to="/" className="relative z-10 inline-flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl bg-white/10 text-white border border-white/20 backdrop-blur-sm">
-              {logoUrl ? (
-                <img
-                  key="logo-img"
-                  src={logoUrl}
-                  alt={companyProfile?.company_name || "Logo"}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <BusFront key="logo-icon" size={20} />
-              )}
-            </div>
-            <span className="leading-tight">
-              <span className="block text-sm font-black">{companyProfile?.company_name || "BonehStar"}</span>
-              <span className="block text-xs font-semibold text-white/70">Sewa Bus Online</span>
-            </span>
+    <main className="relative min-h-screen w-full flex flex-col items-center justify-center bg-slate-50/50 px-4 py-12 overflow-hidden select-none">
+      {/* Decorative Blue Background Grids & Circles */}
+      <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none z-0">
+        <svg width="120" height="120" fill="currentColor" className="text-action-blue">
+          <pattern id="dot-pattern-top" x="0" y="0" width="16" height="16" patternUnits="userSpaceOnUse">
+            <circle cx="2" cy="2" r="2" />
+          </pattern>
+          <rect width="120" height="120" fill="url(#dot-pattern-top)" />
+        </svg>
+      </div>
+
+      <div className="absolute bottom-0 left-0 p-8 opacity-10 pointer-events-none z-0">
+        <svg width="120" height="120" fill="currentColor" className="text-action-blue">
+          <pattern id="dot-pattern-bottom" x="0" y="0" width="16" height="16" patternUnits="userSpaceOnUse">
+            <circle cx="2" cy="2" r="2" />
+          </pattern>
+          <rect width="120" height="120" fill="url(#dot-pattern-bottom)" />
+        </svg>
+      </div>
+
+      <div className="absolute -top-24 -left-24 w-[380px] h-[380px] rounded-full bg-action-blue/5 blur-3xl pointer-events-none z-0" />
+      <div className="absolute -bottom-24 -right-24 w-[380px] h-[380px] rounded-full bg-action-blue/5 blur-3xl pointer-events-none z-0" />
+
+      {/* Main Login Card */}
+      <div className="relative z-10 w-full max-w-[480px] bg-white rounded-3xl border border-slate-100 shadow-[0_12px_40px_rgba(71,103,136,0.06)] p-8 sm:p-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
+        {/* Logo and Brand Title */}
+        <div className="flex flex-col items-center text-center mb-8">
+          <Link to="/" className="inline-flex items-center gap-3">
+            {logoUrl ? (
+              <img
+                src={logoUrl}
+                alt={companyProfile?.company_name || "Logo"}
+                className="h-10 object-contain"
+              />
+            ) : (
+              <div className="flex items-center gap-2">
+                <svg className="h-9 w-9 text-action-blue" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" className="fill-action-blue/15" />
+                </svg>
+                <span className="text-xl font-black tracking-tight text-midnight-indigo">
+                  Boneh <span className="text-action-blue">Star</span>
+                </span>
+              </div>
+            )}
+            {!logoUrl && (
+              <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-blue/60 mt-1 self-end mb-1">
+                Pariwisata
+              </span>
+            )}
           </Link>
 
-          <div className="relative z-10 mt-10 max-w-sm lg:mt-0">
-            <h1 className="text-4xl font-black leading-tight sm:text-5xl">
-              Kelola perjalanan Anda dalam satu akun.
-            </h1>
-            <p className="mt-4 text-sm font-semibold leading-7 text-white/75">
-              Masuk untuk melihat status booking, riwayat pemesanan, dan penawaran dari tim BonehStar.
-            </p>
-          </div>
+          <h2 className="text-2xl font-black text-midnight-indigo mt-6">
+            Masuk ke Akun
+          </h2>
+          <p className="text-xs font-semibold text-slate-blue/80 mt-2 leading-relaxed">
+            Selamat datang kembali! Silakan masuk untuk melanjutkan.
+          </p>
+        </div>
 
-          <div className="relative z-10 mt-8 flex justify-center lg:mt-0">
-      
-          </div>
-
-          <div className="absolute -right-20 bottom-12 size-52 rounded-full bg-white/10" />
-          <div className="absolute left-12 top-36 size-16 rounded-full bg-white/10" />
-        </aside>
-
-        <section className="auth-slide-right relative flex items-center justify-center bg-white px-7 py-10 sm:px-12 lg:-ml-8 lg:rounded-l-[38px] lg:px-20">
-          <div className="w-full max-w-[460px]">
-            <div className="mb-8">
-              <h2 className="text-3xl font-black tracking-tight text-midnight-indigo">
-                Masuk Akun
-              </h2>
-              <p className="mt-3 text-sm font-semibold leading-6 text-slate-blue">
-                Lanjutkan pemesanan dan pantau kebutuhan perjalanan Anda.
-              </p>
+        {/* Login Form */}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {error && (
+            <div className="flex items-start gap-3 rounded-2xl border border-red-100 bg-red-50/50 px-4 py-3 text-xs font-bold text-red-600 animate-in shake duration-500">
+              <AlertCircle className="mt-0.5 size-4.5 shrink-0" />
+              <span>{error}</span>
             </div>
+          )}
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {error && (
-                <div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                  <AlertCircle className="mt-0.5 size-5 shrink-0" />
-                  <span className="font-semibold">{error}</span>
-                </div>
-              )}
+          {/* Email field */}
+          <div className="space-y-2">
+            <label className="block text-xs font-extrabold text-midnight-indigo uppercase tracking-wider">
+              Email
+            </label>
+            <div className="relative flex items-center bg-slate-50/50 border border-slate-200 rounded-2xl px-4 py-3 focus-within:border-action-blue/50 focus-within:bg-white transition-all">
+              <Mail size={16} className="text-slate-blue/70 shrink-0 mr-3" />
+              <input
+                type="email"
+                placeholder="Masukkan email Anda"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+                required
+                className="bg-transparent text-xs font-bold text-midnight-indigo placeholder:text-slate-blue/40 focus:outline-none w-full"
+              />
+            </div>
+          </div>
 
-              <label className="block">
-                <span className="sr-only">Email</span>
-                <input
-                  type="email"
-                  placeholder="Email Address"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  autoComplete="email"
-                  required
-                  className="h-12 w-full border-0 border-b border-[#e5e6ef] bg-transparent px-0 text-sm font-semibold text-midnight-indigo outline-none transition-colors placeholder:text-[#a7a8b7] focus:border-action-blue focus:ring-0"
-                />
-              </label>
-
-              <label className="relative block">
-                <span className="sr-only">Password</span>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  autoComplete="current-password"
-                  required
-                  className="h-12 w-full border-0 border-b border-[#e5e6ef] bg-transparent px-0 pr-10 text-sm font-semibold text-midnight-indigo outline-none transition-colors placeholder:text-[#a7a8b7] focus:border-action-blue focus:ring-0"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((value) => !value)}
-                  className="absolute right-0 top-1/2 -translate-y-1/2 text-[#a7a8b7] hover:text-action-blue"
-                  aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
-                >
-                  {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
-                </button>
-              </label>
-
-              <div className="flex items-center justify-between gap-4 text-xs font-semibold text-slate-blue">
-                <label className="inline-flex cursor-pointer items-center gap-2">
-                  <input
-                    type="checkbox"
-                    className="size-4 rounded border-[#d7d9ed] text-action-blue focus:ring-action-blue/20"
-                  />
-                  Ingat saya
-                </label>
-                <Link to="/auth/forgot-password" className="text-action-blue hover:underline">
-                  Lupa password?
-                </Link>
-              </div>
-
-              <Button
-                type="submit"
-                loading={loading}
-                size="lg"
-                className="h-12 w-full rounded-full bg-action-blue text-base font-black shadow-none hover:bg-glacier-blue"
+          {/* Password field */}
+          <div className="space-y-2">
+            <label className="block text-xs font-extrabold text-midnight-indigo uppercase tracking-wider">
+              Password
+            </label>
+            <div className="relative flex items-center bg-slate-50/50 border border-slate-200 rounded-2xl px-4 py-3 focus-within:border-action-blue/50 focus-within:bg-white transition-all">
+              <Lock size={16} className="text-slate-blue/70 shrink-0 mr-3" />
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Masukkan password Anda"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                required
+                className="bg-transparent text-xs font-bold text-midnight-indigo placeholder:text-slate-blue/40 focus:outline-none w-full pr-8"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((value) => !value)}
+                className="absolute right-4 text-slate-blue/50 hover:text-action-blue transition-colors cursor-pointer"
+                aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
               >
-                Sign In
-              </Button>
-            </form>
-
-            <div className="mt-10">
-              <div className="flex items-center gap-4">
-                <span className="h-px flex-1 bg-[#ececf4]" />
-                <span className="text-sm font-semibold text-[#a7a8b7]">Or Sign In With</span>
-                <span className="h-px flex-1 bg-[#ececf4]" />
-              </div>
-
-              <SocialAuthButtons action="Masuk" />
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
             </div>
-
-            <p className="mt-8 text-center text-xs font-semibold text-[#a7a8b7]">
-              Belum punya akun?{" "}
-              <Link to="/auth/register" className="font-black text-action-blue hover:underline">
-                Daftar
-              </Link>
-            </p>
           </div>
-        </section>
+
+          {/* Remember Me and Forgot Password */}
+          <div className="flex items-center justify-between gap-4 text-[11px] font-bold text-slate-blue/80">
+            <label className="inline-flex cursor-pointer items-center gap-2 select-none">
+              <input
+                type="checkbox"
+                className="size-4 rounded-md border-slate-300 text-action-blue focus:ring-action-blue/20"
+              />
+              Ingat saya
+            </label>
+            <Link to="/auth/forgot-password" className="text-action-blue hover:text-action-blue-dark transition-colors font-bold">
+              Lupa password?
+            </Link>
+          </div>
+
+          {/* Submit Button */}
+          <Button
+            type="submit"
+            loading={loading}
+            size="lg"
+            className="h-12 w-full rounded-2xl bg-action-blue hover:bg-action-blue-dark text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-action-blue/15 transition-all mt-4"
+          >
+            Masuk
+          </Button>
+        </form>
+
+        {/* Divider */}
+        <div className="mt-8">
+          <div className="flex items-center gap-4">
+            <span className="h-px flex-1 bg-slate-100" />
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-blue/40">atau masuk dengan</span>
+            <span className="h-px flex-1 bg-slate-100" />
+          </div>
+
+          <SocialAuthButtons action="Masuk" />
+        </div>
+
+        {/* Sign up link */}
+        <p className="mt-8 text-center text-xs font-semibold text-slate-blue/70">
+          Belum punya akun?{" "}
+          <Link to="/auth/register" className="font-extrabold text-action-blue hover:text-action-blue-dark transition-colors">
+            Daftar sekarang
+          </Link>
+        </p>
       </div>
+
+      {/* Footer Copyright */}
+      <p className="relative z-10 mt-8 text-center text-[10px] font-bold tracking-wider text-slate-blue/40 uppercase">
+        © 2025 {companyProfile?.company_name || "Boneh Star Pariwisata"}. Semua hak dilindungi.
+      </p>
     </main>
   );
 }

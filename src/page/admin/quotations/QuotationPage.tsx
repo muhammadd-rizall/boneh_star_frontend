@@ -13,6 +13,7 @@ import {
     useQuotations,
     type Quotation,
 } from "@/features/admin/quotations"
+import { useToastStore } from "@/store/useToastStore"
 import { AlertCircle, CheckCircle2, FileText, Plus, RefreshCcw, Send } from "lucide-react"
 import { useEffect, useState } from "react"
 
@@ -24,16 +25,26 @@ export default function QuotationPage() {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
   const [quotationToDelete, setQuotationToDelete] = useState<Quotation | null>(null)
   const [deleteLoading, setDeleteLoading] = useState(false)
+  const showSuccess = useToastStore(state => state.showSuccess)
 
   useEffect(() => { const t = setTimeout(() => refetch(searchTerm), 500); return () => clearTimeout(t) }, [searchTerm, refetch])
 
   const handleCreate = () => { setSelectedQuotation(null); setIsModalOpen(true) }
   const handleEdit = (q: Quotation) => { setSelectedQuotation(q); setIsModalOpen(true) }
-  const handleSuccess = () => { setIsModalOpen(false); refetch(searchTerm) }
+  const handleSuccess = () => { 
+    setIsModalOpen(false); 
+    refetch(searchTerm);
+    showSuccess(selectedQuotation ? "Penawaran berhasil diperbarui!" : "Penawaran baru berhasil dibuat!");
+  }
   const handleDeleteClick = (q: Quotation) => { setQuotationToDelete(q); setIsConfirmOpen(true) }
   const handleConfirmDelete = async () => {
     if (!quotationToDelete) return; setDeleteLoading(true)
-    try { await deleteQuotation(quotationToDelete.id); setIsConfirmOpen(false); setQuotationToDelete(null) }
+    try { 
+      await deleteQuotation(quotationToDelete.id); 
+      setIsConfirmOpen(false); 
+      showSuccess("Penawaran berhasil dihapus.");
+      setQuotationToDelete(null) 
+    }
     finally { setDeleteLoading(false) }
   }
 
@@ -56,7 +67,7 @@ export default function QuotationPage() {
       <StatGrid columns={4}>
         <StatCard label="Total Penawaran" value={statistics?.total_quotations ?? 0} icon={FileText} loading={loading} />
         <StatCard label="Diterima" value={statistics?.by_status.accepted ?? 0} icon={CheckCircle2} loading={loading} color="emerald" />
-        <StatCard label="Terkirim / Draft" value={(statistics?.by_status.sent ?? 0) + (statistics?.by_status.draft ?? 0)} icon={Send} loading={loading} color="blue" />
+        <StatCard label="Terkirim / Draf" value={(statistics?.by_status.sent ?? 0) + (statistics?.by_status.draft ?? 0)} icon={Send} loading={loading} color="blue" />
         <StatCard label="Revisi / Ditolak" value={(statistics?.by_status.revision ?? 0) + (statistics?.by_status.rejected ?? 0)} icon={AlertCircle} loading={loading} color="rose" />
       </StatGrid>
 

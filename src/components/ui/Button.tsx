@@ -1,6 +1,5 @@
 import { Button as ButtonPrimitive } from "@base-ui/react/button"
 import { cva, type VariantProps } from "class-variance-authority"
-import { Loader2 } from "lucide-react"
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
@@ -67,7 +66,13 @@ function Button({
       disabled={loading || props.disabled}
       {...props}
     >
-      {loading && <Loader2 key="loader" className="animate-spin" />}
+      {loading && (
+        <span className="flex items-center gap-0.5 px-1 h-3 shrink-0 mr-1.5">
+          <span className="h-1.5 w-1.5 rounded-full bg-current animate-bounce [animation-delay:-0.3s]" />
+          <span className="h-1.5 w-1.5 rounded-full bg-current animate-bounce [animation-delay:-0.15s]" />
+          <span className="h-1.5 w-1.5 rounded-full bg-current animate-bounce" />
+        </span>
+      )}
       {!loading && Icon && <Icon key="icon" className="shrink-0" />}
       {children}
       {!loading && SuffixIcon && <SuffixIcon key="suffix" className="shrink-0" />}

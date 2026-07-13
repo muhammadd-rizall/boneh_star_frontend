@@ -15,12 +15,14 @@ import {
     useUsers,
     type User,
 } from "@/features/admin/users"
+import { useToastStore } from "@/store/useToastStore"
 import { Plus, RefreshCcw, Trash2, UserCheck, UserMinus, Users } from "lucide-react"
 import { useEffect, useState } from "react"
 
 export default function UserPage() {
   const [view, setView] = useState<"active" | "trash">("active")
   const [searchTerm, setSearchTerm] = useState("")
+  const showSuccess = useToastStore(state => state.showSuccess)
 
   const { users, statistics, loading: activeLoading, error: activeError, deleteUser, refetch: refetchActive } = useUsers()
   const { users: trashedUsers, loading: trashLoading, error: trashError, refetch: refetchTrash, restoreUser, forceDeleteUser } = useTrashedUsers()
@@ -46,7 +48,11 @@ export default function UserPage() {
 
   const handleCreate = () => { setSelectedUser(null); setIsModalOpen(true) }
   const handleEdit = (u: User) => { setSelectedUser(u); setIsModalOpen(true) }
-  const handleSuccess = () => { setIsModalOpen(false); if (view === "active") refetchActive(searchTerm); else refetchTrash() }
+  const handleSuccess = () => { 
+    setIsModalOpen(false); 
+    if (view === "active") refetchActive(searchTerm); else refetchTrash();
+    showSuccess(selectedUser ? "Data pengguna berhasil diperbarui!" : "Pengguna baru berhasil ditambahkan!");
+  }
 
   const handleDeleteClick = (u: User) => { setUserToManage(u); setIsDeleteConfirmOpen(true) }
   const handleConfirmDelete = async () => {
@@ -54,6 +60,7 @@ export default function UserPage() {
     try { 
       await deleteUser(userToManage.id); 
       setIsDeleteConfirmOpen(false); 
+      showSuccess(`Pengguna "${userToManage.name}" dipindahkan ke sampah.`);
       setUserToManage(null);
       refetchActive(searchTerm);
     }
@@ -66,7 +73,13 @@ export default function UserPage() {
   }
   const handleConfirmRestore = async () => {
     if (!userToManage) return; setActionLoading(true)
-    try { await restoreUser(userToManage.id); setIsRestoreConfirmOpen(false); setUserToManage(null); refetchActive(searchTerm) }
+    try { 
+      await restoreUser(userToManage.id); 
+      setIsRestoreConfirmOpen(false); 
+      showSuccess(`Pengguna "${userToManage.name}" berhasil dipulihkan.`);
+      setUserToManage(null); 
+      refetchActive(searchTerm) 
+    }
     finally { setActionLoading(false) }
   }
 
@@ -76,6 +89,7 @@ export default function UserPage() {
     try { 
       await forceDeleteUser(userToManage.id); 
       setIsForceDeleteConfirmOpen(false); 
+      showSuccess(`Pengguna "${userToManage.name}" berhasil dihapus permanen.`);
       setUserToManage(null);
       refetchActive(searchTerm);
     }

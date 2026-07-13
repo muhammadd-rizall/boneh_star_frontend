@@ -15,11 +15,14 @@ import {
     useTrashedPaymentMethods,
     type PaymentMethod,
 } from "@/features/admin/payment-methods"
+import { useToastStore } from "@/store/useToastStore"
 import { Banknote, Layers, Plus, RefreshCcw, ShieldCheck } from "lucide-react"
 import { useState } from "react"
 
 export default function PaymentMethodPage() {
   const [view, setView] = useState<'active' | 'trash'>('active')
+  const showSuccess = useToastStore(state => state.showSuccess)
+
   const { 
     paymentMethods, 
     statistics, 
@@ -58,9 +61,13 @@ export default function PaymentMethodPage() {
     setIsModalOpen(true)
   }
 
-  const runAction = async (fn: () => Promise<void>, closeDialog: () => void) => {
+  const runAction = async (fn: () => Promise<void>, closeDialog: () => void, successMsg?: string) => {
     setActionLoading(true)
-    try { await fn(); closeDialog() }
+    try { 
+      await fn(); 
+      closeDialog(); 
+      if (successMsg) showSuccess(successMsg);
+    }
     finally { setActionLoading(false) }
   }
 
@@ -147,14 +154,14 @@ export default function PaymentMethodPage() {
       <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedPaymentMethod ? "Edit Metode Pembayaran" : "Tambah Metode Baru"} subtitle="Pastikan data rekening bank sudah benar">
         <PaymentMethodForm
           paymentMethod={selectedPaymentMethod}
-          onSuccess={() => { setIsModalOpen(false); refetch() }}
+          onSuccess={() => { setIsModalOpen(false); refetch(); showSuccess(selectedPaymentMethod ? "Metode pembayaran berhasil diperbarui!" : "Metode pembayaran baru berhasil ditambahkan!"); }}
           onCancel={() => setIsModalOpen(false)}
         />
       </Modal>
 
-      <Confirmation open={isDeleteConfirmOpen} onClose={() => setIsDeleteConfirmOpen(false)} onConfirm={() => runAction(async () => { await deletePaymentMethod(paymentMethodToAction!.id); refetchTrash() }, () => setIsDeleteConfirmOpen(false))} loading={actionLoading} title="Hapus Metode?" message={`Metode "${paymentMethodToAction?.bank_name}" akan dipindahkan ke sampah.`} variant="warning" confirmText="Ya, Hapus" />
-      <Confirmation open={isRestoreConfirmOpen} onClose={() => setIsRestoreConfirmOpen(false)} onConfirm={() => runAction(async () => { await restorePaymentMethod(paymentMethodToAction!.id); refetch() }, () => setIsRestoreConfirmOpen(false))} loading={actionLoading} title="Pulihkan Metode?" message={`Metode "${paymentMethodToAction?.bank_name}" akan dikembalikan ke daftar aktif.`} variant="info" confirmText="Ya, Pulihkan" />
-      <Confirmation open={isForceDeleteConfirmOpen} onClose={() => setIsForceDeleteConfirmOpen(false)} onConfirm={() => runAction(async () => { await forceDeletePaymentMethod(paymentMethodToAction!.id) }, () => setIsForceDeleteConfirmOpen(false))} loading={actionLoading} variant="danger" title="Hapus Permanen?" message="Data rekening akan dihapus selamanya." confirmText="Ya, Hapus" />
+      <Confirmation open={isDeleteConfirmOpen} onClose={() => setIsDeleteConfirmOpen(false)} onConfirm={() => runAction(async () => { await deletePaymentMethod(paymentMethodToAction!.id); refetchTrash() }, () => setIsDeleteConfirmOpen(false), `Metode "${paymentMethodToAction?.bank_name}" dipindahkan ke sampah.`)} loading={actionLoading} title="Hapus Metode?" message={`Metode "${paymentMethodToAction?.bank_name}" akan dipindahkan ke sampah.`} variant="warning" confirmText="Ya, Hapus" />
+      <Confirmation open={isRestoreConfirmOpen} onClose={() => setIsRestoreConfirmOpen(false)} onConfirm={() => runAction(async () => { await restorePaymentMethod(paymentMethodToAction!.id); refetch() }, () => setIsRestoreConfirmOpen(false), `Metode "${paymentMethodToAction?.bank_name}" berhasil dipulihkan.`)} loading={actionLoading} title="Pulihkan Metode?" message={`Metode "${paymentMethodToAction?.bank_name}" akan dikembalikan ke daftar aktif.`} variant="info" confirmText="Ya, Pulihkan" />
+      <Confirmation open={isForceDeleteConfirmOpen} onClose={() => setIsForceDeleteConfirmOpen(false)} onConfirm={() => runAction(async () => { await forceDeletePaymentMethod(paymentMethodToAction!.id) }, () => setIsForceDeleteConfirmOpen(false), `Metode "${paymentMethodToAction?.bank_name}" berhasil dihapus permanen.`)} loading={actionLoading} variant="danger" title="Hapus Permanen?" message="Data rekening akan dihapus selamanya." confirmText="Ya, Hapus" />
     </div>
   )
 }

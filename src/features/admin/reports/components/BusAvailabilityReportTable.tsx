@@ -12,7 +12,7 @@ interface BusAvailabilityReportTableProps {
 export default function BusAvailabilityReportTable({ data, loading }: BusAvailabilityReportTableProps) {
   const columns: Column<BusAvailability>[] = [
     {
-      header: "Bus Information",
+      header: "Informasi Bus",
       accessor: (row) => (
         <div className="flex flex-col">
           <span className="font-semibold text-slate-900">{row.name}</span>
@@ -29,20 +29,27 @@ export default function BusAvailabilityReportTable({ data, loading }: BusAvailab
           maintenance: "bg-amber-100 text-amber-800",
           inactive: "bg-slate-100 text-slate-800",
         };
+        const statusLabels: Record<string, string> = {
+          available: "Tersedia",
+          booked: "Dipesan",
+          maintenance: "Perawatan",
+          inactive: "Tidak Aktif",
+        };
         const colorClass = statusColors[row.status] || "bg-slate-100 text-slate-800";
+        const label = statusLabels[row.status] || row.status;
         return (
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${colorClass}`}>
-            {row.status}
+          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${colorClass}`}>
+            {label}
           </span>
         );
       },
     },
     {
-      header: "Schedules",
+      header: "Jadwal",
       accessor: (row) => (
         <div className="flex flex-col gap-2 py-2">
           {row.schedules.length === 0 ? (
-            <span className="text-xs italic text-slate-400">No bookings in this period</span>
+            <span className="text-xs italic text-slate-400">Tidak ada pesanan pada periode ini</span>
           ) : (
             row.schedules.map((schedule: BusSchedule) => (
               <div 
@@ -54,13 +61,13 @@ export default function BusAvailabilityReportTable({ data, loading }: BusAvailab
                   <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase ${
                     schedule.status === 'confirmed' ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-200 text-slate-600'
                   }`}>
-                    {schedule.status}
+                    {schedule.status === 'confirmed' ? 'Dikonfirmasi' : 'Menunggu'}
                   </span>
                 </div>
                 <div className="flex flex-col gap-1 text-slate-500">
                   <div className="flex items-center gap-1">
-                    <Calendar size={10} />
-                    <span>{new Date(schedule.departure_date).toLocaleDateString()} - {schedule.return_date ? new Date(schedule.return_date).toLocaleDateString() : 'N/A'}</span>
+                     <Calendar size={10} />
+                     <span>{new Date(schedule.departure_date).toLocaleDateString('id-ID')} - {schedule.return_date ? new Date(schedule.return_date).toLocaleDateString('id-ID') : 'N/A'}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Clock size={10} />
@@ -79,17 +86,17 @@ export default function BusAvailabilityReportTable({ data, loading }: BusAvailab
     <div className="rounded-[28px] border border-slate-200/80 bg-white/90 overflow-hidden shadow-sm">
       <div className="p-6 border-b border-slate-100 flex justify-between items-center">
         <div>
-          <h3 className="text-lg font-semibold text-slate-900">Bus Availability</h3>
-          <p className="text-sm text-slate-500 mt-1">Bus status and their booking schedules</p>
+          <h3 className="text-lg font-semibold text-slate-900">Ketersediaan Bus</h3>
+          <p className="text-sm text-slate-500 mt-1">Status bus dan jadwal pemesanan armada</p>
         </div>
         <div className="flex gap-4 text-xs">
           <div className="flex items-center gap-1.5">
             <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
-            <span className="text-slate-600 font-medium">Available</span>
+            <span className="text-slate-600 font-medium">Tersedia</span>
           </div>
           <div className="flex items-center gap-1.5">
             <div className="w-2.5 h-2.5 rounded-full bg-blue-500"></div>
-            <span className="text-slate-600 font-medium">Booked</span>
+            <span className="text-slate-600 font-medium">Dipesan</span>
           </div>
         </div>
       </div>

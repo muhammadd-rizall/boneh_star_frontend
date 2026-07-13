@@ -6,12 +6,14 @@ import BusCategoryForm from "@/features/admin/bus-categories/components/BusCateg
 import BusCategoryTable from "@/features/admin/bus-categories/components/BusCategoryTable"
 import { useBusCategories, useTrashedBusCategories } from "@/features/admin/bus-categories/hooks/useBusCategories"
 import type { BusCategory } from "@/features/admin/bus-categories/types/BusCategory"
+import { useToastStore } from "@/store/useToastStore"
 import { Layers, LayoutGrid, Plus, RefreshCcw, Trash2 } from "lucide-react"
 import { useEffect, useState } from "react"
 
 export default function BusCategoryPage() {
   const [view, setView] = useState<"active" | "trash">("active")
   const [searchTerm, setSearchTerm] = useState("")
+  const showSuccess = useToastStore(state => state.showSuccess)
 
   const { categories, statistics, loading: activeLoading, error: activeError, deleteCategory, refetch: refetchActive } = useBusCategories()
   const { categories: trashedCategories, loading: trashLoading, error: trashError, refetch: refetchTrash, restoreCategory, forceDeleteCategory } = useTrashedBusCategories()
@@ -52,7 +54,7 @@ export default function BusCategoryPage() {
       </StatGrid>
 
       <div className="flex justify-end">
-        <ViewToggle view={view} onViewChange={setView} activeLabel="Semua" trashLabel="Sampah" />
+        <ViewToggle view={view} onViewChange={setView} activeLabel="Aktif" trashLabel="Sampah" />
       </div>
 
       {error ? (
@@ -73,11 +75,11 @@ export default function BusCategoryPage() {
       )}
 
       <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedCategory ? "Edit Kategori" : "Tambah Kategori Baru"} subtitle="Klasifikasi bus berdasarkan kapasitas">
-        <BusCategoryForm category={selectedCategory} onSuccess={() => { setIsModalOpen(false); refetchActive(searchTerm); refetchTrash() }} onCancel={() => setIsModalOpen(false)} />
+        <BusCategoryForm category={selectedCategory} onSuccess={() => { setIsModalOpen(false); refetchActive(searchTerm); refetchTrash(); showSuccess(selectedCategory ? "Kategori bus berhasil diperbarui!" : "Kategori bus baru berhasil ditambahkan!"); }} onCancel={() => setIsModalOpen(false)} />
       </Modal>
 
-      <Confirmation open={isDeleteOpen} onClose={() => setIsDeleteOpen(false)} onConfirm={async () => { if (categoryToAction) { await deleteCategory(categoryToAction.id); setIsDeleteOpen(false); setCategoryToAction(null); refetchActive(searchTerm) } }} title="Hapus Kategori?" message={`"${categoryToAction?.name}" akan dipindahkan ke sampah.`} variant="warning" confirmText="Ya, Hapus" />
-      <Confirmation open={isRestoreOpen} onClose={() => setIsRestoreOpen(false)} onConfirm={async () => { if (categoryToAction) { await restoreCategory(categoryToAction.id); setIsRestoreOpen(false); setCategoryToAction(null); refetchActive(searchTerm) } }} title="Pulihkan Kategori?" message={`"${categoryToAction?.name}" akan dipulihkan.`} variant="info" confirmText="Ya, Pulihkan" />
+      <Confirmation open={isDeleteOpen} onClose={() => setIsDeleteOpen(false)} onConfirm={async () => { if (categoryToAction) { await deleteCategory(categoryToAction.id); setIsDeleteOpen(false); setCategoryToAction(null); refetchActive(searchTerm); showSuccess(`"${categoryToAction?.name}" dipindahkan ke sampah.`); } }} title="Hapus Kategori?" message={`"${categoryToAction?.name}" akan dipindahkan ke sampah.`} variant="warning" confirmText="Ya, Hapus" />
+      <Confirmation open={isRestoreOpen} onClose={() => setIsRestoreOpen(false)} onConfirm={async () => { if (categoryToAction) { await restoreCategory(categoryToAction.id); setIsRestoreOpen(false); setCategoryToAction(null); refetchActive(searchTerm); showSuccess(`"${categoryToAction?.name}" berhasil dipulihkan.`); } }} title="Pulihkan Kategori?" message={`"${categoryToAction?.name}" akan dipulihkan.`} variant="info" confirmText="Ya, Pulihkan" />
       <Confirmation open={isForceDeleteOpen} onClose={() => setIsForceDeleteOpen(false)} onConfirm={async () => { 
         if (categoryToAction) { 
           try {
@@ -85,7 +87,8 @@ export default function BusCategoryPage() {
             setIsForceDeleteOpen(false); 
             setCategoryToAction(null); 
             refetchActive(searchTerm);
-            refetchTrash(); // Penting: Refresh daftar sampah juga
+            refetchTrash();
+            showSuccess(`"${categoryToAction?.name}" berhasil dihapus permanen.`);
           } catch (err) {
             // Error ditangani oleh hook
           }

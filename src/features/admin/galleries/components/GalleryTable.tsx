@@ -21,7 +21,7 @@ export default function GalleryTable({
 }: GalleryTableProps) {
   const columns: Column<Gallery>[] = [
     { 
-      header: "Gallery Event", 
+      header: "Acara Galeri", 
       accessor: (row) => (
         <div className="flex items-center gap-4 text-left">
           <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-500 overflow-hidden flex-shrink-0">
@@ -34,14 +34,14 @@ export default function GalleryTable({
           <div className="flex flex-col">
             <span className="leading-tight font-semibold text-slate-800">{row.title}</span>
             <span className="text-xs text-slate-500 font-medium">
-              {row.images?.length || 0} Photos
+              {row.images?.length || 0} Foto
             </span>
           </div>
         </div>
       )
     },
     {
-      header: "Date",
+      header: "Tanggal",
       accessor: (row) => (
         <span className="text-sm text-slate-600 font-medium">
           {row.date ? new Date(row.date).toLocaleDateString('id-ID', {
@@ -53,7 +53,7 @@ export default function GalleryTable({
       )
     },
     {
-      header: "Published",
+      header: "Dipublikasikan",
       accessor: (row) => (
         <div className="flex items-center" onClick={(e) => e.stopPropagation()}>
           <label className="relative inline-flex items-center cursor-pointer">
@@ -69,7 +69,7 @@ export default function GalleryTable({
       )
     },
     {
-      header: "Actions",
+      header: "Aksi",
       accessor: (row) => (
         <div className="flex items-center gap-2">
           <Button 
@@ -78,7 +78,7 @@ export default function GalleryTable({
             icon={Edit} 
             className="h-9 w-9 rounded-full p-0" 
             onClick={() => onEdit(row)}
-            title="Edit Gallery" 
+            title="Edit Galeri" 
           />
           <Button 
             size="sm" 
@@ -86,7 +86,7 @@ export default function GalleryTable({
             icon={Trash2} 
             className="h-9 w-9 rounded-full p-0" 
             onClick={() => onDelete(row)}
-            title="Delete Gallery"
+            title="Hapus Galeri"
           />
         </div>
       )

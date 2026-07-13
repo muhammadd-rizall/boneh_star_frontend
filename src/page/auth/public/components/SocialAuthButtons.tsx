@@ -5,26 +5,17 @@ interface SocialAuthButtonsProps {
   action: "Masuk" | "Daftar";
 }
 
-const socialButtons = [
-  {
-    label: "Google",
-    icon: <GoogleIcon className="size-5" />,
-  },
-];
-
 export function SocialAuthButtons({ action }: SocialAuthButtonsProps) {
   return (
-    <div className="mt-6 flex justify-center gap-4">
-      {socialButtons.map((item) => (
-        <button
-          key={item.label}
-          type="button"
-          aria-label={`${action} dengan ${item.label}`}
-          className="flex size-11 items-center justify-center rounded-full border border-[#ececf4] bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-action-blue/40"
-        >
-          {item.icon}
-        </button>
-      ))}
+    <div className="mt-4 w-full">
+      <button
+        type="button"
+        aria-label={`${action} dengan Google`}
+        className="flex items-center justify-center gap-2 h-12 w-full rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-bold text-midnight-indigo transition-all cursor-pointer shadow-sm"
+      >
+        <GoogleIcon className="size-4.5" />
+        <span>Google</span>
+      </button>
     </div>
   );
 }

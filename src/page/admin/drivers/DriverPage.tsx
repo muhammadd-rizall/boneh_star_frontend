@@ -14,12 +14,14 @@ import {
     useTrashedDrivers,
     type Driver,
 } from "@/features/admin/drivers"
+import { useToastStore } from "@/store/useToastStore"
 import { AlertCircle, CheckCircle2, Clock, Plus, RefreshCcw, UserCircle } from "lucide-react"
 import { useEffect, useState } from "react"
 
 export default function DriverPage() {
   const [view, setView] = useState<"active" | "trash">("active")
   const [searchTerm, setSearchTerm] = useState("")
+  const showSuccess = useToastStore(state => state.showSuccess)
 
   const { drivers, statistics, loading: activeLoading, error: activeError, deleteDriver, refetch: refetchActive } = useDrivers()
   const { drivers: trashedDrivers, loading: trashLoading, error: trashError, refetch: refetchTrash, restoreDriver, forceDeleteDriver } = useTrashedDrivers()
@@ -39,7 +41,11 @@ export default function DriverPage() {
 
   const handleCreate = () => { setSelectedDriver(null); setIsModalOpen(true) }
   const handleEdit = (d: Driver) => { setSelectedDriver(d); setIsModalOpen(true) }
-  const handleSuccess = () => { setIsModalOpen(false); if (view === "active") refetchActive(searchTerm); else refetchTrash() }
+  const handleSuccess = () => { 
+    setIsModalOpen(false); 
+    if (view === "active") refetchActive(searchTerm); else refetchTrash();
+    showSuccess(selectedDriver ? "Data pengemudi berhasil diperbarui!" : "Pengemudi baru berhasil ditambahkan!");
+  }
   const handleDeleteClick = (d: Driver) => { setDriverToManage(d); setIsDeleteConfirmOpen(true) }
   const handleConfirmDelete = async () => { 
     if (!driverToManage) return; 
@@ -47,6 +53,7 @@ export default function DriverPage() {
     try { 
       await deleteDriver(driverToManage.id); 
       setIsDeleteConfirmOpen(false); 
+      showSuccess(`Pengemudi "${driverToManage.name}" dipindahkan ke sampah.`);
       setDriverToManage(null);
       refetchActive(searchTerm);
     } finally { 
@@ -54,7 +61,19 @@ export default function DriverPage() {
     } 
   }
   const handleRestoreClick = (id: string) => { const d = trashedDrivers.find(x => x.id === id); if (d) { setDriverToManage(d); setIsRestoreConfirmOpen(true) } }
-  const handleConfirmRestore = async () => { if (!driverToManage) return; setActionLoading(true); try { await restoreDriver(driverToManage.id); setIsRestoreConfirmOpen(false); setDriverToManage(null); refetchActive(searchTerm) } finally { setActionLoading(false) } }
+  const handleConfirmRestore = async () => { 
+    if (!driverToManage) return; 
+    setActionLoading(true); 
+    try { 
+      await restoreDriver(driverToManage.id); 
+      setIsRestoreConfirmOpen(false); 
+      showSuccess(`Pengemudi "${driverToManage.name}" berhasil dipulihkan.`);
+      setDriverToManage(null); 
+      refetchActive(searchTerm) 
+    } finally { 
+      setActionLoading(false) 
+    } 
+  }
   const handleForceDeleteClick = (d: Driver) => { setDriverToManage(d); setIsForceDeleteConfirmOpen(true) }
   const handleConfirmForceDelete = async () => { 
     if (!driverToManage) return; 
@@ -62,6 +81,7 @@ export default function DriverPage() {
     try { 
       await forceDeleteDriver(driverToManage.id); 
       setIsForceDeleteConfirmOpen(false); 
+      showSuccess(`Pengemudi "${driverToManage.name}" berhasil dihapus permanen.`);
       setDriverToManage(null);
       refetchActive(searchTerm);
       refetchTrash();

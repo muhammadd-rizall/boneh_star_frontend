@@ -9,6 +9,7 @@ import {
   CircleDollarSign, Minus, Plus, Check, Info, Info as InfoIcon
 } from 'lucide-react';
 import type { ActivityType, RouteType, BusCategory, Bus } from '@/types/Database';
+import { useToastStore } from '@/store/useToastStore';
 
 // ── Step config ───────────────────────────────────────────────────────────────
 const STEPS = [
@@ -20,6 +21,7 @@ const STEPS = [
 
 export default function BookingRequestPage() {
   const navigate = useNavigate();
+  const { showSuccess, showError } = useToastStore();
   const [currentStep, setCurrentStep] = React.useState<number>(1);
   const [activities, setActivities] = React.useState<ActivityType[]>([]);
   const [routeTypes, setRouteTypes] = React.useState<RouteType[]>([]);
@@ -136,9 +138,12 @@ export default function BookingRequestPage() {
       };
 
       const result = await bookingService.create(payload as any);
+      showSuccess('Pemesanan berhasil dibuat');
       navigate(`/customer/bookings/${result.id}`);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Gagal mengirim permintaan. Pastikan semua data terisi dengan benar.');
+      const errMsg = err.response?.data?.message || 'Gagal mengirim permintaan. Pastikan semua data terisi dengan benar.';
+      setError(errMsg);
+      showError(errMsg);
     } finally {
       setLoading(false);
     }

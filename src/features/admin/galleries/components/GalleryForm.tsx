@@ -51,8 +51,43 @@ export default function GalleryForm({ gallery, onSuccess, onCancel }: GalleryFor
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    if (files.length > 0) {
-      const newPreviews = files.map(file => ({
+    if (files.length === 0) return;
+
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+    const MAX_TOTAL_SIZE = 16 * 1024 * 1024; // 16MB warning
+    const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/jpg", "image/gif", "image/svg+xml", "image/webp"];
+
+    let validationError: string | null = null;
+    const validFiles: File[] = [];
+
+    // Calculate current total size of new previews
+    let currentTotalSize = newImagePreviews.reduce((acc, curr) => acc + curr.file.size, 0);
+
+    for (const file of files) {
+      if (!ALLOWED_TYPES.includes(file.type)) {
+        validationError = `Format file "${file.name}" tidak didukung. Harap pilih gambar dengan format JPG, PNG, WEBP, GIF, atau SVG.`;
+        break;
+      }
+      if (file.size > MAX_FILE_SIZE) {
+        validationError = `File "${file.name}" melebihi batas ukuran maksimal 5MB. Silakan kompres gambar terlebih dahulu.`;
+        break;
+      }
+      if (currentTotalSize + file.size > MAX_TOTAL_SIZE) {
+        validationError = `Total ukuran gambar baru melebihi batas upload maksimal 16MB. Harap kurangi jumlah gambar atau kompres ukurannya.`;
+        break;
+      }
+      currentTotalSize += file.size;
+      validFiles.push(file);
+    }
+
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    setError(null);
+    if (validFiles.length > 0) {
+      const newPreviews = validFiles.map(file => ({
         file,
         url: URL.createObjectURL(file)
       }));
@@ -96,7 +131,20 @@ export default function GalleryForm({ gallery, onSuccess, onCancel }: GalleryFor
       }
       onSuccess();
     } catch (err: any) {
-      const errorMessage = err.response?.data?.message || err.message || "Terjadi kesalahan saat menyimpan data.";
+      let errorMessage = err.response?.data?.message || err.message || "Terjadi kesalahan saat menyimpan data.";
+      
+      // Handle Laravel array validation keys like images.0, images.1, etc.
+      if (err.response?.data?.errors) {
+        const errors = err.response.data.errors;
+        const firstErrorKey = Object.keys(errors)[0];
+        
+        if (firstErrorKey.startsWith("images.")) {
+          const index = firstErrorKey.split(".")[1];
+          errorMessage = `Foto ke-${Number(index) + 1} gagal diunggah. Pastikan format file sesuai (JPG, PNG, WEBP) dan ukurannya tidak melebihi 5MB.`;
+        } else if (errors[firstErrorKey] && errors[firstErrorKey][0]) {
+          errorMessage = errors[firstErrorKey][0];
+        }
+      }
       setError(errorMessage);
     } finally {
       setLoading(false);

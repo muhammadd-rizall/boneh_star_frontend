@@ -9,14 +9,18 @@ import {
     useTrashedPayments,
     type Payment
 } from "@/features/admin/payments"
+import { useToastStore } from "@/store/useToastStore"
 import { CheckCircle, Clock, DollarSign, Receipt, RefreshCcw } from "lucide-react"
 import { useState } from "react"
+import { resolveMediaUrl } from "@/features/admin/company-profile/utils/companyProfileUtils"
 
 const formatRp = (n: number) =>
   new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(n)
 
 export default function PaymentPage() {
   const [view, setView] = useState<'active' | 'trash'>('active')
+  const showSuccess = useToastStore(state => state.showSuccess)
+
   const { 
     payments, 
     statistics, 
@@ -48,9 +52,13 @@ export default function PaymentPage() {
   const [paymentToAction, setPaymentToAction] = useState<Payment | null>(null)
   const [actionLoading, setActionLoading] = useState(false)
 
-  const runAction = async (fn: () => Promise<void>, closeDialog: () => void) => {
+  const runAction = async (fn: () => Promise<void>, closeDialog: () => void, successMsg?: string) => {
     setActionLoading(true)
-    try { await fn(); closeDialog() }
+    try { 
+      await fn(); 
+      closeDialog(); 
+      if (successMsg) showSuccess(successMsg);
+    }
     finally { setActionLoading(false) }
   }
 
@@ -77,7 +85,7 @@ export default function PaymentPage() {
             searchValue={searchTerm} onSearchChange={setSearchTerm} searchPlaceholder="Cari kode booking..."
             extraActions={
               <Button variant="outline" icon={RefreshCcw} className="h-11 rounded-xl px-5" onClick={view === 'active' ? refetch : refetchTrash} loading={loading}>
-                Refresh
+                Segarkan
               </Button>
             }
           />
@@ -138,7 +146,7 @@ export default function PaymentPage() {
 
       <Modal open={isVerifyModalOpen} onClose={() => setIsVerifyModalOpen(false)} title="Verifikasi Pembayaran" subtitle="Tinjau dan ubah status pengajuan pembayaran">
         {selectedPayment && (
-          <PaymentVerifyForm payment={selectedPayment} onSuccess={() => { setIsVerifyModalOpen(false); refetch() }} onCancel={() => setIsVerifyModalOpen(false)} />
+          <PaymentVerifyForm payment={selectedPayment} onSuccess={() => { setIsVerifyModalOpen(false); refetch(); showSuccess("Pembayaran berhasil diverifikasi!"); }} onCancel={() => setIsVerifyModalOpen(false)} />
         )}
       </Modal>
 
@@ -146,7 +154,7 @@ export default function PaymentPage() {
         {selectedPayment && (
           <div className="flex flex-col gap-4">
             <div className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 flex justify-center p-2">
-              <img src={selectedPayment.transfer_proof} alt="Transfer Proof" className="max-h-[60vh] w-auto object-contain rounded-lg" />
+              <img src={resolveMediaUrl(selectedPayment.transfer_proof as string)} alt="Transfer Proof" className="max-h-[60vh] w-auto object-contain rounded-lg" />
             </div>
             <div className="flex justify-end">
               <Button variant="outline" onClick={() => setIsProofModalOpen(false)}>Tutup</Button>
@@ -155,9 +163,9 @@ export default function PaymentPage() {
         )}
       </Modal>
 
-      <Confirmation open={isDeleteConfirmOpen} onClose={() => setIsDeleteConfirmOpen(false)} onConfirm={() => runAction(async () => { await deletePayment(paymentToAction!.id); refetchTrash() }, () => setIsDeleteConfirmOpen(false))} loading={actionLoading} title="Hapus Catatan?" message="Catatan pembayaran akan dipindahkan ke sampah." variant="warning" confirmText="Ya, Hapus" />
-      <Confirmation open={isRestoreConfirmOpen} onClose={() => setIsRestoreConfirmOpen(false)} onConfirm={() => runAction(async () => { await restorePayment(paymentToAction!.id); refetch() }, () => setIsRestoreConfirmOpen(false))} loading={actionLoading} title="Pulihkan Catatan?" message="Data akan dikembalikan ke daftar aktif." variant="info" confirmText="Ya, Pulihkan" />
-      <Confirmation open={isForceDeleteConfirmOpen} onClose={() => setIsForceDeleteConfirmOpen(false)} onConfirm={() => runAction(async () => { await forceDeletePayment(paymentToAction!.id) }, () => setIsForceDeleteConfirmOpen(false))} loading={actionLoading} variant="danger" title="Hapus Permanen?" message="Tindakan ini akan menghapus data selamanya." confirmText="Ya, Hapus" />
+      <Confirmation open={isDeleteConfirmOpen} onClose={() => setIsDeleteConfirmOpen(false)} onConfirm={() => runAction(async () => { await deletePayment(paymentToAction!.id); refetchTrash() }, () => setIsDeleteConfirmOpen(false), "Catatan pembayaran berhasil dipindahkan ke sampah.")} loading={actionLoading} title="Hapus Catatan?" message="Catatan pembayaran akan dipindahkan ke sampah." variant="warning" confirmText="Ya, Hapus" />
+      <Confirmation open={isRestoreConfirmOpen} onClose={() => setIsRestoreConfirmOpen(false)} onConfirm={() => runAction(async () => { await restorePayment(paymentToAction!.id); refetch() }, () => setIsRestoreConfirmOpen(false), "Catatan pembayaran berhasil dipulihkan.")} loading={actionLoading} title="Pulihkan Catatan?" message="Data akan dikembalikan ke daftar aktif." variant="info" confirmText="Ya, Pulihkan" />
+      <Confirmation open={isForceDeleteConfirmOpen} onClose={() => setIsForceDeleteConfirmOpen(false)} onConfirm={() => runAction(async () => { await forceDeletePayment(paymentToAction!.id) }, () => setIsForceDeleteConfirmOpen(false), "Catatan pembayaran berhasil dihapus permanen.")} loading={actionLoading} variant="danger" title="Hapus Permanen?" message="Tindakan ini akan menghapus data selamanya." confirmText="Ya, Hapus" />
     </div>
   )
 }

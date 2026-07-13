@@ -7,12 +7,14 @@ import {
     ActivityTypeTable,
     useActivityTypes, useTrashedActivityTypes, type ActivityType,
 } from "@/features/admin/activity-types"
+import { useToastStore } from "@/store/useToastStore"
 import { CheckCircle2, Plus, RefreshCcw, Tag, Trash2 } from "lucide-react"
 import { useEffect, useState } from "react"
 
 export default function ActivityTypePage() {
   const [view, setView] = useState<"active" | "trash">("active")
   const [searchTerm, setSearchTerm] = useState("")
+  const showSuccess = useToastStore(state => state.showSuccess)
 
   const { activityTypes, statistics, loading: activeLoading, error: activeError, deleteActivityType, refetch: refetchActive } = useActivityTypes()
   const { activityTypes: trashedTypes, loading: trashLoading, error: trashError, refetch: refetchTrash, restoreActivityType, forceDeleteActivityType } = useTrashedActivityTypes()
@@ -53,7 +55,7 @@ export default function ActivityTypePage() {
       </StatGrid>
 
       <div className="flex justify-end">
-        <ViewToggle view={view} onViewChange={setView} activeLabel="Semua" trashLabel="Sampah" />
+        <ViewToggle view={view} onViewChange={setView} activeLabel="Aktif" trashLabel="Sampah" />
       </div>
 
       {error ? (
@@ -74,12 +76,12 @@ export default function ActivityTypePage() {
       )}
 
       <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedType ? "Edit Jenis Aktivitas" : "Tambah Jenis Aktivitas"}>
-        <ActivityTypeForm activityType={selectedType} onSuccess={() => { setIsModalOpen(false); refetchActive(searchTerm); refetchTrash() }} onCancel={() => setIsModalOpen(false)} />
+        <ActivityTypeForm activityType={selectedType} onSuccess={() => { setIsModalOpen(false); refetchActive(searchTerm); refetchTrash(); showSuccess(selectedType ? "Jenis aktivitas berhasil diperbarui!" : "Jenis aktivitas baru berhasil ditambahkan!"); }} onCancel={() => setIsModalOpen(false)} />
       </Modal>
 
-      <Confirmation open={isDeleteOpen} onClose={() => setIsDeleteOpen(false)} onConfirm={async () => { if (typeToAction) { await deleteActivityType(typeToAction.id); setIsDeleteOpen(false); setTypeToAction(null); refetchActive(searchTerm) } }} title="Hapus Jenis Aktivitas?" message={`"${typeToAction?.name}" akan dipindahkan ke sampah.`} variant="warning" confirmText="Ya, Hapus" />
-      <Confirmation open={isRestoreOpen} onClose={() => setIsRestoreOpen(false)} onConfirm={async () => { if (typeToAction) { await restoreActivityType(typeToAction.id); setIsRestoreOpen(false); setTypeToAction(null); refetchActive(searchTerm) } }} title="Pulihkan?" message={`"${typeToAction?.name}" akan dipulihkan.`} variant="info" confirmText="Ya, Pulihkan" />
-      <Confirmation open={isForceDeleteOpen} onClose={() => setIsForceDeleteOpen(false)} onConfirm={async () => { if (typeToAction) { await forceDeleteActivityType(typeToAction.id); setIsForceDeleteOpen(false); setTypeToAction(null); refetchActive(searchTerm) } }} title="Hapus Permanen?" message={`"${typeToAction?.name}" akan dihapus permanen.`} variant="danger" confirmText="Ya, Hapus" />
+      <Confirmation open={isDeleteOpen} onClose={() => setIsDeleteOpen(false)} onConfirm={async () => { if (typeToAction) { await deleteActivityType(typeToAction.id); setIsDeleteOpen(false); setTypeToAction(null); refetchActive(searchTerm); showSuccess(`"${typeToAction?.name}" dipindahkan ke sampah.`); } }} title="Hapus Jenis Aktivitas?" message={`"${typeToAction?.name}" akan dipindahkan ke sampah.`} variant="warning" confirmText="Ya, Hapus" />
+      <Confirmation open={isRestoreOpen} onClose={() => setIsRestoreOpen(false)} onConfirm={async () => { if (typeToAction) { await restoreActivityType(typeToAction.id); setIsRestoreOpen(false); setTypeToAction(null); refetchActive(searchTerm); showSuccess(`"${typeToAction?.name}" berhasil dipulihkan.`); } }} title="Pulihkan?" message={`"${typeToAction?.name}" akan dipulihkan.`} variant="info" confirmText="Ya, Pulihkan" />
+      <Confirmation open={isForceDeleteOpen} onClose={() => setIsForceDeleteOpen(false)} onConfirm={async () => { if (typeToAction) { await forceDeleteActivityType(typeToAction.id); setIsForceDeleteOpen(false); setTypeToAction(null); refetchActive(searchTerm); showSuccess(`"${typeToAction?.name}" berhasil dihapus permanen.`); } }} title="Hapus Permanen?" message={`"${typeToAction?.name}" akan dihapus permanen.`} variant="danger" confirmText="Ya, Hapus" />
     </div>
   )
 }

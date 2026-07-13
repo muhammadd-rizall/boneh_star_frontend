@@ -14,7 +14,7 @@ interface RoleTableProps {
 export default function RoleTable({ data, onDelete, onEdit, loading }: RoleTableProps) {
   const columns: Column<Role>[] = [
     { 
-      header: "Role Identity", 
+      header: "Identitas Peran", 
       accessor: (row) => (
         <div className="flex items-center gap-4 text-left">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-600">
@@ -28,19 +28,19 @@ export default function RoleTable({ data, onDelete, onEdit, loading }: RoleTable
       )
     },
     { 
-      header: "Permissions Count", 
+      header: "Jumlah Izin", 
       accessor: (row) => (
         <span className="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-600">
-          {row.permissions?.length || 0} Permissions
+          {row.permissions?.length || 0} Izin
         </span>
       )
     },
     { 
-      header: "Active Users", 
+      header: "Pengguna Aktif", 
       accessor: (row) => (
         <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500">
           <Users size={14} className="text-slate-400" />
-          <span>{row.users_count || 0}</span>
+          <span>{row.users_count || 0} Pengguna</span>
         </div>
       )
     },
@@ -53,12 +53,12 @@ export default function RoleTable({ data, onDelete, onEdit, loading }: RoleTable
             : "border border-slate-200 bg-slate-100 text-slate-500"
         }`}>
           <span className={`h-1.5 w-1.5 rounded-full ${row.is_active ? "bg-emerald-500" : "bg-slate-400"}`}></span>
-          {row.is_active ? "Active" : "Disabled"}
+          {row.is_active ? "Aktif" : "Nonaktif"}
         </span>
       )
     },
     {
-      header: "Actions",
+      header: "Aksi",
       accessor: (row) => (
         <div className="flex items-center gap-2">
           <Button 
@@ -67,6 +67,7 @@ export default function RoleTable({ data, onDelete, onEdit, loading }: RoleTable
             icon={Edit} 
             className="h-9 w-9 rounded-full p-0" 
             onClick={() => onEdit(row)}
+            title="Edit Hak Akses"
           />
           <Button 
             size="sm" 
@@ -74,6 +75,7 @@ export default function RoleTable({ data, onDelete, onEdit, loading }: RoleTable
             icon={Trash2} 
             className="h-9 w-9 rounded-full p-0" 
             onClick={() => onDelete(row)}
+            title="Hapus Hak Akses"
           />
         </div>
       )

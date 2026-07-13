@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react"
 import { PageHeader, PageToolbar } from "@/components/ui/PageComponents"
-import Search from "@/components/ui/Search"
 import { Button } from "@/components/ui/Button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/Dialog"
 import { Plus } from "lucide-react"
@@ -80,28 +79,17 @@ export default function GalleryPage() {
         title="Galeri Perjalanan"
         subtitle="Kelola foto dan dokumentasi perjalanan pelanggan Anda."
         badge="Operasional"
-      />
-
-      {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-        <div className="w-full sm:w-96">
-          <Search 
-            placeholder="Cari galeri..." 
-            value={search}
-            onChange={(val) => setSearch(val)}
+        actions={
+          <PageToolbar
+            searchValue={search}
+            onSearchChange={setSearch}
+            searchPlaceholder="Cari galeri..."
+            onCreate={handleCreate}
+            createLabel="Tambah Galeri"
+            createIcon={Plus}
           />
-        </div>
-        <div className="flex items-center gap-3 w-full sm:w-auto">
-          <Button 
-            variant="primary" 
-            icon={Plus} 
-            className="w-full sm:w-auto font-bold rounded-xl"
-            onClick={handleCreate}
-          >
-            Tambah Galeri
-          </Button>
-        </div>
-      </div>
+        }
+      />
 
       {/* Content Area */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">

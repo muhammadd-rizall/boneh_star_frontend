@@ -15,7 +15,7 @@ export default function QuotationTable({ data, onDelete, onEdit, loading }: Quot
   const formatDate = (dateString: string) => {
     try {
       const date = new Date(dateString);
-      return new Intl.DateTimeFormat('en-GB', {
+      return new Intl.DateTimeFormat('id-ID', {
         day: '2-digit',
         month: 'short',
         year: 'numeric'
@@ -33,36 +33,36 @@ export default function QuotationTable({ data, onDelete, onEdit, loading }: Quot
     }).format(amount);
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusConfig = (status: string) => {
     switch (status) {
-      case 'draft': return 'border-slate-200 bg-slate-50 text-slate-600';
-      case 'sent': return 'border-blue-200 bg-blue-50 text-blue-700';
-      case 'accepted': return 'border-emerald-200 bg-emerald-50 text-emerald-700';
-      case 'revision': return 'border-amber-200 bg-amber-50 text-amber-700';
-      case 'expired': return 'border-rose-200 bg-rose-50 text-rose-700';
-      case 'rejected': return 'border-red-200 bg-red-50 text-red-700';
-      default: return 'border-slate-200 bg-slate-100 text-slate-500';
+      case 'draft': return { label: 'Draf', color: 'border-slate-200 bg-slate-50 text-slate-600' };
+      case 'sent': return { label: 'Dikirim', color: 'border-blue-200 bg-blue-50 text-blue-700' };
+      case 'accepted': return { label: 'Diterima', color: 'border-emerald-200 bg-emerald-50 text-emerald-700' };
+      case 'revision': return { label: 'Revisi', color: 'border-amber-200 bg-amber-50 text-amber-700' };
+      case 'expired': return { label: 'Kedaluwarsa', color: 'border-rose-200 bg-rose-50 text-rose-700' };
+      case 'rejected': return { label: 'Ditolak', color: 'border-red-200 bg-red-50 text-red-700' };
+      default: return { label: status, color: 'border-slate-200 bg-slate-100 text-slate-500' };
     }
   };
 
   const columns: Column<Quotation>[] = [
     {
-      header: "Booking Details",
+      header: "Detail Pemesanan",
       accessor: (row) => (
         <div className="flex flex-col gap-1 text-left">
           <div className="flex items-center gap-1.5 font-bold text-slate-900 tracking-tight">
             <FileText size={14} className="text-slate-400" />
-            <span>{row.booking?.booking_code || 'No Code'}</span>
+            <span>{row.booking?.booking_code || 'Tanpa Kode'}</span>
           </div>
           <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500">
             <User size={12} />
-            <span>{row.booking?.customer?.name || 'Unknown Customer'}</span>
+            <span>{row.booking?.customer?.name || 'Pelanggan Tidak Diketahui'}</span>
           </div>
         </div>
       )
     },
     {
-      header: "Pricing",
+      header: "Harga Penawaran",
       accessor: (row) => (
         <div className="flex flex-col gap-1 text-left">
           <div className="flex items-center gap-1.5 text-sm font-bold text-slate-700">
@@ -76,29 +76,32 @@ export default function QuotationTable({ data, onDelete, onEdit, loading }: Quot
       )
     },
     {
-      header: "Validity",
+      header: "Masa Berlaku",
       accessor: (row) => (
         <div className="flex flex-col gap-1 text-left">
           <div className="flex items-center gap-1.5 text-xs font-medium text-slate-600">
             <Calendar size={12} className="text-slate-400" />
-            <span>Until {formatDate(row.valid_until)}</span>
+            <span>Hingga {formatDate(row.valid_until)}</span>
           </div>
           <div className="text-[10px] text-slate-400">
-            Created by: {row.user?.name || 'Admin'}
+            Dibuat oleh: {row.user?.name || 'Admin'}
           </div>
         </div>
       )
     },
     {
       header: "Status",
-      accessor: (row) => (
-        <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] border ${getStatusColor(row.status)}`}>
-          {row.status}
-        </span>
-      )
+      accessor: (row) => {
+        const config = getStatusConfig(row.status);
+        return (
+          <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] border ${config.color}`}>
+            {config.label}
+          </span>
+        );
+      }
     },
     {
-      header: "Actions",
+      header: "Aksi",
       accessor: (row) => (
         <div className="flex items-center gap-2">
           <Button 
@@ -107,7 +110,7 @@ export default function QuotationTable({ data, onDelete, onEdit, loading }: Quot
             icon={Edit} 
             className="h-9 w-9 rounded-full p-0" 
             onClick={() => onEdit(row)}
-            title="Edit Quotation" 
+            title="Edit Penawaran" 
           />
           <Button 
             size="sm" 
@@ -115,7 +118,7 @@ export default function QuotationTable({ data, onDelete, onEdit, loading }: Quot
             icon={Trash2} 
             className="h-9 w-9 rounded-full p-0" 
             onClick={() => onDelete(row)}
-            title="Delete Quotation"
+            title="Hapus Penawaran"
           />
         </div>
       )

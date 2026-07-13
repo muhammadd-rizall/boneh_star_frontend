@@ -12,7 +12,7 @@ interface IncomeReportTableProps {
 export default function IncomeReportTable({ data, loading }: IncomeReportTableProps) {
   const columns: Column<Payment>[] = [
     {
-      header: "Date",
+      header: "Tanggal",
       accessor: (row) => formatDate(row.payment_date),
     },
     {
@@ -21,23 +21,23 @@ export default function IncomeReportTable({ data, loading }: IncomeReportTablePr
       className: "font-semibold text-slate-900",
     },
     {
-      header: "Method",
+      header: "Metode",
       accessor: (row) => row.payment_method?.bank_name || "-",
     },
     {
-      header: "Type",
+      header: "Jenis",
       accessor: (row) => (
         <span className={`rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-wider ${
           row.payment_type === 'dp' 
             ? 'bg-blue-100 text-blue-600' 
             : 'bg-emerald-100 text-emerald-600'
         }`}>
-          {row.payment_type === 'dp' ? 'Down Payment' : 'Settlement'}
+          {row.payment_type === 'dp' ? 'Uang Muka (DP)' : 'Pelunasan'}
         </span>
       ),
     },
     {
-      header: "Amount",
+      header: "Jumlah",
       accessor: (row) => (
         <span className="font-semibold text-slate-900">
           {formatCurrency(row.amount)}
@@ -50,13 +50,13 @@ export default function IncomeReportTable({ data, loading }: IncomeReportTablePr
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between px-1">
-        <h3 className="text-lg font-bold text-slate-800">Verified Payments History</h3>
+        <h3 className="text-lg font-bold text-slate-800">Riwayat Pembayaran Terverifikasi</h3>
       </div>
       <DataTable 
         data={data} 
         columns={columns} 
         loading={loading} 
-        emptyMessage="No verified payments in this period"
+        emptyMessage="Tidak ada pembayaran terverifikasi pada periode ini"
         paginated
       />
     </div>

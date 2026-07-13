@@ -6,12 +6,14 @@ import BusFacilityForm from "@/features/admin/bus-facilities/components/BusFacil
 import BusFacilityTable from "@/features/admin/bus-facilities/components/BusFacilityTable"
 import { useBusFacilities, useTrashedBusFacilities } from "@/features/admin/bus-facilities/hooks/useBusFacilities"
 import type { BusFacility } from "@/features/admin/bus-facilities/types/BusFacility"
+import { useToastStore } from "@/store/useToastStore"
 import { Plus, RefreshCcw, Shield, Trash2, Wrench } from "lucide-react"
 import { useEffect, useState } from "react"
 
 export default function BusFacilityPage() {
   const [view, setView] = useState<"active" | "trash">("active")
   const [searchTerm, setSearchTerm] = useState("")
+  const showSuccess = useToastStore(state => state.showSuccess)
 
   const { facilities, statistics, loading: activeLoading, error: activeError, deleteFacility, refetch: refetchActive } = useBusFacilities()
   const { facilities: trashedFacilities, loading: trashLoading, error: trashError, refetch: refetchTrash, restoreFacility, forceDeleteFacility } = useTrashedBusFacilities()
@@ -74,12 +76,12 @@ export default function BusFacilityPage() {
       )}
 
       <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedFacility ? "Edit Fasilitas" : "Tambah Fasilitas Baru"}>
-        <BusFacilityForm facility={selectedFacility} onSuccess={() => { setIsModalOpen(false); refetchActive(searchTerm); refetchTrash() }} onCancel={() => setIsModalOpen(false)} />
+        <BusFacilityForm facility={selectedFacility} onSuccess={() => { setIsModalOpen(false); refetchActive(searchTerm); refetchTrash(); showSuccess(selectedFacility ? "Fasilitas berhasil diperbarui!" : "Fasilitas baru berhasil ditambahkan!"); }} onCancel={() => setIsModalOpen(false)} />
       </Modal>
 
-      <Confirmation open={isDeleteOpen} onClose={() => setIsDeleteOpen(false)} loading={actionLoading} onConfirm={async () => { if (facilityToAction) { setActionLoading(true); try { await deleteFacility(facilityToAction.id); setIsDeleteOpen(false); setFacilityToAction(null); refetchActive(searchTerm) } catch(e){} finally { setActionLoading(false) } } }} title="Hapus Fasilitas?" message={`"${facilityToAction?.name}" akan dipindahkan ke sampah.`} variant="warning" confirmText="Ya, Hapus" />
-      <Confirmation open={isRestoreOpen} onClose={() => setIsRestoreOpen(false)} loading={actionLoading} onConfirm={async () => { if (facilityToAction) { setActionLoading(true); try { await restoreFacility(facilityToAction.id); setIsRestoreOpen(false); setFacilityToAction(null); refetchActive(searchTerm) } catch(e){} finally { setActionLoading(false) } } }} title="Pulihkan?" message={`"${facilityToAction?.name}" akan dipulihkan.`} variant="info" confirmText="Ya, Pulihkan" />
-      <Confirmation open={isForceDeleteOpen} onClose={() => setIsForceDeleteOpen(false)} loading={actionLoading} onConfirm={async () => { if (facilityToAction) { setActionLoading(true); try { await forceDeleteFacility(facilityToAction.id); setIsForceDeleteOpen(false); setFacilityToAction(null); refetchActive(searchTerm) } catch(e){} finally { setActionLoading(false) } } }} title="Hapus Permanen?" message={`"${facilityToAction?.name}" akan dihapus permanen.`} variant="danger" confirmText="Ya, Hapus" />
+      <Confirmation open={isDeleteOpen} onClose={() => setIsDeleteOpen(false)} loading={actionLoading} onConfirm={async () => { if (facilityToAction) { setActionLoading(true); try { await deleteFacility(facilityToAction.id); setIsDeleteOpen(false); setFacilityToAction(null); refetchActive(searchTerm); showSuccess(`"${facilityToAction?.name}" dipindahkan ke sampah.`); } catch(e){} finally { setActionLoading(false) } } }} title="Hapus Fasilitas?" message={`"${facilityToAction?.name}" akan dipindahkan ke sampah.`} variant="warning" confirmText="Ya, Hapus" />
+      <Confirmation open={isRestoreOpen} onClose={() => setIsRestoreOpen(false)} loading={actionLoading} onConfirm={async () => { if (facilityToAction) { setActionLoading(true); try { await restoreFacility(facilityToAction.id); setIsRestoreOpen(false); setFacilityToAction(null); refetchActive(searchTerm); showSuccess(`"${facilityToAction?.name}" berhasil dipulihkan.`); } catch(e){} finally { setActionLoading(false) } } }} title="Pulihkan?" message={`"${facilityToAction?.name}" akan dipulihkan.`} variant="info" confirmText="Ya, Pulihkan" />
+      <Confirmation open={isForceDeleteOpen} onClose={() => setIsForceDeleteOpen(false)} loading={actionLoading} onConfirm={async () => { if (facilityToAction) { setActionLoading(true); try { await forceDeleteFacility(facilityToAction.id); setIsForceDeleteOpen(false); setFacilityToAction(null); refetchActive(searchTerm); showSuccess(`"${facilityToAction?.name}" berhasil dihapus permanen.`); } catch(e){} finally { setActionLoading(false) } } }} title="Hapus Permanen?" message={`"${facilityToAction?.name}" akan dihapus permanen.`} variant="danger" confirmText="Ya, Hapus" />
     </div>
   )
 }

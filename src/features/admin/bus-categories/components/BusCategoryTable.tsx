@@ -23,7 +23,7 @@ export default function BusCategoryTable({
 }: BusCategoryTableProps) {
   const columns: Column<BusCategory>[] = [
     { 
-      header: "Category Name", 
+      header: "Nama Kategori", 
       accessor: (row) => (
         <div className="flex items-center gap-4 text-left">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-500 overflow-hidden">
@@ -42,16 +42,16 @@ export default function BusCategoryTable({
       )
     },
     { 
-      header: "Capacity Range", 
+      header: "Rentang Kapasitas", 
       accessor: (row) => (
         <div className="flex items-center gap-1.5 text-xs text-slate-600 font-medium">
           <Users size={14} className="text-slate-400" />
-          <span>{row.min_capacity} - {row.max_capacity} Seats</span>
+          <span>{row.min_capacity} - {row.max_capacity} Kursi</span>
         </div>
       )
     },
     {
-      header: "Created At",
+      header: "Dibuat Pada",
       accessor: (row) => (
         <span className="text-xs text-slate-500 font-medium">
           {new Date(row.created_at).toLocaleDateString('id-ID', {
@@ -63,7 +63,7 @@ export default function BusCategoryTable({
       )
     },
     {
-      header: "Actions",
+      header: "Aksi",
       accessor: (row) => (
         <div className="flex items-center gap-2">
           {isTrash ? (
@@ -74,7 +74,7 @@ export default function BusCategoryTable({
                 icon={RotateCcw} 
                 className="h-9 w-9 rounded-full p-0" 
                 onClick={() => onRestore?.(row.id)}
-                title="Restore Category" 
+                title="Pulihkan Kategori" 
               />
               <Button 
                 size="sm" 
@@ -82,7 +82,7 @@ export default function BusCategoryTable({
                 icon={Trash2} 
                 className="h-9 w-9 rounded-full p-0" 
                 onClick={() => onDelete(row)}
-                title="Permanently Delete"
+                title="Hapus Permanen"
               />
             </>
           ) : (
@@ -93,7 +93,7 @@ export default function BusCategoryTable({
                 icon={Edit} 
                 className="h-9 w-9 rounded-full p-0" 
                 onClick={() => onEdit(row)}
-                title="Edit Category" 
+                title="Edit Kategori" 
               />
               <Button 
                 size="sm" 
@@ -101,7 +101,7 @@ export default function BusCategoryTable({
                 icon={Trash2} 
                 className="h-9 w-9 rounded-full p-0" 
                 onClick={() => onDelete(row)}
-                title="Delete Category"
+                title="Hapus Kategori"
               />
             </>
           )}

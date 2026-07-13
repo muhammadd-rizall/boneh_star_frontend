@@ -3,12 +3,14 @@ import { Button } from "@/components/ui/Button"
 import { Modal } from "@/components/ui/Modal"
 import { ErrorBanner, PageHeader, PageToolbar, StatCard, StatGrid, ViewToggle } from "@/components/ui/PageComponents"
 import { CustomerForm, CustomerTable, useCustomers, useTrashedCustomers, type Customer } from "@/features/admin/customers"
+import { useToastStore } from "@/store/useToastStore"
 import { Heart, Plus, RefreshCcw, UserCheck, UserPlus, Users } from "lucide-react"
 import { useEffect, useState } from "react"
 
 export default function CustomerPage() {
   const [view, setView] = useState<"active" | "trash">("active")
   const [searchTerm, setSearchTerm] = useState("")
+  const showSuccess = useToastStore(state => state.showSuccess)
 
   const { customers, statistics, loading: activeLoading, error: activeError, deleteCustomer, refetch: refetchActive } = useCustomers()
   const { customers: trashedCustomers, loading: trashLoading, error: trashError, refetch: refetchTrash, restoreCustomer, forceDeleteCustomer } = useTrashedCustomers()
@@ -24,10 +26,48 @@ export default function CustomerPage() {
   useEffect(() => { if (view === "active") { const t = setTimeout(() => refetchActive(searchTerm), 500); return () => clearTimeout(t) } }, [searchTerm, view, refetchActive])
   useEffect(() => { if (view === "trash") refetchTrash() }, [view, refetchTrash])
 
-  const handleSuccess = () => { setIsModalOpen(false); if (view === "active") refetchActive(searchTerm); else refetchTrash() }
-  const handleConfirmDelete = async () => { if (!customerToManage) return; setActionLoading(true); try { await deleteCustomer(customerToManage.id); setIsDeleteConfirmOpen(false); setCustomerToManage(null) } finally { setActionLoading(false) } }
-  const handleConfirmRestore = async () => { if (!customerToManage) return; setActionLoading(true); try { await restoreCustomer(customerToManage.id); setIsRestoreConfirmOpen(false); setCustomerToManage(null); refetchActive(searchTerm) } finally { setActionLoading(false) } }
-  const handleConfirmForceDelete = async () => { if (!customerToManage) return; setActionLoading(true); try { await forceDeleteCustomer(customerToManage.id); setIsForceDeleteConfirmOpen(false); setCustomerToManage(null) } finally { setActionLoading(false) } }
+  const handleSuccess = () => { 
+    setIsModalOpen(false); 
+    if (view === "active") refetchActive(searchTerm); else refetchTrash();
+    showSuccess(selectedCustomer ? "Data pelanggan berhasil diperbarui!" : "Pelanggan baru berhasil ditambahkan!");
+  }
+  const handleConfirmDelete = async () => { 
+    if (!customerToManage) return; 
+    setActionLoading(true); 
+    try { 
+      await deleteCustomer(customerToManage.id); 
+      setIsDeleteConfirmOpen(false); 
+      showSuccess(`Pelanggan "${customerToManage.name}" dipindahkan ke sampah.`);
+      setCustomerToManage(null) 
+    } finally { 
+      setActionLoading(false) 
+    } 
+  }
+  const handleConfirmRestore = async () => { 
+    if (!customerToManage) return; 
+    setActionLoading(true); 
+    try { 
+      await restoreCustomer(customerToManage.id); 
+      setIsRestoreConfirmOpen(false); 
+      showSuccess(`Pelanggan "${customerToManage.name}" berhasil dipulihkan.`);
+      setCustomerToManage(null); 
+      refetchActive(searchTerm) 
+    } finally { 
+      setActionLoading(false) 
+    } 
+  }
+  const handleConfirmForceDelete = async () => { 
+    if (!customerToManage) return; 
+    setActionLoading(true); 
+    try { 
+      await forceDeleteCustomer(customerToManage.id); 
+      setIsForceDeleteConfirmOpen(false); 
+      showSuccess(`Pelanggan "${customerToManage.name}" berhasil dihapus permanen.`);
+      setCustomerToManage(null) 
+    } finally { 
+      setActionLoading(false) 
+    } 
+  }
 
   const loading = view === "active" ? activeLoading : trashLoading
   const error = view === "active" ? activeError : trashError

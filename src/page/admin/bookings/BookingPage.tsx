@@ -14,6 +14,7 @@ import {
     useBookings,
     type Booking,
 } from "@/features/admin/bookings"
+import { useToastStore } from "@/store/useToastStore"
 import {
     Bus,
     CheckCircle2,
@@ -49,6 +50,7 @@ export default function BookingPage() {
   const [isForceDeleteConfirmOpen, setIsForceDeleteConfirmOpen] = useState(false)
   const [bookingToManage, setBookingToManage] = useState<Booking | null>(null)
   const [actionLoading, setActionLoading] = useState(false)
+  const showSuccess = useToastStore(state => state.showSuccess)
 
   useEffect(() => {
     if (view === "trash") {
@@ -63,13 +65,22 @@ export default function BookingPage() {
 
   const handleCreate = () => { setSelectedBooking(null); setIsModalOpen(true) }
   const handleEdit = (b: Booking) => { setSelectedBooking(b); setIsModalOpen(true) }
-  const handleSuccess = () => { setIsModalOpen(false); refetch() }
+  const handleSuccess = () => { 
+    setIsModalOpen(false); 
+    refetch();
+    showSuccess(selectedBooking ? "Booking berhasil diperbarui!" : "Booking baru berhasil dibuat!");
+  }
 
   const handleDeleteClick = (b: Booking) => { setBookingToManage(b); setIsConfirmOpen(true) }
   const handleConfirmDelete = async () => {
     if (!bookingToManage) return
     setActionLoading(true)
-    try { await deleteBooking(bookingToManage.id); setIsConfirmOpen(false); setBookingToManage(null) }
+    try { 
+      await deleteBooking(bookingToManage.id); 
+      setIsConfirmOpen(false); 
+      showSuccess(`Booking "${bookingToManage.booking_code}" dipindahkan ke sampah.`);
+      setBookingToManage(null);
+    }
     finally { setActionLoading(false) }
   }
 
@@ -77,7 +88,12 @@ export default function BookingPage() {
   const handleConfirmRestore = async () => {
     if (!bookingToManage) return
     setActionLoading(true)
-    try { await restoreBooking(bookingToManage.id); setIsRestoreConfirmOpen(false); setBookingToManage(null) }
+    try { 
+      await restoreBooking(bookingToManage.id); 
+      setIsRestoreConfirmOpen(false); 
+      showSuccess(`Booking "${bookingToManage.booking_code}" berhasil dipulihkan.`);
+      setBookingToManage(null);
+    }
     finally { setActionLoading(false) }
   }
 
@@ -85,7 +101,12 @@ export default function BookingPage() {
   const handleConfirmForceDelete = async () => {
     if (!bookingToManage) return
     setActionLoading(true)
-    try { await forceDeleteBooking(bookingToManage.id); setIsForceDeleteConfirmOpen(false); setBookingToManage(null) }
+    try { 
+      await forceDeleteBooking(bookingToManage.id); 
+      setIsForceDeleteConfirmOpen(false); 
+      showSuccess(`Booking "${bookingToManage.booking_code}" berhasil dihapus permanen.`);
+      setBookingToManage(null);
+    }
     finally { setActionLoading(false) }
   }
 
@@ -95,7 +116,7 @@ export default function BookingPage() {
       <PageHeader
         title="Manajemen Pemesanan"
         subtitle="Kelola seluruh data booking armada bus"
-        badge="Bookings"
+        badge="Pemesanan"
         actions={
           <PageToolbar
             searchValue={searchTerm}

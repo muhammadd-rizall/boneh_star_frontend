@@ -23,7 +23,7 @@ export default function RouteTypeTable({
 }: RouteTypeTableProps) {
   const columns: Column<RouteType>[] = [
     { 
-      header: "Route Type", 
+      header: "Jenis Rute", 
       accessor: (row) => (
         <div className="flex items-center gap-4 text-left">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-500 overflow-hidden">
@@ -34,27 +34,27 @@ export default function RouteTypeTable({
       )
     },
     {
-      header: "Description",
+      header: "Deskripsi",
       accessor: (row) => (
         <span className="text-xs text-slate-500 font-medium line-clamp-2 max-w-[250px]">
-          {row.description || <span className="italic text-slate-400">No description</span>}
+          {row.description || <span className="italic text-slate-400">Tidak ada deskripsi</span>}
         </span>
       )
     },
     {
-      header: "Scope",
+      header: "Wilayah / Cakupan",
       accessor: (row) => (
         <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
           row.scope === 'inside' 
             ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' 
             : 'bg-amber-50 text-amber-600 border border-amber-100'
         }`}>
-          {row.scope} City
+          {row.scope === 'inside' ? 'Dalam Kota' : 'Luar Kota'}
         </span>
       )
     },
     {
-      header: "Created At",
+      header: "Dibuat Pada",
       accessor: (row) => (
         <span className="text-xs text-slate-500 font-medium">
           {new Date(row.created_at).toLocaleDateString('id-ID', {
@@ -66,7 +66,7 @@ export default function RouteTypeTable({
       )
     },
     {
-      header: "Actions",
+      header: "Aksi",
       accessor: (row) => (
         <div className="flex items-center gap-2">
           {isTrash ? (
@@ -77,7 +77,7 @@ export default function RouteTypeTable({
                 icon={RotateCcw} 
                 className="h-9 w-9 rounded-full p-0" 
                 onClick={() => onRestore?.(row.id)}
-                title="Restore Route Type" 
+                title="Pulihkan Jenis Rute" 
               />
               <Button 
                 size="sm" 
@@ -85,7 +85,7 @@ export default function RouteTypeTable({
                 icon={Trash2} 
                 className="h-9 w-9 rounded-full p-0" 
                 onClick={() => onDelete(row)}
-                title="Permanently Delete"
+                title="Hapus Permanen"
               />
             </>
           ) : (
@@ -96,7 +96,7 @@ export default function RouteTypeTable({
                 icon={Edit} 
                 className="h-9 w-9 rounded-full p-0" 
                 onClick={() => onEdit(row)}
-                title="Edit Route Type" 
+                title="Edit Jenis Rute" 
               />
               <Button 
                 size="sm" 
@@ -104,7 +104,7 @@ export default function RouteTypeTable({
                 icon={Trash2} 
                 className="h-9 w-9 rounded-full p-0" 
                 onClick={() => onDelete(row)}
-                title="Delete Route Type"
+                title="Hapus Jenis Rute"
               />
             </>
           )}

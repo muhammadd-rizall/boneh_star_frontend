@@ -14,6 +14,7 @@ import {
   Save, Clock, ArrowRight, Shield, CheckCircle
 } from 'lucide-react';
 import { formatDate, formatCurrency } from '@/utils/formatter';
+import { useToastStore } from '@/store/useToastStore';
 
 interface ActivityItem {
   id: string;
@@ -29,6 +30,8 @@ export default function ProfilePage() {
     profile, statistics, loading, error,
     updateProfile, updatePassword, uploadPicture, refresh
   } = useProfile();
+  
+  const { showSuccess, showError } = useToastStore();
 
   // Dynamic Stats & Activities Data
   const [bookings, setBookings] = useState<any[]>([]);
@@ -108,9 +111,12 @@ export default function ProfilePage() {
         address: editAddress
       });
       setEditSuccess(true);
+      showSuccess('Profil berhasil diperbarui');
       setTimeout(() => setEditSuccess(false), 4000);
     } catch (err: any) {
-      setEditError(err.message || 'Gagal memperbarui profil');
+      const errMsg = err.message || 'Gagal memperbarui profil';
+      setEditError(errMsg);
+      showError(errMsg);
     } finally {
       setEditLoading(false);
     }
@@ -120,6 +126,7 @@ export default function ProfilePage() {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
       setPasswordError('Konfirmasi password baru tidak cocok');
+      showError('Konfirmasi password baru tidak cocok');
       return;
     }
     setPasswordLoading(true);
@@ -132,12 +139,15 @@ export default function ProfilePage() {
         password_confirmation: confirmPassword
       });
       setPasswordSuccess(true);
+      showSuccess('Password berhasil diubah');
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
       setTimeout(() => setPasswordSuccess(false), 4000);
     } catch (err: any) {
-      setPasswordError(err.response?.data?.message || err.message || 'Gagal mengubah password');
+      const errMsg = err.response?.data?.message || err.message || 'Gagal mengubah password';
+      setPasswordError(errMsg);
+      showError(errMsg);
     } finally {
       setPasswordLoading(false);
     }
@@ -148,8 +158,10 @@ export default function ProfilePage() {
     if (file) {
       try {
         await uploadPicture(file);
-      } catch (err) {
+        showSuccess('Foto profil berhasil diperbarui');
+      } catch (err: any) {
         console.error(err);
+        showError(err.message || 'Gagal memperbarui foto profil');
       }
     }
   };

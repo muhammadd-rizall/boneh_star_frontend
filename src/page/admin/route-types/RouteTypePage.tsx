@@ -6,12 +6,14 @@ import RouteTypeForm from "@/features/admin/route-types/components/RouteTypeForm
 import RouteTypeTable from "@/features/admin/route-types/components/RouteTypeTable"
 import { useRouteTypes, useTrashedRouteTypes } from "@/features/admin/route-types/hooks/useRouteTypes"
 import type { RouteType } from "@/features/admin/route-types/types/RouteType"
+import { useToastStore } from "@/store/useToastStore"
 import { Map, MapPin, Plus, RefreshCcw, Trash2 } from "lucide-react"
 import { useEffect, useState } from "react"
 
 export default function RouteTypePage() {
   const [view, setView] = useState<"active" | "trash">("active")
   const [searchTerm, setSearchTerm] = useState("")
+  const showSuccess = useToastStore(state => state.showSuccess)
 
   const { routeTypes, statistics, loading: activeLoading, error: activeError, deleteRouteType, refetch: refetchActive } = useRouteTypes()
   const { routeTypes: trashedRouteTypes, loading: trashLoading, error: trashError, refetch: refetchTrash, restoreRouteType, forceDeleteRouteType } = useTrashedRouteTypes()
@@ -52,7 +54,7 @@ export default function RouteTypePage() {
       </StatGrid>
 
       <div className="flex justify-end">
-        <ViewToggle view={view} onViewChange={setView} activeLabel="Semua" trashLabel="Sampah" />
+        <ViewToggle view={view} onViewChange={setView} activeLabel="Aktif" trashLabel="Sampah" />
       </div>
 
       {error ? (
@@ -73,12 +75,12 @@ export default function RouteTypePage() {
       )}
 
       <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedRouteType ? "Edit Tipe Rute" : "Tambah Tipe Rute Baru"}>
-        <RouteTypeForm routeType={selectedRouteType} onSuccess={() => { setIsModalOpen(false); refetchActive(searchTerm); refetchTrash() }} onCancel={() => setIsModalOpen(false)} />
+        <RouteTypeForm routeType={selectedRouteType} onSuccess={() => { setIsModalOpen(false); refetchActive(searchTerm); refetchTrash(); showSuccess(selectedRouteType ? "Tipe rute berhasil diperbarui!" : "Tipe rute baru berhasil ditambahkan!"); }} onCancel={() => setIsModalOpen(false)} />
       </Modal>
 
-      <Confirmation open={isDeleteOpen} onClose={() => setIsDeleteOpen(false)} onConfirm={async () => { if (routeTypeToAction) { await deleteRouteType(routeTypeToAction.id); setIsDeleteOpen(false); setRouteTypeToAction(null); refetchActive(searchTerm) } }} title="Hapus Tipe Rute?" message={`"${routeTypeToAction?.name}" akan dipindahkan ke sampah.`} variant="warning" confirmText="Ya, Hapus" />
-      <Confirmation open={isRestoreOpen} onClose={() => setIsRestoreOpen(false)} onConfirm={async () => { if (routeTypeToAction) { await restoreRouteType(routeTypeToAction.id); setIsRestoreOpen(false); setRouteTypeToAction(null); refetchActive(searchTerm) } }} title="Pulihkan?" message={`"${routeTypeToAction?.name}" akan dipulihkan.`} variant="info" confirmText="Ya, Pulihkan" />
-      <Confirmation open={isForceDeleteOpen} onClose={() => setIsForceDeleteOpen(false)} onConfirm={async () => { if (routeTypeToAction) { await forceDeleteRouteType(routeTypeToAction.id); setIsForceDeleteOpen(false); setRouteTypeToAction(null); refetchActive(searchTerm) } }} title="Hapus Permanen?" message={`"${routeTypeToAction?.name}" akan dihapus permanen.`} variant="danger" confirmText="Ya, Hapus" />
+      <Confirmation open={isDeleteOpen} onClose={() => setIsDeleteOpen(false)} onConfirm={async () => { if (routeTypeToAction) { await deleteRouteType(routeTypeToAction.id); setIsDeleteOpen(false); setRouteTypeToAction(null); refetchActive(searchTerm); showSuccess(`"${routeTypeToAction?.name}" dipindahkan ke sampah.`); } }} title="Hapus Tipe Rute?" message={`"${routeTypeToAction?.name}" akan dipindahkan ke sampah.`} variant="warning" confirmText="Ya, Hapus" />
+      <Confirmation open={isRestoreOpen} onClose={() => setIsRestoreOpen(false)} onConfirm={async () => { if (routeTypeToAction) { await restoreRouteType(routeTypeToAction.id); setIsRestoreOpen(false); setRouteTypeToAction(null); refetchActive(searchTerm); showSuccess(`"${routeTypeToAction?.name}" berhasil dipulihkan.`); } }} title="Pulihkan?" message={`"${routeTypeToAction?.name}" akan dipulihkan.`} variant="info" confirmText="Ya, Pulihkan" />
+      <Confirmation open={isForceDeleteOpen} onClose={() => setIsForceDeleteOpen(false)} onConfirm={async () => { if (routeTypeToAction) { await forceDeleteRouteType(routeTypeToAction.id); setIsForceDeleteOpen(false); setRouteTypeToAction(null); refetchActive(searchTerm); showSuccess(`"${routeTypeToAction?.name}" berhasil dihapus permanen.`); } }} title="Hapus Permanen?" message={`"${routeTypeToAction?.name}" akan dihapus permanen.`} variant="danger" confirmText="Ya, Hapus" />
     </div>
   )
 }
