@@ -9,7 +9,6 @@ import {
   Bus as BusIcon,
   Users,
   Save,
-  Calendar,
   Hash,
   Shield,
   Info,
@@ -77,7 +76,6 @@ export default function BusForm({ bus, onSuccess, onCancel }: BusFormProps) {
     plat_number: "",
     name: "",
     seat_count: 0,
-    production_year: new Date().getFullYear(),
     brand: "",
     status: "available",
     notes: "",
@@ -108,7 +106,6 @@ export default function BusForm({ bus, onSuccess, onCancel }: BusFormProps) {
         plat_number: bus.plat_number,
         name: bus.name,
         seat_count: bus.seat_count,
-        production_year: bus.production_year,
         brand: bus.brand || "",
         status: bus.status,
         notes: bus.notes || "",
@@ -237,15 +234,6 @@ export default function BusForm({ bus, onSuccess, onCancel }: BusFormProps) {
               icon={Users}
               value={formData.seat_count || ""}
               onChange={(e) => setFormData({ ...formData, seat_count: Number(e.target.value) })}
-              required
-            />
-            <Input
-              label="Tahun Produksi"
-              type="number"
-              placeholder="Contoh: 2023"
-              icon={Calendar}
-              value={formData.production_year || ""}
-              onChange={(e) => setFormData({ ...formData, production_year: Number(e.target.value) })}
               required
             />
             <Select

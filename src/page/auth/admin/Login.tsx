@@ -36,7 +36,7 @@ export default function Login() {
     } catch (err: any) {
       console.error("Login error:", err);
       setError(
-        err.response?.data?.message || err.message || "Login failed. Please check your credentials."
+        err.response?.data?.message || err.message || "Login gagal. Silakan periksa kembali email dan password Anda."
       );
     } finally {
       setLoading(false);
@@ -77,10 +77,10 @@ export default function Login() {
         >
           <div className="mb-8 text-center">
             <h2 className="text-[28px] font-bold leading-[1.2] tracking-tight text-midnight-indigo">
-              Welcome Back
+              Selamat Datang
             </h2>
             <p className="mt-2 text-[16px] font-medium leading-[1.6] text-slate-blue">
-              Securely access the BonehStar admin panel.
+              Masuk untuk mengakses dashboard admin BonehStar.
             </p>
           </div>
 
@@ -94,7 +94,7 @@ export default function Login() {
 
             <div className="space-y-4">
               <Input
-                label="Email Address"
+                label="Alamat Email"
                 type="email"
                 placeholder="admin@bonehstar.com"
                 icon={Mail}
@@ -124,7 +124,7 @@ export default function Login() {
                   className="h-4.5 w-4.5 cursor-pointer rounded-md border-platinum-tint text-action-blue focus:ring-action-blue/20 transition-all" 
                 />
                 <label htmlFor="remember" className="cursor-pointer text-[14px] font-semibold text-slate-blue select-none hover:text-midnight-indigo transition-colors">
-                  Stay signed in
+                  Tetap masuk
                 </label>
               </div>
             </div>
@@ -136,7 +136,7 @@ export default function Login() {
               suffix={ArrowRight}
               className="mt-2 w-full rounded-xl bg-action-blue font-bold text-white shadow-lg shadow-action-blue/20 transition-all hover:bg-action-blue/90 hover:shadow-action-blue/30"
             >
-              submit
+              Masuk
             </Button>
           </form>
         </div>

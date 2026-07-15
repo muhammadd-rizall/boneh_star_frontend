@@ -64,7 +64,6 @@ export const busService = {
       formData.append('plat_number', data.plat_number);
       formData.append('name', data.name);
       formData.append('seat_count', String(data.seat_count));
-      formData.append('production_year', String(data.production_year));
       formData.append('status', data.status);
       
       if (data.brand) formData.append('brand', data.brand);
@@ -103,7 +102,6 @@ export const busService = {
       if (data.plat_number) formData.append('plat_number', data.plat_number);
       if (data.name) formData.append('name', data.name);
       if (data.seat_count) formData.append('seat_count', String(data.seat_count));
-      if (data.production_year) formData.append('production_year', String(data.production_year));
       if (data.status) formData.append('status', data.status);
       
       if (data.brand !== undefined) formData.append('brand', data.brand || '');

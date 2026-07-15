@@ -2,7 +2,7 @@ import { DataTable } from "@/components/ui/DataTable"
 import type { Column } from "@/components/ui/DataTable"
 import { Button } from "@/components/ui/Button"
 import type { Booking } from "@/features/admin/bookings/types/Booking"
-import { Edit, Trash2, Calendar, MapPin, Users, Bus, RotateCcw } from "lucide-react"
+import { Edit, Trash2, Calendar, MapPin, Users, Bus, RotateCcw, Phone } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface BookingTableProps {
@@ -59,6 +59,12 @@ export default function BookingTable({
             <Users size={12} className="text-action-blue" />
             <span className="truncate max-w-[120px]">{row.customer?.name || 'Pelanggan'}</span>
           </div>
+          {row.customer?.phone && (
+            <div className="flex items-center gap-1.5 text-[10px] font-semibold text-slate-blue/70">
+              <Phone size={10} className="text-emerald-500" />
+              <span>{row.customer.phone}</span>
+            </div>
+          )}
         </div>
       )
     },

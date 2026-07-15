@@ -106,7 +106,6 @@ export interface Bus extends TimestampedEntity {
   plat_number: string;
   name: string;
   seat_count: number;
-  production_year: number;
   brand?: string | null;
   status: 'available' | 'booked' | 'maintenance' | 'inactive';
   notes?: string | null;

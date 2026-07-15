@@ -519,7 +519,7 @@ export default function BookingRequestPage() {
                                 {bus.brand && (
                                   <div className="flex items-center gap-1">
                                     <BusIcon size={12} className="text-steel-gray shrink-0" />
-                                    <span className="truncate">{bus.brand} ({bus.production_year})</span>
+                                    <span className="truncate">{bus.brand}</span>
                                   </div>
                                 )}
                               </div>

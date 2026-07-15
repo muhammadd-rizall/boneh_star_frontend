@@ -139,13 +139,6 @@ export default function FleetDetailModal({ bus, onClose }: FleetDetailModalProps
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Calendar size={15} className="text-slate-blue/60" />
-              <div>
-                <p className="text-[10px] text-slate-blue/45 uppercase tracking-wider">Tahun Produksi</p>
-                <p className="text-midnight-indigo font-bold">{bus.production_year || "-"}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 col-span-2">
               <Hash size={15} className="text-slate-blue/60" />
               <div>
                 <p className="text-[10px] text-slate-blue/45 uppercase tracking-wider">Nomor Polisi</p>

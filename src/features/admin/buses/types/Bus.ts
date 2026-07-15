@@ -17,7 +17,6 @@ export interface BusFormData {
   plat_number: string;
   name: string;
   seat_count: number;
-  production_year: number;
   brand?: string;
   status: 'available' | 'booked' | 'maintenance' | 'inactive';
   notes?: string;

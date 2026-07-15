@@ -2,7 +2,7 @@ import { DataTable } from "@/components/ui/DataTable"
 import type { Column } from "@/components/ui/DataTable"
 import { Button } from "@/components/ui/Button"
 import type { Bus } from "@/features/admin/buses/types/Bus"
-import { Edit, Trash2, Bus as BusIcon, Calendar, Hash, Users, RotateCcw } from "lucide-react"
+import { Edit, Trash2, Bus as BusIcon, Hash, Users, RotateCcw } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface BusTableProps {
@@ -82,15 +82,6 @@ export default function BusTable({ data, onDelete, onEdit, onRestore, loading, i
               +{(row.facilities?.length || 0) - 3}
             </span>
           )}
-        </div>
-      )
-    },
-    { 
-      header: "Tahun", 
-      accessor: (row) => (
-        <div className="flex items-center gap-2 text-xs text-slate-blue font-semibold opacity-85">
-          <Calendar size={14} className="text-action-blue" />
-          <span>{row.production_year}</span>
         </div>
       )
     },
