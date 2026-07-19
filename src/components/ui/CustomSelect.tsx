@@ -67,7 +67,7 @@ export function CustomSelect({
           </div>
         )}
 
-        <Select value={value} onValueChange={onChange} disabled={disabled}>
+        <Select value={value} onValueChange={(val) => onChange(val ?? "")} disabled={disabled}>
           <SelectTrigger
             id={selectId}
             className={cn(

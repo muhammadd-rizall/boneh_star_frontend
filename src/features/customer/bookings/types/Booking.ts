@@ -1,4 +1,4 @@
-import type { TimestampedEntity, BookingStatus, CancelledBy, QuotationStatus, TransactionStatus, PaymentStatus, PaymentType } from '@/types/Database';
+import type { TimestampedEntity, BookingStatus, CancelledBy, QuotationStatus, TransactionStatus, PaymentStatus, PaymentType, BookingBus } from '@/types/Database';
 
 export interface CustomerBooking extends TimestampedEntity {
   customer_id: string;
@@ -21,6 +21,7 @@ export interface CustomerBooking extends TimestampedEntity {
   route_type?: { id: string; name: string; scope: string };
   quotation?: CustomerQuotation;
   transaction?: CustomerTransaction;
+  booking_buses?: BookingBus[];
 }
 
 export interface CustomerQuotation extends TimestampedEntity {

@@ -1,6 +1,9 @@
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useRef } from "react"
 import { notificationService } from "@/features/admin/notifications/services/NotificationService"
 import type { Notification } from "@/features/admin/notifications/types/Notification"
+
+// Poll for unread count every 30 seconds to avoid hammering the server
+const POLL_INTERVAL_MS = 30_000
 
 export function useNotifications() {
   const [notifications, setNotifications] = useState<Notification[]>([])
@@ -9,6 +12,7 @@ export function useNotifications() {
   const [error, setError] = useState<string | null>(null)
   const [meta, setMeta] = useState<any>(null)
   const [page, setPage] = useState(1)
+  const pollTimer = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const fetchNotifications = useCallback(async () => {
     try {
@@ -25,6 +29,16 @@ export function useNotifications() {
       setLoading(false)
     }
   }, [page])
+
+  /** Lightweight poll — only fetches unread count to avoid loading the full list */
+  const pollUnreadCount = useCallback(async () => {
+    try {
+      const { unreadCount } = await notificationService.getPaginated({ page: 1 })
+      setUnreadCount(unreadCount)
+    } catch {
+      // Silently ignore polling errors
+    }
+  }, [])
 
   const markAsRead = async (id: string) => {
     try {
@@ -59,9 +73,18 @@ export function useNotifications() {
     }
   }
 
+  // Initial full fetch on mount
   useEffect(() => {
     fetchNotifications()
   }, [fetchNotifications])
+
+  // Polling: only lightweight unread-count check every 30s
+  useEffect(() => {
+    pollTimer.current = setInterval(pollUnreadCount, POLL_INTERVAL_MS)
+    return () => {
+      if (pollTimer.current) clearInterval(pollTimer.current)
+    }
+  }, [pollUnreadCount])
 
   return {
     notifications,

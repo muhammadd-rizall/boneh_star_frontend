@@ -41,16 +41,16 @@ export default function IncomeReportFilters({ filters, onFilterChange }: IncomeR
       <Select
         label="Tahun Laporan"
         icon={Calendar}
-        value={filters.year}
+        value={filters.year?.toString() || ""}
         options={years}
-        onChange={(value) => onFilterChange({ year: value })}
+        onChange={(value) => onFilterChange({ year: value ? parseInt(value, 10) : undefined })}
       />
       <Select
         label="Bulan Laporan"
         icon={Calendar}
-        value={filters.month || ""}
+        value={filters.month?.toString() || ""}
         options={months}
-        onChange={(value) => onFilterChange({ month: value || undefined })}
+        onChange={(value) => onFilterChange({ month: value ? parseInt(value, 10) : undefined })}
       />
       <Select
         label="Status Pembayaran"

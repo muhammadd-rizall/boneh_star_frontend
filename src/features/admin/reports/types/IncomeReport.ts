@@ -28,6 +28,7 @@ export interface IncomeReportStatistics {
 export interface IncomeReportFilters {
   month?: number;
   year?: number;
+  status?: string;
 }
 
 export interface IncomeReportApiResponse {

@@ -43,7 +43,7 @@ export default function ReviewPage() {
   const handleTogglePublish = async (review: Review) => {
     try {
       await togglePublishReview(review.id)
-      showSuccess(review.is_published ? "Ulasan berhasil disembunyikan!" : "Ulasan berhasil dipublikasikan!");
+      showSuccess(review.is_publish ? "Ulasan berhasil disembunyikan!" : "Ulasan berhasil dipublikasikan!");
     } catch (err) {
       console.error("Failed to toggle publish status:", err)
     }
