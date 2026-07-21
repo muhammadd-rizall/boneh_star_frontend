@@ -231,7 +231,7 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
       <DialogFooter className="mt-4 border-t border-platinum-tint/40 pt-8">
         <Button type="button" variant="ghost" onClick={onCancel} className="px-10 font-bold text-slate-blue hover:text-midnight-indigo">Batal</Button>
         <Button type="submit" variant="primary" className="flex-1 font-bold h-14 rounded-xl shadow-button" loading={loading} icon={Save}>
-          {isEdit ? "Update Transaksi" : "Terbitkan Invoice"}
+          {isEdit ? "Perbarui Transaksi" : "Terbitkan Invoice"}
         </Button>
       </DialogFooter>
     </form>

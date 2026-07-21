@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import ToastContainer from "@/components/feedback/ToastContainer";
 import {
   Home, CalendarCheck, CalendarPlus, MessageSquare, Bell,
-  User, LogOut, Headphones, ChevronDown
+  User, LogOut, Headphones, ChevronDown, Bus
 } from "lucide-react";
 
 interface CustomerLayoutProps {
@@ -110,6 +110,20 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
             >
               <Home size={18} className={location.pathname === '/' ? "text-emerald-700" : "text-steel-gray"} />
               <span>Beranda</span>
+            </Link>
+
+            {/* ── Daftar Armada ── */}
+            <Link
+              to="/armada"
+              className={cn(
+                "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-150",
+                location.pathname === '/armada'
+                  ? "bg-emerald-50/70 text-emerald-800"
+                  : "text-slate-blue hover:text-gray-900 hover:bg-cloud-mist"
+              )}
+            >
+              <Bus size={18} className={location.pathname === '/armada' ? "text-emerald-700" : "text-steel-gray"} />
+              <span>Daftar Armada</span>
             </Link>
 
             {/* ── PEMESANAN GROUP ── */}

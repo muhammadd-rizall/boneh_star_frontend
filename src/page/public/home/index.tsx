@@ -11,6 +11,7 @@ import {
   FAQSection,
   useHomeData
 } from "@/features/public/home";
+import CTABanner from "./CTABanner";
 import { SkeletonHome } from '@/components/feedback/Skeleton';
 import { RotateCcw } from 'lucide-react';
 import type { Bus } from '@/features/admin/buses/types/Bus';
@@ -36,7 +37,7 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <PublicLayout>
+      <PublicLayout isLoading={true}>
         <SkeletonHome />
       </PublicLayout>
     );
@@ -74,14 +75,14 @@ export default function HomePage() {
         <WorkingProcessSection />
 
         <div id='testimonials' className='bg-white scroll-mt-24'>
-          <TestimonialsSection reviews={reviews} />
+          <TestimonialsSection />
         </div>
 
-
-        
         <div className='bg-white'>
           <FAQSection />
         </div>
+
+        <CTABanner />
       </div>
       {selectedBus && (
         <FleetDetailModal bus={selectedBus} onClose={() => setSelectedBus(null)} />

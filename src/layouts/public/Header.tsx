@@ -15,6 +15,7 @@ const navigation = [
 
 const customerNavigation = [
   { label: "Booking", to: "/customer/bookings" },
+  { label: "Armada", to: "/armada" },
   { label: "Profil", to: "/customer/profile" },
   { label: "Ulasan", to: "/customer/reviews" },
 ];

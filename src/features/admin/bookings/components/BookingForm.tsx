@@ -192,16 +192,16 @@ export default function BookingForm({ booking, onSuccess, onCancel }: BookingFor
   };
 
   const statusOptions = [
-    { label: "Pending", value: "pending" },
-    { label: "Quoted", value: "quoted" },
-    { label: "Confirmed", value: "confirmed" },
-    { label: "Ongoing", value: "ongoing" },
-    { label: "Completed", value: "completed" },
-    { label: "Cancelled", value: "cancelled" },
+    { label: "Tertunda", value: "pending" },
+    { label: "Ditawarkan", value: "quoted" },
+    { label: "Dikonfirmasi", value: "confirmed" },
+    { label: "Sedang Jalan", value: "ongoing" },
+    { label: "Selesai", value: "completed" },
+    { label: "Dibatalkan", value: "cancelled" },
   ];
 
   const cancelledByOptions = [
-    { label: "Customer", value: "customer" },
+    { label: "Pelanggan", value: "customer" },
     { label: "Admin", value: "admin" },
   ];
 
@@ -497,7 +497,7 @@ export default function BookingForm({ booking, onSuccess, onCancel }: BookingFor
           loading={loading} 
           icon={Save}
         >
-          {isEdit ? "Update Pesanan" : "Simpan Pesanan"}
+          {isEdit ? "Perbarui Pesanan" : "Simpan Pesanan"}
         </Button>
       </DialogFooter>
     </form>

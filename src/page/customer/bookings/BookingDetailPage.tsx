@@ -46,7 +46,7 @@ export default function BookingDetailPage() {
   const {
     booking, paymentMethods, companyProfile,
     loading: detailLoading, error, refresh,
-    acceptQuotation, reviseQuotation, cancelBooking
+    acceptQuotation, reviseQuotation, cancelBooking, completeBooking
   } = useBookingDetail(id!);
 
   const { profile, loading: profileLoading } = useProfile();
@@ -57,7 +57,8 @@ export default function BookingDetailPage() {
   const [cancelLoading, setCancelLoading] = React.useState(false);
   const [timeline, setTimeline] = React.useState<any[]>([]);
   const [loadingTimeline, setLoadingTimeline] = React.useState(false);
-  const [activeTab, setActiveTab] = React.useState<'info' | 'fleet' | 'quotation' | 'history' | 'document'>('info');
+  const [activeTab, setActiveTab] = React.useState<'info' | 'fleet' | 'quotation' | 'history' | 'document' | 'review'>('info');
+  const [isEditingReview, setIsEditingReview] = React.useState(false);
 
   React.useEffect(() => {
     if (id) {
@@ -118,6 +119,19 @@ export default function BookingDetailPage() {
   );
 
   const canCancel = ['pending', 'quoted'].includes(booking.status);
+
+  const showCompleteButton = ['confirmed', 'ongoing'].includes(booking.status);
+  
+  const returnDateReached = (() => {
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const returnDate = new Date(booking.return_date);
+    returnDate.setHours(0,0,0,0);
+    return today >= returnDate;
+  })();
+
+  const isFullyPaid = booking.transaction?.status === 'fully_paid';
+  const completeEnabled = returnDateReached && isFullyPaid;
 
   // Helper date formatting
   const formatDateWithDay = (dateStr: string) => {
@@ -290,6 +304,14 @@ export default function BookingDetailPage() {
                   icon={FileText}
                   label="Dokumen"
                 />
+                {booking.status === 'completed' && (
+                  <TabButton
+                    active={activeTab === 'review'}
+                    onClick={() => setActiveTab('review')}
+                    icon={Star}
+                    label="Ulasan"
+                  />
+                )}
               </nav>
             </div>
 
@@ -446,35 +468,7 @@ export default function BookingDetailPage() {
                     </Section>
                   )}
 
-                  {booking.status === 'completed' && (
-                    <Section title="Beri Ulasan" icon={Star}>
-                      {(booking as any).review ? (
-                        <div className="flex flex-col items-center py-6 text-center gap-3">
-                          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 border border-emerald-100">
-                            <CheckCircle2 size={24} className="text-emerald-600" />
-                          </div>
-                          <div>
-                            <p className="text-sm font-bold text-gray-900">Ulasan Anda sudah dikirim</p>
-                            <p className="text-xs text-slate-blue mt-1">Terima kasih atas ulasan Anda!</p>
-                          </div>
-                        </div>
-                      ) : (
-                        <ReviewForm
-                          bookingId={booking.id}
-                          onCancel={() => {}}
-                          onSubmit={async (data: ReviewFormData) => {
-                            try {
-                              await reviewService.create(data);
-                              showSuccess('Ulasan Anda berhasil dikirim');
-                              refresh();
-                            } catch (err: any) {
-                              showError(err.message || 'Gagal mengirim ulasan');
-                            }
-                          }}
-                        />
-                      )}
-                    </Section>
-                  )}
+
                 </div>
               )}
 
@@ -531,6 +525,78 @@ export default function BookingDetailPage() {
                         Dokumen invoice resmi akan diterbitkan otomatis setelah penawaran harga disetujui.
                       </p>
                     </div>
+                  )}
+                </div>
+              )}
+
+              {/* TAB 6: Ulasan */}
+              {activeTab === 'review' && booking.status === 'completed' && (
+                <div className="bg-white border border-pale-gray rounded-2xl p-5 shadow-sm">
+                  <h3 className="text-sm font-black text-gray-900 border-b border-pale-gray pb-3 mb-4">Ulasan Perjalanan</h3>
+                  {(booking as any).review && !isEditingReview ? (
+                    <div className="flex flex-col gap-4 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 border border-emerald-100 text-emerald-600 shrink-0">
+                          <CheckCircle2 size={22} />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-gray-900">Ulasan Anda sudah dikirim</p>
+                          <p className="text-xs text-slate-blue mt-0.5">Terima kasih atas ulasan dan masukan Anda!</p>
+                        </div>
+                      </div>
+
+                      <div className="p-4 rounded-xl border border-pale-gray bg-cloud-mist flex flex-col gap-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1 text-amber-400">
+                            {[...Array(5)].map((_, i) => (
+                              <Star 
+                                key={i} 
+                                size={14} 
+                                className={i < (booking as any).review.rating ? 'fill-amber-400 text-amber-400' : 'text-slate-200'} 
+                              />
+                            ))}
+                          </div>
+                          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            Penilaian: {(booking as any).review.rating} / 5
+                          </span>
+                        </div>
+                        <p className="text-xs font-semibold text-slate-600 leading-relaxed italic">
+                          "{(booking as any).review.comment}"
+                        </p>
+                      </div>
+
+                      <button
+                        onClick={() => setIsEditingReview(true)}
+                        className="mt-2 w-full sm:w-auto px-6 py-2.5 rounded-xl border border-pale-gray bg-white text-xs font-bold text-action-blue hover:bg-cloud-mist transition-colors cursor-pointer shadow-sm text-center"
+                      >
+                        Edit Ulasan
+                      </button>
+                    </div>
+                  ) : (
+                    <ReviewForm
+                      bookingId={booking.id}
+                      initialRating={(booking as any).review?.rating}
+                      initialComment={(booking as any).review?.comment}
+                      onCancel={(booking as any).review ? () => setIsEditingReview(false) : undefined}
+                      onSubmit={async (data: ReviewFormData) => {
+                        try {
+                          if ((booking as any).review) {
+                            await reviewService.update((booking as any).review.id, {
+                              rating: data.rating,
+                              comment: data.comment
+                            });
+                            showSuccess('Ulasan Anda berhasil diubah');
+                          } else {
+                            await reviewService.create(data);
+                            showSuccess('Ulasan Anda berhasil dikirim');
+                          }
+                          setIsEditingReview(false);
+                          refresh();
+                        } catch (err: any) {
+                          showError(err.response?.data?.message || err.message || 'Gagal mengirim ulasan');
+                        }
+                      }}
+                    />
                   )}
                 </div>
               )}
@@ -613,6 +679,41 @@ export default function BookingDetailPage() {
 
             {/* Action Buttons */}
             <div className="flex flex-col gap-2">
+              {showCompleteButton && (
+                <div className="flex flex-col gap-2">
+                  <button
+                    disabled={!completeEnabled}
+                    onClick={async () => {
+                      if (window.confirm('Apakah Anda yakin perjalanan ini telah selesai? Setelah diselesaikan, Anda dapat memberikan ulasan.')) {
+                        await completeBooking();
+                      }
+                    }}
+                    className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl border text-xs font-bold transition-all cursor-pointer shadow-sm ${
+                      completeEnabled 
+                        ? 'border-indigo-200 bg-indigo-50 text-indigo-600 hover:bg-indigo-100' 
+                        : 'border-slate-100 bg-slate-50 text-slate-400 cursor-not-allowed'
+                    }`}
+                  >
+                    <CheckCircle2 size={14} />
+                    Selesaikan Perjalanan
+                  </button>
+
+                  {!completeEnabled && (
+                    <div className="p-3 bg-amber-50 border border-amber-100 rounded-xl text-[10px] text-amber-800 leading-relaxed font-semibold">
+                      <p className="font-bold mb-1">Penyelesaian Perjalanan:</p>
+                      <ul className="list-disc pl-3 flex flex-col gap-0.5">
+                        <li className={returnDateReached ? "text-emerald-700 font-bold" : "text-amber-850"} style={{ color: returnDateReached ? '#047857' : '#92400e' }}>
+                          Tanggal pulang ({formatDate(booking.return_date)}) telah tiba/lewat {returnDateReached && '✓'}
+                        </li>
+                        <li className={isFullyPaid ? "text-emerald-700 font-bold" : "text-amber-850"} style={{ color: isFullyPaid ? '#047857' : '#92400e' }}>
+                          Pembayaran tagihan sudah lunas {isFullyPaid && '✓'}
+                        </li>
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {canCancel && (
                 <button
                   onClick={() => setShowCancelModal(true)}

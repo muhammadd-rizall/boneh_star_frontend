@@ -50,12 +50,13 @@ export default function BookingIndexPage() {
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     .slice(0, 5);
 
-  const totalSpent = bookings
-    .filter(b => b.transaction)
+  const bookingsWithTransaction = bookings.filter(b => b.transaction);
+
+  const totalSpent = bookingsWithTransaction
     .reduce((sum, b) => sum + (b.transaction?.total_amount ?? 0), 0);
 
-  const avgPerBooking = completed.length > 0
-    ? bookings.filter(b => b.transaction).reduce((s, b) => s + (b.transaction?.total_amount ?? 0), 0) / Math.max(completed.length, 1)
+  const avgPerBooking = bookingsWithTransaction.length > 0
+    ? totalSpent / bookingsWithTransaction.length
     : 0;
 
   const getTabList = () => {
@@ -283,7 +284,7 @@ function BookingRow({ booking, onView }: { booking: CustomerBooking; onView: () 
         </p>
         <p className="text-xs text-slate-blue mt-0.5">
           {formatDate(booking.departure_date)}
-          {booking.passenger_count && ` · ${booking.passenger_count} Seat`}
+          {booking.passenger_count && ` · ${booking.passenger_count} Kursi`}
           {booking.bus_count_requested && ` · ${booking.bus_count_requested > 1 ? 'Big Bus' : 'Medium Bus'}`}
         </p>
       </div>

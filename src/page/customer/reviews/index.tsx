@@ -1,13 +1,20 @@
+import React, { useState } from 'react';
 import CustomerLayout from '@/layouts/customer/CustomerLayout';
 import { useReviews } from '@/features/customer/reviews/hooks/useReviews';
 import { Card } from '@/components/ui/Card';
 import Loader from '@/components/feedback/Loader';
 import ErrorState from '@/components/feedback/ErrorState';
-import { Star, MessageSquare } from 'lucide-react';
+import { Star, MessageSquare, Edit2 } from 'lucide-react';
 import { formatDate } from '@/utils/formatter';
+import { Modal } from '@/components/ui/Modal';
+import ReviewForm from '@/features/customer/reviews/components/ReviewForm';
+import { useToastStore } from '@/store/useToastStore';
+import type { CustomerReview } from '@/features/customer/reviews/types/Review';
 
 export default function ReviewIndexPage() {
-  const { reviews, loading, error, refresh } = useReviews();
+  const { reviews, loading, error, refresh, updateReview } = useReviews();
+  const { showSuccess, showError } = useToastStore();
+  const [editingReview, setEditingReview] = useState<CustomerReview | null>(null);
 
   if (loading) {
     return (
@@ -50,7 +57,7 @@ export default function ReviewIndexPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1 text-amber-400">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} size={14} className={i < review.rating ? 'fill-amber-400' : 'text-slate-200'} />
+                    <Star key={i} size={14} className={i < review.rating ? 'fill-amber-400 text-amber-400' : 'text-slate-200'} />
                   ))}
                 </div>
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
@@ -60,13 +67,49 @@ export default function ReviewIndexPage() {
               <p className="text-xs font-semibold text-slate-600 leading-relaxed italic flex-1">
                 "{review.comment}"
               </p>
-              <div className="border-t border-slate-50 pt-4 mt-auto">
-                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Pemesanan</p>
-                <p className="text-xs font-extrabold text-midnight-indigo">#{review.booking?.booking_code}</p>
+              <div className="flex items-center justify-between border-t border-slate-50 pt-4 mt-auto">
+                <div>
+                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Pemesanan</p>
+                  <p className="text-xs font-extrabold text-midnight-indigo">#{review.booking?.booking_code}</p>
+                </div>
+                <button
+                  onClick={() => setEditingReview(review)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-pale-gray bg-white text-[11px] font-bold text-action-blue hover:bg-cloud-mist transition-colors cursor-pointer shadow-sm"
+                >
+                  <Edit2 size={11} />
+                  Edit
+                </button>
               </div>
             </div>
           ))}
         </div>
+      )}
+
+      {editingReview && (
+        <Modal 
+          open={!!editingReview} 
+          onClose={() => setEditingReview(null)} 
+          title="Edit Ulasan"
+        >
+          <ReviewForm
+            bookingId={editingReview.booking_id}
+            initialRating={editingReview.rating}
+            initialComment={editingReview.comment}
+            onCancel={() => setEditingReview(null)}
+            onSubmit={async (data) => {
+              try {
+                await updateReview(editingReview.id, {
+                  rating: data.rating,
+                  comment: data.comment
+                });
+                showSuccess('Ulasan Anda berhasil diperbarui');
+                setEditingReview(null);
+              } catch (err: any) {
+                showError(err.response?.data?.message || err.message || 'Gagal mengubah ulasan');
+              }
+            }}
+          />
+        </Modal>
       )}
     </CustomerLayout>
   );

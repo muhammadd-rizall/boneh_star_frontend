@@ -10,6 +10,7 @@ const ENDPOINTS = {
   BOOKINGS: '/customer/bookings',
   BOOKING_DETAIL: (id: string) => `/customer/bookings/${id}`,
   BOOKING_CANCEL: (id: string) => `/customer/bookings/${id}/cancel`,
+  BOOKING_COMPLETE: (id: string) => `/customer/bookings/${id}/complete`,
   UPLOAD_PAYMENT: (id: string) => `/customer/bookings/${id}/upload-payment`,
   PAYMENT_METHODS: '/customer/bookings/payment-methods',
   QUOTATION_ACCEPT: (id: string) => `/customer/quotations/${id}/accept`,
@@ -35,6 +36,10 @@ export const bookingService = {
 
   cancel: async (id: string, reason: string): Promise<void> => {
     await axios.post(ENDPOINTS.BOOKING_CANCEL(id), { reason });
+  },
+
+  complete: async (id: string): Promise<void> => {
+    await axios.post(ENDPOINTS.BOOKING_COMPLETE(id));
   },
 
   uploadPayment: async (id: string, data: PaymentFormData): Promise<any> => {

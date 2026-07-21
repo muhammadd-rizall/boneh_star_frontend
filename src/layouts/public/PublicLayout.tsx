@@ -6,18 +6,19 @@ import { usePublicCompanyProfile } from "@/features/admin/company-profile/hooks/
 
 interface PublicLayoutProps {
   children: ReactNode;
+  isLoading?: boolean;
 }
 
-export default function PublicLayout({ children }: PublicLayoutProps) {
+export default function PublicLayout({ children, isLoading }: PublicLayoutProps) {
   const { profile } = usePublicCompanyProfile();
 
   return (
     <div className="min-h-screen bg-white text-midnight-indigo selection:bg-action-blue/20 selection:text-midnight-indigo">
       <div className="relative flex min-h-screen flex-col">
-        <Header companyProfile={profile} />
+        {!isLoading && <Header companyProfile={profile} />}
         <main className="flex-1">{children}</main>
-        <Footer companyProfile={profile} />
-        <WhatsAppFloating whatsapp={profile.whatsapp} />
+        {!isLoading && <Footer companyProfile={profile} />}
+        {!isLoading && <WhatsAppFloating whatsapp={profile.whatsapp} />}
       </div>
     </div>
   );

@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { AlertCircle, Eye, EyeOff, User, Mail, Lock, Phone } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { useCustomerAuthStore } from '@/features/auth/public';
-import { useCompanyProfile } from '@/features/admin/company-profile';
-import { resolveMediaUrl } from '@/features/admin/company-profile/utils/companyProfileUtils';
-import { SocialAuthButtons } from './components/SocialAuthButtons';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { AlertCircle, Eye, EyeOff, User, Mail, Lock, Phone } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { useCustomerAuthStore } from "@/features/auth/public";
+import { useCompanyProfile } from "@/features/admin/company-profile";
+import { resolveMediaUrl } from "@/features/admin/company-profile/utils/companyProfileUtils";
 
 type ApiError = {
   response?: {
@@ -15,13 +14,14 @@ type ApiError = {
   };
 };
 
+
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    password: '',
-    confirmPassword: '',
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -40,7 +40,7 @@ export default function RegisterPage() {
     setError(null);
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Password dan konfirmasi password tidak cocok.');
+      setError("Password dan konfirmasi password tidak cocok.");
       setLoading(false);
       return;
     }
@@ -48,241 +48,255 @@ export default function RegisterPage() {
     try {
       const { name, email, phone, password } = formData;
       await register({ name, email, phone, password });
-      navigate('/customer/bookings');
+      navigate("/customer/bookings");
     } catch (err: unknown) {
       const apiError = err as ApiError;
-      setError(apiError.response?.data?.message || 'Registrasi gagal. Silakan coba lagi.');
+      setError(apiError.response?.data?.message || "Registrasi gagal. Silakan coba lagi.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <main className="relative min-h-screen w-full flex flex-col items-center justify-center bg-slate-50/50 px-4 py-12 overflow-hidden select-none">
-      {/* Decorative Blue Background Grids & Circles */}
-      <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none z-0">
-        <svg width="120" height="120" fill="currentColor" className="text-action-blue">
-          <pattern id="dot-pattern-top" x="0" y="0" width="16" height="16" patternUnits="userSpaceOnUse">
-            <circle cx="2" cy="2" r="2" />
-          </pattern>
-          <rect width="120" height="120" fill="url(#dot-pattern-top)" />
-        </svg>
-      </div>
+    <main className="min-h-screen w-full flex flex-col items-center justify-center bg-[#F3F4F6] p-4 sm:p-6 md:p-8 overflow-x-hidden select-none">
+      
+      {/* Centered card container for the split-screen layout */}
+      <div className="w-full max-w-[1140px] bg-white rounded-[32px] shadow-[0_20px_60px_rgba(0,0,0,0.04)] border border-[#E5E7EB] flex flex-col lg:flex-row overflow-hidden min-h-[640px] lg:min-h-[700px]">
+        
+        {/* Left Section: Elegant Branding Panel */}
+        <div className="lg:w-1/2 relative bg-gradient-to-tr from-[#E6EEF8] via-[#F3F7FC] to-[#EBF3FC] flex flex-col justify-between p-12 overflow-hidden border-b lg:border-b-0 lg:border-r border-[#E5E7EB]">
+          
+          {/* Ambient light effects for visual interest */}
+          <div className="absolute -top-40 -left-40 w-[450px] h-[450px] rounded-full bg-blue-400/10 blur-[100px] pointer-events-none z-0" />
+          <div className="absolute -bottom-20 -left-20 w-[350px] h-[350px] rounded-full bg-indigo-400/10 blur-[80px] pointer-events-none z-0" />
+          
+          {/* Dot matrix pattern top-right */}
+          <div className="absolute top-12 right-12 opacity-20 pointer-events-none z-0">
+            <div className="grid grid-cols-5 gap-2">
+              {[...Array(15)].map((_, i) => (
+                <div key={i} className="w-1.5 h-1.5 rounded-full bg-[#0066FF]" />
+              ))}
+            </div>
+          </div>
 
-      <div className="absolute bottom-0 left-0 p-8 opacity-10 pointer-events-none z-0">
-        <svg width="120" height="120" fill="currentColor" className="text-action-blue">
-          <pattern id="dot-pattern-bottom" x="0" y="0" width="16" height="16" patternUnits="userSpaceOnUse">
-            <circle cx="2" cy="2" r="2" />
-          </pattern>
-          <rect width="120" height="120" fill="url(#dot-pattern-bottom)" />
-        </svg>
-      </div>
-
-      <div className="absolute -top-24 -left-24 w-[380px] h-[380px] rounded-full bg-action-blue/5 blur-3xl pointer-events-none z-0" />
-      <div className="absolute -bottom-24 -right-24 w-[380px] h-[380px] rounded-full bg-action-blue/5 blur-3xl pointer-events-none z-0" />
-
-      {/* Main Register Card */}
-      <div className="relative z-10 w-full max-w-[480px] bg-white rounded-3xl border border-slate-100 shadow-[0_12px_40px_rgba(71,103,136,0.06)] p-8 sm:p-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
-        {/* Logo and Brand Title */}
-        <div className="flex flex-col items-center text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-3">
-            {logoUrl ? (
-              <img
-                src={logoUrl}
-                alt={companyProfile?.company_name || "Logo"}
-                className="h-10 object-contain"
-              />
-            ) : (
-              <div className="flex items-center gap-2">
-                <svg className="h-9 w-9 text-action-blue" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" className="fill-action-blue/15" />
-                </svg>
-                <span className="text-xl font-black tracking-tight text-midnight-indigo">
-                  Boneh <span className="text-action-blue">Star</span>
+          {/* Top Logo Section */}
+          <div className="relative z-10">
+            <Link to="/" className="inline-flex items-center gap-3">
+              {logoUrl ? (
+                <img
+                  src={logoUrl}
+                  alt={companyProfile?.company_name || "Logo"}
+                  className="h-11 w-11 object-contain"
+                />
+              ) : (
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white shadow-sm border border-[#E5E7EB]">
+                  {/* Custom Star Logo */}
+                  <svg className="h-6 w-6 text-[#0066FF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" className="fill-[#0066FF]/10" />
+                  </svg>
+                </div>
+              )}
+              <div className="text-left leading-tight">
+                <span className="text-lg font-black tracking-tight text-[#0f172a] block">
+                  BONEH STAR
+                </span>
+                <span className="text-[9px] font-extrabold uppercase tracking-widest text-[#64748b] block mt-0.5">
+                  PARIWISATA
                 </span>
               </div>
-            )}
-            {!logoUrl && (
-              <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-blue/60 mt-1 self-end mb-1">
-                Pariwisata
-              </span>
-            )}
-          </Link>
+            </Link>
+          </div>
 
-          <h2 className="text-2xl font-black text-midnight-indigo mt-6">
-            Daftar Akun
-          </h2>
-          <p className="text-xs font-semibold text-slate-blue/80 mt-2 leading-relaxed">
-            Daftar sekali untuk pengalaman booking yang lebih ringkas.
-          </p>
+          {/* Middle Content: Large typography */}
+          <div className="relative z-10 max-w-md my-auto pt-16 lg:pt-0">
+            <h1 className="text-4xl font-extrabold text-[#0f172a] leading-[1.25] tracking-tight">
+              Perjalanan <span className="text-[#0066FF]">Nyaman</span>,<br />
+              Kenangan Tak Terlupakan.
+            </h1>
+            
+            {/* Divider line under title */}
+            <div className="w-12 h-1 bg-[#0066FF] rounded-full mt-5" />
+
+            <p className="text-sm font-semibold text-[#64748b] leading-relaxed mt-6">
+              Boneh Star Pariwisata siap menjadi teman perjalanan terbaik Anda untuk setiap momen berharga.
+            </p>
+          </div>
         </div>
 
-        {/* Register Form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {error && (
-            <div className="flex items-start gap-3 rounded-2xl border border-red-100 bg-red-50/50 px-4 py-3 text-xs font-bold text-red-600 animate-in shake duration-500">
-              <AlertCircle className="mt-0.5 size-4.5 shrink-0" />
-              <span>{error}</span>
+        {/* Right Section: Minimalist Register Form */}
+        <div className="lg:w-1/2 flex flex-col justify-center items-center p-8 sm:p-12 bg-white relative z-10">
+          
+          {/* Card wrapper inside right pane to look exactly like screenshot */}
+          <div className="w-full max-w-[420px] bg-white rounded-3xl p-6 sm:p-8 border border-slate-100/80 shadow-[0_8px_30px_rgba(0,0,0,0.02)]">
+            
+            {/* Header */}
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-[#0f172a] tracking-tight">
+                Daftar Akun
+              </h2>
+              <p className="text-xs text-[#64748b] mt-2 leading-relaxed font-semibold">
+                Daftar sekali untuk pengalaman booking yang lebih ringkas.
+              </p>
             </div>
-          )}
 
-          {/* Full Name field */}
-          <div className="space-y-2">
-            <label className="block text-xs font-extrabold text-midnight-indigo uppercase tracking-wider">
-              Nama Lengkap
-            </label>
-            <div className="relative flex items-center bg-slate-50/50 border border-slate-200 rounded-2xl px-4 py-3 focus-within:border-action-blue/50 focus-within:bg-white transition-all">
-              <User size={16} className="text-slate-blue/70 shrink-0 mr-3" />
-              <input
-                type="text"
-                placeholder="Masukkan nama lengkap Anda"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                autoComplete="name"
-                required
-                className="bg-transparent text-xs font-bold text-midnight-indigo placeholder:text-slate-blue/40 focus:outline-none w-full"
-              />
-            </div>
-          </div>
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {error && (
+                <div className="flex items-start gap-3 rounded-2xl border border-red-100 bg-red-50/50 px-4 py-3 text-xs font-semibold text-red-650 animate-in shake duration-500">
+                  <AlertCircle className="mt-0.5 size-4 shrink-0" />
+                  <span>{error}</span>
+                </div>
+              )}
 
-          {/* Email field */}
-          <div className="space-y-2">
-            <label className="block text-xs font-extrabold text-midnight-indigo uppercase tracking-wider">
-              Email
-            </label>
-            <div className="relative flex items-center bg-slate-50/50 border border-slate-200 rounded-2xl px-4 py-3 focus-within:border-action-blue/50 focus-within:bg-white transition-all">
-              <Mail size={16} className="text-slate-blue/70 shrink-0 mr-3" />
-              <input
-                type="email"
-                placeholder="Masukkan email Anda"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                autoComplete="email"
-                required
-                className="bg-transparent text-xs font-bold text-midnight-indigo placeholder:text-slate-blue/40 focus:outline-none w-full"
-              />
-            </div>
-          </div>
+              {/* Full Name Input */}
+              <div className="space-y-2 text-left">
+                <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider">
+                  Nama Lengkap
+                </label>
+                <div className="relative flex items-center bg-slate-50/50 border border-slate-200 focus-within:border-[#0066FF]/50 focus-within:bg-white rounded-2xl px-4 py-3 transition-all">
+                  <User size={16} className="text-slate-400 shrink-0 mr-3" />
+                  <input
+                    type="text"
+                    placeholder="Masukkan nama lengkap Anda"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    autoComplete="name"
+                    required
+                    className="bg-transparent text-xs font-bold text-[#0f172a] placeholder:text-slate-400/70 focus:outline-none w-full"
+                  />
+                </div>
+              </div>
 
-          {/* Phone field */}
-          <div className="space-y-2">
-            <label className="block text-xs font-extrabold text-midnight-indigo uppercase tracking-wider">
-              No. Handphone
-            </label>
-            <div className="relative flex items-center bg-slate-50/50 border border-slate-200 rounded-2xl px-4 py-3 focus-within:border-action-blue/50 focus-within:bg-white transition-all">
-              <Phone size={16} className="text-slate-blue/70 shrink-0 mr-3" />
-              <input
-                type="tel"
-                placeholder="Masukkan nomor handphone Anda"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                required
-                className="bg-transparent text-xs font-bold text-midnight-indigo placeholder:text-slate-blue/40 focus:outline-none w-full"
-              />
-            </div>
-          </div>
+              {/* Email Input */}
+              <div className="space-y-2 text-left">
+                <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider">
+                  Email
+                </label>
+                <div className="relative flex items-center bg-slate-50/50 border border-slate-200 focus-within:border-[#0066FF]/50 focus-within:bg-white rounded-2xl px-4 py-3 transition-all">
+                  <Mail size={16} className="text-slate-400 shrink-0 mr-3" />
+                  <input
+                    type="email"
+                    placeholder="Masukkan email Anda"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    autoComplete="email"
+                    required
+                    className="bg-transparent text-xs font-bold text-[#0f172a] placeholder:text-slate-400/70 focus:outline-none w-full"
+                  />
+                </div>
+              </div>
 
-          {/* Password field */}
-          <div className="space-y-2">
-            <label className="block text-xs font-extrabold text-midnight-indigo uppercase tracking-wider">
-              Password
-            </label>
-            <div className="relative flex items-center bg-slate-50/50 border border-slate-200 rounded-2xl px-4 py-3 focus-within:border-action-blue/50 focus-within:bg-white transition-all">
-              <Lock size={16} className="text-slate-blue/70 shrink-0 mr-3" />
-              <input
-                type={showPassword ? 'text' : 'password'}
-                placeholder="Buat password Anda"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                autoComplete="new-password"
-                required
-                className="bg-transparent text-xs font-bold text-midnight-indigo placeholder:text-slate-blue/40 focus:outline-none w-full pr-8"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword((value) => !value)}
-                className="absolute right-4 text-slate-blue/50 hover:text-action-blue transition-colors cursor-pointer"
-                aria-label={showPassword ? 'Sembunyikan password' : 'Tampilkan password'}
+              {/* Phone Input */}
+              <div className="space-y-2 text-left">
+                <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider">
+                  No. Handphone
+                </label>
+                <div className="relative flex items-center bg-slate-50/50 border border-slate-200 focus-within:border-[#0066FF]/50 focus-within:bg-white rounded-2xl px-4 py-3 transition-all">
+                  <Phone size={16} className="text-slate-400 shrink-0 mr-3" />
+                  <input
+                    type="tel"
+                    placeholder="Masukkan nomor handphone Anda"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    required
+                    className="bg-transparent text-xs font-bold text-[#0f172a] placeholder:text-slate-400/70 focus:outline-none w-full"
+                  />
+                </div>
+              </div>
+
+              {/* Password Input */}
+              <div className="space-y-2 text-left">
+                <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider">
+                  Password
+                </label>
+                <div className="relative flex items-center bg-slate-50/50 border border-slate-200 focus-within:border-[#0066FF]/50 focus-within:bg-white rounded-2xl px-4 py-3 transition-all">
+                  <Lock size={16} className="text-slate-400 shrink-0 mr-3" />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Buat password Anda"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    autoComplete="new-password"
+                    required
+                    className="bg-transparent text-xs font-bold text-[#0f172a] placeholder:text-slate-400/70 focus:outline-none w-full pr-8"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((value) => !value)}
+                    className="absolute right-4 text-slate-400 hover:text-[#0066FF] transition-colors cursor-pointer"
+                    aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Confirm Password Input */}
+              <div className="space-y-2 text-left">
+                <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider">
+                  Konfirmasi Password
+                </label>
+                <div className="relative flex items-center bg-slate-50/50 border border-slate-200 focus-within:border-[#0066FF]/50 focus-within:bg-white rounded-2xl px-4 py-3 transition-all">
+                  <Lock size={16} className="text-slate-400 shrink-0 mr-3" />
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Konfirmasi password Anda"
+                    value={formData.confirmPassword}
+                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                    autoComplete="new-password"
+                    required
+                    className="bg-transparent text-xs font-bold text-[#0f172a] placeholder:text-slate-400/70 focus:outline-none w-full pr-8"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword((value) => !value)}
+                    className="absolute right-4 text-slate-400 hover:text-[#0066FF] transition-colors cursor-pointer"
+                    aria-label={showConfirmPassword ? "Sembunyikan konfirmasi password" : "Tampilkan konfirmasi password"}
+                  >
+                    {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Terms checkbox */}
+              <label className="flex cursor-pointer items-start gap-2.5 text-xs font-semibold leading-relaxed text-slate-500 pt-1 select-none">
+                <input
+                  type="checkbox"
+                  className="size-4 mt-0.5 rounded border-slate-300 text-[#0066FF] focus:ring-[#0066FF]/15 cursor-pointer"
+                  required
+                />
+                <span>
+                  Saya setuju dengan <span className="font-bold text-[#0066FF] hover:underline">syarat layanan</span> dan{" "}
+                  <span className="font-bold text-[#0066FF] hover:underline">kebijakan privasi</span>
+                </span>
+              </label>
+
+              {/* Submit Button */}
+              <Button
+                type="submit"
+                loading={loading}
+                className="h-12 w-full rounded-2xl bg-[#0066FF] hover:bg-[#0052CC] text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-blue-500/10 transition-all mt-6 cursor-pointer"
               >
-                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
-            </div>
+                Daftar
+              </Button>
+            </form>
+
+            
+
+            {/* Sign in link */}
+            <p className="text-center text-xs font-semibold text-slate-500 mt-6">
+              Sudah punya akun?{" "}
+              <Link to="/auth/login" className="font-extrabold text-[#0066FF] hover:text-[#0052CC] transition-colors">
+                Masuk sekarang
+              </Link>
+            </p>
           </div>
-
-          {/* Confirm Password field */}
-          <div className="space-y-2">
-            <label className="block text-xs font-extrabold text-midnight-indigo uppercase tracking-wider">
-              Konfirmasi Password
-            </label>
-            <div className="relative flex items-center bg-slate-50/50 border border-slate-200 rounded-2xl px-4 py-3 focus-within:border-action-blue/50 focus-within:bg-white transition-all">
-              <Lock size={16} className="text-slate-blue/70 shrink-0 mr-3" />
-              <input
-                type={showConfirmPassword ? 'text' : 'password'}
-                placeholder="Konfirmasi password Anda"
-                value={formData.confirmPassword}
-                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                autoComplete="new-password"
-                required
-                className="bg-transparent text-xs font-bold text-midnight-indigo placeholder:text-slate-blue/40 focus:outline-none w-full pr-8"
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword((value) => !value)}
-                className="absolute right-4 text-slate-blue/50 hover:text-action-blue transition-colors cursor-pointer"
-                aria-label={showConfirmPassword ? 'Sembunyikan konfirmasi password' : 'Tampilkan konfirmasi password'}
-              >
-                {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
-            </div>
-          </div>
-
-          {/* Terms checkbox */}
-          <label className="flex cursor-pointer items-start gap-3 text-[11px] font-bold leading-relaxed text-slate-blue/80 select-none">
-            <input
-              type="checkbox"
-              className="size-4 mt-0.5 rounded-md border-slate-300 text-action-blue focus:ring-action-blue/20"
-              required
-            />
-            <span>
-              Saya setuju dengan <span className="text-action-blue hover:underline">syarat layanan</span> dan{' '}
-              <span className="text-action-blue hover:underline">kebijakan privasi</span>
-            </span>
-          </label>
-
-          {/* Submit Button */}
-          <Button
-            type="submit"
-            loading={loading}
-            size="lg"
-            className="h-12 w-full rounded-2xl bg-action-blue hover:bg-action-blue-dark text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-action-blue/15 transition-all mt-4"
-          >
-            Daftar
-          </Button>
-        </form>
-
-        {/* Divider */}
-        <div className="mt-8">
-          <div className="flex items-center gap-4">
-            <span className="h-px flex-1 bg-slate-100" />
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-blue/40">atau daftar dengan</span>
-            <span className="h-px flex-1 bg-slate-100" />
-          </div>
-
-          <SocialAuthButtons action="Daftar" />
         </div>
-
-        {/* Sign in link */}
-        <p className="mt-8 text-center text-xs font-semibold text-slate-blue/70">
-          Sudah punya akun?{' '}
-          <Link to="/auth/login" className="font-extrabold text-action-blue hover:text-action-blue-dark transition-colors">
-            Masuk sekarang
-          </Link>
-        </p>
       </div>
 
       {/* Footer Copyright */}
-      <p className="relative z-10 mt-8 text-center text-[10px] font-bold tracking-wider text-slate-blue/40 uppercase">
-        © 2025 {companyProfile?.company_name || 'Boneh Star Pariwisata'}. Semua hak dilindungi.
+      <p className="mt-8 text-center text-xs font-semibold text-slate-400">
+        © {new Date().getFullYear()} Boneh Star Pariwisata. Semua hak dilindungi.
       </p>
     </main>
   );

@@ -1,36 +1,30 @@
-import { Calendar, FileText, UserCheck, CreditCard, Bus } from "lucide-react";
+import { Calendar, Bus, ClipboardCheck, ShieldCheck } from "lucide-react";
 import { useInView } from "@/hooks/useAnimations";
 
 const steps = [
-  { 
-    id: "01",
-    icon: Calendar, 
-    title: "Cek Ketersediaan", 
-    desc: "Pilih tanggal dan armada yang sesuai kebutuhan Anda" 
+  {
+    id: 1,
+    icon: Calendar,
+    title: "Pilih Tanggal & Tujuan",
+    desc: "Tentukan tanggal keberangkatan dan tujuan perjalanan Anda."
   },
-  { 
-    id: "02",
-    icon: FileText, 
-    title: "Isi Formulir", 
-    desc: "Lengkapi data perjalanan secara mudah" 
+  {
+    id: 2,
+    icon: Bus,
+    title: "Pilih Armada",
+    desc: "Pilih armada yang sesuai dengan kebutuhan rombongan Anda."
   },
-  { 
-    id: "03",
-    icon: UserCheck, 
-    title: "Konfirmasi Admin", 
-    desc: "Tim kami akan menghubungi untuk konfirmasi" 
+  {
+    id: 3,
+    icon: ClipboardCheck,
+    title: "Isi Data Pemesanan",
+    desc: "Lengkapi data pemesanan dan detail perjalanan."
   },
-  { 
-    id: "04",
-    icon: CreditCard, 
-    title: "Pembayaran", 
-    desc: "Lakukan pembayaran sesuai kesepakatan" 
-  },
-  { 
-    id: "05",
-    icon: Bus, 
-    title: "Berangkat", 
-    desc: "Perjalanan nyaman siap dimulai" 
+  {
+    id: 4,
+    icon: ShieldCheck,
+    title: "Konfirmasi & Berangkat",
+    desc: "Pemesanan dikonfirmasi, siap berangkat sesuai jadwal."
   }
 ];
 
@@ -38,63 +32,55 @@ export default function WorkingProcessSection() {
   const { ref, inView } = useInView(0.1);
 
   return (
-    <section ref={ref} className="py-16 bg-white">
+    <section ref={ref} className="py-24 bg-white scroll-mt-24" id="cara-pemesanan">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         
-        {/* Soft Container Card */}
-        <div className={`bg-[#FAF9F6]/50 rounded-[32px] border border-slate-100 p-8 sm:p-12 relative overflow-hidden reveal ${
-          inView ? "in-view" : ""
-        }`}>
+        {/* Section Header */}
+        <div className={`text-center flex flex-col items-center mb-20 reveal ${inView ? "in-view" : ""}`}>
+          <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#006bff] mb-3 block">
+            CARA PEMESANAN
+          </span>
+          <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-midnight-indigo leading-tight">
+            Mudah, Cepat & Praktis
+          </h2>
+        </div>
+
+        {/* Timeline container */}
+        <div className={`relative reveal ${inView ? "in-view" : ""}`}>
           
-          <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
-            
-            {/* Left Header Info (3 cols) */}
-            <div className="lg:col-span-3 text-left">
-              <span className="text-xs font-bold uppercase tracking-[0.2em] text-action-blue block mb-3">
-                ALUR PEMESANAN
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-midnight-indigo leading-tight">
-                Mudah, Cepat <br className="hidden sm:block" />& Praktis
-              </h2>
-            </div>
+          {/* Connecting Dashed Line on Desktop */}
+          <div className="hidden lg:block absolute top-10 left-[15%] right-[15%] border-t-2 border-dashed border-slate-200/80 z-0" />
 
-            {/* Right Steps Timeline (9 cols) */}
-            <div className="lg:col-span-9 relative">
-              
-              {/* Dashed Line on Desktop */}
-              <div className="hidden lg:block absolute top-10 left-[10%] right-[10%] border-t-2 border-dashed border-slate-200 z-0" />
-
-              {/* Steps Wrapper */}
-              <div className="relative z-10 grid gap-8 sm:grid-cols-5">
-                {steps.map((step, i) => {
-                  const Icon = step.icon;
-                  return (
-                    <div key={i} className="flex flex-col items-center text-center group">
-                      
-                      {/* Circle Icon Container */}
-                      <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-white text-action-blue mb-4 shadow-sm border border-slate-100 transition-all duration-300 group-hover:scale-105 group-hover:border-action-blue/30 group-hover:shadow-md">
-                        <Icon size={26} strokeWidth={1.5} className="group-hover:scale-110 transition-transform duration-300" />
-                      </div>
-
-                      {/* Step Number */}
-                      <span className="text-xs font-extrabold text-action-blue/80 tracking-wider mb-2 block">
-                        {step.id}
-                      </span>
-
-                      {/* Titles & Desc */}
-                      <h4 className="text-sm font-bold text-midnight-indigo mb-1.5 px-1 leading-snug">
-                        {step.title}
-                      </h4>
-                      <p className="text-[11px] font-medium text-slate-blue/70 leading-relaxed max-w-[140px] px-2">
-                        {step.desc}
-                      </p>
+          {/* Steps Grid */}
+          <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4 relative z-10">
+            {steps.map((step, i) => {
+              const Icon = step.icon;
+              return (
+                <div key={i} className="flex flex-col items-center text-center group px-4">
+                  
+                  {/* Icon Container with Badge */}
+                  <div className="relative mb-6">
+                    {/* Number Badge */}
+                    <div className="absolute -top-1 -left-1 flex h-6 w-6 items-center justify-center rounded-full bg-[#006bff] text-[11px] font-extrabold text-white shadow-sm z-20">
+                      {step.id}
                     </div>
-                  );
-                })}
-              </div>
+                    
+                    {/* Circle Icon */}
+                    <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-white text-[#006bff] border border-slate-100 shadow-[0_8px_20px_rgba(0,0,0,0.04)] transition-all duration-300 group-hover:scale-105 group-hover:border-[#006bff]/20 group-hover:shadow-[0_12px_24px_rgba(0,107,255,0.08)]">
+                      <Icon size={32} className="stroke-[1.8] group-hover:scale-110 transition-transform duration-300" />
+                    </div>
+                  </div>
 
-            </div>
-
+                  {/* Title & Description */}
+                  <h3 className="text-base font-bold text-midnight-indigo mb-2.5 group-hover:text-[#006bff] transition-colors duration-300">
+                    {step.title}
+                  </h3>
+                  <p className="text-[13px] font-medium leading-relaxed text-slate-blue/70 max-w-[220px]">
+                    {step.desc}
+                  </p>
+                </div>
+              );
+            })}
           </div>
 
         </div>

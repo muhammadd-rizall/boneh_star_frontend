@@ -65,7 +65,7 @@ export function useBookingDetail(id: string) {
       showSuccess('Pemesanan berhasil dibatalkan');
       await fetchDetail();
     } catch (err: any) {
-      showError(err.message || 'Gagal membatalkan pemesanan');
+      showError(err.response?.data?.message || err.message || 'Gagal membatalkan pemesanan');
     }
   };
 
@@ -75,7 +75,7 @@ export function useBookingDetail(id: string) {
       showSuccess('Penawaran berhasil disetujui');
       await fetchDetail();
     } catch (err: any) {
-      showError(err.message || 'Gagal menyetujui penawaran');
+      showError(err.response?.data?.message || err.message || 'Gagal menyetujui penawaran');
     }
   };
 
@@ -85,7 +85,17 @@ export function useBookingDetail(id: string) {
       showSuccess('Permintaan negosiasi berhasil dikirim');
       await fetchDetail();
     } catch (err: any) {
-      showError(err.message || 'Gagal mengirim permintaan negosiasi');
+      showError(err.response?.data?.message || err.message || 'Gagal mengirim permintaan negosiasi');
+    }
+  };
+
+  const completeBooking = async () => {
+    try {
+      await bookingService.complete(id);
+      showSuccess('Pemesanan perjalanan berhasil diselesaikan');
+      await fetchDetail();
+    } catch (err: any) {
+      showError(err.response?.data?.message || err.message || 'Gagal menyelesaikan pemesanan');
     }
   };
 
@@ -98,6 +108,7 @@ export function useBookingDetail(id: string) {
     refresh: fetchDetail, 
     cancelBooking,
     acceptQuotation,
-    reviseQuotation
+    reviseQuotation,
+    completeBooking
   };
 }

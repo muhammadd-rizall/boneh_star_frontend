@@ -12,7 +12,7 @@ export default function CustomerPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const showSuccess = useToastStore(state => state.showSuccess)
 
-  const { customers, statistics, loading: activeLoading, error: activeError, deleteCustomer, refetch: refetchActive } = useCustomers()
+  const { customers, statistics, loading: activeLoading, error: activeError, deleteCustomer, refetch: refetchActive, searchCustomers } = useCustomers()
   const { customers: trashedCustomers, loading: trashLoading, error: trashError, refetch: refetchTrash, restoreCustomer, forceDeleteCustomer } = useTrashedCustomers()
 
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -23,7 +23,8 @@ export default function CustomerPage() {
   const [customerToManage, setCustomerToManage] = useState<Customer | null>(null)
   const [actionLoading, setActionLoading] = useState(false)
 
-  useEffect(() => { if (view === "active") { const t = setTimeout(() => refetchActive(searchTerm), 500); return () => clearTimeout(t) } }, [searchTerm, view, refetchActive])
+  // searchCustomers sudah ada debounce 350ms di dalam hook
+  useEffect(() => { if (view === "active") searchCustomers(searchTerm) }, [searchTerm, view, searchCustomers])
   useEffect(() => { if (view === "trash") refetchTrash() }, [view, refetchTrash])
 
   const handleSuccess = () => { 

@@ -7,13 +7,15 @@ import StarRating from './StarRating';
 
 interface Props {
   bookingId: string;
+  initialRating?: number;
+  initialComment?: string;
   onSubmit: (data: ReviewFormData) => Promise<void>;
-  onCancel: () => void;
+  onCancel?: () => void;
 }
 
-export default function ReviewForm({ bookingId, onSubmit, onCancel }: Props) {
-  const [rating, setRating] = React.useState(5);
-  const [comment, setComment] = React.useState('');
+export default function ReviewForm({ bookingId, initialRating = 5, initialComment = '', onSubmit, onCancel }: Props) {
+  const [rating, setRating] = React.useState(initialRating);
+  const [comment, setComment] = React.useState(initialComment);
   const [loading, setLoading] = React.useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {

@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useRef } from "react"
 import { customerService } from "@/features/admin/customers/services/CustomerService"
 import type { Customer, CustomerStatistics } from "@/features/admin/customers/types/Customer"
 
@@ -7,6 +7,7 @@ export function useCustomers() {
   const [statistics, setStatistics] = useState<CustomerStatistics | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const fetchCustomers = useCallback(async (search?: string) => {
     try {
@@ -22,6 +23,14 @@ export function useCustomers() {
     }
   }, [])
 
+  // Debounced search — hanya kirim request 350ms setelah user berhenti mengetik
+  const searchCustomers = useCallback((search?: string) => {
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(() => {
+      fetchCustomers(search)
+    }, 350)
+  }, [fetchCustomers])
+
   const deleteCustomer = async (id: string) => {
     try {
       if (!id) return;
@@ -34,6 +43,9 @@ export function useCustomers() {
 
   useEffect(() => {
     fetchCustomers()
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current)
+    }
   }, [fetchCustomers])
 
   return {
@@ -42,9 +54,11 @@ export function useCustomers() {
     loading,
     error,
     refetch: fetchCustomers,
+    searchCustomers,
     deleteCustomer
   }
 }
+
 
 export function useTrashedCustomers() {
   const [customers, setCustomers] = useState<Customer[]>([])

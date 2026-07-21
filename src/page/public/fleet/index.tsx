@@ -285,26 +285,34 @@ export default function FleetPage() {
             )}
 
             {/* Bottom CTA Banner */}
-            <div className="mt-20 bg-white rounded-3xl border border-slate-100 p-8 sm:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.02)] flex flex-col sm:flex-row items-center justify-between gap-6">
-              <div className="flex items-center gap-5">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-cloud-mist text-action-blue border border-platinum-tint shadow-sm">
-                  <Phone size={20} />
+            <div className="mt-20 relative overflow-hidden rounded-[24px] bg-gradient-to-r from-[#0038a8] to-[#006bff] p-8 sm:p-10 shadow-[0_12px_40px_rgba(0,107,255,0.15)] flex flex-col md:flex-row items-center justify-between gap-8">
+              {/* Left Section: Icon and Content */}
+              <div className="flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left w-full md:w-auto">
+                {/* Icon Circle (Glassmorphism) */}
+                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/15 shadow-inner">
+                  <Phone size={28} className="text-white" strokeWidth={1.8} />
                 </div>
-                <div className="text-left">
-                  <h4 className="text-lg font-bold text-midnight-indigo">Belum menemukan armada yang sesuai?</h4>
-                  <p className="mt-1.5 text-sm font-medium text-slate-blue/80 max-w-xl leading-relaxed">
+                
+                {/* Text Content */}
+                <div className="space-y-1.5">
+                  <h4 className="text-xl md:text-2xl font-bold text-white tracking-tight">
+                    Belum menemukan armada yang sesuai?
+                  </h4>
+                  <p className="text-sm md:text-base font-medium text-white/80 max-w-xl leading-relaxed">
                     Hubungi kami untuk konsultasi dan rekomendasi armada terbaik sesuai kebutuhan perjalanan Anda.
                   </p>
                 </div>
               </div>
+
+              {/* Right Section: Button */}
               <a
                 href={whatsappHref}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-action-blue hover:bg-action-blue-dark px-8 py-4 text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-action-blue/20 transition-all hover:scale-[1.02] active:scale-[0.98] shrink-0"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-[12px] bg-white hover:bg-white/95 px-8 text-sm font-bold text-[#006bff] shadow-lg active:scale-95 transition-all w-full sm:w-auto shrink-0 cursor-pointer"
               >
                 Hubungi Kami
-                <Phone size={14} />
+                <Phone size={16} strokeWidth={2.2} />
               </a>
             </div>
 
