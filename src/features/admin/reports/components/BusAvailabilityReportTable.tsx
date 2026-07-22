@@ -3,6 +3,7 @@ import { DataTable } from "@/components/ui/DataTable";
 import type { Column } from "@/components/ui/DataTable";
 import type { BusAvailability, BusSchedule } from "../types/BusAvailabilityReport";
 import { Calendar, Clock } from "lucide-react";
+import { formatDateDMY } from "@/utils/formatter";
 
 interface BusAvailabilityReportTableProps {
   data: BusAvailability[];
@@ -67,7 +68,7 @@ export default function BusAvailabilityReportTable({ data, loading }: BusAvailab
                 <div className="flex flex-col gap-1 text-slate-500">
                   <div className="flex items-center gap-1">
                      <Calendar size={10} />
-                     <span>{new Date(schedule.departure_date).toLocaleDateString('id-ID')} - {schedule.return_date ? new Date(schedule.return_date).toLocaleDateString('id-ID') : 'N/A'}</span>
+                     <span>{formatDateDMY(schedule.departure_date)} - {schedule.return_date ? formatDateDMY(schedule.return_date) : 'N/A'}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Clock size={10} />

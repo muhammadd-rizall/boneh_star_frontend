@@ -3,7 +3,7 @@ import type { CustomerTransaction } from '../types/Booking';
 import type { PaymentMethod } from '@/types/Database';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { formatCurrency, formatDate } from '@/utils/formatter';
+import { formatCurrency, formatDate, formatDateDMY } from '@/utils/formatter';
 import { CreditCard, Upload, ExternalLink, Clock, CheckCircle2, XCircle, Landmark } from 'lucide-react';
 import { resolveMediaUrl } from '@/features/admin/company-profile/utils/companyProfileUtils';
 
@@ -240,14 +240,22 @@ export default function PaymentSection({ transaction, paymentMethods, departureD
 
               <div className="flex flex-col gap-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Tanggal Transfer</label>
-                <input 
-                  type="date" 
-                  className="rounded-2xl border border-slate-100 bg-white p-3.5 text-sm font-bold text-slate-700 focus:border-orange-500 outline-none transition-all"
-                  required
-                  max={maxDate}
-                  value={formData.payment_date}
-                  onChange={(e) => setFormData({ ...formData, payment_date: e.target.value })}
-                />
+                <div className="relative min-h-[50px]">
+                  <input 
+                    type="date" 
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 peer"
+                    required
+                    max={maxDate}
+                    value={formData.payment_date}
+                    onChange={(e) => setFormData({ ...formData, payment_date: e.target.value })}
+                    onClick={e => { try { e.currentTarget.showPicker(); } catch (err) {} }}
+                  />
+                  <div className="pointer-events-none w-full rounded-2xl border border-slate-100 bg-white p-3.5 text-sm font-bold text-slate-700 transition-all flex items-center min-h-[50px] peer-focus:border-orange-500 peer-focus:ring-2 peer-focus:ring-orange-500/10 hover:border-slate-300">
+                    <span>
+                      {formData.payment_date ? formatDateDMY(formData.payment_date) : "Pilih tanggal"}
+                    </span>
+                  </div>
+                </div>
                 <p className="text-[9px] font-bold text-slate-400 ml-1 italic">* Maksimal H-1 sebelum keberangkatan</p>
               </div>
 

@@ -102,7 +102,7 @@ export default function ReportCharts({ statistics }: ReportChartsProps) {
   return (
     <div className="flex flex-col gap-8">
       {/* Monthly Trend - Full Width Line Chart */}
-      <Card className="p-8 border-platinum-tint bg-white shadow-card rounded-2xl">
+      <Card className="px-6 pt-6 pb-5 border-platinum-tint bg-white shadow-card rounded-2xl">
         <div className="mb-8 border-l-4 border-action-blue pl-4">
           <h3 className="text-[11px] font-bold uppercase tracking-[0.25em] text-slate-blue">Tren Bulanan</h3>
           <p className="text-xl font-bold text-midnight-indigo mt-1">Grafik Performa Pesanan</p>
@@ -274,7 +274,7 @@ export default function ReportCharts({ statistics }: ReportChartsProps) {
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         {/* Status Chart - Replaced with Donut (Pie) Chart */}
-        <Card className="p-8 border-platinum-tint bg-white shadow-card rounded-2xl">
+        <Card className="px-6 pt-6 pb-5 border-platinum-tint bg-white shadow-card rounded-2xl">
           <div className="mb-6 flex items-center justify-between">
             <div className="border-l-4 border-blue-500 pl-4">
               <h3 className="text-[11px] font-bold uppercase tracking-[0.25em] text-slate-blue">Status</h3>
@@ -369,7 +369,7 @@ export default function ReportCharts({ statistics }: ReportChartsProps) {
         </Card>
 
         {/* Activity Chart - Premium Redesign */}
-        <Card className="p-8 border-platinum-tint bg-white shadow-card rounded-2xl">
+        <Card className="px-6 pt-6 pb-5 border-platinum-tint bg-white shadow-card rounded-2xl">
           <div className="mb-6 flex items-center justify-between">
             <div className="border-l-4 border-emerald-500 pl-4">
               <h3 className="text-[11px] font-bold uppercase tracking-[0.25em] text-slate-blue">Aktivitas</h3>

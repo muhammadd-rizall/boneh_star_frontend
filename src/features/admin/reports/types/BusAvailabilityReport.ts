@@ -11,6 +11,9 @@ export interface BusAvailability {
   name: string;
   plat_number: string;
   status: string;
+  category_name?: string | null;
+  seat_count?: number;
+  primary_image?: string | null;
   schedules: BusSchedule[];
 }
 

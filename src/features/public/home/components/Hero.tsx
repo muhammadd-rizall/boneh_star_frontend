@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button';
 import type { Bus } from '@/features/admin/buses/types/Bus';
 import type { BusCategory } from '@/features/admin/bus-categories/types/BusCategory';
 import { cn } from '@/lib/utils';
+import { formatDateDMY } from '@/utils/formatter';
 
 interface HeroProps {
   categories: BusCategory[];
@@ -24,29 +25,18 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
   const [formData, setFormData] = useState({
     jenisBus: '',
     departureDate: '',
-    tujuan: '',
+    returnDate: '',
     penumpang: ''
   });
 
   const [isBusDropdownOpen, setIsBusDropdownOpen] = useState(false);
-  const [isTujuanDropdownOpen, setIsTujuanDropdownOpen] = useState(false);
-  const [isPassengerDropdownOpen, setIsPassengerDropdownOpen] = useState(false);
-
   const busDropdownRef = useRef<HTMLDivElement>(null);
-  const tujuanDropdownRef = useRef<HTMLDivElement>(null);
-  const passengerDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Node;
       if (busDropdownRef.current && !busDropdownRef.current.contains(target)) {
         setIsBusDropdownOpen(false);
-      }
-      if (tujuanDropdownRef.current && !tujuanDropdownRef.current.contains(target)) {
-        setIsTujuanDropdownOpen(false);
-      }
-      if (passengerDropdownRef.current && !passengerDropdownRef.current.contains(target)) {
-        setIsPassengerDropdownOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -62,27 +52,13 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
     const availableBuses = allBuses.filter(b => b.status === 'available');
 
     // Parse passenger capacity
-    let passengerMin = 0;
-    let passengerMax = 999;
-    if (formData.penumpang) {
-      if (formData.penumpang === '1-15 Orang') {
-        passengerMax = 15;
-      } else if (formData.penumpang === '16-30 Orang') {
-        passengerMin = 16;
-        passengerMax = 30;
-      } else if (formData.penumpang === '31-50 Orang') {
-        passengerMin = 31;
-        passengerMax = 50;
-      } else if (formData.penumpang === '50+ Orang') {
-        passengerMin = 51;
-      }
-    }
+    const passengerCount = parseInt(formData.penumpang, 10) || 0;
 
     let filtered = availableBuses.filter(b => {
       // Category filter
       if (formData.jenisBus && b.category?.name !== formData.jenisBus) return false;
-      // Capacity filter
-      if (b.seat_count < passengerMin || b.seat_count > passengerMax) return false;
+      // Capacity filter: seat count must be at least passengerCount
+      if (passengerCount > 0 && b.seat_count < passengerCount) return false;
       return true;
     });
 
@@ -117,7 +93,7 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
   };
 
   return (
-    <section className='relative min-h-[92vh] w-full flex flex-col justify-center bg-midnight-indigo pt-32 pb-24 overflow-hidden'>
+    <section className='relative min-h-[92vh] w-full flex flex-col justify-center bg-midnight-indigo pt-32 pb-24'>
       {/* Background Image & Overlay */}
       <div className='absolute inset-0 z-0'>
         <img 
@@ -194,8 +170,6 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
                 className='relative flex items-center gap-3.5 px-6 py-4 hover:bg-slate-50/60 transition-colors cursor-pointer rounded-2xl lg:rounded-none lg:border-r lg:border-slate-100 w-full text-left group'
                 onClick={() => {
                   setIsBusDropdownOpen(!isBusDropdownOpen);
-                  setIsTujuanDropdownOpen(false);
-                  setIsPassengerDropdownOpen(false);
                 }}
               >
                 <BusIcon size={20} className='text-[#006bff] shrink-0 group-hover:scale-110 transition-transform duration-300' />
@@ -243,116 +217,67 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
               </div>
               
               {/* Date Input 2: Tanggal Berangkat */}
+              <div className="relative flex items-center gap-3.5 px-6 py-4 hover:bg-slate-50/60 transition-colors lg:border-r lg:border-slate-100 w-full text-left group min-h-[80px]">
+                <input 
+                  type="date" 
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 peer"
+                  value={formData.departureDate}
+                  onChange={e => setFormData({...formData, departureDate: e.target.value})}
+                  onClick={e => { try { e.currentTarget.showPicker(); } catch (err) {} }}
+                />
+                <Calendar size={20} className='text-[#006bff] shrink-0 group-hover:scale-110 transition-transform duration-300' />
+                <div className='flex flex-col flex-1 min-w-0 pointer-events-none'>
+                  <span className='text-[10px] font-bold uppercase tracking-wider text-slate-blue/60 mb-0.5'>Tanggal Berangkat</span>
+                  <span className={cn('text-[14px] font-bold', formData.departureDate ? 'text-midnight-indigo' : 'text-slate-400 font-normal')}>
+                    {formData.departureDate ? formatDateDMY(formData.departureDate) : 'Pilih tanggal'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Date Input 3: Tanggal Pulang */}
+              <div className="relative flex items-center gap-3.5 px-6 py-4 hover:bg-slate-50/60 transition-colors lg:border-r lg:border-slate-100 w-full text-left group min-h-[80px]">
+                <input 
+                  type="date" 
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 peer"
+                  value={formData.returnDate}
+                  onChange={e => setFormData({...formData, returnDate: e.target.value})}
+                  onClick={e => { try { e.currentTarget.showPicker(); } catch (err) {} }}
+                />
+                <Calendar size={20} className='text-[#006bff] shrink-0 group-hover:scale-110 transition-transform duration-300' />
+                <div className='flex flex-col flex-1 min-w-0 pointer-events-none'>
+                  <span className='text-[10px] font-bold uppercase tracking-wider text-slate-blue/60 mb-0.5'>Tanggal Pulang</span>
+                  <span className={cn('text-[14px] font-bold', formData.returnDate ? 'text-midnight-indigo' : 'text-slate-400 font-normal')}>
+                    {formData.returnDate ? formatDateDMY(formData.returnDate) : 'Pilih tanggal'}
+                  </span>
+                </div>
+              </div>
+              
+              {/* Input 4: Jumlah Peserta */}
               <label 
-                className='flex items-center gap-3.5 px-6 py-4 hover:bg-slate-50/60 transition-colors cursor-pointer lg:border-r lg:border-slate-100 w-full text-left group'
+                className='flex items-center gap-3.5 px-6 py-4 hover:bg-slate-50/60 transition-colors cursor-pointer w-full text-left group'
                 onClick={(e) => {
                   const input = e.currentTarget.querySelector('input');
                   if (input) {
-                    if (input.type !== 'date') input.type = 'date';
-                    try { input.showPicker(); } catch (err) {}
+                    input.focus();
                   }
-                }}
-              >
-                <Calendar size={20} className='text-[#006bff] shrink-0 group-hover:scale-110 transition-transform duration-300' />
-                <div className='flex flex-col flex-1 min-w-0'>
-                  <span className='text-[10px] font-bold uppercase tracking-wider text-slate-blue/60 mb-0.5'>Tanggal Berangkat</span>
-                  <input 
-                    type='text' 
-                    onFocus={(e) => { e.target.type = 'date'; }}
-                    onBlur={(e) => !e.target.value && (e.target.type = 'text')}
-                    placeholder='Pilih tanggal'
-                    className='bg-transparent text-[14px] font-bold text-midnight-indigo focus:outline-none w-full cursor-pointer placeholder:font-bold placeholder:text-midnight-indigo' 
-                    value={formData.departureDate} 
-                    onChange={e => setFormData({...formData, departureDate: e.target.value})} 
-                  />
-                </div>
-              </label>
-              
-              {/* Dropdown 3: Tujuan / Kota Tujuan */}
-              <div 
-                ref={tujuanDropdownRef}
-                className='relative flex items-center gap-3.5 px-6 py-4 hover:bg-slate-50/60 transition-colors cursor-pointer lg:border-r lg:border-slate-100 w-full text-left group'
-                onClick={() => {
-                  setIsTujuanDropdownOpen(!isTujuanDropdownOpen);
-                  setIsBusDropdownOpen(false);
-                  setIsPassengerDropdownOpen(false);
-                }}
-              >
-                <MapPin size={20} className='text-[#006bff] shrink-0 group-hover:scale-110 transition-transform duration-300' />
-                <div className='flex flex-col flex-1 min-w-0'>
-                  <span className='text-[10px] font-bold uppercase tracking-wider text-slate-blue/60 mb-0.5'>Tujuan / Kota Tujuan</span>
-                  <div className='flex items-center justify-between gap-1.5'>
-                    <span className='text-[14px] font-bold text-midnight-indigo truncate'>
-                      {formData.tujuan || 'Pilih tujuan'}
-                    </span>
-                    <ChevronDown size={14} className={cn('text-slate-400 shrink-0 transition-transform duration-300', isTujuanDropdownOpen && 'rotate-180')} />
-                  </div>
-                </div>
-
-                {isTujuanDropdownOpen && (
-                  <div className='absolute top-[105%] left-0 w-full min-w-[200px] bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.12)] border border-slate-100 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200'>
-                    <div className='py-1.5 max-h-[220px] overflow-y-auto'>
-                      {['Semua Tujuan', 'Padang', 'Bukittinggi', 'Pekanbaru', 'Medan', 'Jakarta'].map(dest => (
-                        <div 
-                          key={dest} 
-                          className={cn('px-4 py-2.5 text-[13px] font-bold transition-colors hover:bg-slate-50 cursor-pointer flex items-center justify-between', (formData.tujuan === dest || (dest === 'Semua Tujuan' && !formData.tujuan)) ? 'text-[#006bff] bg-blue-50/40' : 'text-slate-blue')}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setFormData({...formData, tujuan: dest === 'Semua Tujuan' ? '' : dest});
-                            setIsTujuanDropdownOpen(false);
-                          }}
-                        >
-                          {dest}
-                          {(formData.tujuan === dest || (dest === 'Semua Tujuan' && !formData.tujuan)) && <CheckCircle2 size={14} className="text-[#006bff]" />}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-              
-              {/* Dropdown 4: Jumlah Peserta */}
-              <div 
-                ref={passengerDropdownRef}
-                className='relative flex items-center gap-3.5 px-6 py-4 hover:bg-slate-50/60 transition-colors cursor-pointer w-full text-left group'
-                onClick={() => {
-                  setIsPassengerDropdownOpen(!isPassengerDropdownOpen);
-                  setIsBusDropdownOpen(false);
-                  setIsTujuanDropdownOpen(false);
                 }}
               >
                 <Users size={20} className='text-[#006bff] shrink-0 group-hover:scale-110 transition-transform duration-300' />
                 <div className='flex flex-col flex-1 min-w-0'>
                   <span className='text-[10px] font-bold uppercase tracking-wider text-slate-blue/60 mb-0.5'>Jumlah Peserta</span>
-                  <div className='flex items-center justify-between gap-1.5'>
-                    <span className='text-[14px] font-bold text-midnight-indigo truncate'>
-                      {formData.penumpang || 'Pilih jumlah'}
-                    </span>
-                    <ChevronDown size={14} className={cn('text-slate-400 shrink-0 transition-transform duration-300', isPassengerDropdownOpen && 'rotate-180')} />
-                  </div>
+                  <input 
+                    type='number' 
+                    min='1'
+                    placeholder='Masukkan jumlah'
+                    className='bg-transparent text-[14px] font-bold text-midnight-indigo focus:outline-none w-full cursor-pointer placeholder:font-bold placeholder:text-midnight-indigo [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none' 
+                    value={formData.penumpang} 
+                    onChange={e => {
+                      const val = e.target.value.replace(/\D/g, '');
+                      setFormData({...formData, penumpang: val});
+                    }} 
+                  />
                 </div>
-
-                {isPassengerDropdownOpen && (
-                  <div className='absolute top-[105%] left-0 w-full min-w-[200px] bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.12)] border border-slate-100 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200'>
-                    <div className='py-1.5 max-h-[220px] overflow-y-auto'>
-                      {['Semua Kapasitas', '1-15 Orang', '16-30 Orang', '31-50 Orang', '50+ Orang'].map(opt => (
-                        <div 
-                          key={opt} 
-                          className={cn('px-4 py-2.5 text-[13px] font-bold transition-colors hover:bg-slate-50 cursor-pointer flex items-center justify-between', (formData.penumpang === opt || (opt === 'Semua Kapasitas' && !formData.penumpang)) ? 'text-[#006bff] bg-blue-50/40' : 'text-slate-blue')}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setFormData({...formData, penumpang: opt === 'Semua Kapasitas' ? '' : opt});
-                            setIsPassengerDropdownOpen(false);
-                          }}
-                        >
-                          {opt}
-                          {(formData.penumpang === opt || (opt === 'Semua Kapasitas' && !formData.penumpang)) && <CheckCircle2 size={14} className="text-[#006bff]" />}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
+              </label>
               
               {/* Submit Button */}
               <div className='w-full lg:w-auto px-4 lg:pl-6 lg:pr-4 lg:shrink-0 flex justify-center py-2 lg:py-0'>

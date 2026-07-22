@@ -28,7 +28,7 @@ export default function IncomeReportCharts({ statistics }: IncomeReportChartsPro
   return (
     <div className="flex flex-col gap-6">
       {/* Monthly Trend - Full Width */}
-      <Card className="p-8 border-slate-200/80 bg-white/90 shadow-card rounded-2xl">
+      <Card className="px-6 pt-6 pb-5 border-slate-200/80 bg-white/90 shadow-card rounded-2xl">
         <div className="mb-8 border-l-4 border-emerald-500 pl-4">
           <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400">Monthly Income Trend</h3>
           <p className="text-xl font-bold text-midnight-indigo mt-1">Grafik Performa Pendapatan</p>

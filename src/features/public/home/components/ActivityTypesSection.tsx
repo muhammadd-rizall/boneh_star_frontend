@@ -115,9 +115,21 @@ export default function ActivityTypesSection({ activityTypes }: ActivityTypesSec
                 }`}
                 style={{ "--delay": (i * 80) + "ms" } as React.CSSProperties}
               >
-                {/* Icon Container */}
-                <div className="mb-6 flex justify-center text-action-blue transition-transform duration-300 group-hover:scale-110">
-                  <Icon size={44} className="stroke-[1.5]" />
+                {/* Icon / Image Container */}
+                <div className="mb-6 flex justify-center transition-transform duration-300 group-hover:scale-110">
+                  {item.image_url ? (
+                    <div className="h-[72px] w-[72px] overflow-hidden rounded-[20px] border border-slate-100 bg-slate-50 shadow-sm flex items-center justify-center">
+                      <img 
+                        src={item.image_url} 
+                        alt={item.name} 
+                        className="h-full w-full object-cover" 
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex h-[72px] w-[72px] items-center justify-center rounded-[20px] bg-action-blue/10 text-action-blue shadow-sm">
+                      <Icon size={32} className="stroke-[1.5]" />
+                    </div>
+                  )}
                 </div>
                 
                 {/* Card Title */}

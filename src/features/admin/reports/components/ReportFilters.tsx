@@ -1,4 +1,4 @@
-import { Input } from "@/components/ui/Input";
+import React, { useRef } from "react";
 import { CustomSelect as Select } from "@/components/ui/CustomSelect";
 import { Calendar, Filter, Map } from "lucide-react";
 import type { BookingReportFilters } from "../types/BookingReport";
@@ -9,6 +9,9 @@ interface ReportFiltersProps {
 }
 
 export default function ReportFilters({ filters, onFilterChange }: ReportFiltersProps) {
+  const startRef = useRef<HTMLInputElement>(null);
+  const endRef = useRef<HTMLInputElement>(null);
+
   const statusOptions = [
     { label: "Semua Status", value: "" },
     { label: "Tertunda (Pending)", value: "pending" },
@@ -21,40 +24,94 @@ export default function ReportFilters({ filters, onFilterChange }: ReportFilters
 
   const scopeOptions = [
     { label: "Semua Cakupan", value: "" },
-    { label: "Dalam Kota", value: "internal" },
-    { label: "Luar Kota", value: "external" },
+    { label: "Dalam Kota", value: "inside" },
+    { label: "Luar Kota", value: "outside" },
   ];
 
+  const formatDateIndo = (dateStr?: string) => {
+    if (!dateStr) return "Pilih tanggal";
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return dateStr;
+    const months = [
+      "Jan", "Feb", "Mar", "Apr", "Mei", "Jun", 
+      "Jul", "Agu", "Sep", "Okt", "Nov", "Des"
+    ];
+    return `${date.getDate().toString().padStart(2, '0')} ${months[date.getMonth()]} ${date.getFullYear()}`;
+  };
+
+  const handleOpenPicker = (ref: React.RefObject<HTMLInputElement>) => {
+    if (ref.current) {
+      try {
+        ref.current.showPicker();
+      } catch (err) {
+        ref.current.click();
+      }
+    }
+  };
+
   return (
-    <div className="grid grid-cols-1 gap-6 rounded-[24px] border border-platinum-tint bg-white p-8 shadow-card sm:grid-cols-2 lg:grid-cols-4">
-      <Input
-        label="Tanggal Mulai"
-        type="date"
-        icon={Calendar}
-        value={filters.start_date}
-        onChange={(e) => onFilterChange({ start_date: e.target.value })}
-      />
-      <Input
-        label="Tanggal Selesai"
-        type="date"
-        icon={Calendar}
-        value={filters.end_date}
-        onChange={(e) => onFilterChange({ end_date: e.target.value })}
-      />
-      <Select
-        label="Status Pesanan"
-        icon={Filter}
-        value={filters.status || ""}
-        options={statusOptions}
-        onChange={(value) => onFilterChange({ status: value || undefined })}
-      />
-      <Select
-        label="Cakupan Rute"
-        icon={Map}
-        value={filters.scope || ""}
-        options={scopeOptions}
-        onChange={(value) => onFilterChange({ scope: (value as any) || undefined })}
-      />
+    <div className="grid grid-cols-1 gap-6 rounded-[24px] border border-platinum-tint bg-white p-6 shadow-card sm:grid-cols-2 lg:grid-cols-4">
+      {/* Tanggal Mulai */}
+      <div className="flex flex-col gap-2">
+        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Tanggal Mulai</label>
+        <div 
+          onClick={() => handleOpenPicker(startRef)}
+          className="relative flex h-[52px] cursor-pointer items-center justify-between rounded-xl border border-slate-200 bg-white px-4 transition-all focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-100"
+        >
+          <Calendar className="h-5 w-5 text-slate-400 shrink-0" />
+          <span className="text-sm font-semibold text-slate-700">{formatDateIndo(filters.start_date)}</span>
+          <Calendar className="h-5 w-5 text-slate-400 shrink-0" />
+          <input
+            ref={startRef}
+            type="date"
+            value={filters.start_date || ""}
+            onChange={(e) => onFilterChange({ start_date: e.target.value })}
+            className="absolute inset-0 h-full w-full pointer-events-none opacity-0"
+          />
+        </div>
+      </div>
+
+      {/* Tanggal Selesai */}
+      <div className="flex flex-col gap-2">
+        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Tanggal Selesai</label>
+        <div 
+          onClick={() => handleOpenPicker(endRef)}
+          className="relative flex h-[52px] cursor-pointer items-center justify-between rounded-xl border border-slate-200 bg-white px-4 transition-all focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-100"
+        >
+          <Calendar className="h-5 w-5 text-slate-400 shrink-0" />
+          <span className="text-sm font-semibold text-slate-700">{formatDateIndo(filters.end_date)}</span>
+          <Calendar className="h-5 w-5 text-slate-400 shrink-0" />
+          <input
+            ref={endRef}
+            type="date"
+            value={filters.end_date || ""}
+            onChange={(e) => onFilterChange({ end_date: e.target.value })}
+            className="absolute inset-0 h-full w-full pointer-events-none opacity-0"
+          />
+        </div>
+      </div>
+
+      {/* Status Pesanan */}
+      <div className="flex flex-col gap-2">
+        <Select
+          label="Status Pesanan"
+          icon={Filter}
+          value={filters.status || ""}
+          options={statusOptions}
+          onChange={(value) => onFilterChange({ status: value || undefined })}
+        />
+      </div>
+
+      {/* Cakupan Rute */}
+      <div className="flex flex-col gap-2">
+        <Select
+          label="Cakupan Rute"
+          icon={Map}
+          value={filters.scope || ""}
+          options={scopeOptions}
+          onChange={(value) => onFilterChange({ scope: (value as any) || undefined })}
+        />
+      </div>
     </div>
   );
 }

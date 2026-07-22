@@ -335,3 +335,66 @@ a {
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.55 0.08 250);
 }
+
+/* ── Brand Social Icons (theSVG overrides) ────────────────── */
+
+/* YouTube: Path 1 = outer red, Path 2 = inner white */
+.youtube-icon path:nth-child(1) {
+  fill: #ff0000 !important;
+}
+.youtube-icon path:nth-child(2) {
+  fill: #ffffff !important;
+}
+
+/* Facebook: Path 1 = outer circle (blue), Path 2 = inner f (white) */
+.facebook-icon path:nth-child(1) {
+  fill: #1877f2 !important;
+}
+.facebook-icon path:nth-child(2) {
+  fill: #ffffff !important;
+}
+
+/* TikTok: cyan, red and black path overrides */
+.tiktok-icon .cls-2 {
+  fill: #fe0979 !important;
+}
+.tiktok-icon .cls-3 {
+  fill: #25f4ee !important;
+}
+.tiktok-icon path:not([class]) {
+  fill: #000000 !important;
+}
+
+/* Threads: default is white, override to black */
+.threads-icon path {
+  fill: #000000 !important;
+}
+
+/* X (Twitter): default is black */
+.x-icon path {
+  fill: #000000 !important;
+}
+
+/* LinkedIn: Path is blue (#0A66C2) by default, white on hover */
+.linkedin-icon path {
+  fill: #0a66c2 !important;
+}
+.group:hover .linkedin-icon path {
+  fill: #ffffff !important;
+}
+
+/* Force white fill for thesvg components when needed (e.g. WhatsApp on CTA button) */
+.fill-white path {
+  fill: #ffffff !important;
+}
+
+/* WhatsApp Floating Icon inside menu to inherit currentColor */
+.whatsapp-floating-icon path {
+  fill: currentColor !important;
+}
+
+
+
+
+
+

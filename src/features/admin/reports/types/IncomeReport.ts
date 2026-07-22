@@ -26,6 +26,8 @@ export interface IncomeReportStatistics {
 }
 
 export interface IncomeReportFilters {
+  start_date?: string;
+  end_date?: string;
   month?: number;
   year?: number;
   status?: string;

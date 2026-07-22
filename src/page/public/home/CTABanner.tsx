@@ -21,8 +21,8 @@ export default function CTABanner() {
         {/* Left Section: Icon and Content */}
         <div className="flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left w-full lg:w-auto">
           {/* Icon Circle */}
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/15 shadow-inner">
-            <Calendar size={28} className="text-white" strokeWidth={1.8} />
+          <div className="flex h-[50px] w-[50px] shrink-0 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/15 shadow-inner">
+            <Calendar size={26} className="text-white" strokeWidth={1.8} />
           </div>
           
           {/* Text Content */}

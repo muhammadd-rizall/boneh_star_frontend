@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { 
   X, 
   Users, 
@@ -16,7 +17,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Bus,
-  Lightbulb
+  Lightbulb,
+  Calendar
 } from "lucide-react";
 import { Whatsapp } from "@thesvg/react";
 import { 
@@ -27,6 +29,7 @@ import {
 import type { Bus as BusType } from "@/features/admin/buses/types/Bus";
 import { getCapacityLabel } from "../utils/fleetCardUtils";
 import { usePublicCompanyProfile } from "@/features/admin/company-profile/hooks/usePublicCompanyProfile";
+import { useCustomerAuthStore } from "@/features/auth/public";
 
 interface FleetDetailModalProps {
   bus: BusType;
@@ -49,6 +52,8 @@ const getFacilityIcon = (name: string) => {
 
 export default function FleetDetailModal({ bus, onClose }: FleetDetailModalProps) {
   const { profile } = usePublicCompanyProfile();
+  const navigate = useNavigate();
+  const isCustomerAuthenticated = useCustomerAuthStore((state) => state.isAuthenticated);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   const images = bus.images ?? [];
@@ -60,8 +65,16 @@ export default function FleetDetailModal({ bus, onClose }: FleetDetailModalProps
   const whatsappNumbers = normalizeWhatsApp(profile?.whatsapp);
   const primaryWhatsApp = whatsappNumbers[0];
   const whatsappHref = primaryWhatsApp
-    ? `${buildWhatsAppHref(primaryWhatsApp)}?text=Halo%20Admin%20Boneh%20Star,%20saya%20ingin%20tanya%20sewa%20armada%20${encodeURIComponent(bus.name)}`
-    : `https://wa.me/6281234567890?text=Halo%20Admin%20Boneh%20Star,%20saya%20ingin%20tanya%20sewa%20armada%20${encodeURIComponent(bus.name)}`;
+    ? `${buildWhatsAppHref(primaryWhatsApp)}?text=Halo%20Admin%20Boneh%20Star,%20saya%20ingin%20tanya%20sewa%20armada%2520${encodeURIComponent(bus.name)}`
+    : `https://wa.me/6281234567890?text=Halo%20Admin%20Boneh%20Star,%20saya%20ingin%20tanya%20sewa%20armada%2520${encodeURIComponent(bus.name)}`;
+
+  const handleBookingClick = () => {
+    if (isCustomerAuthenticated) {
+      navigate(`/customer/bookings/request?bus_id=${bus.id}`);
+    } else {
+      navigate(`/auth/login?redirect=${encodeURIComponent(`/customer/bookings/request?bus_id=${bus.id}`)}`);
+    }
+  };
 
   const handlePrevImage = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -254,16 +267,25 @@ export default function FleetDetailModal({ bus, onClose }: FleetDetailModalProps
             </div>
           </div>
 
-          {/* Action CTA Button */}
-          <a
-            href={whatsappHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-4 w-full py-4 bg-[#006bff] hover:bg-[#005ad4] text-white rounded-2xl text-xs font-extrabold uppercase tracking-wider transition-all duration-300 shadow-md shadow-[#006bff]/15 flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.01] active:scale-[0.99]"
-          >
-            <Whatsapp className="size-5 fill-white" />
-            Hubungi via WhatsApp
-          </a>
+          {/* Action CTA Buttons */}
+          <div className="mt-6 flex flex-col sm:flex-row gap-3">
+            <button
+              onClick={handleBookingClick}
+              className="flex-1 py-3.5 bg-[#006bff] hover:bg-[#005ad4] text-white rounded-2xl text-xs font-extrabold uppercase tracking-wider transition-all duration-300 shadow-md shadow-[#006bff]/15 flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.01] active:scale-[0.99] border border-transparent focus:outline-none"
+            >
+              <Calendar size={16} />
+              Pesan Sekarang
+            </button>
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 py-3.5 bg-[#25D366] hover:bg-[#20ba5a] text-white rounded-2xl text-xs font-extrabold uppercase tracking-wider transition-all duration-300 shadow-md shadow-[#25D366]/15 flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.01] active:scale-[0.99] border border-transparent text-center"
+            >
+              <Whatsapp className="size-5 fill-white" />
+              Tanya WhatsApp
+            </a>
+          </div>
         </div>
       </div>
     </div>

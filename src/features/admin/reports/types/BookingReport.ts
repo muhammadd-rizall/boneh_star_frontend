@@ -36,7 +36,7 @@ export interface BookingReportFilters {
   start_date: string;
   end_date: string;
   status?: string;
-  scope?: 'internal' | 'external';
+  scope?: 'inside' | 'outside';
 }
 
 export interface BookingReportApiResponse {

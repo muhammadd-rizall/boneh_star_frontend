@@ -3,6 +3,7 @@ import type { Column } from "@/components/ui/DataTable"
 import { Button } from "@/components/ui/Button"
 import type { Payment } from "@/features/admin/payments/types/Payment"
 import { Eye, CheckCircle, Trash2, Receipt, RotateCcw } from "lucide-react"
+import { formatDateDMY } from "@/utils/formatter"
 
 interface PaymentTableProps {
   data: Payment[]
@@ -36,7 +37,7 @@ export default function PaymentTable({
               {row.transaction?.invoice_number || "N/A"}
             </span>
             <span className="text-xs text-slate-500">
-              {row.payment_type.toUpperCase()} - {new Date(row.payment_date).toLocaleDateString()}
+              {row.payment_type.toUpperCase()} - {formatDateDMY(row.payment_date)}
             </span>
           </div>
         </div>

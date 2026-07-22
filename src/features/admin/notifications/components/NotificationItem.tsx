@@ -1,6 +1,7 @@
 import type { Notification } from "@/features/admin/notifications/types/Notification"
 import { Bell, Check, Calendar, Info, AlertTriangle, AlertCircle, ExternalLink, Trash2, CheckSquare } from "lucide-react"
 import { useNavigate } from "react-router-dom"
+import { formatDateDMY } from "@/utils/formatter"
 
 interface NotificationItemProps {
   notification: Notification;
@@ -79,7 +80,7 @@ export default function NotificationItem({ notification, onMarkAsRead, onDelete 
           </div>
           <span className="flex items-center gap-1.5 text-[11px] font-medium text-slate-400 shrink-0">
             <Calendar size={12} />
-            {new Date(notification.created_at).toLocaleDateString()}
+            {formatDateDMY(notification.created_at)}
           </span>
         </div>
         <p className={`text-xs leading-relaxed break-words ${notification.is_read ? "text-slate-500" : "text-slate-600"}`}>

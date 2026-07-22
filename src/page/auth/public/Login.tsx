@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { AlertCircle, Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { useCustomerAuthStore } from "@/features/auth/public";
@@ -43,6 +43,8 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
 
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirect = searchParams.get("redirect");
   const login = useCustomerAuthStore((state) => state.login);
   const { profile: companyProfile } = useCompanyProfile();
 
@@ -55,7 +57,7 @@ export default function LoginPage() {
 
     try {
       await login({ email, password });
-      navigate("/customer/bookings");
+      navigate(redirect || "/customer/bookings");
     } catch (err: unknown) {
       const apiError = err as ApiError;
       setError(apiError.response?.data?.message || "Email atau password salah.");

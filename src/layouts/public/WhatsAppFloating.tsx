@@ -24,7 +24,7 @@ export default function WhatsAppFloating({ whatsapp }: WhatsAppFloatingProps) {
             <div className="min-w-0">
               <div className="mb-1 flex items-center gap-2">
                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#25D366] text-white">
-                  <Whatsapp width={17} height={17} />
+                  <Whatsapp className="whatsapp-floating-icon" width={17} height={17} />
                 </span>
                 <h3 className="truncate text-base font-bold text-midnight-indigo">
                   Chat WhatsApp
@@ -54,7 +54,7 @@ export default function WhatsAppFloating({ whatsapp }: WhatsAppFloatingProps) {
                 className="group flex items-center gap-3 rounded-xl border border-transparent p-3 transition-all duration-200 hover:border-[#25D366]/30 hover:bg-[#25D366]/10 focus:outline-none focus:ring-2 focus:ring-[#25D366]/30"
               >
                 <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#25D366]/15 text-[#128C7E] transition-colors group-hover:bg-[#25D366] group-hover:text-white">
-                  <Whatsapp width={20} height={20} />
+                  <Whatsapp className="whatsapp-floating-icon" width={20} height={20} />
                 </div>
                 <div className="min-w-0 flex-1">
                   <span className="block text-xs font-semibold uppercase tracking-[0.08em] text-slate-blue transition-colors group-hover:text-[#128C7E]">

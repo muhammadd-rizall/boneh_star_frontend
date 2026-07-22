@@ -82,7 +82,7 @@ export default function ActivityTypeForm({ activityType, onSuccess, onCancel }: 
         <div className="flex flex-col gap-2">
           <label className="text-sm font-bold text-midnight-indigo">Gambar / Ikon (Opsional)</label>
           {imagePreview ? (
-            <div className="relative w-full h-48 rounded-xl overflow-hidden border border-platinum-tint group">
+            <div className="relative w-full h-[192px] rounded-xl overflow-hidden border border-platinum-tint group">
               <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-midnight-indigo/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                 <Button

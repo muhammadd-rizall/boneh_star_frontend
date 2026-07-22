@@ -3,6 +3,7 @@ import {
   BusFront,
   Mail,
   MapPin,
+  Globe,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
@@ -10,9 +11,17 @@ import {
   normalizeWhatsApp,
   normalizeSocialMedia,
   resolveMediaUrl,
-  getSocialIcon,
 } from "@/features/admin/company-profile/utils/companyProfileUtils";
-import { Whatsapp } from "@thesvg/react";
+import {
+  Youtube,
+  Instagram,
+  Facebook,
+  Tiktok,
+  Threads,
+  X,
+  Whatsapp,
+  Linkedin,
+} from "@thesvg/react";
 
 interface FooterProps {
   companyProfile: Pick<
@@ -25,6 +34,71 @@ export default function Footer({ companyProfile }: FooterProps) {
   const whatsappNumbers = normalizeWhatsApp(companyProfile.whatsapp);
   const socialMedias = normalizeSocialMedia(companyProfile.social_media);
   const logoUrl = resolveMediaUrl(companyProfile.logo);
+
+  const localGetSocialIcon = (platform: string) => {
+    const p = platform.toLowerCase();
+    if (p.includes("instagram")) {
+      return {
+        icon: Instagram,
+        className: "instagram-icon",
+        hoverBg: "hover:bg-pink-50 hover:border-pink-200",
+      };
+    }
+    if (p.includes("facebook")) {
+      return {
+        icon: Facebook,
+        className: "facebook-icon",
+        hoverBg: "hover:bg-blue-50 hover:border-blue-200",
+      };
+    }
+    if (p.includes("twitter") || p.includes("x.com")) {
+      return {
+        icon: X,
+        className: "x-icon",
+        hoverBg: "hover:bg-slate-100 hover:border-slate-300",
+      };
+    }
+    if (p.includes("youtube")) {
+      return {
+        icon: Youtube,
+        className: "youtube-icon",
+        hoverBg: "hover:bg-red-50 hover:border-red-200",
+      };
+    }
+    if (p.includes("tiktok")) {
+      return {
+        icon: Tiktok,
+        className: "tiktok-icon",
+        hoverBg: "hover:bg-slate-100 hover:border-slate-300",
+      };
+    }
+    if (p.includes("threads")) {
+      return {
+        icon: Threads,
+        className: "threads-icon",
+        hoverBg: "hover:bg-slate-100 hover:border-slate-300",
+      };
+    }
+    if (p.includes("linkedin")) {
+      return {
+        icon: Linkedin,
+        className: "linkedin-icon",
+        hoverBg: "hover:bg-blue-50 hover:border-blue-200",
+      };
+    }
+    if (p.includes("whatsapp") || p.includes("wa.me")) {
+      return {
+        icon: Whatsapp,
+        className: "whatsapp-icon",
+        hoverBg: "hover:bg-emerald-50 hover:border-emerald-200",
+      };
+    }
+    return {
+      icon: Globe,
+      className: "text-slate-400",
+      hoverBg: "hover:bg-slate-50 hover:border-slate-300",
+    };
+  };
 
   const footerMenu = [
     { label: "Home", href: "/" },
@@ -76,17 +150,17 @@ export default function Footer({ companyProfile }: FooterProps) {
               {/* Social Media Circular Buttons */}
               <div className="flex items-center gap-2.5">
                 {socialMedias.map((social, idx) => {
-                  const Icon = getSocialIcon(social.platform);
+                  const { icon: Icon, className: iconClass, hoverBg } = localGetSocialIcon(social.platform);
                   return (
                     <a
                       key={idx}
                       href={social.url}
                       target="_blank"
                       rel="noreferrer"
-                      className="flex h-9 w-9 items-center justify-center rounded-full bg-white border border-slate-200 text-slate-400 transition-all duration-200 hover:bg-[#006bff] hover:text-white hover:border-[#006bff] hover:scale-105 active:scale-95 shadow-sm"
+                      className={`group flex h-9 w-9 items-center justify-center rounded-full bg-white border border-slate-200 transition-all duration-200 ${hoverBg} hover:scale-105 active:scale-95 shadow-sm`}
                       aria-label={social.platform}
                     >
-                      <Icon className="size-4 fill-current [&_path]:fill-current" />
+                      <Icon className={`size-[18px] ${iconClass}`} />
                     </a>
                   );
                 })}

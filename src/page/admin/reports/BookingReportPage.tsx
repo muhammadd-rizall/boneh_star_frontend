@@ -40,11 +40,26 @@ export default function BookingReportPage() {
 
   if (error) return <ErrorState message={error} onRetry={refetch} />;
 
+  const formatDateIndo = (dateStr?: string) => {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return dateStr;
+    const months = [
+      "Januari", "Februari", "Maret", "April", "Mei", "Juni", 
+      "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+    ];
+    return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
+  };
+
   return (
     <div className="flex flex-col gap-8">
       <PageHeader
         title="Laporan Pemesanan"
-        subtitle={data ? `Periode Laporan: ${data.period.start_date} s/d ${data.period.end_date}` : "Statistik pemesanan armada"}
+        subtitle={
+          filters.start_date && filters.end_date 
+            ? `Periode Laporan: ${formatDateIndo(filters.start_date)} s/d ${formatDateIndo(filters.end_date)}`
+            : "Statistik pemesanan armada"
+        }
         badge="Laporan"
         actions={
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">

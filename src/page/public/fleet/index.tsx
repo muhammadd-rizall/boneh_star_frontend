@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import PublicLayout from "@/layouts/public/PublicLayout";
 import { useFleetData } from "@/features/public/fleet/hooks/useFleetData";
 import { 
@@ -22,6 +22,12 @@ import { buildWhatsAppHref } from "@/features/admin/company-profile/utils/compan
 
 const PER_PAGE = 9;
 
+const sortOptions = [
+  { value: "latest", label: "Terbaru" },
+  { value: "seats-asc", label: "Kursi Terkecil" },
+  { value: "seats-desc", label: "Kursi Terbesar" },
+];
+
 export default function FleetPage() {
   const { buses, categories, loading } = useFleetData();
   const { profile } = usePublicCompanyProfile();
@@ -31,6 +37,8 @@ export default function FleetPage() {
   const [selectedBus, setSelectedBus] = useState<Bus | null>(null);
   const [sortBy, setSortBy] = useState("latest");
   const [visibleCount, setVisibleCount] = useState(PER_PAGE);
+  const [isSortOpen, setIsSortOpen] = useState(false);
+  const sortRef = useRef<HTMLDivElement>(null);
 
   const filtered = useMemo(() => {
     let result = [...buses];
@@ -66,6 +74,18 @@ export default function FleetPage() {
   useEffect(() => {
     setVisibleCount(PER_PAGE);
   }, [search, selectedCategory, sortBy]);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (sortRef.current && !sortRef.current.contains(event.target as Node)) {
+        setIsSortOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const visibleBuses = filtered.slice(0, visibleCount);
   const remaining = filtered.length - visibleCount;
@@ -214,20 +234,45 @@ export default function FleetPage() {
                 </div>
 
                 {/* Sort selector */}
-                <div className="relative flex items-center bg-slate-50 border border-slate-150 rounded-2xl px-4 py-2.5 w-full sm:w-auto min-w-[150px]">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-blue/60 mr-2 shrink-0">
-                    Urutkan:
-                  </span>
-                  <select
-                    className="bg-transparent text-xs font-bold text-midnight-indigo focus:outline-none appearance-none cursor-pointer pr-5 w-full"
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
+                <div ref={sortRef} className="relative w-full sm:w-auto">
+                  <button
+                    type="button"
+                    onClick={() => setIsSortOpen(!isSortOpen)}
+                    className="flex items-center justify-between bg-slate-50 border border-slate-150 hover:bg-slate-100/50 rounded-2xl px-4 py-2.5 w-full sm:w-auto min-w-[170px] text-xs font-bold text-midnight-indigo transition-all cursor-pointer text-left focus:outline-none"
                   >
-                    <option value="latest">Terbaru</option>
-                    <option value="seats-asc">Kursi Terkecil</option>
-                    <option value="seats-desc">Kursi Terbesar</option>
-                  </select>
-                  <ChevronDown size={13} className="absolute right-4 text-slate-blue pointer-events-none" />
+                    <div className="flex items-center">
+                      <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-blue/60 mr-2 shrink-0">
+                        Urutkan:
+                      </span>
+                      <span>{sortOptions.find(opt => opt.value === sortBy)?.label}</span>
+                    </div>
+                    <ChevronDown size={13} className={`text-slate-blue transition-transform duration-200 shrink-0 ml-2 ${isSortOpen ? "rotate-180" : ""}`} />
+                  </button>
+
+                  {isSortOpen && (
+                    <div className="absolute right-0 top-full mt-2 w-full sm:w-[170px] bg-white border border-slate-100 rounded-2xl shadow-xl py-1.5 z-20 animate-in fade-in slide-in-from-top-2 duration-200">
+                      {sortOptions.map((opt) => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          onClick={() => {
+                            setSortBy(opt.value);
+                            setIsSortOpen(false);
+                          }}
+                          className={`w-full text-left px-4 py-2.5 text-xs font-bold transition-colors flex items-center justify-between ${
+                            sortBy === opt.value
+                              ? "bg-action-blue/10 text-action-blue"
+                              : "text-slate-blue hover:bg-slate-50 hover:text-midnight-indigo"
+                          }`}
+                        >
+                          <span>{opt.label}</span>
+                          {sortBy === opt.value && (
+                            <span className="w-1.5 h-1.5 rounded-full bg-action-blue" />
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {hasFilters && (
@@ -289,8 +334,8 @@ export default function FleetPage() {
               {/* Left Section: Icon and Content */}
               <div className="flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left w-full md:w-auto">
                 {/* Icon Circle (Glassmorphism) */}
-                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/15 shadow-inner">
-                  <Phone size={28} className="text-white" strokeWidth={1.8} />
+                <div className="flex h-[50px] w-[50px] shrink-0 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/15 shadow-inner">
+                  <Phone size={26} className="text-white" strokeWidth={1.8} />
                 </div>
                 
                 {/* Text Content */}

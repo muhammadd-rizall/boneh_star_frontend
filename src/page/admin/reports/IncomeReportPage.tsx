@@ -42,9 +42,22 @@ export default function IncomeReportPage() {
 
   if (error) return <ErrorState message={error} onRetry={refetch} />;
 
-  const periodText = data 
-    ? `${data.period.month ? formatMonth(data.period.month) + ' ' : ''}${data.period.year}`
-    : "Ringkasan Pendapatan";
+  const formatDateIndo = (dateStr?: string) => {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return dateStr;
+    const months = [
+      "Januari", "Februari", "Maret", "April", "Mei", "Juni", 
+      "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+    ];
+    return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
+  };
+
+  const periodText = (filters.start_date && filters.end_date)
+    ? `${formatDateIndo(filters.start_date)} s/d ${formatDateIndo(filters.end_date)}`
+    : data 
+      ? `${data.period.month ? formatMonth(data.period.month) + ' ' : ''}${data.period.year}`
+      : "Ringkasan Pendapatan";
 
   return (
     <div className="flex flex-col gap-8">
@@ -122,10 +135,8 @@ export default function IncomeReportPage() {
         <>
           <IncomeReportSummary summary={data.statistics.summary} />
           
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-            <div className="lg:col-span-2">
-               <IncomeReportCharts statistics={data.statistics} />
-            </div>
+          <div className="flex flex-col gap-8">
+            <IncomeReportCharts statistics={data.statistics} />
             
             <OutstandingList data={data.statistics.outstanding_list} loading={loading} />
             

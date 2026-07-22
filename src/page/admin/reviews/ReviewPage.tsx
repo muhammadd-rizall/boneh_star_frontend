@@ -1,11 +1,10 @@
-import { useState } from "react"
+import React, { useState, useRef } from "react"
 import { 
   ReviewTable, 
   useReviews, 
   type Review 
 } from "@/features/admin/reviews"
 import { Button } from "@/components/ui/Button"
-import { Input } from "@/components/ui/Input"
 import { CustomSelect as Select } from "@/components/ui/CustomSelect"
 import { Card } from "@/components/ui/Card"
 import { PageHeader, StatCard, StatGrid, ErrorBanner } from "@/components/ui/PageComponents"
@@ -29,6 +28,30 @@ export default function ReviewPage() {
   const [reviewToAction, setReviewToAction] = useState<Review | null>(null)
   const [actionLoading, setActionLoading] = useState(false)
   const showSuccess = useToastStore(state => state.showSuccess)
+
+  const startRef = useRef<HTMLInputElement>(null)
+  const endRef = useRef<HTMLInputElement>(null)
+
+  const formatDateIndo = (dateStr?: string) => {
+    if (!dateStr) return "Pilih tanggal"
+    const date = new Date(dateStr)
+    if (isNaN(date.getTime())) return dateStr
+    const months = [
+      "Jan", "Feb", "Mar", "Apr", "Mei", "Jun", 
+      "Jul", "Agu", "Sep", "Okt", "Nov", "Des"
+    ]
+    return `${date.getDate().toString().padStart(2, '0')} ${months[date.getMonth()]} ${date.getFullYear()}`
+  }
+
+  const handleOpenPicker = (ref: React.RefObject<HTMLInputElement | null>) => {
+    if (ref.current) {
+      try {
+        ref.current.showPicker()
+      } catch (err) {
+        ref.current.click()
+      }
+    }
+  }
 
   const runAction = async (fn: () => Promise<void>, closeDialog: () => void, successMsg?: string) => {
     setActionLoading(true)
@@ -71,20 +94,48 @@ export default function ReviewPage() {
       {/* Filters */}
       <Card padding="md" className="mb-4">
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 items-end">
-          <Input 
-            label="Dari Tanggal" 
-            type="date" 
-            value={params.start_date || ''} 
-            onChange={e => updateParams({ start_date: e.target.value })}
-            icon={Calendar}
-          />
-          <Input 
-            label="Sampai Tanggal" 
-            type="date" 
-            value={params.end_date || ''} 
-            onChange={e => updateParams({ end_date: e.target.value })}
-            icon={Calendar}
-          />
+          {/* Dari Tanggal */}
+          <div className="flex flex-col gap-2 w-full">
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-0.5">Dari Tanggal</label>
+            <div 
+              onClick={() => handleOpenPicker(startRef)}
+              className="relative flex h-[52px] cursor-pointer items-center justify-between rounded-xl border border-slate-200 bg-white px-4 transition-all focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-100 hover:border-slate-300"
+            >
+              <Calendar className="h-5 w-5 text-slate-400 shrink-0" />
+              <span className="text-sm font-semibold text-slate-700">{formatDateIndo(params.start_date)}</span>
+              <Calendar className="h-5 w-5 text-slate-400 shrink-0" />
+              <input
+                ref={startRef}
+                type="date"
+                value={params.start_date || ""}
+                onChange={(e) => updateParams({ start_date: e.target.value || undefined })}
+                onClick={(e) => { try { e.currentTarget.showPicker(); } catch (err) {} }}
+                className="absolute inset-0 h-full w-full pointer-events-none opacity-0"
+              />
+            </div>
+          </div>
+
+          {/* Sampai Tanggal */}
+          <div className="flex flex-col gap-2 w-full">
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-0.5">Sampai Tanggal</label>
+            <div 
+              onClick={() => handleOpenPicker(endRef)}
+              className="relative flex h-[52px] cursor-pointer items-center justify-between rounded-xl border border-slate-200 bg-white px-4 transition-all focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-100 hover:border-slate-300"
+            >
+              <Calendar className="h-5 w-5 text-slate-400 shrink-0" />
+              <span className="text-sm font-semibold text-slate-700">{formatDateIndo(params.end_date)}</span>
+              <Calendar className="h-5 w-5 text-slate-400 shrink-0" />
+              <input
+                ref={endRef}
+                type="date"
+                value={params.end_date || ""}
+                onChange={(e) => updateParams({ end_date: e.target.value || undefined })}
+                onClick={(e) => { try { e.currentTarget.showPicker(); } catch (err) {} }}
+                className="absolute inset-0 h-full w-full pointer-events-none opacity-0"
+              />
+            </div>
+          </div>
+
           <Select 
             label="Rating"
             placeholder="Semua Rating"

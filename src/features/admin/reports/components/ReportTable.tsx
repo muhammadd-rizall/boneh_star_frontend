@@ -81,12 +81,12 @@ export default function ReportTable({ data, loading }: ReportTableProps) {
   ];
 
   return (
-    <div className="rounded-[32px] border border-platinum-tint bg-white overflow-hidden shadow-card">
-      <div className="p-8 border-b border-platinum-tint/50">
+    <div className="rounded-[24px] border border-platinum-tint bg-white overflow-hidden shadow-card">
+      <div className="px-6 pt-6 pb-5 border-b border-platinum-tint/50">
         <h3 className="text-xl font-bold text-midnight-indigo tracking-tight">Rincian Item Laporan</h3>
         <p className="text-sm font-medium text-slate-blue opacity-60 mt-1">Daftar lengkap transaksi dalam rentang waktu yang dipilih</p>
       </div>
-      <DataTable columns={columns} data={data} loading={loading} paginated />
+      <DataTable columns={columns} data={data} loading={loading} paginated className="border-none shadow-none rounded-none" />
     </div>
   );
 }

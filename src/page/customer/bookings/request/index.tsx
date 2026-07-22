@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import CustomerLayout from '@/layouts/customer/CustomerLayout';
 import { bookingService } from '@/features/customer/bookings/services/BookingService';
 import { publicService } from '@/features/public/shared/services/publicService';
@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import type { ActivityType, RouteType, BusCategory, Bus } from '@/types/Database';
 import { useToastStore } from '@/store/useToastStore';
+import { formatDateDMY } from '@/utils/formatter';
 
 // ── Step config ───────────────────────────────────────────────────────────────
 const STEPS = [
@@ -21,6 +22,9 @@ const STEPS = [
 
 export default function BookingRequestPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const initialBusId = searchParams.get('bus_id');
+
   const { showSuccess, showError } = useToastStore();
   const [currentStep, setCurrentStep] = React.useState<number>(1);
   const [activities, setActivities] = React.useState<ActivityType[]>([]);
@@ -39,12 +43,14 @@ export default function BookingRequestPage() {
     origin: '',
     full_route: '',
     passenger_count: 1,
-    bus_count_requested: 1,
+    bus_count_requested: initialBusId ? 1 : 1,
     special_notes: '',
   });
 
   // Selected Bus IDs
-  const [selectedBusIds, setSelectedBusIds] = React.useState<string[]>([]);
+  const [selectedBusIds, setSelectedBusIds] = React.useState<string[]>(
+    initialBusId ? [initialBusId] : []
+  );
   // Category Filter for Step 2
   const [activeCategoryFilter, setActiveCategoryFilter] = React.useState<string>('all');
 
@@ -303,27 +309,39 @@ export default function BookingRequestPage() {
                   {/* Tanggal Berangkat + Kembali */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <FormGroup label="Tanggal Berangkat" required>
-                      <div className="relative">
-                        <Calendar size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-steel-gray pointer-events-none" />
+                      <div className="relative min-h-[42px]">
                         <input
                           type="date"
-                          className={`${inputClass} pl-9`}
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 peer"
                           value={formData.departure_date}
                           onChange={e => setFormData({ ...formData, departure_date: e.target.value })}
+                          onClick={e => { try { e.currentTarget.showPicker(); } catch (err) {} }}
                           required
                         />
+                        <div className="pointer-events-none w-full rounded-xl border border-pale-gray bg-white py-2.5 pl-9 pr-4 text-xs font-bold text-gray-800 transition-all flex items-center min-h-[42px] peer-focus:border-action-blue peer-focus:ring-2 peer-focus:ring-action-blue/10 hover:border-slate-300">
+                          <Calendar size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-steel-gray" />
+                          <span className={formData.departure_date ? "text-gray-800" : "text-gray-400 font-normal"}>
+                            {formData.departure_date ? formatDateDMY(formData.departure_date) : "Pilih tanggal"}
+                          </span>
+                        </div>
                       </div>
                     </FormGroup>
 
                     <FormGroup label="Tanggal Kembali (Opsional)">
-                      <div className="relative">
-                        <Calendar size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-steel-gray pointer-events-none" />
+                      <div className="relative min-h-[42px]">
                         <input
                           type="date"
-                          className={`${inputClass} pl-9`}
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 peer"
                           value={formData.return_date}
                           onChange={e => setFormData({ ...formData, return_date: e.target.value })}
+                          onClick={e => { try { e.currentTarget.showPicker(); } catch (err) {} }}
                         />
+                        <div className="pointer-events-none w-full rounded-xl border border-pale-gray bg-white py-2.5 pl-9 pr-4 text-xs font-bold text-gray-800 transition-all flex items-center min-h-[42px] peer-focus:border-action-blue peer-focus:ring-2 peer-focus:ring-action-blue/10 hover:border-slate-300">
+                          <Calendar size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-steel-gray" />
+                          <span className={formData.return_date ? "text-gray-800" : "text-gray-400 font-normal"}>
+                            {formData.return_date ? formatDateDMY(formData.return_date) : "Pilih tanggal"}
+                          </span>
+                        </div>
                       </div>
                     </FormGroup>
                   </div>
@@ -588,8 +606,8 @@ export default function BookingRequestPage() {
                       <ConfItem label="Tipe Rute" value={selectedRoute?.name} />
                       <ConfItem label="Tujuan / Rute" value={formData.full_route} />
                       <ConfItem label="Keberangkatan" value={formData.origin} />
-                      <ConfItem label="Tanggal Berangkat" value={formData.departure_date} />
-                      <ConfItem label="Tanggal Kembali" value={formData.return_date || '—'} />
+                      <ConfItem label="Tanggal Berangkat" value={formData.departure_date ? formatDateDMY(formData.departure_date) : ''} />
+                      <ConfItem label="Tanggal Kembali" value={formData.return_date ? formatDateDMY(formData.return_date) : '—'} />
                       <ConfItem label="Jumlah Peserta" value={`${formData.passenger_count} Orang`} />
                       <ConfItem label="Jumlah Bus" value={`${formData.bus_count_requested} Unit`} />
                       
@@ -707,7 +725,7 @@ export default function BookingRequestPage() {
                 {/* Summary fields */}
                 <div className="px-4 py-4 flex flex-col gap-3">
                   <SummaryRow icon={Compass}          label="Jenis Kegiatan"    value={selectedActivity?.name} />
-                  <SummaryRow icon={Calendar}          label="Tanggal Berangkat" value={formData.departure_date} />
+                  <SummaryRow icon={Calendar}          label="Tanggal Berangkat" value={formData.departure_date ? formatDateDMY(formData.departure_date) : undefined} />
                   <SummaryRow icon={MapPin}            label="Tujuan / Rute"     value={formData.full_route} />
                   <SummaryRow icon={Users}             label="Jumlah Peserta"    value={formData.passenger_count ? `${formData.passenger_count} orang` : undefined} />
                   <SummaryRow icon={BusIcon}           label="Jumlah Bus"        value={formData.bus_count_requested ? `${formData.bus_count_requested} unit` : undefined} />
