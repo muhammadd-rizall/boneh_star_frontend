@@ -115,6 +115,17 @@ export function normalizeSocialMedia(socialMedia: unknown): SocialMedia[] {
  */
 export function resolveMediaUrl(path: string | null | undefined): string {
   if (!path) return "";
+
+  // Filter out dead placeholder domains immediately to avoid 30s network timeout delay
+  if (
+    path.includes("via.placeholder.com") ||
+    path.includes("lorempixel.com") ||
+    path.includes("placeholder.com") ||
+    path.includes("picsum.photos")
+  ) {
+    return "";
+  }
+
   // Jika sudah berupa URL (http/https), gunakan langsung
   if (path.startsWith("http")) return path;
   
@@ -124,11 +135,16 @@ export function resolveMediaUrl(path: string | null | undefined): string {
   return `${baseUrl}/storage/${path.replace(/^\//, "")}`;
 }
 
-export function buildWhatsAppHref(whatsapp: string): string {
+export function buildWhatsAppHref(whatsapp: string, message?: string): string {
   if (!whatsapp) return "#";
   const cleanNumber = String(whatsapp).replace(/\D/g, "");
+  if (!cleanNumber) return "#";
   const formattedNumber = cleanNumber.startsWith("0") 
     ? "62" + cleanNumber.slice(1) 
     : cleanNumber.startsWith("62") ? cleanNumber : "62" + cleanNumber;
+  
+  if (message) {
+    return `https://wa.me/${formattedNumber}?text=${encodeURIComponent(message)}`;
+  }
   return `https://wa.me/${formattedNumber}`;
 }

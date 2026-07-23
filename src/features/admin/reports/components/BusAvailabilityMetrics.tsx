@@ -1,4 +1,3 @@
-import React from 'react';
 import type { BusAvailability } from "../types/BusAvailabilityReport";
 import { Bus, CheckCircle2, Calendar, Wrench, XCircle } from "lucide-react";
 
@@ -77,9 +76,9 @@ export default function BusAvailabilityMetrics({ data, period }: BusAvailability
       value: `${totalBuses}`,
       subtitle: "Unit bus aktif",
       icon: Bus,
-      iconColor: "text-emerald-600",
-      bgColor: "bg-emerald-50/70 border border-emerald-100/50",
-      iconBg: "bg-emerald-50 border border-emerald-100",
+      iconColor: "text-blue-600",
+      bgColor: "bg-blue-50/70 border border-blue-100/50",
+      iconBg: "bg-blue-50 border border-blue-100",
     },
     {
       title: "Tersedia",
@@ -95,18 +94,18 @@ export default function BusAvailabilityMetrics({ data, period }: BusAvailability
       value: `${bookedDays} Hari`,
       subtitle: "Total hari dipesan",
       icon: Calendar,
-      iconColor: "text-indigo-600",
-      bgColor: "bg-indigo-50/50 border border-indigo-100/50",
-      iconBg: "bg-indigo-50 border border-indigo-100",
+      iconColor: "text-purple-600",
+      bgColor: "bg-purple-50/50 border border-purple-100/50",
+      iconBg: "bg-purple-50 border border-purple-100",
     },
     {
       title: "Maintenance",
       value: `${maintenanceDays} Hari`,
       subtitle: "Dalam perawatan",
       icon: Wrench,
-      iconColor: "text-orange-500",
-      bgColor: "bg-orange-50/50 border border-orange-100/50",
-      iconBg: "bg-orange-50 border border-orange-100",
+      iconColor: "text-amber-600",
+      bgColor: "bg-amber-50/50 border border-amber-100/50",
+      iconBg: "bg-amber-50 border border-amber-100",
     },
     {
       title: "Tidak Tersedia",

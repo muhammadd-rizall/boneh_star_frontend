@@ -6,7 +6,7 @@ import { publicService } from '@/features/public/shared/services/publicService';
 import {
   ArrowLeft, ArrowRight, Compass, Bus as BusIcon, Users, FileText,
   Calendar, MapPin, AlertCircle, Shield, CheckCircle2,
-  CircleDollarSign, Minus, Plus, Check, Info, Info as InfoIcon
+  CircleDollarSign, Minus, Plus, Check, Info as InfoIcon
 } from 'lucide-react';
 import type { ActivityType, RouteType, BusCategory, Bus } from '@/types/Database';
 import { useToastStore } from '@/store/useToastStore';
@@ -624,6 +624,44 @@ export default function BookingRequestPage() {
                         <p className="font-bold text-gray-700 mb-1">Catatan Khusus</p>
                         <p className="text-slate-blue italic whitespace-pre-line leading-relaxed">
                           {formData.special_notes.trim() || 'Tidak ada catatan khusus.'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Syarat & Ketentuan Sewa Bus */}
+                  <div className="border border-pale-gray rounded-2xl p-4 bg-cloud-mist/20 flex flex-col gap-3">
+                    <div className="flex items-center gap-2 text-xs font-bold text-gray-900 border-b border-pale-gray pb-2">
+                      <InfoIcon size={15} className="text-action-blue shrink-0" />
+                      <span>Ringkasan Syarat &amp; Ketentuan Sewa Bus</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-[11px]">
+                      {/* Inclusions / Exclusions */}
+                      <div className="bg-white p-3 rounded-xl border border-pale-gray flex flex-col gap-1">
+                        <span className="font-bold text-action-blue">Fasilitas Tarif</span>
+                        <p className="text-gray-700 leading-tight">
+                          <strong className="text-emerald-600">✓ Sudah termasuk:</strong> Bus, Driver &amp; BBM.<br />
+                          <strong className="text-rose-500">✕ Belum termasuk:</strong> Tol, Parkir, Tiket Wisata/Ferry &amp; Tips Driver.
+                        </p>
+                      </div>
+
+                      {/* DP & Pelunasan */}
+                      <div className="bg-white p-3 rounded-xl border border-pale-gray flex flex-col gap-1">
+                        <span className="font-bold text-action-blue">Ketentuan DP &amp; Pelunasan</span>
+                        <p className="text-gray-700 leading-tight">
+                          • DP Min. <strong>30%</strong> dari total sewa disetujui.<br />
+                          • Pelunasan sisa <strong>70%</strong> maksimal <strong>H-3</strong> sebelum keberangkatan.
+                        </p>
+                      </div>
+
+                      {/* Kebijakan Pembatalan / Refund */}
+                      <div className="bg-white p-3 rounded-xl border border-pale-gray flex flex-col gap-1">
+                        <span className="font-bold text-action-blue">Kebijakan Pembatalan / Refund</span>
+                        <p className="text-gray-700 leading-tight">
+                          • Pembatalan &ge; H-7: Refund <strong>50% DP</strong>.<br />
+                          • Pembatalan H-3 s/d H-6: DP <strong>hangus (0%)</strong>.<br />
+                          • Reschedule gratis jika diajukan &ge; H-7.
                         </p>
                       </div>
                     </div>

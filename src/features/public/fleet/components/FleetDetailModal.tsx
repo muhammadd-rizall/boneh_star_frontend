@@ -63,10 +63,11 @@ export default function FleetDetailModal({ bus, onClose }: FleetDetailModalProps
   const capacityLabel = getCapacityLabel(bus);
 
   const whatsappNumbers = normalizeWhatsApp(profile?.whatsapp);
-  const primaryWhatsApp = whatsappNumbers[0];
-  const whatsappHref = primaryWhatsApp
-    ? `${buildWhatsAppHref(primaryWhatsApp)}?text=Halo%20Admin%20Boneh%20Star,%20saya%20ingin%20tanya%20sewa%20armada%2520${encodeURIComponent(bus.name)}`
-    : `https://wa.me/6281234567890?text=Halo%20Admin%20Boneh%20Star,%20saya%20ingin%20tanya%20sewa%20armada%2520${encodeURIComponent(bus.name)}`;
+  const primaryWhatsApp = whatsappNumbers[0] || "6281234567890";
+  const whatsappHref = buildWhatsAppHref(
+    primaryWhatsApp,
+    `Halo Admin Boneh Star, saya ingin tanya sewa armada ${bus.name}`
+  );
 
   const handleBookingClick = () => {
     if (isCustomerAuthenticated) {

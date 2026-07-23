@@ -50,6 +50,16 @@ export default function LoginPage() {
 
   const logoUrl = companyProfile ? resolveMediaUrl(companyProfile.logo) : null;
 
+  // Catch error parameter from OAuth redirect
+  React.useEffect(() => {
+    const urlError = searchParams.get("error");
+    if (urlError) {
+      setError(decodeURIComponent(urlError));
+    }
+  }, [searchParams]);
+
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -64,6 +74,14 @@ export default function LoginPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGoogleSignIn = () => {
+    setLoading(true);
+    const backendUrl = import.meta.env.VITE_API_URL 
+      ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "") 
+      : "http://localhost:8000";
+    window.location.href = `${backendUrl}/auth/google/redirect`;
   };
 
   return (
@@ -237,7 +255,9 @@ export default function LoginPage() {
             {/* Google Sign In Button */}
             <button
               type="button"
-              className="flex items-center justify-center gap-2.5 h-12 w-full rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-bold text-[#0f172a] transition-all cursor-pointer shadow-sm hover:border-slate-300"
+              onClick={handleGoogleSignIn}
+              disabled={loading}
+              className="flex items-center justify-center gap-2.5 h-12 w-full rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-bold text-[#0f172a] transition-all cursor-pointer shadow-sm hover:border-slate-300 disabled:opacity-50"
             >
               <GoogleIcon className="size-4.5" />
               <span>Masuk dengan Google</span>

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import type { CSSProperties } from 'react';
 import PublicLayout from "@/layouts/public/PublicLayout";
 import { 
   Hero, 
@@ -75,7 +74,7 @@ export default function HomePage() {
         <WorkingProcessSection />
 
         <div id='testimonials' className='bg-white scroll-mt-24'>
-          <TestimonialsSection />
+          <TestimonialsSection reviews={reviews} />
         </div>
 
         <div className='bg-white'>

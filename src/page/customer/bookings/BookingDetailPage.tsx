@@ -17,9 +17,9 @@ import Loader from '@/components/feedback/Loader';
 import ErrorState from '@/components/feedback/ErrorState';
 import { Modal } from '@/components/ui/Modal';
 import {
-  Calendar, MapPin, Users, Bus, ArrowLeft, Info,
-  FileText, XCircle, FileDown, Star, Route, Hash,
-  CheckCircle2, Clock, Shield, Compass, CircleDollarSign,
+  Calendar, MapPin, Users, Bus, Info,
+  FileText, XCircle, FileDown, Star,
+  CheckCircle2, Clock, Compass, CircleDollarSign,
   MessageCircle, ClipboardList, Check, Quote, Paperclip
 } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/utils/formatter';
@@ -125,7 +125,8 @@ export default function BookingDetailPage() {
   const returnDateReached = (() => {
     const today = new Date();
     today.setHours(0,0,0,0);
-    const returnDate = new Date(booking.return_date);
+    const targetDateStr = booking.return_date || booking.departure_date;
+    const returnDate = new Date(targetDateStr);
     returnDate.setHours(0,0,0,0);
     return today >= returnDate;
   })();
@@ -703,7 +704,7 @@ export default function BookingDetailPage() {
                       <p className="font-bold mb-1">Penyelesaian Perjalanan:</p>
                       <ul className="list-disc pl-3 flex flex-col gap-0.5">
                         <li className={returnDateReached ? "text-emerald-700 font-bold" : "text-amber-850"} style={{ color: returnDateReached ? '#047857' : '#92400e' }}>
-                          Tanggal pulang ({formatDate(booking.return_date)}) telah tiba/lewat {returnDateReached && '✓'}
+                          Tanggal pulang ({booking.return_date ? formatDate(booking.return_date) : formatDate(booking.departure_date)}) telah tiba/lewat {returnDateReached && '✓'}
                         </li>
                         <li className={isFullyPaid ? "text-emerald-700 font-bold" : "text-amber-850"} style={{ color: isFullyPaid ? '#047857' : '#92400e' }}>
                           Pembayaran tagihan sudah lunas {isFullyPaid && '✓'}
@@ -824,15 +825,6 @@ function DetailRow({ icon: Icon, label, value, badge }: { icon: any; label: stri
           )}
         </div>
       </div>
-    </div>
-  );
-}
-
-function ServicePill({ label }: { label: string }) {
-  return (
-    <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-emerald-100 bg-emerald-50/30 text-emerald-700 text-xs font-bold">
-      <Check size={13} className="text-emerald-600" strokeWidth={3} />
-      <span>{label}</span>
     </div>
   );
 }

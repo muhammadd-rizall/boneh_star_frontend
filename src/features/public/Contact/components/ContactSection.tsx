@@ -138,13 +138,12 @@ export default function ContactSection() {
     },
   ];
 
-  // Default Maps Embed URL pointing to Batusangkar
-  const mapsEmbedUrl = (profile as { maps_link?: string }).maps_link && (profile as { maps_link?: string }).maps_link?.includes("embed")
-    ? (profile as { maps_link: string }).maps_link
+  const mapsEmbedUrl = (profile as unknown as Record<string, any>)?.maps_link && (profile as unknown as Record<string, any>)?.maps_link?.includes("embed")
+    ? (profile as unknown as Record<string, any>).maps_link
     : "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.771221782283!2d100.5908051!3d-0.4578135!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2fd52327cb707bb7%3A0xc3cf978c430ad8a7!2sKubu%20Rajo%2C%20Kec.%20Rambatan%2C%20Kabupaten%20Tanah%20Datar%2C%20Sumatera%20Barat!5e0!3m2!1sid!2sid!4v1700000000000!5m2!1sid!2sid";
 
-  const mapsRedirectUrl = (profile as { maps_link?: string }).maps_link && !(profile as { maps_link?: string }).maps_link?.includes("embed")
-    ? (profile as { maps_link: string }).maps_link
+  const mapsRedirectUrl = (profile as unknown as Record<string, any>)?.maps_link && !(profile as unknown as Record<string, any>)?.maps_link?.includes("embed")
+    ? (profile as unknown as Record<string, any>).maps_link
     : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(companyNameVal + " " + addressVal.replace(/\n/g, " "))}`;
 
   return (

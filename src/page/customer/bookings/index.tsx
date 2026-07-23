@@ -9,7 +9,6 @@ import {
   Plus, Briefcase, Clock, CalendarCheck, CheckCircle2,
   ChevronRight, Bus, Shield, MessageCircle,
 } from 'lucide-react';
-import { useCustomerAuthStore } from '@/features/auth/public';
 import { formatCurrency, formatDate } from '@/utils/formatter';
 import type { CustomerBooking } from '@/features/customer/bookings/types/Booking';
 
@@ -26,7 +25,6 @@ export default function BookingIndexPage() {
   const { bookings, loading, error, refresh } = useBookings();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const customer = useCustomerAuthStore((s) => s.user);
 
   const activeTab = searchParams.get('tab') ?? 'stats';
 
@@ -42,7 +40,6 @@ export default function BookingIndexPage() {
 
   const pending   = bookings.filter(b => b.status === 'pending');
   const quoted    = bookings.filter(b => b.status === 'quoted');
-  const active    = bookings.filter(b => ['confirmed', 'ongoing'].includes(b.status));
   const completed = bookings.filter(b => b.status === 'completed');
   const cancelled = bookings.filter(b => b.status === 'cancelled');
 

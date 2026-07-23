@@ -1,5 +1,5 @@
 import { usePublicCompanyProfile } from '@/features/admin/company-profile/hooks/usePublicCompanyProfile';
-import { Bus as BusIcon, Calendar, Users, ArrowRight, ShieldCheck, User, MapPin, Search, ChevronDown, CheckCircle2, AlertCircle, XCircle } from 'lucide-react';
+import { Bus as BusIcon, Calendar, Users, ShieldCheck, User, Search, ChevronDown, CheckCircle2, AlertCircle, XCircle } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
 import type { Bus } from '@/features/admin/buses/types/Bus';

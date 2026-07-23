@@ -39,7 +39,7 @@ export default function ReportFilters({ filters, onFilterChange }: ReportFilters
     return `${date.getDate().toString().padStart(2, '0')} ${months[date.getMonth()]} ${date.getFullYear()}`;
   };
 
-  const handleOpenPicker = (ref: React.RefObject<HTMLInputElement>) => {
+  const handleOpenPicker = (ref: React.RefObject<HTMLInputElement | null>) => {
     if (ref.current) {
       try {
         ref.current.showPicker();

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import type { BusAvailability } from "../types/BusAvailabilityReport";
 import { Card } from '@/components/ui/Card';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Info, Check, Wrench, X } from 'lucide-react';

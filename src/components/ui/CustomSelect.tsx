@@ -40,7 +40,6 @@ export function CustomSelect({
   placeholder = "Pilih opsi...",
   className = "",
   id,
-  required,
   disabled,
 }: SelectProps) {
   const selectId = id || (label ? label.toLowerCase().replace(/\s+/g, "-") : undefined)

@@ -1,4 +1,4 @@
-import React, { ReactNode, useState, useEffect } from "react";
+import { type ReactNode, useState, useEffect } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../public/Header";
 import { usePublicCompanyProfile } from "@/features/admin/company-profile/hooks/usePublicCompanyProfile";

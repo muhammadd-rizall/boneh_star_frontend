@@ -9,6 +9,7 @@ import type {
 
 const ENDPOINTS = {
   LOGIN: '/auth/login',
+  GOOGLE: '/auth/google',
   REGISTER: '/auth/register',
   LOGOUT: '/auth/logout',
   FORGOT_PASSWORD: '/auth/forgot-password',
@@ -18,6 +19,11 @@ const ENDPOINTS = {
 export const authService = {
   login: async (data: LoginFormData): Promise<AuthResponse> => {
     const response = await axios.post(ENDPOINTS.LOGIN, data);
+    return response.data;
+  },
+
+  googleLogin: async (data: { email: string; name: string; google_id?: string; profile_picture?: string }): Promise<AuthResponse> => {
+    const response = await axios.post(ENDPOINTS.GOOGLE, data);
     return response.data;
   },
 

@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-interface Permission {
+export interface Permission {
   id: string
   name: string
   slug: string
@@ -12,6 +12,7 @@ interface Role {
   id: string
   name: string
   slug: string
+  permissions?: Permission[]
 }
 
 interface User {
@@ -66,7 +67,7 @@ export const useAuthStore = create<AuthState>()(
         const { user } = get();
         if (!user || !user.roles) return false;
         return user.roles.some((role) => 
-          role.permissions?.some((p) => p.slug === permissionSlug)
+          role.permissions?.some((p: Permission) => p.slug === permissionSlug)
         );
       },
 

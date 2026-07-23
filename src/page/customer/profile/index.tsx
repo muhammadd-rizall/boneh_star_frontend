@@ -9,9 +9,9 @@ import type { CustomerNotification } from '@/features/customer/notifications/typ
 import Loader from '@/components/feedback/Loader';
 import ErrorState from '@/components/feedback/ErrorState';
 import {
-  User, Mail, Phone, MapPin, Calendar, Camera, Upload,
+  User, Mail, Phone, MapPin, Calendar, Camera,
   Lock, CircleDollarSign, CheckCircle2, Star, Eye, EyeOff,
-  Save, Clock, ArrowRight, Shield, CheckCircle
+  Save, CheckCircle
 } from 'lucide-react';
 import { formatDate, formatCurrency } from '@/utils/formatter';
 import { useToastStore } from '@/store/useToastStore';
@@ -203,7 +203,7 @@ export default function ProfilePage() {
     : '0.0';
 
   // Helper to resolve icon from notification details
-  function getNotificationIcon(title: string, type: string) {
+  function getNotificationIcon(title: string) {
     const t = (title || '').toLowerCase();
     if (t.includes('bayar') || t.includes('pembayaran') || t.includes('invoice') || t.includes('bukti')) {
       return { icon: CheckCircle2, color: 'bg-emerald-50 text-emerald-600' };
@@ -225,7 +225,7 @@ export default function ProfilePage() {
 
   if (notifications.length > 0) {
     notifications.forEach((n) => {
-      const { icon, color } = getNotificationIcon(n.title, n.type);
+      const { icon, color } = getNotificationIcon(n.title);
       activities.push({
         id: n.id,
         title: n.title,
@@ -420,13 +420,14 @@ export default function ProfilePage() {
                   )}
                 </div>
 
-                {/* Small camera badge */}
+                {/* Camera badge button */}
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="absolute bottom-1 right-1 h-8 w-8 rounded-full bg-white border border-pale-gray shadow-md flex items-center justify-center text-slate-blue hover:text-action-blue hover:scale-105 transition-all cursor-pointer"
+                  className="absolute bottom-0 right-0 h-9 w-9 rounded-full bg-[#006bff] hover:bg-[#0052cc] text-white shadow-md border-2 border-white flex items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer z-10"
+                  title="Ubah Foto Profil"
                 >
-                  <Camera size={14} />
+                  <Camera size={18} strokeWidth={2.2} />
                 </button>
               </div>
 
@@ -493,7 +494,7 @@ export default function ProfilePage() {
               <div className="flex flex-col gap-4">
                 {statsLoading ? (
                   <div className="flex justify-center py-4">
-                    <Loader size="sm" />
+                    <Loader />
                   </div>
                 ) : sortedActivities.length === 0 ? (
                   <div className="text-center py-6">

@@ -3,13 +3,11 @@ import PublicLayout from "@/layouts/public/PublicLayout";
 import { useFleetData } from "@/features/public/fleet/hooks/useFleetData";
 import { 
   Bus as BusIcon, 
-  Armchair, 
   X, 
   ChevronDown, 
   ShieldCheck, 
   Users, 
   Phone,
-  ArrowRight,
   Sparkles,
   Search as SearchIcon
 } from "lucide-react";
@@ -61,7 +59,7 @@ export default function FleetPage() {
     
     // Sorting
     if (sortBy === "latest") {
-      result.sort((a, b) => b.id - a.id);
+      result.sort((a, b) => (b.id || '').localeCompare(a.id || ''));
     } else if (sortBy === "seats-asc") {
       result.sort((a, b) => a.seat_count - b.seat_count);
     } else if (sortBy === "seats-desc") {

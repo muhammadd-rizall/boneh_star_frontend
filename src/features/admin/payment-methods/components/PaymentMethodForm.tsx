@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { DialogFooter } from "@/components/ui/Dialog";
-import { CreditCard, Save, User, Hash, CheckCircle2, Circle, XCircle, ClipboardList } from "lucide-react";
+import { CreditCard, Save, User, Hash, CheckCircle2, XCircle, ClipboardList } from "lucide-react";
 import type { PaymentMethod, PaymentMethodFormData } from "../types/PaymentMethod";
 import { paymentMethodService } from "../services/PaymentMethodService";
 import { cn } from "@/lib/utils";

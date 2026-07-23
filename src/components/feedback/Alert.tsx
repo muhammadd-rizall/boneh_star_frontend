@@ -18,7 +18,7 @@ type Props = {
 
 const config: Record<
   Variant,
-  { icon: React.ComponentType<{ size?: number; className?: string }>; bg: string; border: string; text: string; iconColor: string }
+  { icon: React.ComponentType<{ size?: number; className?: string; strokeWidth?: number }>; bg: string; border: string; text: string; iconColor: string }
 > = {
   success: {
     icon: CheckCircle2,

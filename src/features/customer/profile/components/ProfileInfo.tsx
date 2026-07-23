@@ -1,5 +1,5 @@
 import React from 'react';
-import { Mail, Phone, MapPin, Camera, Shield, CheckCircle, Upload } from 'lucide-react';
+import { Mail, Phone, MapPin, Shield, CheckCircle, Upload } from 'lucide-react';
 import type { CustomerProfile } from '../types/Profile';
 import { resolveMediaUrl } from '@/features/admin/company-profile/utils/companyProfileUtils';
 

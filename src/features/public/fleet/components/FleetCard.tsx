@@ -11,7 +11,7 @@ import {
   Music, 
   Sparkles 
 } from "lucide-react";
-import { resolveMediaUrl } from "@/features/admin/company-profile/utils/companyProfileUtils";
+import { resolveMediaUrl, buildWhatsAppHref, normalizeWhatsApp } from "@/features/admin/company-profile/utils/companyProfileUtils";
 import type { Bus } from "@/features/admin/buses/types/Bus";
 import { cn } from "@/lib/utils";
 import { getCapacityLabel } from "../utils/fleetCardUtils";
@@ -52,7 +52,7 @@ export default function FleetCard({
   const facilities = bus.facilities ?? [];
   const capacityLabel = getCapacityLabel(bus);
 
-  const defaultDesc = bus.description || (
+  const defaultDesc = (bus as any).description || bus.notes || (
     bus.category?.name.toLowerCase().includes("big")
       ? "Cocok untuk perjalanan jarak jauh dengan kenyamanan ekstra."
       : bus.category?.name.toLowerCase().includes("medium")
@@ -60,9 +60,12 @@ export default function FleetCard({
       : "Cocok untuk rombongan kecil dan perjalanan dalam kota."
   );
 
-  const whatsappUrl = profile?.whatsapp?.[0]
-    ? `https://wa.me/${profile.whatsapp[0].replace(/[^0-9]/g, "")}?text=Halo%20Admin%20Boneh%20Star,%20saya%20tertarik%20ingin%20tanya%20detail%20menyewa%20armada%20${encodeURIComponent(bus.name)}`
-    : `https://wa.me/62821XXXXXXXX?text=Halo%20Admin%20Boneh%20Star,%20saya%20tertarik%20ingin%20tanya%20detail%20menyewa%20armada%20${encodeURIComponent(bus.name)}`;
+  const whatsappNumbers = normalizeWhatsApp(profile?.whatsapp);
+  const primaryWhatsApp = whatsappNumbers[0] || "62821XXXXXXXX";
+  const whatsappUrl = buildWhatsAppHref(
+    primaryWhatsApp,
+    `Halo Admin Boneh Star, saya tertarik ingin tanya detail menyewa armada ${bus.name}`
+  );
 
   const handleDetailClick = (e: React.MouseEvent) => {
     if (onViewDetail) {

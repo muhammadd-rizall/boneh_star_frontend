@@ -8,7 +8,6 @@ import type { User, UserFormData } from "../types/User";
 import { roleService } from "@/features/admin/roles";
 import type { Role } from "@/features/admin/roles";
 import { User as UserIcon, Mail, Lock, ShieldCheck, Save, XCircle } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 interface UserFormProps {
   user?: User | null;

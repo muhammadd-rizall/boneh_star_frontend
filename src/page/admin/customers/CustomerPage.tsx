@@ -4,7 +4,7 @@ import { Modal } from "@/components/ui/Modal"
 import { ErrorBanner, PageHeader, PageToolbar, StatCard, StatGrid, ViewToggle } from "@/components/ui/PageComponents"
 import { CustomerForm, CustomerTable, useCustomers, useTrashedCustomers, type Customer } from "@/features/admin/customers"
 import { useToastStore } from "@/store/useToastStore"
-import { Heart, Plus, RefreshCcw, UserCheck, UserPlus, Users } from "lucide-react"
+import { Heart, RefreshCcw, UserCheck, UserPlus, Users } from "lucide-react"
 import { useEffect, useState } from "react"
 
 export default function CustomerPage() {

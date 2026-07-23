@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react"
 import { PageHeader, PageToolbar } from "@/components/ui/PageComponents"
-import { Button } from "@/components/ui/Button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/Dialog"
 import { Plus } from "lucide-react"
 import type { Gallery } from "../types/Gallery"

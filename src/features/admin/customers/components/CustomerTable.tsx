@@ -5,6 +5,8 @@ import type { Customer } from "@/features/admin/customers/types/Customer"
 import { Edit, Trash2, Mail, Phone, MapPin, User as UserIcon, RotateCcw } from "lucide-react"
 import { cn } from "@/lib/utils"
 
+import { resolveMediaUrl } from "@/features/admin/company-profile/utils/companyProfileUtils"
+
 interface CustomerTableProps {
   data: Customer[]
   onDelete: (customer: Customer) => void
@@ -28,13 +30,13 @@ export default function CustomerTable({
       accessor: (row) => (
         <div className="flex items-center gap-4 text-left py-1">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-platinum-tint bg-cloud-mist text-slate-blue overflow-hidden shadow-sm">
-            {row.profile_picture ? (
+            {row.profile_picture && resolveMediaUrl(row.profile_picture) ? (
               <img 
-                src={row.profile_picture} 
+                src={resolveMediaUrl(row.profile_picture)} 
                 alt={row.name} 
                 className="h-full w-full object-cover transition-transform hover:scale-110 duration-500"
                 onError={(e) => {
-                  (e.target as HTMLImageElement).src = 'https://ui-avatars.com/api/?background=0B3558&color=fff&name=' + encodeURIComponent(row.name);
+                  (e.target as HTMLImageElement).style.display = 'none';
                 }}
               />
             ) : (

@@ -3,7 +3,7 @@ import PublicLayout from "@/layouts/public/PublicLayout";
 import { usePublicCompanyProfile } from "@/features/admin/company-profile/hooks/usePublicCompanyProfile";
 import { galleryService } from "@/features/admin/galleries/services/GalleryService";
 import type { Gallery } from "@/features/admin/galleries/types/Gallery";
-import { Compass, ChevronRight, ArrowRight, Image as ImageIcon, Calendar, Sparkles, ShieldCheck, Bus, Users, Clock, Headphones, Phone } from "lucide-react";
+import { ChevronRight, ArrowRight, Image as ImageIcon, ShieldCheck, Bus, Users, Clock, Headphones, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useInView } from "@/hooks/useAnimations";
 import type { CSSProperties } from "react";
@@ -50,7 +50,7 @@ export default function AboutPage() {
   };
 
   // Helper to categorize images dynamically
-  const getCategoryForImage = (url: string, title: string, desc: string): string => {
+  const getCategoryForImage = (_url: string, title: string, desc: string): string => {
     const t = `${title} ${desc}`.toLowerCase();
     
     if (t.includes("gathering") || t.includes("kegiatan") || t.includes("acara") || t.includes("petrokimia")) {

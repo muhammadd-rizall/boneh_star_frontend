@@ -4,28 +4,28 @@ import { useInView } from "@/hooks/useAnimations";
 
 const faqs = [
   {
-    question: "Bagaimana cara melakukan pemesanan bus?",
-    answer: "Pemesanan bus dapat dilakukan secara online dengan membuat akun customer terlebih dahulu, kemudian memilih tanggal, tipe bus, dan melengkapi data perjalanan. Anda juga bisa menghubungi tim marketing kami langsung via WhatsApp untuk dipandu."
+    question: "Bagaimana cara melakukan pemesanan bus pariwisata?",
+    answer: "Pemesanan bus dapat dilakukan secara online dengan membuat akun pelanggan terlebih dahulu, mengisi formulir detail perjalanan (tanggal, rute, jumlah peserta, pilihan armada), lalu mengajukan pemesanan. Admin kami akan mengirimkan penawaran resmi beserta rincian harga terbaik."
   },
   {
-    question: "Apakah bisa membatalkan atau reschedule pemesanan?",
-    answer: "Ya, pembatalan atau perubahan jadwal (reschedule) dapat dilakukan dengan menghubungi admin kami. Ketentuan mengenai pengembalian dana (refund) atau pemindahan tanggal disesuaikan dengan kebijakan waktu pembatalan."
+    question: "Apa saja yang sudah dan belum termasuk dalam tarif sewa bus?",
+    answer: "Tarif sewa bus yang ditawarkan sudah termasuk Unit Bus Pariwisata, Jasa Driver & Co-Driver profesional, serta Bahan Bakar Minyak (BBM). Biaya yang belum termasuk meliputi: Biaya Tol, Parkir, Tiket Masuk Objek Wisata, Penyeberangan Kapal (Ferry), dan Tips/Uang Makan Kru Driver."
   },
   {
-    question: "Apakah tersedia layanan untuk luar kota atau luar pulau?",
-    answer: "Tentu saja. Boneh Star menyediakan layanan sewa bus pariwisata baik untuk perjalanan dalam kota, luar kota, antar kota antar provinsi (AKAP), hingga perjalanan lintas pulau sesuai kebutuhan agenda perjalanan Anda."
+    question: "Bagaimana ketentuan DP (Down Payment) dan Pelunasan?",
+    answer: "Pembayaran DP minimal 30% dari total nilai penawaran disetujui untuk mengunci ketersediaan unit armada. Pelunasan tagihan sisa (70%) wajib diselesaikan paling lambat H-3 sebelum tanggal keberangkatan."
   },
   {
-    question: "Berapa hari sebelumnya pemesanan harus dilakukan?",
-    answer: "Kami merekomendasikan pemesanan dilakukan paling lambat 7 hingga 14 hari sebelum tanggal keberangkatan. Untuk peak season (musim liburan/hari raya), disarankan memesan jauh-jauh hari agar ketersediaan armada terjamin."
+    question: "Bagaimana Kebijakan Pembatalan (Cancellation & Refund Policy)?",
+    answer: "Pembatalan H-7 atau lebih sebelum keberangkatan berhak menerima refund 50% dari DP. Pembatalan H-3 hingga H-6 menyebabkan DP hangus (0% refund). Pembatalan H-1 atau pada Hari H dikenakan denda 100% dari total sewa. Reschedule tanggal bebas biaya jika diajukan minimal H-7 sebelum keberangkatan (selama armada tersedia)."
   },
   {
-    question: "Apakah harga sudah termasuk driver dan BBM?",
-    answer: "Ya, tarif yang kami tawarkan sudah termasuk jasa pengemudi (driver) profesional dan biaya bahan bakar (BBM). Biaya parkir, tol, penyeberangan kapal, serta tips & uang makan driver biasanya ditanggung oleh pihak penyewa."
+    question: "Berapa hari sebelum keberangkatan pemesanan idealnya dilakukan?",
+    answer: "Kami merekomendasikan pemesanan dilakukan paling lambat 7 hingga 14 hari sebelum tanggal keberangkatan. Untuk peak season (musim liburan/hari raya), disarankan memesan 1-2 bulan sebelumnya agar ketersediaan armada terjamin."
   },
   {
-    question: "Apakah tersedia diskon untuk rombongan besar?",
-    answer: "Kami menawarkan harga khusus atau potongan harga menarik untuk pemesanan rombongan besar, instansi sekolah/perusahaan, atau penyewaan lebih dari satu unit bus. Hubungi admin kami untuk penawaran terbaik."
+    question: "Apakah tersedia layanan luar kota dan luar pulau?",
+    answer: "Tentu saja. Boneh Star menyediakan layanan sewa bus pariwisata baik untuk perjalanan dalam kota, luar kota, antar kota antar provinsi (AKAP), hingga perjalanan lintas pulau sesuai kebutuhan agenda rombongan Anda."
   }
 ];
 

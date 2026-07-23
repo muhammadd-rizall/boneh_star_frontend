@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Calendar, MapPin, Users, Bus, ChevronRight, Plus, ArrowRight } from 'lucide-react';
+import { Calendar, Users, Bus, ChevronRight, Plus, ArrowRight } from 'lucide-react';
 import type { CustomerBooking } from '../types/Booking';
 import BookingStatusBadge from './BookingStatusBadge';
 import { formatDate, formatCurrency } from '@/utils/formatter';

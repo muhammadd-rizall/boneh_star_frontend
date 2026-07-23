@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Card } from "@/components/ui/Card";
 import type { BookingReportStatistics } from "../types/BookingReport";
 import { cn } from "@/lib/utils";
-import { TrendingUp, PieChart, Route } from "lucide-react";
+import { PieChart, Route } from "lucide-react";
 
 interface ReportChartsProps {
   statistics: BookingReportStatistics;

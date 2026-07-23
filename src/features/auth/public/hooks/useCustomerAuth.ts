@@ -10,6 +10,7 @@ interface AuthState {
   isAuthenticated: boolean;
   hasHydrated: boolean;
   login: (data: LoginFormData) => Promise<void>;
+  googleLogin: (data: { email: string; name: string; google_id?: string; profile_picture?: string }) => Promise<void>;
   register: (data: RegisterFormData) => Promise<void>;
   logout: () => Promise<void>;
   setHasHydrated: (state: boolean) => void;
@@ -25,6 +26,15 @@ export const useCustomerAuthStore = create<AuthState>()(
 
       login: async (data: LoginFormData) => {
         const response = await authService.login(data);
+        set({
+          user: response.data.user,
+          token: response.data.token,
+          isAuthenticated: Boolean(response.data.token),
+        });
+      },
+
+      googleLogin: async (data: { email: string; name: string; google_id?: string; profile_picture?: string }) => {
+        const response = await authService.googleLogin(data);
         set({
           user: response.data.user,
           token: response.data.token,

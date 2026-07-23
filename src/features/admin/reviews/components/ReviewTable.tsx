@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/Button"
 import type { Review } from "@/features/admin/reviews/types/Review"
 import { Star, Eye, EyeOff, Trash2, RotateCcw, User } from "lucide-react"
 
+import { resolveMediaUrl } from "@/features/admin/company-profile/utils/companyProfileUtils"
+
 interface ReviewTableProps {
   data: Review[]
   onTogglePublish: (review: Review) => void
@@ -27,8 +29,15 @@ export default function ReviewTable({
       accessor: (row) => (
         <div className="flex items-center gap-4 text-left">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-500 overflow-hidden">
-            {row.customer?.profile_picture ? (
-              <img src={row.customer.profile_picture} alt={row.customer.name} className="h-full w-full object-cover" />
+            {row.customer?.profile_picture && resolveMediaUrl(row.customer.profile_picture) ? (
+              <img 
+                src={resolveMediaUrl(row.customer.profile_picture)} 
+                alt={row.customer.name} 
+                className="h-full w-full object-cover" 
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
+              />
             ) : (
               <User size={20} />
             )}

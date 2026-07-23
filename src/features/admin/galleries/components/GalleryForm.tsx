@@ -219,7 +219,7 @@ export default function GalleryForm({ gallery, onSuccess, onCancel }: GalleryFor
           
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {/* Existing Images */}
-            {existingImages.map((path, idx) => (
+            {existingImages.map((path) => (
               <div key={path} className="relative aspect-square rounded-xl overflow-hidden border border-slate-200 group">
                 <img src={getFullImageUrl(path)} alt="Gallery" className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">

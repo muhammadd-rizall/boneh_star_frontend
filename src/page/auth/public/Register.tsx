@@ -15,6 +15,8 @@ type ApiError = {
 };
 
 
+
+
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
     name: "",
@@ -56,6 +58,8 @@ export default function RegisterPage() {
       setLoading(false);
     }
   };
+
+
 
   return (
     <main className="min-h-screen w-full flex flex-col items-center justify-center bg-[#F3F4F6] p-4 sm:p-6 md:p-8 overflow-x-hidden select-none">
@@ -280,6 +284,8 @@ export default function RegisterPage() {
                 Daftar
               </Button>
             </form>
+
+
 
             
 
