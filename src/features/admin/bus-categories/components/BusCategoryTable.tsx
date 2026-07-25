@@ -3,6 +3,7 @@ import type { Column } from "@/components/ui/DataTable"
 import { Button } from "@/components/ui/Button"
 import type { BusCategory } from "@/features/admin/bus-categories/types/BusCategory"
 import { Edit, Trash2, Layout, Users, FileText, RotateCcw } from "lucide-react"
+import { useModulePermission } from "@/hooks/useModulePermission"
 
 interface BusCategoryTableProps {
   data: BusCategory[]
@@ -21,6 +22,8 @@ export default function BusCategoryTable({
   loading, 
   isTrash = false 
 }: BusCategoryTableProps) {
+  const { canUpdate, canDelete } = useModulePermission("categories")
+
   const columns: Column<BusCategory>[] = [
     { 
       header: "Nama Kategori", 
@@ -68,41 +71,49 @@ export default function BusCategoryTable({
         <div className="flex items-center gap-2">
           {isTrash ? (
             <>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                icon={RotateCcw} 
-                className="h-9 w-9 rounded-full p-0" 
-                onClick={() => onRestore?.(row.id)}
-                title="Pulihkan Kategori" 
-              />
-              <Button 
-                size="sm" 
-                variant="danger" 
-                icon={Trash2} 
-                className="h-9 w-9 rounded-full p-0" 
-                onClick={() => onDelete(row)}
-                title="Hapus Permanen"
-              />
+              {canUpdate && (
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  icon={RotateCcw} 
+                  className="h-9 w-9 rounded-full p-0" 
+                  onClick={() => onRestore?.(row.id)}
+                  title="Pulihkan Kategori" 
+                />
+              )}
+              {canDelete && (
+                <Button 
+                  size="sm" 
+                  variant="danger" 
+                  icon={Trash2} 
+                  className="h-9 w-9 rounded-full p-0" 
+                  onClick={() => onDelete(row)}
+                  title="Hapus Permanen"
+                />
+              )}
             </>
           ) : (
             <>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                icon={Edit} 
-                className="h-9 w-9 rounded-full p-0" 
-                onClick={() => onEdit(row)}
-                title="Edit Kategori" 
-              />
-              <Button 
-                size="sm" 
-                variant="danger" 
-                icon={Trash2} 
-                className="h-9 w-9 rounded-full p-0" 
-                onClick={() => onDelete(row)}
-                title="Hapus Kategori"
-              />
+              {canUpdate && (
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  icon={Edit} 
+                  className="h-9 w-9 rounded-full p-0" 
+                  onClick={() => onEdit(row)}
+                  title="Edit Kategori" 
+                />
+              )}
+              {canDelete && (
+                <Button 
+                  size="sm" 
+                  variant="danger" 
+                  icon={Trash2} 
+                  className="h-9 w-9 rounded-full p-0" 
+                  onClick={() => onDelete(row)}
+                  title="Hapus Kategori"
+                />
+              )}
             </>
           )}
         </div>

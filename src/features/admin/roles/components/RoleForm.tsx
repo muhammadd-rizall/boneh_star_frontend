@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 interface RoleFormProps {
   role?: Role | null;
   availablePermissions: Record<string, Permission[]>;
-  onSuccess: () => void;
+  onSuccess: (roleName?: string) => void;
   onCancel: () => void;
 }
 
@@ -72,7 +72,7 @@ export default function RoleForm({ role, availablePermissions, onSuccess, onCanc
       } else {
         await roleService.create(formData);
       }
-      onSuccess();
+      onSuccess(formData.name);
     } catch (err: any) {
       setError(err.response?.data?.message || "Terjadi kesalahan saat menyimpan data.");
     } finally {

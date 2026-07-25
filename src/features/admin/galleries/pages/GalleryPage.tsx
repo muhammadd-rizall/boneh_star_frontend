@@ -6,8 +6,10 @@ import type { Gallery } from "../types/Gallery"
 import { galleryService } from "../services/GalleryService"
 import GalleryTable from "../components/GalleryTable"
 import GalleryForm from "../components/GalleryForm"
+import { useModulePermission } from "@/hooks/useModulePermission"
 
 export default function GalleryPage() {
+  const { canUpdate, canDelete } = useModulePermission("galleries")
   const [galleries, setGalleries] = useState<Gallery[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
@@ -86,6 +88,7 @@ export default function GalleryPage() {
             onCreate={handleCreate}
             createLabel="Tambah Galeri"
             createIcon={Plus}
+            createPermission="galleries.create"
           />
         }
       />
@@ -98,6 +101,8 @@ export default function GalleryPage() {
           onEdit={handleEdit}
           onDelete={handleDelete}
           onTogglePublish={handleTogglePublish}
+          canUpdate={canUpdate}
+          canDelete={canDelete}
         />
       </div>
 

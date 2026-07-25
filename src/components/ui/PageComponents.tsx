@@ -3,6 +3,7 @@ import React from "react"
 import { Button } from "./Button"
 import Search from "./Search"
 import { cn } from "@/lib/utils"
+import { useAuthStore } from "@/store/useAuthStore"
 
 // ─── PageHeader ────────────────────────────────────────────────────────────────
 interface PageHeaderProps {
@@ -184,6 +185,7 @@ export function ViewToggle({
 }
 
 // ─── PageToolbar ───────────────────────────────────────────────────────────────
+
 interface PageToolbarProps {
   searchValue: string
   onSearchChange: (v: string) => void
@@ -193,6 +195,7 @@ interface PageToolbarProps {
   onCreate?: () => void
   createLabel?: string
   createIcon?: React.ComponentType<{ size?: number; className?: string }>
+  createPermission?: string
   extraActions?: React.ReactNode
 }
 
@@ -203,8 +206,12 @@ export function PageToolbar({
   onCreate,
   createLabel = "Tambah Baru",
   createIcon: CreateIcon = Plus,
+  createPermission,
   extraActions,
 }: PageToolbarProps) {
+  const hasPermission = useAuthStore((state) => state.hasPermission);
+  const canCreate = !createPermission || hasPermission(createPermission);
+
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between w-full">
       <div className="flex-1 min-w-0 sm:max-w-xl">
@@ -218,7 +225,7 @@ export function PageToolbar({
 
       <div className="flex items-center gap-3 shrink-0">
         {extraActions}
-        {onCreate && (
+        {onCreate && canCreate && (
           <Button
             variant="primary"
             icon={CreateIcon}

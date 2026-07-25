@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/Button"
 import type { Payment } from "@/features/admin/payments/types/Payment"
 import { Eye, CheckCircle, Trash2, Receipt, RotateCcw } from "lucide-react"
 import { formatDateDMY } from "@/utils/formatter"
+import { useModulePermission } from "@/hooks/useModulePermission"
 
 interface PaymentTableProps {
   data: Payment[]
@@ -24,6 +25,8 @@ export default function PaymentTable({
   loading, 
   isTrash = false 
 }: PaymentTableProps) {
+  const { canVerify, canDelete } = useModulePermission("payments")
+
   const columns: Column<Payment>[] = [
     { 
       header: "Transaksi", 
@@ -87,22 +90,26 @@ export default function PaymentTable({
         <div className="flex items-center gap-2">
           {isTrash ? (
             <>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                icon={RotateCcw} 
-                className="h-9 w-9 rounded-full p-0" 
-                onClick={() => onRestore?.(row.id)}
-                title="Pulihkan Pembayaran" 
-              />
-              <Button 
-                size="sm" 
-                variant="danger" 
-                icon={Trash2} 
-                className="h-9 w-9 rounded-full p-0" 
-                onClick={() => onDelete(row)}
-                title="Hapus Permanen"
-              />
+              {canVerify && (
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  icon={RotateCcw} 
+                  className="h-9 w-9 rounded-full p-0" 
+                  onClick={() => onRestore?.(row.id)}
+                  title="Pulihkan Pembayaran" 
+                />
+              )}
+              {canDelete && (
+                <Button 
+                  size="sm" 
+                  variant="danger" 
+                  icon={Trash2} 
+                  className="h-9 w-9 rounded-full p-0" 
+                  onClick={() => onDelete(row)}
+                  title="Hapus Permanen"
+                />
+              )}
             </>
           ) : (
             <>
@@ -114,7 +121,7 @@ export default function PaymentTable({
                 onClick={() => onViewProof(row)}
                 title="Lihat Bukti" 
               />
-              {row.status === 'pending' && (
+              {row.status === 'pending' && canVerify && (
                 <Button 
                   size="sm" 
                   variant="primary" 
@@ -124,14 +131,16 @@ export default function PaymentTable({
                   title="Verifikasi Pembayaran" 
                 />
               )}
-              <Button 
-                size="sm" 
-                variant="danger" 
-                icon={Trash2} 
-                className="h-9 w-9 rounded-full p-0" 
-                onClick={() => onDelete(row)}
-                title="Hapus Pembayaran"
-              />
+              {canDelete && (
+                <Button 
+                  size="sm" 
+                  variant="danger" 
+                  icon={Trash2} 
+                  className="h-9 w-9 rounded-full p-0" 
+                  onClick={() => onDelete(row)}
+                  title="Hapus Pembayaran"
+                />
+              )}
             </>
           )}
         </div>

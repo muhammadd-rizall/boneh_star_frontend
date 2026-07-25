@@ -2,16 +2,19 @@ import { DataTable } from "@/components/ui/DataTable"
 import type { Column } from "@/components/ui/DataTable"
 import { Button } from "@/components/ui/Button"
 import type { Booking } from "@/features/admin/bookings/types/Booking"
-import { Edit, Trash2, Calendar, MapPin, Users, Bus, RotateCcw, Phone } from "lucide-react"
+import { Edit, Trash2, Calendar, MapPin, Users, Bus, RotateCcw, Phone, Eye } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useModulePermission } from "@/hooks/useModulePermission"
 
 interface BookingTableProps {
   data: Booking[]
   onDelete: (booking: Booking) => void
   onEdit: (booking: Booking) => void
+  onViewDetail?: (booking: Booking) => void
   onRestore?: (booking: Booking) => void
   onForceDelete?: (booking: Booking) => void
   loading?: boolean
+  isTrash?: boolean
   isTrashed?: boolean
 }
 
@@ -19,11 +22,16 @@ export default function BookingTable({
   data, 
   onDelete, 
   onEdit, 
+  onViewDetail,
   onRestore, 
   onForceDelete, 
   loading, 
-  isTrashed = false 
+  isTrash = false,
+  isTrashed = false
 }: BookingTableProps) {
+  const isTrashView = isTrash || isTrashed
+  const { canUpdate, canDelete } = useModulePermission("bookings")
+
   const formatDate = (dateString: string) => {
     try {
       const date = new Date(dateString);
@@ -140,43 +148,51 @@ export default function BookingTable({
       header: "Aksi",
       accessor: (row) => (
         <div className="flex items-center gap-2">
-          {isTrashed ? (
+          {isTrashView ? (
             <>
-              <Button 
-                size="icon-sm" 
-                variant="outline" 
-                icon={RotateCcw} 
-                className="h-9 w-9 rounded-xl shadow-sm hover:border-blue-500 hover:text-blue-500" 
-                onClick={() => onRestore?.(row)}
-                title="Pulihkan Pesanan" 
-              />
-              <Button 
-                size="icon-sm" 
-                variant="danger" 
-                icon={Trash2} 
-                className="h-9 w-9 rounded-xl shadow-sm" 
-                onClick={() => onForceDelete?.(row)}
-                title="Hapus Permanen"
-              />
+              {canUpdate && (
+                <Button 
+                  size="icon-sm" 
+                  variant="outline" 
+                  icon={RotateCcw} 
+                  className="h-9 w-9 rounded-xl shadow-sm hover:border-blue-500 hover:text-blue-500" 
+                  onClick={() => onRestore?.(row)}
+                  title="Pulihkan Pesanan" 
+                />
+              )}
+              {canDelete && (
+                <Button 
+                  size="icon-sm" 
+                  variant="danger" 
+                  icon={Trash2} 
+                  className="h-9 w-9 rounded-xl shadow-sm" 
+                  onClick={() => onForceDelete?.(row)}
+                  title="Hapus Permanen"
+                />
+              )}
             </>
           ) : (
             <>
-              <Button 
-                size="icon-sm" 
-                variant="outline" 
-                icon={Edit} 
-                className="h-9 w-9 rounded-xl shadow-sm hover:border-action-blue hover:text-action-blue" 
-                onClick={() => onEdit(row)}
-                title="Edit Pesanan" 
-              />
-              <Button 
-                size="icon-sm" 
-                variant="danger" 
-                icon={Trash2} 
-                className="h-9 w-9 rounded-xl shadow-sm" 
-                onClick={() => onDelete(row)}
-                title="Hapus Pesanan"
-              />
+              {canUpdate && (
+                <Button 
+                  size="icon-sm" 
+                  variant="outline" 
+                  icon={Edit} 
+                  className="h-9 w-9 rounded-xl shadow-sm hover:border-action-blue hover:text-action-blue" 
+                  onClick={() => onEdit(row)}
+                  title="Edit Pesanan" 
+                />
+              )}
+              {canDelete && (
+                <Button 
+                  size="icon-sm" 
+                  variant="danger" 
+                  icon={Trash2} 
+                  className="h-9 w-9 rounded-xl shadow-sm" 
+                  onClick={() => onDelete(row)}
+                  title="Hapus Pesanan"
+                />
+              )}
             </>
           )}
         </div>

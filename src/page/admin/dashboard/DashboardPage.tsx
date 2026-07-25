@@ -173,6 +173,8 @@ function QuickAction({
 export default function DashboardPage() {
   const { data, loading, error, refetch } = useDashboard();
   const user = useAuthStore((state) => state.user);
+  const hasPermission = useAuthStore((state) => state.hasPermission);
+
   const now = new Date();
   const greeting =
     now.getHours() < 12 ? "Selamat pagi" : now.getHours() < 18 ? "Selamat siang" : "Selamat malam";
@@ -185,6 +187,19 @@ export default function DashboardPage() {
     { label: "Transaksi", icon: Receipt, color: "slate" as const },
     { label: "Rating Rata-rata", icon: Star, color: "rose" as const },
   ];
+
+  const allQuickActions = [
+    { to: "/admin/bookings", icon: CalendarCheck, label: "Kelola Pemesanan", desc: "Konfirmasi & tinjau booking", permission: "bookings.view" },
+    { to: "/admin/quotations", icon: Receipt, label: "Penawaran Harga", desc: "Tinjau permintaan harga", permission: "quotations.view" },
+    { to: "/admin/payments", icon: CreditCard, label: "Pembayaran", desc: "Verifikasi bukti transfer", permission: "payments.view" },
+    { to: "/admin/drivers", icon: UserCheck, label: "Daftar Pengemudi", desc: "Atur jadwal & data supir", permission: "drivers.view" },
+    { to: "/admin/buses", icon: Bus, label: "Data Armada", desc: "Manajemen unit kendaraan", permission: "buses.view" },
+    { to: "/admin/reports/bookings", icon: TrendingUp, label: "Laporan Statistik", desc: "Analisis performa bisnis", permission: "reports.bookings" },
+  ];
+
+  const filteredQuickActions = allQuickActions.filter(
+    (action) => !action.permission || hasPermission(action.permission)
+  );
 
   if (error) {
     return (
@@ -242,12 +257,9 @@ export default function DashboardPage() {
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cloud-mist text-midnight-indigo shadow-sm"><Clock size={20} /></div>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
-            <QuickAction to="/admin/bookings" icon={CalendarCheck} label="Kelola Pemesanan" desc="Konfirmasi & tinjau booking" />
-            <QuickAction to="/admin/quotations" icon={Receipt} label="Penawaran Harga" desc="Tinjau permintaan harga" />
-            <QuickAction to="/admin/payments" icon={CreditCard} label="Pembayaran" desc="Verifikasi bukti transfer" />
-            <QuickAction to="/admin/drivers" icon={UserCheck} label="Daftar Pengemudi" desc="Atur jadwal & data supir" />
-            <QuickAction to="/admin/buses" icon={Bus} label="Data Armada" desc="Manajemen unit kendaraan" />
-            <QuickAction to="/admin/reports/bookings" icon={TrendingUp} label="Laporan Statistik" desc="Analisis performa bisnis" />
+            {filteredQuickActions.map((act) => (
+              <QuickAction key={act.to} to={act.to} icon={act.icon} label={act.label} desc={act.desc} />
+            ))}
           </div>
         </div>
 

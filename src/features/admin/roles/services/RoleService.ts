@@ -60,6 +60,11 @@ export const roleService = {
     };
   },
 
+  getActiveRoles: async (): Promise<Role[]> => {
+    const response = await axios.get<RoleApiResponse>('/admin/roles/active');
+    return Array.isArray(response.data.data) ? (response.data.data as Role[]) : [];
+  },
+
   getById: async (id: string): Promise<Role> => {
     const response = await axios.get<RoleApiResponse>(ENDPOINTS.DETAIL(id));
     return response.data.data as Role;

@@ -6,6 +6,7 @@ import { Edit, Trash2, Mail, Phone, MapPin, User as UserIcon, RotateCcw } from "
 import { cn } from "@/lib/utils"
 
 import { resolveMediaUrl } from "@/features/admin/company-profile/utils/companyProfileUtils"
+import { useModulePermission } from "@/hooks/useModulePermission"
 
 interface CustomerTableProps {
   data: Customer[]
@@ -24,6 +25,8 @@ export default function CustomerTable({
   loading, 
   isTrash = false 
 }: CustomerTableProps) {
+  const { canUpdate, canDelete } = useModulePermission("customers")
+
   const columns: Column<Customer>[] = [
     { 
       header: "Identitas Pelanggan", 
@@ -100,41 +103,49 @@ export default function CustomerTable({
         <div className="flex items-center gap-2">
           {isTrash ? (
             <>
-              <Button 
-                size="icon-sm" 
-                variant="outline" 
-                icon={RotateCcw} 
-                className="h-9 w-9 rounded-xl shadow-sm hover:border-blue-500 hover:text-blue-500" 
-                onClick={() => onRestore?.(row.id)}
-                title="Pulihkan Pelanggan" 
-              />
-              <Button 
-                size="icon-sm" 
-                variant="danger" 
-                icon={Trash2} 
-                className="h-9 w-9 rounded-xl shadow-sm" 
-                onClick={() => onDelete(row)}
-                title="Hapus Permanen"
-              />
+              {canUpdate && (
+                <Button 
+                  size="icon-sm" 
+                  variant="outline" 
+                  icon={RotateCcw} 
+                  className="h-9 w-9 rounded-xl shadow-sm hover:border-blue-500 hover:text-blue-500" 
+                  onClick={() => onRestore?.(row.id)}
+                  title="Pulihkan Pelanggan" 
+                />
+              )}
+              {canDelete && (
+                <Button 
+                  size="icon-sm" 
+                  variant="danger" 
+                  icon={Trash2} 
+                  className="h-9 w-9 rounded-xl shadow-sm" 
+                  onClick={() => onDelete(row)}
+                  title="Hapus Permanen"
+                />
+              )}
             </>
           ) : (
             <>
-              <Button 
-                size="icon-sm" 
-                variant="outline" 
-                icon={Edit} 
-                className="h-9 w-9 rounded-xl shadow-sm hover:border-action-blue hover:text-action-blue" 
-                onClick={() => onEdit(row)}
-                title="Edit Pelanggan" 
-              />
-              <Button 
-                size="icon-sm" 
-                variant="danger" 
-                icon={Trash2} 
-                className="h-9 w-9 rounded-xl shadow-sm" 
-                onClick={() => onDelete(row)}
-                title="Hapus Pelanggan"
-              />
+              {canUpdate && (
+                <Button 
+                  size="icon-sm" 
+                  variant="outline" 
+                  icon={Edit} 
+                  className="h-9 w-9 rounded-xl shadow-sm hover:border-action-blue hover:text-action-blue" 
+                  onClick={() => onEdit(row)}
+                  title="Edit Pelanggan" 
+                />
+              )}
+              {canDelete && (
+                <Button 
+                  size="icon-sm" 
+                  variant="danger" 
+                  icon={Trash2} 
+                  className="h-9 w-9 rounded-xl shadow-sm" 
+                  onClick={() => onDelete(row)}
+                  title="Hapus Pelanggan"
+                />
+              )}
             </>
           )}
         </div>

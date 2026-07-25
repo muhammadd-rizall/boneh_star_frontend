@@ -58,6 +58,14 @@ function CustomerProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function AdminPermissionGuard({ permission, children }: { permission: string; children: React.ReactNode }) {
+  const hasPermission = useAuthStore((state) => state.hasPermission);
+  if (!hasPermission(permission)) {
+    return <Navigate to="/admin/dashboard" replace />;
+  }
+  return <>{children}</>;
+}
+
 function App() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const isCustomerAuthenticated = useCustomerAuthStore((state) => state.isAuthenticated);
@@ -161,26 +169,26 @@ function App() {
       >
         <Route index element={<Navigate to="/admin/dashboard" />} />
         <Route path="dashboard" element={<DashboardPage />} />
-        <Route path="buses" element={<BusPage />} />
-        <Route path="bus-categories" element={<BusCategoryPage />} />
-        <Route path="bus-facilities" element={<BusFacilityPage />} />
-        <Route path="galleries" element={<GalleryPage />} />
-        <Route path="activity-types" element={<ActivityTypePage />} />
-        <Route path="route-types" element={<RouteTypePage />} />
-        <Route path="drivers" element={<DriverPage />} />
-        <Route path="bookings" element={<BookingPage />} />
-        <Route path="quotations" element={<QuotationPage />} />
-        <Route path="transactions" element={<TransactionPage />} />
-        <Route path="payments" element={<PaymentPage />} />
-        <Route path="payment-methods" element={<PaymentMethodPage />} />
-        <Route path="reviews" element={<ReviewPage />} />
-        <Route path="reports/bookings" element={<BookingReportPage />} />
-        <Route path="reports/income" element={<IncomeReportPage />} />
-        <Route path="reports/bus-availability" element={<BusAvailabilityReportPage />} />
-        <Route path="users" element={<UserPage />} />
-        <Route path="customers" element={<CustomerPage />} />
-        <Route path="roles" element={<RolePage />} />
-        <Route path="settings" element={<CompanyProfilePage />} />
+        <Route path="buses" element={<AdminPermissionGuard permission="buses.view"><BusPage /></AdminPermissionGuard>} />
+        <Route path="bus-categories" element={<AdminPermissionGuard permission="categories.view"><BusCategoryPage /></AdminPermissionGuard>} />
+        <Route path="bus-facilities" element={<AdminPermissionGuard permission="facilities.view"><BusFacilityPage /></AdminPermissionGuard>} />
+        <Route path="galleries" element={<AdminPermissionGuard permission="company_profile.view"><GalleryPage /></AdminPermissionGuard>} />
+        <Route path="activity-types" element={<AdminPermissionGuard permission="activities.view"><ActivityTypePage /></AdminPermissionGuard>} />
+        <Route path="route-types" element={<AdminPermissionGuard permission="routes.view"><RouteTypePage /></AdminPermissionGuard>} />
+        <Route path="drivers" element={<AdminPermissionGuard permission="drivers.view"><DriverPage /></AdminPermissionGuard>} />
+        <Route path="bookings" element={<AdminPermissionGuard permission="bookings.view"><BookingPage /></AdminPermissionGuard>} />
+        <Route path="quotations" element={<AdminPermissionGuard permission="quotations.view"><QuotationPage /></AdminPermissionGuard>} />
+        <Route path="transactions" element={<AdminPermissionGuard permission="transactions.view"><TransactionPage /></AdminPermissionGuard>} />
+        <Route path="payments" element={<AdminPermissionGuard permission="payments.view"><PaymentPage /></AdminPermissionGuard>} />
+        <Route path="payment-methods" element={<AdminPermissionGuard permission="payment_methods.view"><PaymentMethodPage /></AdminPermissionGuard>} />
+        <Route path="reviews" element={<AdminPermissionGuard permission="reviews.view"><ReviewPage /></AdminPermissionGuard>} />
+        <Route path="reports/bookings" element={<AdminPermissionGuard permission="reports.bookings"><BookingReportPage /></AdminPermissionGuard>} />
+        <Route path="reports/income" element={<AdminPermissionGuard permission="reports.income"><IncomeReportPage /></AdminPermissionGuard>} />
+        <Route path="reports/bus-availability" element={<AdminPermissionGuard permission="buses.view"><BusAvailabilityReportPage /></AdminPermissionGuard>} />
+        <Route path="users" element={<AdminPermissionGuard permission="users.view"><UserPage /></AdminPermissionGuard>} />
+        <Route path="customers" element={<AdminPermissionGuard permission="customers.view"><CustomerPage /></AdminPermissionGuard>} />
+        <Route path="roles" element={<AdminPermissionGuard permission="roles.view"><RolePage /></AdminPermissionGuard>} />
+        <Route path="settings" element={<AdminPermissionGuard permission="company_profile.view"><CompanyProfilePage /></AdminPermissionGuard>} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" />} />

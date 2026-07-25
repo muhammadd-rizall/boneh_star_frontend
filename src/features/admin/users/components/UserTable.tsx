@@ -6,6 +6,7 @@ import { Modal } from "@/components/ui/Modal"
 import type { User } from "@/features/admin/users/types/User"
 import { Edit, Trash2, Shield, Mail, User as UserIcon, RotateCcw, Key } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useModulePermission } from "@/hooks/useModulePermission"
 
 interface UserTableProps {
   data: User[]
@@ -19,6 +20,7 @@ interface UserTableProps {
 export default function UserTable({ data, onDelete, onEdit, onRestore, loading, isTrash = false }: UserTableProps) {
   const [isDetailOpen, setIsDetailOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
+  const { canUpdate, canDelete } = useModulePermission("users")
 
   const getUserPermissions = (user: User) => {
     const directPermissions = user.permissions ?? []
@@ -149,41 +151,49 @@ export default function UserTable({ data, onDelete, onEdit, onRestore, loading, 
         <div className="flex items-center gap-2">
           {isTrash ? (
             <>
-              <Button
-                size="icon-sm"
-                variant="outline"
-                icon={RotateCcw}
-                className="h-9 w-9 rounded-xl shadow-sm hover:border-blue-500 hover:text-blue-500"
-                onClick={() => onRestore?.(row.id)}
-                title="Pulihkan Pengguna"
-              />
-              <Button
-                size="icon-sm"
-                variant="danger"
-                icon={Trash2}
-                className="h-9 w-9 rounded-xl shadow-sm"
-                onClick={() => onDelete(row)}
-                title="Hapus Permanen"
-              />
+              {canUpdate && (
+                <Button
+                  size="icon-sm"
+                  variant="outline"
+                  icon={RotateCcw}
+                  className="h-9 w-9 rounded-xl shadow-sm hover:border-blue-500 hover:text-blue-500"
+                  onClick={() => onRestore?.(row.id)}
+                  title="Pulihkan Pengguna"
+                />
+              )}
+              {canDelete && (
+                <Button
+                  size="icon-sm"
+                  variant="danger"
+                  icon={Trash2}
+                  className="h-9 w-9 rounded-xl shadow-sm"
+                  onClick={() => onDelete(row)}
+                  title="Hapus Permanen"
+                />
+              )}
             </>
           ) : (
             <>
-              <Button
-                size="icon-sm"
-                variant="outline"
-                icon={Edit}
-                className="h-9 w-9 rounded-xl shadow-sm hover:border-action-blue hover:text-action-blue"
-                onClick={() => onEdit(row)}
-                title="Edit Pengguna"
-              />
-              <Button
-                size="icon-sm"
-                variant="danger"
-                icon={Trash2}
-                className="h-9 w-9 rounded-xl shadow-sm"
-                onClick={() => onDelete(row)}
-                title="Hapus Pengguna"
-              />
+              {canUpdate && (
+                <Button
+                  size="icon-sm"
+                  variant="outline"
+                  icon={Edit}
+                  className="h-9 w-9 rounded-xl shadow-sm hover:border-action-blue hover:text-action-blue"
+                  onClick={() => onEdit(row)}
+                  title="Edit Pengguna"
+                />
+              )}
+              {canDelete && (
+                <Button
+                  size="icon-sm"
+                  variant="danger"
+                  icon={Trash2}
+                  className="h-9 w-9 rounded-xl shadow-sm"
+                  onClick={() => onDelete(row)}
+                  title="Hapus Pengguna"
+                />
+              )}
             </>
           )}
         </div>

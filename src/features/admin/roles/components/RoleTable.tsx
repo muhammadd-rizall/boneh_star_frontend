@@ -2,16 +2,21 @@ import { DataTable } from "@/components/ui/DataTable"
 import type { Column } from "@/components/ui/DataTable"
 import { Button } from "@/components/ui/Button"
 import type { Role } from "../types/Role"
-import { Edit, Trash2, ShieldCheck, Users } from "lucide-react"
+import { Edit, Trash2, ShieldCheck, Users, RotateCcw } from "lucide-react"
+import { useModulePermission } from "@/hooks/useModulePermission"
 
 interface RoleTableProps {
   data: Role[]
   onDelete: (role: Role) => void
   onEdit: (role: Role) => void
+  onRestore?: (id: string) => void
   loading?: boolean
+  isTrash?: boolean
 }
 
-export default function RoleTable({ data, onDelete, onEdit, loading }: RoleTableProps) {
+export default function RoleTable({ data, onDelete, onEdit, onRestore, loading, isTrash = false }: RoleTableProps) {
+  const { canUpdate, canDelete } = useModulePermission("roles")
+
   const columns: Column<Role>[] = [
     { 
       header: "Identitas Peran", 
@@ -61,22 +66,26 @@ export default function RoleTable({ data, onDelete, onEdit, loading }: RoleTable
       header: "Aksi",
       accessor: (row) => (
         <div className="flex items-center gap-2">
-          <Button 
-            size="sm" 
-            variant="outline" 
-            icon={Edit} 
-            className="h-9 w-9 rounded-full p-0" 
-            onClick={() => onEdit(row)}
-            title="Edit Hak Akses"
-          />
-          <Button 
-            size="sm" 
-            variant="danger" 
-            icon={Trash2} 
-            className="h-9 w-9 rounded-full p-0" 
-            onClick={() => onDelete(row)}
-            title="Hapus Hak Akses"
-          />
+          {canUpdate && (
+            <Button 
+              size="sm" 
+              variant="outline" 
+              icon={Edit} 
+              className="h-9 w-9 rounded-full p-0" 
+              onClick={() => onEdit(row)}
+              title="Edit Hak Akses"
+            />
+          )}
+          {canDelete && (
+            <Button 
+              size="sm" 
+              variant="danger" 
+              icon={Trash2} 
+              className="h-9 w-9 rounded-full p-0" 
+              onClick={() => onDelete(row)}
+              title="Hapus Hak Akses"
+            />
+          )}
         </div>
       )
     }

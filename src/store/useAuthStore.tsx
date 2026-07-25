@@ -63,18 +63,26 @@ export const useAuthStore = create<AuthState>()(
         set({ user });
       },
 
-      hasPermission: (permissionSlug: string) => {
+      hasPermission: (permissionSlug?: string) => {
+        if (!permissionSlug) return true;
         const { user } = get();
-        if (!user || !user.roles) return false;
+        if (!user || !user.roles || user.roles.length === 0) return false;
+        
+        // Only Super Admin bypasses all permission checks
+        const isSuperAdmin = user.roles.some((role) => 
+          role.slug === 'super-admin'
+        );
+        if (isSuperAdmin) return true;
+
         return user.roles.some((role) => 
-          role.permissions?.some((p: Permission) => p.slug === permissionSlug)
+          role.permissions?.some((p: Permission) => p.slug === permissionSlug || p.name === permissionSlug)
         );
       },
 
       hasRole: (roleSlug: string) => {
         const { user } = get();
         if (!user || !user.roles) return false;
-        return user.roles.some((role) => role.slug === roleSlug);
+        return user.roles.some((role) => role.slug === roleSlug || role.name.toLowerCase() === roleSlug.toLowerCase());
       },
     }),
     {

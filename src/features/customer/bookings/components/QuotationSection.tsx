@@ -10,12 +10,13 @@ interface Props {
   quotation: CustomerQuotation;
   whatsappNumber?: string;
   bookingCode: string;
+  bookingStatus?: string;
   onAccept: () => void;
   onRevise: (note: string) => void;
 }
 
 export default function QuotationSection({
-  quotation, whatsappNumber, bookingCode, onAccept, onRevise,
+  quotation, whatsappNumber, bookingCode, bookingStatus, onAccept, onRevise,
 }: Props) {
   const [isRevising, setIsRevising] = React.useState(false);
   const [proposedPrice, setProposedPrice] = React.useState('');
@@ -118,6 +119,25 @@ export default function QuotationSection({
       </div>
     </div>
   ) : null;
+
+  // ── STATUS: booking cancelled / quotation rejected ─────────────────────────
+  if (bookingStatus === 'cancelled' || quotation.booking?.status === 'cancelled' || quotation.status === 'rejected') {
+    return (
+      <div className="flex flex-col gap-4">
+        <PriceCard />
+        <AdminNote />
+        <div className="flex items-center gap-3 p-4 rounded-xl bg-rose-50 border border-rose-200">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-rose-500">
+            <XCircle size={18} className="text-white" strokeWidth={2.5} />
+          </div>
+          <div>
+            <p className="text-sm font-bold text-rose-800">Pemesanan Telah Dibatalkan</p>
+            <p className="text-xs text-rose-600 mt-0.5">Penawaran harga ini tidak lagi berlaku karena pemesanan telah dibatalkan.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // ── STATUS: accepted ────────────────────────────────────────────────────────
   if (quotation.status === 'accepted') {

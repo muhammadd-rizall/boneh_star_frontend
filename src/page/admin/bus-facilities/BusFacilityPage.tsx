@@ -42,7 +42,7 @@ export default function BusFacilityPage() {
         actions={
           <PageToolbar
             searchValue={searchTerm} onSearchChange={setSearchTerm} searchPlaceholder="Cari fasilitas..."
-            onCreate={() => { setSelectedFacility(null); setIsModalOpen(true) }} createLabel="Tambah Fasilitas" createIcon={Plus}
+            onCreate={() => { setSelectedFacility(null); setIsModalOpen(true) }} createLabel="Tambah Fasilitas" createIcon={Plus} createPermission="facilities.create"
             extraActions={<Button variant="outline" icon={RefreshCcw} className="h-11 rounded-xl px-5" onClick={view === "active" ? () => refetchActive(searchTerm) : refetchTrash} loading={loading}>Refresh</Button>}
           />
         }

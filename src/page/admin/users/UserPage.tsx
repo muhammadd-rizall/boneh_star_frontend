@@ -120,6 +120,7 @@ export default function UserPage() {
             onCreate={handleCreate}
             createLabel="Tambah Pengguna"
             createIcon={Plus}
+            createPermission="users.create"
             extraActions={
               <Button
                 variant="outline"

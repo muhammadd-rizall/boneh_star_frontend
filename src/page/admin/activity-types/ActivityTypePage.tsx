@@ -42,7 +42,7 @@ export default function ActivityTypePage() {
         actions={
           <PageToolbar
             searchValue={searchTerm} onSearchChange={setSearchTerm} searchPlaceholder="Cari jenis aktivitas..."
-            onCreate={() => { setSelectedType(null); setIsModalOpen(true) }} createLabel="Tambah Jenis" createIcon={Plus}
+            onCreate={() => { setSelectedType(null); setIsModalOpen(true) }} createLabel="Tambah Jenis" createIcon={Plus} createPermission="activities.create"
             extraActions={<Button variant="outline" icon={RefreshCcw} className="h-11 rounded-xl px-5" onClick={view === "active" ? () => refetchActive(searchTerm) : refetchTrash} loading={loading}>Refresh</Button>}
           />
         }

@@ -46,8 +46,7 @@ export default function UserForm({ user, onSuccess, onCancel }: UserFormProps) {
     const fetchRoles = async () => {
       try {
         setRolesLoading(true);
-        const result = await roleService.getAll();
-        const activeRoles = result.roles.filter((role) => role.is_active);
+        const activeRoles = await roleService.getActiveRoles();
         setAvailableRoles(activeRoles);
 
         if (!user && activeRoles.length > 0) {
@@ -57,7 +56,7 @@ export default function UserForm({ user, onSuccess, onCancel }: UserFormProps) {
           }));
         }
       } catch (err: any) {
-        setError("Gagal mengambil data hak akses.");
+        console.error("Gagal mengambil data hak akses:", err);
       } finally {
         setRolesLoading(false);
       }

@@ -3,6 +3,7 @@ import type { Column } from "@/components/ui/DataTable"
 import { Button } from "@/components/ui/Button"
 import type { ActivityType } from "@/features/admin/activity-types/types/ActivityType"
 import { Edit, FileText, ImageIcon, RotateCcw, Tag, Trash2 } from "lucide-react"
+import { useModulePermission } from "@/hooks/useModulePermission"
 
 interface ActivityTypeTableProps {
   data: ActivityType[]
@@ -21,6 +22,8 @@ export default function ActivityTypeTable({
   loading, 
   isTrash = false 
 }: ActivityTypeTableProps) {
+  const { canUpdate, canDelete } = useModulePermission("activities")
+
   const columns: Column<ActivityType>[] = [
     { 
       header: "Jenis Aktivitas",
@@ -78,41 +81,49 @@ export default function ActivityTypeTable({
         <div className="flex items-center gap-2">
           {isTrash ? (
             <>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                icon={RotateCcw} 
-                className="h-9 w-9 rounded-full p-0" 
-                onClick={() => onRestore?.(row.id)}
-                title="Pulihkan jenis aktivitas"
-              />
-              <Button 
-                size="sm" 
-                variant="danger" 
-                icon={Trash2} 
-                className="h-9 w-9 rounded-full p-0" 
-                onClick={() => onDelete(row)}
-                title="Hapus permanen"
-              />
+              {canUpdate && (
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  icon={RotateCcw} 
+                  className="h-9 w-9 rounded-full p-0" 
+                  onClick={() => onRestore?.(row.id)}
+                  title="Pulihkan jenis aktivitas"
+                />
+              )}
+              {canDelete && (
+                <Button 
+                  size="sm" 
+                  variant="danger" 
+                  icon={Trash2} 
+                  className="h-9 w-9 rounded-full p-0" 
+                  onClick={() => onDelete(row)}
+                  title="Hapus permanen"
+                />
+              )}
             </>
           ) : (
             <>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                icon={Edit} 
-                className="h-9 w-9 rounded-full p-0" 
-                onClick={() => onEdit(row)}
-                title="Edit jenis aktivitas"
-              />
-              <Button 
-                size="sm" 
-                variant="danger" 
-                icon={Trash2} 
-                className="h-9 w-9 rounded-full p-0" 
-                onClick={() => onDelete(row)}
-                title="Hapus jenis aktivitas"
-              />
+              {canUpdate && (
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  icon={Edit} 
+                  className="h-9 w-9 rounded-full p-0" 
+                  onClick={() => onEdit(row)}
+                  title="Edit jenis aktivitas"
+                />
+              )}
+              {canDelete && (
+                <Button 
+                  size="sm" 
+                  variant="danger" 
+                  icon={Trash2} 
+                  className="h-9 w-9 rounded-full p-0" 
+                  onClick={() => onDelete(row)}
+                  title="Hapus jenis aktivitas"
+                />
+              )}
             </>
           )}
         </div>

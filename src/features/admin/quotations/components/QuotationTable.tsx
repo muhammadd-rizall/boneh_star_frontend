@@ -2,16 +2,20 @@ import { DataTable } from "@/components/ui/DataTable"
 import type { Column } from "@/components/ui/DataTable"
 import { Button } from "@/components/ui/Button"
 import type { Quotation } from "@/features/admin/quotations/types/Quotation"
-import { Edit, Trash2, Calendar, FileText, Banknote, User } from "lucide-react"
+import { Edit, Trash2, Calendar, FileText, Banknote, User, Eye } from "lucide-react"
+import { useModulePermission } from "@/hooks/useModulePermission"
 
 interface QuotationTableProps {
   data: Quotation[]
   onDelete: (quotation: Quotation) => void
   onEdit: (quotation: Quotation) => void
+  onViewDetail?: (quotation: Quotation) => void
   loading?: boolean
 }
 
-export default function QuotationTable({ data, onDelete, onEdit, loading }: QuotationTableProps) {
+export default function QuotationTable({ data, onDelete, onEdit, onViewDetail, loading }: QuotationTableProps) {
+  const { canUpdate, canDelete } = useModulePermission("quotations")
+
   const formatDate = (dateString: string) => {
     try {
       const date = new Date(dateString);
@@ -104,22 +108,26 @@ export default function QuotationTable({ data, onDelete, onEdit, loading }: Quot
       header: "Aksi",
       accessor: (row) => (
         <div className="flex items-center gap-2">
-          <Button 
-            size="sm" 
-            variant="outline" 
-            icon={Edit} 
-            className="h-9 w-9 rounded-full p-0" 
-            onClick={() => onEdit(row)}
-            title="Edit Penawaran" 
-          />
-          <Button 
-            size="sm" 
-            variant="danger" 
-            icon={Trash2} 
-            className="h-9 w-9 rounded-full p-0" 
-            onClick={() => onDelete(row)}
-            title="Hapus Penawaran"
-          />
+          {canUpdate && (
+            <Button 
+              size="sm" 
+              variant="outline" 
+              icon={Edit} 
+              className="h-9 w-9 rounded-full p-0" 
+              onClick={() => onEdit(row)}
+              title="Edit Penawaran" 
+            />
+          )}
+          {canDelete && (
+            <Button 
+              size="sm" 
+              variant="danger" 
+              icon={Trash2} 
+              className="h-9 w-9 rounded-full p-0" 
+              onClick={() => onDelete(row)}
+              title="Hapus Penawaran" 
+            />
+          )}
         </div>
       )
     }

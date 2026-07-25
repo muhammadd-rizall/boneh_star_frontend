@@ -58,7 +58,7 @@ export default function QuotationPage() {
           <PageToolbar
             searchValue={searchTerm} onSearchChange={setSearchTerm}
             searchPlaceholder="Cari kode booking atau pelanggan..."
-            onCreate={handleCreate} createLabel="Buat Penawaran" createIcon={Plus}
+            onCreate={handleCreate} createLabel="Buat Penawaran" createIcon={Plus} createPermission="quotations.create"
             extraActions={<Button variant="outline" icon={RefreshCcw} className="h-11 rounded-xl px-5" onClick={() => refetch(searchTerm)} loading={loading}>Refresh</Button>}
           />
         }

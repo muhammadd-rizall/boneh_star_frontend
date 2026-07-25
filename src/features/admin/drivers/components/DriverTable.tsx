@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/Button"
 import type { Driver } from "@/features/admin/drivers/types/Driver"
 import { Edit, Trash2, UserCircle, RotateCcw, Phone } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useModulePermission } from "@/hooks/useModulePermission"
 
 interface DriverTableProps {
   data: Driver[]
@@ -22,6 +23,8 @@ export default function DriverTable({
   loading, 
   isTrash = false 
 }: DriverTableProps) {
+  const { canUpdate, canDelete } = useModulePermission("drivers")
+
   const columns: Column<Driver>[] = [
     { 
       header: "Identitas Supir", 
@@ -98,41 +101,49 @@ export default function DriverTable({
         <div className="flex items-center gap-2">
           {isTrash ? (
             <>
-              <Button 
-                size="icon-sm" 
-                variant="outline" 
-                icon={RotateCcw} 
-                className="h-9 w-9 rounded-xl shadow-sm hover:border-blue-500 hover:text-blue-500" 
-                onClick={() => onRestore?.(row.id)}
-                title="Pulihkan Supir" 
-              />
-              <Button 
-                size="icon-sm" 
-                variant="danger" 
-                icon={Trash2} 
-                className="h-9 w-9 rounded-xl shadow-sm" 
-                onClick={() => onDelete(row)}
-                title="Hapus Permanen"
-              />
+              {canUpdate && (
+                <Button 
+                  size="icon-sm" 
+                  variant="outline" 
+                  icon={RotateCcw} 
+                  className="h-9 w-9 rounded-xl shadow-sm hover:border-blue-500 hover:text-blue-500" 
+                  onClick={() => onRestore?.(row.id)}
+                  title="Pulihkan Supir" 
+                />
+              )}
+              {canDelete && (
+                <Button 
+                  size="icon-sm" 
+                  variant="danger" 
+                  icon={Trash2} 
+                  className="h-9 w-9 rounded-xl shadow-sm" 
+                  onClick={() => onDelete(row)}
+                  title="Hapus Permanen"
+                />
+              )}
             </>
           ) : (
             <>
-              <Button 
-                size="icon-sm" 
-                variant="outline" 
-                icon={Edit} 
-                className="h-9 w-9 rounded-xl shadow-sm hover:border-action-blue hover:text-action-blue" 
-                onClick={() => onEdit(row)}
-                title="Edit Supir" 
-              />
-              <Button 
-                size="icon-sm" 
-                variant="danger" 
-                icon={Trash2} 
-                className="h-9 w-9 rounded-xl shadow-sm" 
-                onClick={() => onDelete(row)}
-                title="Hapus Supir"
-              />
+              {canUpdate && (
+                <Button 
+                  size="icon-sm" 
+                  variant="outline" 
+                  icon={Edit} 
+                  className="h-9 w-9 rounded-xl shadow-sm hover:border-action-blue hover:text-action-blue" 
+                  onClick={() => onEdit(row)}
+                  title="Edit Supir" 
+                />
+              )}
+              {canDelete && (
+                <Button 
+                  size="icon-sm" 
+                  variant="danger" 
+                  icon={Trash2} 
+                  className="h-9 w-9 rounded-xl shadow-sm" 
+                  onClick={() => onDelete(row)}
+                  title="Hapus Supir"
+                />
+              )}
             </>
           )}
         </div>

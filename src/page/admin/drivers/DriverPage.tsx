@@ -104,7 +104,7 @@ export default function DriverPage() {
           <PageToolbar
             searchValue={searchTerm} onSearchChange={setSearchTerm}
             searchPlaceholder="Cari nama atau no. telepon..."
-            onCreate={handleCreate} createLabel="Tambah Pengemudi" createIcon={Plus}
+            onCreate={handleCreate} createLabel="Tambah Pengemudi" createIcon={Plus} createPermission="drivers.create"
             extraActions={<Button variant="outline" icon={RefreshCcw} className="h-11 rounded-xl px-5" onClick={view === "active" ? () => refetchActive(searchTerm) : refetchTrash} loading={loading}>Refresh</Button>}
           />
         }

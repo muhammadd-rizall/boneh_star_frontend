@@ -2,15 +2,18 @@ import { DataTable } from "@/components/ui/DataTable"
 import type { Column } from "@/components/ui/DataTable"
 import { Button } from "@/components/ui/Button"
 import type { Transaction } from "@/features/admin/transactions/types/Transaction"
-import { Edit, Trash2, FileText, Banknote, User, RotateCcw, Receipt } from "lucide-react"
+import { Edit, Trash2, FileText, Banknote, User, Eye, Receipt, RotateCcw } from "lucide-react"
+import { useModulePermission } from "@/hooks/useModulePermission"
 
 interface TransactionTableProps {
   data: Transaction[]
   onDelete: (transaction: Transaction) => void
   onEdit: (transaction: Transaction) => void
+  onViewDetail?: (transaction: Transaction) => void
   onRestore?: (transaction: Transaction) => void
   onForceDelete?: (transaction: Transaction) => void
   loading?: boolean
+  isTrash?: boolean
   isTrashed?: boolean
 }
 
@@ -18,12 +21,16 @@ export default function TransactionTable({
   data, 
   onDelete, 
   onEdit, 
-  onRestore, 
-  onForceDelete, 
-  loading, 
-  isTrashed = false 
+  onViewDetail,
+  onRestore,
+  onForceDelete,
+  loading,
+  isTrash = false,
+  isTrashed = false
 }: TransactionTableProps) {
-  
+  const isTrashView = isTrash || isTrashed
+  const { canUpdate, canDelete } = useModulePermission("transactions")
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
@@ -100,43 +107,51 @@ export default function TransactionTable({
       header: "Aksi",
       accessor: (row) => (
         <div className="flex items-center gap-2">
-          {isTrashed ? (
+          {isTrashView ? (
             <>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                icon={RotateCcw} 
-                className="h-9 w-9 rounded-full p-0" 
-                onClick={() => onRestore?.(row)}
-                title="Pulihkan Transaksi" 
-              />
-              <Button 
-                size="sm" 
-                variant="danger" 
-                icon={Trash2} 
-                className="h-9 w-9 rounded-full p-0" 
-                onClick={() => onForceDelete?.(row)}
-                title="Hapus Permanen"
-              />
+              {canUpdate && (
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  icon={RotateCcw} 
+                  className="h-9 w-9 rounded-full p-0" 
+                  onClick={() => onRestore?.(row)}
+                  title="Pulihkan Transaksi" 
+                />
+              )}
+              {canDelete && (
+                <Button 
+                  size="sm" 
+                  variant="danger" 
+                  icon={Trash2} 
+                  className="h-9 w-9 rounded-full p-0" 
+                  onClick={() => onForceDelete?.(row)}
+                  title="Hapus Permanen"
+                />
+              )}
             </>
           ) : (
             <>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                icon={Edit} 
-                className="h-9 w-9 rounded-full p-0" 
-                onClick={() => onEdit(row)}
-                title="Edit Transaksi" 
-              />
-              <Button 
-                size="sm" 
-                variant="danger" 
-                icon={Trash2} 
-                className="h-9 w-9 rounded-full p-0" 
-                onClick={() => onDelete(row)}
-                title="Pindahkan ke Sampah"
-              />
+              {canUpdate && (
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  icon={Edit} 
+                  className="h-9 w-9 rounded-full p-0" 
+                  onClick={() => onEdit(row)}
+                  title="Edit Transaksi" 
+                />
+              )}
+              {canDelete && (
+                <Button 
+                  size="sm" 
+                  variant="danger" 
+                  icon={Trash2} 
+                  className="h-9 w-9 rounded-full p-0" 
+                  onClick={() => onDelete(row)}
+                  title="Pindahkan ke Sampah"
+                />
+              )}
             </>
           )}
         </div>

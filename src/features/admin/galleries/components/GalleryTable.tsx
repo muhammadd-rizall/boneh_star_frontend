@@ -3,6 +3,7 @@ import type { Column } from "@/components/ui/DataTable"
 import { Button } from "@/components/ui/Button"
 import type { Gallery } from "../types/Gallery"
 import { Edit, Trash2, Image as ImageIcon } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface GalleryTableProps {
   data: Gallery[]
@@ -10,6 +11,8 @@ interface GalleryTableProps {
   onEdit: (gallery: Gallery) => void
   onTogglePublish?: (gallery: Gallery) => void
   loading?: boolean
+  canUpdate?: boolean
+  canDelete?: boolean
 }
 
 export default function GalleryTable({ 
@@ -18,6 +21,8 @@ export default function GalleryTable({
   onEdit, 
   onTogglePublish,
   loading, 
+  canUpdate = true,
+  canDelete = true,
 }: GalleryTableProps) {
   const columns: Column<Gallery>[] = [
     { 
@@ -56,14 +61,15 @@ export default function GalleryTable({
       header: "Dipublikasikan",
       accessor: (row) => (
         <div className="flex items-center" onClick={(e) => e.stopPropagation()}>
-          <label className="relative inline-flex items-center cursor-pointer">
+          <label className={cn("relative inline-flex items-center", canUpdate ? "cursor-pointer" : "cursor-not-allowed")}>
             <input
               type="checkbox"
               className="sr-only peer"
               checked={row.is_publish}
+              disabled={!canUpdate}
               onChange={() => onTogglePublish?.(row)}
             />
-            <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-action-blue/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-action-blue"></div>
+            <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-action-blue/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-action-blue peer-disabled:opacity-60"></div>
           </label>
         </div>
       )
@@ -72,22 +78,27 @@ export default function GalleryTable({
       header: "Aksi",
       accessor: (row) => (
         <div className="flex items-center gap-2">
-          <Button 
-            size="sm" 
-            variant="outline" 
-            icon={Edit} 
-            className="h-9 w-9 rounded-full p-0" 
-            onClick={() => onEdit(row)}
-            title="Edit Galeri" 
-          />
-          <Button 
-            size="sm" 
-            variant="danger" 
-            icon={Trash2} 
-            className="h-9 w-9 rounded-full p-0" 
-            onClick={() => onDelete(row)}
-            title="Hapus Galeri"
-          />
+          {canUpdate && (
+            <Button 
+              size="sm" 
+              variant="outline" 
+              icon={Edit} 
+              className="h-9 w-9 rounded-full p-0" 
+              onClick={() => onEdit(row)}
+              title="Edit Galeri" 
+            />
+          )}
+          {canDelete && (
+            <Button 
+              size="sm" 
+              variant="danger" 
+              icon={Trash2} 
+              className="h-9 w-9 rounded-full p-0" 
+              onClick={() => onDelete(row)}
+              title="Hapus Galeri"
+            />
+          )}
+          {!canUpdate && !canDelete && <span className="text-xs text-slate-400 font-medium">-</span>}
         </div>
       )
     }

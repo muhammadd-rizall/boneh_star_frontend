@@ -83,7 +83,7 @@ export default function CustomerPage() {
         actions={
           <PageToolbar
             searchValue={searchTerm} onSearchChange={setSearchTerm} searchPlaceholder="Cari pelanggan..."
-            onCreate={() => { setSelectedCustomer(null); setIsModalOpen(true) }} createLabel="Tambah Pelanggan" createIcon={UserPlus}
+            onCreate={() => { setSelectedCustomer(null); setIsModalOpen(true) }} createLabel="Tambah Pelanggan" createIcon={UserPlus} createPermission="customers.create"
             extraActions={<Button variant="outline" icon={RefreshCcw} className="h-11 rounded-xl px-5" onClick={view === "active" ? () => refetchActive(searchTerm) : refetchTrash} loading={loading}>Refresh</Button>}
           />
         }

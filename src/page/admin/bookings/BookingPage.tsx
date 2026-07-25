@@ -125,6 +125,7 @@ export default function BookingPage() {
             onCreate={handleCreate}
             createLabel="Buat Booking"
             createIcon={Plus}
+            createPermission="bookings.create"
             extraActions={
               <Button
                 variant="outline"

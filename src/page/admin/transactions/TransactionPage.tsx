@@ -73,7 +73,7 @@ export default function TransactionPage() {
           <PageToolbar
             searchValue={searchTerm} onSearchChange={setSearchTerm}
             searchPlaceholder="Cari nomor invoice atau pelanggan..."
-            onCreate={handleCreate} createLabel="Buat Tagihan" createIcon={Plus}
+            onCreate={handleCreate} createLabel="Buat Tagihan" createIcon={Plus} createPermission="transactions.create"
             extraActions={<Button variant="outline" icon={RefreshCcw} className="h-11 rounded-xl px-5" onClick={view === "active" ? () => refetch(searchTerm) : fetchTrashed} loading={loading}>Refresh</Button>}
           />
         }

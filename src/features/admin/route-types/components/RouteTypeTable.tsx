@@ -3,6 +3,7 @@ import type { Column } from "@/components/ui/DataTable"
 import { Button } from "@/components/ui/Button"
 import type { RouteType } from "@/features/admin/route-types/types/RouteType"
 import { Edit, Trash2, Map, RotateCcw } from "lucide-react"
+import { useModulePermission } from "@/hooks/useModulePermission"
 
 interface RouteTypeTableProps {
   data: RouteType[]
@@ -21,6 +22,8 @@ export default function RouteTypeTable({
   loading, 
   isTrash = false 
 }: RouteTypeTableProps) {
+  const { canUpdate, canDelete } = useModulePermission("routes")
+
   const columns: Column<RouteType>[] = [
     { 
       header: "Jenis Rute", 
@@ -71,41 +74,49 @@ export default function RouteTypeTable({
         <div className="flex items-center gap-2">
           {isTrash ? (
             <>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                icon={RotateCcw} 
-                className="h-9 w-9 rounded-full p-0" 
-                onClick={() => onRestore?.(row.id)}
-                title="Pulihkan Jenis Rute" 
-              />
-              <Button 
-                size="sm" 
-                variant="danger" 
-                icon={Trash2} 
-                className="h-9 w-9 rounded-full p-0" 
-                onClick={() => onDelete(row)}
-                title="Hapus Permanen"
-              />
+              {canUpdate && (
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  icon={RotateCcw} 
+                  className="h-9 w-9 rounded-full p-0" 
+                  onClick={() => onRestore?.(row.id)}
+                  title="Pulihkan Jenis Rute" 
+                />
+              )}
+              {canDelete && (
+                <Button 
+                  size="sm" 
+                  variant="danger" 
+                  icon={Trash2} 
+                  className="h-9 w-9 rounded-full p-0" 
+                  onClick={() => onDelete(row)}
+                  title="Hapus Permanen"
+                />
+              )}
             </>
           ) : (
             <>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                icon={Edit} 
-                className="h-9 w-9 rounded-full p-0" 
-                onClick={() => onEdit(row)}
-                title="Edit Jenis Rute" 
-              />
-              <Button 
-                size="sm" 
-                variant="danger" 
-                icon={Trash2} 
-                className="h-9 w-9 rounded-full p-0" 
-                onClick={() => onDelete(row)}
-                title="Hapus Jenis Rute"
-              />
+              {canUpdate && (
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  icon={Edit} 
+                  className="h-9 w-9 rounded-full p-0" 
+                  onClick={() => onEdit(row)}
+                  title="Edit Jenis Rute" 
+                />
+              )}
+              {canDelete && (
+                <Button 
+                  size="sm" 
+                  variant="danger" 
+                  icon={Trash2} 
+                  className="h-9 w-9 rounded-full p-0" 
+                  onClick={() => onDelete(row)}
+                  title="Hapus Jenis Rute"
+                />
+              )}
             </>
           )}
         </div>

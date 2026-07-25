@@ -41,7 +41,7 @@ export default function RouteTypePage() {
         actions={
           <PageToolbar
             searchValue={searchTerm} onSearchChange={setSearchTerm} searchPlaceholder="Cari tipe rute..."
-            onCreate={() => { setSelectedRouteType(null); setIsModalOpen(true) }} createLabel="Tambah Rute" createIcon={Plus}
+            onCreate={() => { setSelectedRouteType(null); setIsModalOpen(true) }} createLabel="Tambah Rute" createIcon={Plus} createPermission="routes.create"
             extraActions={<Button variant="outline" icon={RefreshCcw} className="h-11 rounded-xl px-5" onClick={view === "active" ? () => refetchActive(searchTerm) : refetchTrash} loading={loading}>Refresh</Button>}
           />
         }

@@ -111,6 +111,7 @@ export default function DahsbordLayout() {
 
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
+  const hasPermission = useAuthStore((state) => state.hasPermission);
   const notificationState = useNotifications();
   const { unreadCount } = notificationState;
   const navigate = useNavigate();
@@ -132,6 +133,84 @@ export default function DahsbordLayout() {
   const pageTitle = pageTitles[location.pathname] ?? "Panel Administrasi";
   const roleName = formatRoleName(user?.roles?.[0]?.name || "Administrator");
   const initial = user?.name?.charAt(0).toUpperCase() || "A";
+
+  interface MenuItem {
+    to: string;
+    icon: React.ElementType;
+    label: string;
+    permission?: string;
+  }
+
+  interface MenuGroup {
+    label: string;
+    items: MenuItem[];
+  }
+
+  const menuGroups: MenuGroup[] = [
+    {
+      label: "Ringkasan",
+      items: [
+        { to: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+      ],
+    },
+    {
+      label: "Operasional",
+      items: [
+        { to: "/admin/bookings", icon: CalendarCheck, label: "Pemesanan", permission: "bookings.view" },
+        { to: "/admin/quotations", icon: FileText, label: "Penawaran", permission: "quotations.view" },
+      ],
+    },
+    {
+      label: "Keuangan",
+      items: [
+        { to: "/admin/transactions", icon: Receipt, label: "Transaksi", permission: "transactions.view" },
+        { to: "/admin/payments", icon: CreditCard, label: "Pembayaran", permission: "payments.view" },
+        { to: "/admin/payment-methods", icon: Banknote, label: "Metode Bayar", permission: "payment_methods.view" },
+      ],
+    },
+    {
+      label: "Laporan",
+      items: [
+        { to: "/admin/reports/bookings", icon: BarChart3, label: "Laporan Booking", permission: "reports.bookings" },
+        { to: "/admin/reports/income", icon: TrendingUp, label: "Pendapatan", permission: "reports.income" },
+        { to: "/admin/reports/bus-availability", icon: CalendarRange, label: "Ketersediaan Bus", permission: "buses.view" },
+        { to: "/admin/reviews", icon: MessageSquare, label: "Ulasan", permission: "reviews.view" },
+      ],
+    },
+    {
+      label: "Armada",
+      items: [
+        { to: "/admin/buses", icon: Bus, label: "Data Bus", permission: "buses.view" },
+        { to: "/admin/bus-categories", icon: Layers, label: "Kategori Bus", permission: "categories.view" },
+        { to: "/admin/bus-facilities", icon: Wrench, label: "Fasilitas Bus", permission: "facilities.view" },
+        { to: "/admin/activity-types", icon: Tag, label: "Jenis Aktivitas", permission: "activities.view" },
+        { to: "/admin/route-types", icon: Map, label: "Jenis Rute", permission: "routes.view" },
+        { to: "/admin/galleries", icon: ImageIcon, label: "Galeri Perjalanan", permission: "galleries.view" },
+      ],
+    },
+    {
+      label: "Manajemen",
+      items: [
+        { to: "/admin/drivers", icon: UserCheck, label: "Pengemudi", permission: "drivers.view" },
+        { to: "/admin/users", icon: Users, label: "Pengguna", permission: "users.view" },
+        { to: "/admin/customers", icon: UserCircle, label: "Pelanggan", permission: "customers.view" },
+        { to: "/admin/roles", icon: ShieldCheck, label: "Hak Akses", permission: "roles.view" },
+      ],
+    },
+    {
+      label: "Sistem",
+      items: [
+        { to: "/admin/settings", icon: Settings, label: "Pengaturan", permission: "company_profile.view" },
+      ],
+    },
+  ];
+
+  const filteredMenuGroups = menuGroups
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) => !item.permission || hasPermission(item.permission)),
+    }))
+    .filter((group) => group.items.length > 0);
 
   return (
     <div className="flex h-dvh w-full overflow-hidden bg-white font-sans text-midnight-indigo">
@@ -179,47 +258,20 @@ export default function DahsbordLayout() {
         </div>
 
         <nav className={cn("flex-1 overflow-x-hidden overflow-y-auto py-5 text-midnight-indigo", collapsed ? "px-3" : "px-4")}>
-          <SidebarGroup label="Ringkasan" collapsed={collapsed}>
-            <SidebarItem to="/admin/dashboard" icon={LayoutDashboard} label="Dashboard" collapsed={collapsed} onNavigate={() => setMobileOpen(false)} />
-          </SidebarGroup>
-
-          <SidebarGroup label="Operasional" collapsed={collapsed}>
-            <SidebarItem to="/admin/bookings" icon={CalendarCheck} label="Pemesanan" collapsed={collapsed} onNavigate={() => setMobileOpen(false)} />
-            <SidebarItem to="/admin/quotations" icon={FileText} label="Penawaran" collapsed={collapsed} onNavigate={() => setMobileOpen(false)} />
-          </SidebarGroup>
-
-          <SidebarGroup label="Keuangan" collapsed={collapsed}>
-            <SidebarItem to="/admin/transactions" icon={Receipt} label="Transaksi" collapsed={collapsed} onNavigate={() => setMobileOpen(false)} />
-            <SidebarItem to="/admin/payments" icon={CreditCard} label="Pembayaran" collapsed={collapsed} onNavigate={() => setMobileOpen(false)} />
-            <SidebarItem to="/admin/payment-methods" icon={Banknote} label="Metode Bayar" collapsed={collapsed} onNavigate={() => setMobileOpen(false)} />
-          </SidebarGroup>
-
-          <SidebarGroup label="Laporan" collapsed={collapsed}>
-            <SidebarItem to="/admin/reports/bookings" icon={BarChart3} label="Laporan Booking" collapsed={collapsed} onNavigate={() => setMobileOpen(false)} />
-            <SidebarItem to="/admin/reports/income" icon={TrendingUp} label="Pendapatan" collapsed={collapsed} onNavigate={() => setMobileOpen(false)} />
-            <SidebarItem to="/admin/reports/bus-availability" icon={CalendarRange} label="Ketersediaan Bus" collapsed={collapsed} onNavigate={() => setMobileOpen(false)} />
-            <SidebarItem to="/admin/reviews" icon={MessageSquare} label="Ulasan" collapsed={collapsed} onNavigate={() => setMobileOpen(false)} />
-          </SidebarGroup>
-
-          <SidebarGroup label="Armada" collapsed={collapsed}>
-            <SidebarItem to="/admin/buses" icon={Bus} label="Data Bus" collapsed={collapsed} onNavigate={() => setMobileOpen(false)} />
-            <SidebarItem to="/admin/bus-categories" icon={Layers} label="Kategori Bus" collapsed={collapsed} onNavigate={() => setMobileOpen(false)} />
-            <SidebarItem to="/admin/bus-facilities" icon={Wrench} label="Fasilitas Bus" collapsed={collapsed} onNavigate={() => setMobileOpen(false)} />
-            <SidebarItem to="/admin/activity-types" icon={Tag} label="Jenis Aktivitas" collapsed={collapsed} onNavigate={() => setMobileOpen(false)} />
-            <SidebarItem to="/admin/route-types" icon={Map} label="Jenis Rute" collapsed={collapsed} onNavigate={() => setMobileOpen(false)} />
-            <SidebarItem to="/admin/galleries" icon={ImageIcon} label="Galeri Perjalanan" collapsed={collapsed} onNavigate={() => setMobileOpen(false)} />
-          </SidebarGroup>
-
-          <SidebarGroup label="Manajemen" collapsed={collapsed}>
-            <SidebarItem to="/admin/drivers" icon={UserCheck} label="Pengemudi" collapsed={collapsed} onNavigate={() => setMobileOpen(false)} />
-            <SidebarItem to="/admin/users" icon={Users} label="Pengguna" collapsed={collapsed} onNavigate={() => setMobileOpen(false)} />
-            <SidebarItem to="/admin/customers" icon={UserCircle} label="Pelanggan" collapsed={collapsed} onNavigate={() => setMobileOpen(false)} />
-            <SidebarItem to="/admin/roles" icon={ShieldCheck} label="Hak Akses" collapsed={collapsed} onNavigate={() => setMobileOpen(false)} />
-          </SidebarGroup>
-
-          <SidebarGroup label="Sistem" collapsed={collapsed}>
-            <SidebarItem to="/admin/settings" icon={Settings} label="Pengaturan" collapsed={collapsed} onNavigate={() => setMobileOpen(false)} />
-          </SidebarGroup>
+          {filteredMenuGroups.map((group) => (
+            <SidebarGroup key={group.label} label={group.label} collapsed={collapsed}>
+              {group.items.map((item) => (
+                <SidebarItem
+                  key={item.to}
+                  to={item.to}
+                  icon={item.icon}
+                  label={item.label}
+                  collapsed={collapsed}
+                  onNavigate={() => setMobileOpen(false)}
+                />
+              ))}
+            </SidebarGroup>
+          ))}
         </nav>
 
         <div className={cn("shrink-0 border-t border-platinum-tint/60", collapsed ? "p-3" : "p-4")}>

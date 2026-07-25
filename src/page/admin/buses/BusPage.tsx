@@ -121,6 +121,7 @@ export default function BusPage() {
             onCreate={handleCreate}
             createLabel="Tambah Bus"
             createIcon={Plus}
+            createPermission="buses.create"
             extraActions={
               <Button
                 variant="outline"

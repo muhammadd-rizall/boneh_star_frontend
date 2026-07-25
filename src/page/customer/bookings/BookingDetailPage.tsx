@@ -435,6 +435,7 @@ export default function BookingDetailPage() {
                         quotation={booking.quotation as any}
                         whatsappNumber={companyProfile?.whatsapp?.[0]}
                         bookingCode={booking.booking_code}
+                        bookingStatus={booking.status}
                         onAccept={() => acceptQuotation(booking.quotation!.id)}
                         onRevise={(note) => reviseQuotation(booking.quotation!.id, note)}
                       />

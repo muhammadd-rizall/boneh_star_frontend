@@ -48,7 +48,7 @@ export default function RolePage() {
         actions={
           <PageToolbar
             searchValue={searchTerm} onSearchChange={setSearchTerm} searchPlaceholder="Cari role..."
-            onCreate={() => { setSelectedRole(null); setIsModalOpen(true) }} createLabel="Buat Role" createIcon={Plus}
+            onCreate={() => { setSelectedRole(null); setIsModalOpen(true) }} createLabel="Buat Role" createIcon={Plus} createPermission="roles.create"
             extraActions={<Button variant="outline" icon={RefreshCcw} className="h-11 rounded-xl px-5" onClick={refetch} loading={loading}>Refresh</Button>}
           />
         }

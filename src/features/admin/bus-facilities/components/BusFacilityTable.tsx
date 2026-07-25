@@ -3,6 +3,7 @@ import type { Column } from "@/components/ui/DataTable"
 import { Button } from "@/components/ui/Button"
 import type { BusFacility } from "@/features/admin/bus-facilities/types/BusFacility"
 import { Edit, Trash2, Shield, RotateCcw } from "lucide-react"
+import { useModulePermission } from "@/hooks/useModulePermission"
 
 interface BusFacilityTableProps {
   data: BusFacility[]
@@ -21,6 +22,8 @@ export default function BusFacilityTable({
   loading, 
   isTrash = false 
 }: BusFacilityTableProps) {
+  const { canUpdate, canDelete } = useModulePermission("facilities")
+
   const columns: Column<BusFacility>[] = [
     { 
       header: "Nama Fasilitas", 
@@ -53,41 +56,49 @@ export default function BusFacilityTable({
         <div className="flex items-center gap-2">
           {isTrash ? (
             <>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                icon={RotateCcw} 
-                className="h-9 w-9 rounded-full p-0" 
-                onClick={() => onRestore?.(row.id)}
-                title="Pulihkan Fasilitas" 
-              />
-              <Button 
-                size="sm" 
-                variant="danger" 
-                icon={Trash2} 
-                className="h-9 w-9 rounded-full p-0" 
-                onClick={() => onDelete(row)}
-                title="Hapus Permanen"
-              />
+              {canUpdate && (
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  icon={RotateCcw} 
+                  className="h-9 w-9 rounded-full p-0" 
+                  onClick={() => onRestore?.(row.id)}
+                  title="Pulihkan Fasilitas" 
+                />
+              )}
+              {canDelete && (
+                <Button 
+                  size="sm" 
+                  variant="danger" 
+                  icon={Trash2} 
+                  className="h-9 w-9 rounded-full p-0" 
+                  onClick={() => onDelete(row)}
+                  title="Hapus Permanen"
+                />
+              )}
             </>
           ) : (
             <>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                icon={Edit} 
-                className="h-9 w-9 rounded-full p-0" 
-                onClick={() => onEdit(row)}
-                title="Edit Fasilitas" 
-              />
-              <Button 
-                size="sm" 
-                variant="danger" 
-                icon={Trash2} 
-                className="h-9 w-9 rounded-full p-0" 
-                onClick={() => onDelete(row)}
-                title="Hapus Fasilitas"
-              />
+              {canUpdate && (
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  icon={Edit} 
+                  className="h-9 w-9 rounded-full p-0" 
+                  onClick={() => onEdit(row)}
+                  title="Edit Fasilitas" 
+                />
+              )}
+              {canDelete && (
+                <Button 
+                  size="sm" 
+                  variant="danger" 
+                  icon={Trash2} 
+                  className="h-9 w-9 rounded-full p-0" 
+                  onClick={() => onDelete(row)}
+                  title="Hapus Fasilitas"
+                />
+              )}
             </>
           )}
         </div>

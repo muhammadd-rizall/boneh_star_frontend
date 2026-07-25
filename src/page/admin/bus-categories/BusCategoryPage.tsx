@@ -41,7 +41,7 @@ export default function BusCategoryPage() {
         actions={
           <PageToolbar
             searchValue={searchTerm} onSearchChange={setSearchTerm} searchPlaceholder="Cari kategori..."
-            onCreate={() => { setSelectedCategory(null); setIsModalOpen(true) }} createLabel="Tambah Kategori" createIcon={Plus}
+            onCreate={() => { setSelectedCategory(null); setIsModalOpen(true) }} createLabel="Tambah Kategori" createIcon={Plus} createPermission="categories.create"
             extraActions={<Button variant="outline" icon={RefreshCcw} className="h-11 rounded-xl px-5" onClick={view === "active" ? () => refetchActive(searchTerm) : refetchTrash} loading={loading}>Refresh</Button>}
           />
         }
