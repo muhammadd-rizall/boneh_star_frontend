@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/Button"
 import type { BusCategory } from "@/features/admin/bus-categories/types/BusCategory"
 import { Edit, Trash2, Layout, Users, FileText, RotateCcw } from "lucide-react"
 import { useModulePermission } from "@/hooks/useModulePermission"
+import { formatCurrency } from "@/utils/formatter"
 
 interface BusCategoryTableProps {
   data: BusCategory[]
@@ -51,6 +52,24 @@ export default function BusCategoryTable({
           <Users size={14} className="text-slate-400" />
           <span>{row.min_capacity} - {row.max_capacity} Kursi</span>
         </div>
+      )
+    },
+    { 
+      header: "Dalam Kota (Estimasi)", 
+      accessor: (row) => (
+        <span className="text-xs text-slate-600 font-medium">
+          {row.price_inside_min && row.price_inside_max
+            ? `${formatCurrency(row.price_inside_min)} - ${formatCurrency(row.price_inside_max)}`
+            : "—"}
+        </span>
+      )
+    },
+    { 
+      header: "Luar Kota (Estimasi)", 
+      accessor: (row) => (
+        <span className="text-xs text-slate-600 font-medium">
+          {row.price_outside ? `${formatCurrency(row.price_outside)} / Hari` : "—"}
+        </span>
       )
     },
     {

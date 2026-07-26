@@ -104,11 +104,11 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
               className={cn(
                 "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-150",
                 location.pathname === '/'
-                  ? "bg-emerald-50/70 text-emerald-800"
+                  ? "bg-action-blue/10 text-action-blue"
                   : "text-slate-blue hover:text-gray-900 hover:bg-cloud-mist"
               )}
             >
-              <Home size={18} className={location.pathname === '/' ? "text-emerald-700" : "text-steel-gray"} />
+              <Home size={18} className={location.pathname === '/' ? "text-action-blue" : "text-steel-gray"} />
               <span>Beranda</span>
             </Link>
 
@@ -118,11 +118,11 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
               className={cn(
                 "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-150",
                 location.pathname === '/armada'
-                  ? "bg-emerald-50/70 text-emerald-800"
+                  ? "bg-action-blue/10 text-action-blue"
                   : "text-slate-blue hover:text-gray-900 hover:bg-cloud-mist"
               )}
             >
-              <Bus size={18} className={location.pathname === '/armada' ? "text-emerald-700" : "text-steel-gray"} />
+              <Bus size={18} className={location.pathname === '/armada' ? "text-action-blue" : "text-steel-gray"} />
               <span>Daftar Armada</span>
             </Link>
 
@@ -140,12 +140,12 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                     className={cn(
                       "flex w-full items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-150 cursor-pointer",
                       isBookingsRoute && !['stats', 'pending', 'offers', 'history'].includes(activeTab)
-                        ? "bg-emerald-50/70 text-emerald-800"
+                        ? "bg-action-blue/10 text-action-blue"
                         : "text-slate-blue hover:text-gray-900 hover:bg-cloud-mist"
                     )}
                   >
                     <div className="flex items-center gap-3">
-                      <CalendarCheck size={18} className={isBookingsRoute ? "text-emerald-700" : "text-steel-gray"} />
+                      <CalendarCheck size={18} className={isBookingsRoute ? "text-action-blue" : "text-steel-gray"} />
                       <span>Pemesanan</span>
                     </div>
                     <ChevronDown
@@ -161,7 +161,7 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                         to="/customer/bookings?tab=stats"
                         className={cn(
                           "block py-1.5 text-xs font-bold transition-all",
-                          isSubActive('stats') ? "text-emerald-800" : "text-slate-blue hover:text-gray-900"
+                          isSubActive('stats') ? "text-action-blue" : "text-slate-blue hover:text-gray-900"
                         )}
                       >
                         Statistik
@@ -170,7 +170,7 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                         to="/customer/bookings?tab=pending"
                         className={cn(
                           "block py-1.5 text-xs font-bold transition-all",
-                          isSubActive('pending') ? "text-emerald-800" : "text-slate-blue hover:text-gray-900"
+                          isSubActive('pending') ? "text-action-blue" : "text-slate-blue hover:text-gray-900"
                         )}
                       >
                         Pengajuan
@@ -179,7 +179,7 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                         to="/customer/bookings?tab=offers"
                         className={cn(
                           "block py-1.5 text-xs font-bold transition-all",
-                          isSubActive('offers') ? "text-emerald-800" : "text-slate-blue hover:text-gray-900"
+                          isSubActive('offers') ? "text-action-blue" : "text-slate-blue hover:text-gray-900"
                         )}
                       >
                         Penawaran
@@ -188,7 +188,7 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                         to="/customer/bookings?tab=history"
                         className={cn(
                           "block py-1.5 text-xs font-bold transition-all",
-                          isSubActive('history') ? "text-emerald-800" : "text-slate-blue hover:text-gray-900"
+                          isSubActive('history') ? "text-action-blue" : "text-slate-blue hover:text-gray-900"
                         )}
                       >
                         Riwayat
@@ -203,11 +203,11 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                   className={cn(
                     "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-150",
                     location.pathname === '/customer/bookings/request'
-                      ? "bg-emerald-50/70 text-emerald-800"
+                      ? "bg-action-blue/10 text-action-blue"
                       : "text-slate-blue hover:text-gray-900 hover:bg-cloud-mist"
                   )}
                 >
-                  <CalendarPlus size={18} className={location.pathname === '/customer/bookings/request' ? "text-emerald-700" : "text-steel-gray"} />
+                  <CalendarPlus size={18} className={location.pathname === '/customer/bookings/request' ? "text-action-blue" : "text-steel-gray"} />
                   <span>Buat Pemesanan</span>
                 </Link>
 
@@ -217,11 +217,11 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                   className={cn(
                     "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-150",
                     location.pathname === '/customer/reviews'
-                      ? "bg-emerald-50/70 text-emerald-800"
+                      ? "bg-action-blue/10 text-action-blue"
                       : "text-slate-blue hover:text-gray-900 hover:bg-cloud-mist"
                   )}
                 >
-                  <MessageSquare size={18} className={location.pathname === '/customer/reviews' ? "text-emerald-700" : "text-steel-gray"} />
+                  <MessageSquare size={18} className={location.pathname === '/customer/reviews' ? "text-action-blue" : "text-steel-gray"} />
                   <span>Ulasan Saya</span>
                 </Link>
 
@@ -231,12 +231,12 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                   className={cn(
                     "flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-150",
                     location.pathname === '/customer/notifications'
-                      ? "bg-emerald-50/70 text-emerald-800"
+                      ? "bg-action-blue/10 text-action-blue"
                       : "text-slate-blue hover:text-gray-900 hover:bg-cloud-mist"
                   )}
                 >
                   <div className="flex items-center gap-3">
-                    <Bell size={18} className={location.pathname === '/customer/notifications' ? "text-emerald-700" : "text-steel-gray"} />
+                    <Bell size={18} className={location.pathname === '/customer/notifications' ? "text-action-blue" : "text-steel-gray"} />
                     <span>Notifikasi</span>
                   </div>
                   {unreadCount > 0 && (
@@ -261,11 +261,11 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                   className={cn(
                     "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-150",
                     location.pathname === '/customer/profile'
-                      ? "bg-[#EAF5F0] text-[#0E5F38]"
+                      ? "bg-action-blue/10 text-action-blue"
                       : "text-slate-blue hover:text-gray-900 hover:bg-cloud-mist"
                   )}
                 >
-                  <User size={18} className={location.pathname === '/customer/profile' ? "text-[#0E5F38]" : "text-steel-gray"} />
+                  <User size={18} className={location.pathname === '/customer/profile' ? "text-action-blue" : "text-steel-gray"} />
                   <span>Profil Akun</span>
                 </Link>
               </nav>

@@ -9,15 +9,15 @@ const faqs = [
   },
   {
     question: "Apa saja yang sudah dan belum termasuk dalam tarif sewa bus?",
-    answer: "Tarif sewa bus yang ditawarkan sudah termasuk Unit Bus Pariwisata, Jasa Driver & Co-Driver profesional, serta Bahan Bakar Minyak (BBM). Biaya yang belum termasuk meliputi: Biaya Tol, Parkir, Tiket Masuk Objek Wisata, Penyeberangan Kapal (Ferry), dan Tips/Uang Makan Kru Driver."
+    answer: "Tarif sewa bus yang ditawarkan sudah termasuk Unit Bus Pariwisata, Jasa Driver & Co-Driver profesional, serta Bahan Bakar Minyak (BBM). Biaya yang belum termasuk meliputi: Biaya Tol, Parkir, Tiket Masuk Objek Wisata, Penyeberangan Kapal (Ferry), dan Tips/Uang Makan Kru Driver, atau dapat disesuaikan kembali sesuai dengan kesepakatan bersama pihak bus."
   },
   {
     question: "Bagaimana ketentuan DP (Down Payment) dan Pelunasan?",
-    answer: "Pembayaran DP minimal 30% dari total nilai penawaran disetujui untuk mengunci ketersediaan unit armada. Pelunasan tagihan sisa (70%) wajib diselesaikan paling lambat H-3 sebelum tanggal keberangkatan."
+    answer: "Pembayaran DP minimal 30% dari total nilai penawaran disetujui untuk mengunci ketersediaan unit armada. Pelunasan sisa tagihan (70%) wajib diselesaikan paling lambat H-3 sebelum keberangkatan untuk rute dalam kota, dan paling lambat H-7 sebelum keberangkatan untuk rute luar kota."
   },
   {
     question: "Bagaimana Kebijakan Pembatalan (Cancellation & Refund Policy)?",
-    answer: "Pembatalan H-7 atau lebih sebelum keberangkatan berhak menerima refund 50% dari DP. Pembatalan H-3 hingga H-6 menyebabkan DP hangus (0% refund). Pembatalan H-1 atau pada Hari H dikenakan denda 100% dari total sewa. Reschedule tanggal bebas biaya jika diajukan minimal H-7 sebelum keberangkatan (selama armada tersedia)."
+    answer: "Pembatalan H-7 atau lebih sebelum keberangkatan berhak menerima pengembalian dana penuh (100% refund). Pembatalan H-6 hingga H-1 sebelum keberangkatan mendapatkan pengembalian sebesar 50%. Pembatalan pada Hari H (hari keberangkatan) tidak dapat dibatalkan atau dana tidak dapat dikembalikan (0% refund)."
   },
   {
     question: "Berapa hari sebelum keberangkatan pemesanan idealnya dilakukan?",

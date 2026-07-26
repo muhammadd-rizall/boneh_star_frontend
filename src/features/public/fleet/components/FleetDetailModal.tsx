@@ -30,6 +30,7 @@ import type { Bus as BusType } from "@/features/admin/buses/types/Bus";
 import { getCapacityLabel } from "../utils/fleetCardUtils";
 import { usePublicCompanyProfile } from "@/features/admin/company-profile/hooks/usePublicCompanyProfile";
 import { useCustomerAuthStore } from "@/features/auth/public";
+import { formatCurrency } from "@/utils/formatter";
 
 interface FleetDetailModalProps {
   bus: BusType;
@@ -216,6 +217,25 @@ export default function FleetDetailModal({ bus, onClose }: FleetDetailModalProps
                 </div>
               </div>
             </div>
+
+            {/* Tarif Sewa (Estimasi) */}
+            {bus.category?.price_inside_min && bus.category?.price_outside && (
+              <div className="p-4 rounded-2xl bg-blue-50/10 border border-blue-100/20 mb-6 flex justify-between items-center text-sm">
+                <div>
+                  <p className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Estimasi Dalam Kota</p>
+                  <p className="text-base text-slate-800 font-black">
+                    {formatCurrency(bus.category.price_inside_min)} - {formatCurrency(bus.category.price_inside_max ?? 0)}
+                  </p>
+                </div>
+                <div className="h-8 w-px bg-slate-200" />
+                <div className="text-right">
+                  <p className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Estimasi Luar Kota</p>
+                  <p className="text-base text-[#006bff] font-black">
+                    {formatCurrency(bus.category.price_outside)} <span className="text-xs text-slate-500 font-normal">/ Hari</span>
+                  </p>
+                </div>
+              </div>
+            )}
 
             {/* Description */}
             <div className="mb-6 text-left">

@@ -27,7 +27,9 @@ import {
   Plus,
   Trash2,
   Contact,
-  ClipboardList
+  ClipboardList,
+  Sparkles,
+  Check
 } from "lucide-react";
 
 interface BookingFormProps {
@@ -41,6 +43,7 @@ export default function BookingForm({ booking, onSuccess, onCancel }: BookingFor
   const [loading, setLoading] = useState(false);
   const [fetchingData, setFetchingData] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [preferredBusesText, setPreferredBusesText] = useState<string | null>(null);
 
   const [customers, setCustomers] = useState<{label: string, value: string}[]>([]);
   const [activities, setActivities] = useState<{label: string, value: string}[]>([]);
@@ -99,6 +102,11 @@ export default function BookingForm({ booking, onSuccess, onCancel }: BookingFor
 
   useEffect(() => {
     if (booking) {
+      const rawNotes = booking.special_notes || "";
+      const match = rawNotes.match(/\[Armada Pilihan Customer: (.*?)\]/);
+      const extractedPref = match ? match[1] : null;
+      setPreferredBusesText(extractedPref);
+
       setFormData({
         customer_id: booking.customer_id,
         activity_id: booking.activity_id,
@@ -110,7 +118,7 @@ export default function BookingForm({ booking, onSuccess, onCancel }: BookingFor
         full_route: booking.full_route || "",
         passenger_count: booking.passenger_count,
         bus_count_requested: booking.bus_count_requested,
-        special_notes: booking.special_notes || "",
+        special_notes: match ? rawNotes.replace(/\[Armada Pilihan Customer: .*?\]/, '').trim() : rawNotes,
         status: booking.status,
         cancelled_by: booking.cancelled_by || null,
         cancelled_reason: booking.cancelled_reason || "",
@@ -154,17 +162,58 @@ export default function BookingForm({ booking, onSuccess, onCancel }: BookingFor
     setFormData({ ...formData, buses: updatedBuses });
   };
 
+  const handleAssignPreferredBuses = () => {
+    if (!preferredBusesText) return;
+
+    // Ambil plat nomor di dalam tanda kurung ()
+    const matches = [...preferredBusesText.matchAll(/\((.*?)\)/g)].map(m => m[1].trim().toLowerCase());
+    const matchedBuses: typeof availableBuses = [];
+
+    if (matches.length > 0) {
+      matches.forEach(plat => {
+        const found = availableBuses.find(b => b.label.toLowerCase().includes(plat));
+        if (found) matchedBuses.push(found);
+      });
+    } else {
+      // Fallback mencocokkan nama
+      const parts = preferredBusesText.split(',').map(p => p.trim().toLowerCase());
+      parts.forEach(part => {
+        const found = availableBuses.find(b => b.label.toLowerCase().includes(part));
+        if (found) matchedBuses.push(found);
+      });
+    }
+
+    if (matchedBuses.length > 0) {
+      const newBuses = matchedBuses.map(b => ({
+        bus_id: b.value,
+        driver_id: "", // Admin memilih supir secara manual
+        seat_count: b.seats,
+        assignment_notes: "Sesuai pilihan customer"
+      }));
+
+      setFormData(prev => ({
+        ...prev,
+        buses: newBuses
+      }));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
     try {
+      const rawNotes = formData.special_notes || "";
+      const finalNotes = preferredBusesText
+        ? `[Armada Pilihan Customer: ${preferredBusesText}]\n${rawNotes}`.trim()
+        : rawNotes || null;
+
       const dataToSubmit = {
         ...formData,
         return_date: formData.return_date || null,
         full_route: formData.full_route || null,
-        special_notes: formData.special_notes || null,
+        special_notes: finalNotes,
         cancelled_by: formData.status === 'cancelled' ? formData.cancelled_by : null,
         cancelled_reason: formData.status === 'cancelled' ? formData.cancelled_reason : null,
       };
@@ -353,6 +402,30 @@ export default function BookingForm({ booking, onSuccess, onCancel }: BookingFor
             Tambah Penugasan
           </Button>
         </div>
+
+        {preferredBusesText && (
+          <div className="rounded-[24px] border border-amber-200 bg-amber-50/40 p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm animate-in fade-in duration-300">
+            <div className="flex gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-100/60 text-amber-700">
+                <Sparkles size={18} className="animate-pulse" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-amber-800">Preferensi Armada Customer</p>
+                <p className="text-xs text-amber-700 mt-1 font-semibold leading-relaxed">
+                  Customer memesan unit spesifik: <span className="font-bold underline">{preferredBusesText}</span>
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={handleAssignPreferredBuses}
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-amber-600 text-white text-xs font-bold hover:bg-amber-700 transition-all cursor-pointer shadow-md shadow-amber-600/10 whitespace-nowrap self-stretch sm:self-auto justify-center"
+            >
+              <Check size={13} strokeWidth={3} />
+              Tugaskan Pilihan Customer
+            </button>
+          </div>
+        )}
 
         {(!formData.buses || formData.buses.length === 0) ? (
           <div className="rounded-[24px] border border-dashed border-platinum-tint p-12 text-center text-slate-blue bg-cloud-mist/30 transition-all hover:bg-cloud-mist/50">

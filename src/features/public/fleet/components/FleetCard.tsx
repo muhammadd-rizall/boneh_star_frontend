@@ -16,6 +16,7 @@ import type { Bus } from "@/features/admin/buses/types/Bus";
 import { cn } from "@/lib/utils";
 import { getCapacityLabel } from "../utils/fleetCardUtils";
 import { usePublicCompanyProfile } from "@/features/admin/company-profile/hooks/usePublicCompanyProfile";
+import { formatCurrency } from "@/utils/formatter";
 
 export interface FleetCardProps {
   bus: Bus;
@@ -165,8 +166,25 @@ export default function FleetCard({
           )}
         </div>
 
+        {/* Dynamic Pricing Estimate (If available) */}
+        {bus.category?.price_inside_min && bus.category?.price_outside && (
+          <div className="mt-4 flex items-center justify-between gap-2 border-t border-slate-100 pt-4 text-xs font-bold text-slate-blue">
+            <div className="flex flex-col">
+              <span className="text-[9px] text-slate-blue/60 uppercase tracking-wide">Dalam Kota:</span>
+              <span className="text-midnight-indigo font-black text-sm">{formatCurrency(bus.category.price_inside_min)}</span>
+            </div>
+            <div className="h-6 w-px bg-slate-200" />
+            <div className="flex flex-col text-right">
+              <span className="text-[9px] text-slate-blue/60 uppercase tracking-wide">Luar Kota / Hari:</span>
+              <span className="text-midnight-indigo font-black text-sm">
+                {formatCurrency(bus.category.price_outside)}
+              </span>
+            </div>
+          </div>
+        )}
+
         {/* Action Button */}
-        <div className="mt-auto pt-6">
+        <div className="mt-auto pt-5">
           <a
             href={whatsappUrl}
             onClick={handleDetailClick}

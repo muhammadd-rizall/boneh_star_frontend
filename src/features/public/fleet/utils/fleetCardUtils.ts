@@ -14,15 +14,5 @@ export function getBusStatusMeta(status: Bus["status"]) {
 }
 
 export function getCapacityLabel(bus: Bus): string {
-  const seats = bus.seat_count;
-  const category = bus.category;
-
-  if (category?.min_capacity && category?.max_capacity) {
-    if (category.min_capacity === category.max_capacity) {
-      return `${seats} kursi`;
-    }
-    return `${category.min_capacity}–${category.max_capacity} kursi`;
-  }
-
-  return `${seats} kursi`;
+  return `${bus.seat_count} kursi`;
 }

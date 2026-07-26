@@ -33,6 +33,9 @@ export interface CustomerQuotation extends TimestampedEntity {
   status: QuotationStatus;
   valid_until: string;
   revision_note: string | null;
+
+  // Relations
+  booking?: CustomerBooking;
 }
 
 export interface CustomerTransaction extends TimestampedEntity {

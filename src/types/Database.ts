@@ -121,6 +121,9 @@ export interface BusCategory extends TimestampedEntity {
   name: string
   min_capacity: number
   max_capacity: number
+  price_inside_min?: number | null
+  price_inside_max?: number | null
+  price_outside?: number | null
   description?: string | null
 }
 

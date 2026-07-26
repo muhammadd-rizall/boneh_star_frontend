@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { DialogFooter } from "@/components/ui/Dialog";
-import { Layout, Users, FileText, Save, XCircle } from "lucide-react";
+import { Layout, Users, FileText, Save, XCircle, Banknote } from "lucide-react";
 import type { BusCategory, BusCategoryFormData } from "../types/BusCategory";
 import { busCategoryService } from "../services/BusCategoryService";
 import { Textarea } from "@/components/ui/Textarea";
@@ -22,6 +22,9 @@ export default function BusCategoryForm({ category, onSuccess, onCancel }: BusCa
     name: "",
     min_capacity: 1,
     max_capacity: 1,
+    price_inside_min: null,
+    price_inside_max: null,
+    price_outside: null,
     description: "",
   });
 
@@ -31,6 +34,9 @@ export default function BusCategoryForm({ category, onSuccess, onCancel }: BusCa
         name: category.name || "",
         min_capacity: category.min_capacity || 1,
         max_capacity: category.max_capacity || 1,
+        price_inside_min: category.price_inside_min ?? null,
+        price_inside_max: category.price_inside_max ?? null,
+        price_outside: category.price_outside ?? null,
         description: category.description || "",
       });
     } else {
@@ -38,6 +44,9 @@ export default function BusCategoryForm({ category, onSuccess, onCancel }: BusCa
         name: "",
         min_capacity: 1,
         max_capacity: 1,
+        price_inside_min: null,
+        price_inside_max: null,
+        price_outside: null,
         description: "",
       });
     }
@@ -111,6 +120,38 @@ export default function BusCategoryForm({ category, onSuccess, onCancel }: BusCa
             min={1}
           />
         </div>
+
+        <div className="grid gap-6 md:grid-cols-2">
+          <Input
+            label="Estimasi Dalam Kota (Min) (Rp)"
+            type="number"
+            placeholder="Contoh: 2000000"
+            icon={Banknote}
+            value={formData.price_inside_min?.toString() || ""}
+            onChange={(e) => setFormData({ ...formData, price_inside_min: e.target.value ? Number(e.target.value) : null })}
+            min={0}
+          />
+
+          <Input
+            label="Estimasi Dalam Kota (Max) (Rp)"
+            type="number"
+            placeholder="Contoh: 2800000"
+            icon={Banknote}
+            value={formData.price_inside_max?.toString() || ""}
+            onChange={(e) => setFormData({ ...formData, price_inside_max: e.target.value ? Number(e.target.value) : null })}
+            min={0}
+          />
+        </div>
+
+        <Input
+          label="Estimasi Luar Kota / Hari (Rp)"
+          type="number"
+          placeholder="Contoh: 3000000"
+          icon={Banknote}
+          value={formData.price_outside?.toString() || ""}
+          onChange={(e) => setFormData({ ...formData, price_outside: e.target.value ? Number(e.target.value) : null })}
+          min={0}
+        />
 
         <Textarea
           label="Deskripsi Kategori"
