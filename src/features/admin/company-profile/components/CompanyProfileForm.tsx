@@ -302,11 +302,11 @@ export default function CompanyProfileForm() {
                   placeholder="Ceritakan tentang perusahaan Anda..."
                   value={formData.description || ""}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  maxLength={500}
-                  rows={3}
+                  maxLength={5000}
+                  rows={4}
                 />
                 <div className="absolute bottom-3 right-4 text-[10px] text-slate-400 font-semibold">
-                  {(formData.description || "").length}/500
+                  {(formData.description || "").length}/5000
                 </div>
               </div>
             </div>

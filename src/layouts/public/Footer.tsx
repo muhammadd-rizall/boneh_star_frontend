@@ -141,10 +141,9 @@ export default function Footer({ companyProfile }: FooterProps) {
                   {companyProfile.company_name}
                 </span>
               </div>
-              
+
               <p className="text-sm leading-relaxed text-slate-500 max-w-sm">
-                {companyProfile.description ||
-                  "Menyediakan layanan transportasi pariwisata terbaik dengan armada nyaman, aman, dan terawat untuk setiap perjalanan Anda."}
+                Menyediakan layanan transportasi pariwisata terbaik dengan armada nyaman, aman, dan terawat untuk setiap perjalanan Anda.
               </p>
 
               {/* Social Media Circular Buttons */}
@@ -204,14 +203,14 @@ export default function Footer({ companyProfile }: FooterProps) {
               </div>
 
               {/* Kontak Kami */}
-              <div className="flex flex-col gap-4 sm:col-span-1">
+              <div className="flex flex-col gap-6 sm:col-span-1">
                 <h4 className="text-xs font-extrabold text-midnight-indigo uppercase tracking-wider">Kontak Kami</h4>
                 <div className="flex flex-col gap-3.5 text-sm text-slate-500">
                   <div className="flex items-start gap-2.5">
                     <MapPin size={16} className="mt-0.5 text-slate-400 shrink-0" />
                     <span className="leading-relaxed font-medium">{companyProfile.address}</span>
                   </div>
-                  
+
                   <div className="flex flex-col gap-2.5">
                     {whatsappNumbers.map((whatsapp, idx) => (
                       <a

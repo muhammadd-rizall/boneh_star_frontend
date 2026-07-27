@@ -1010,15 +1010,18 @@ export default function BookingRequestPage() {
 
                                 {/* Bus Thumbnail */}
                                 <div className="h-36 w-full bg-slate-50 border-b border-slate-200/50 relative overflow-hidden flex items-center justify-center">
-                                  {bus.images && bus.images.length > 0 ? (
-                                    <img
-                                      src={bus.images[0].url}
-                                      alt={bus.name}
-                                      className="h-full w-full object-cover"
-                                    />
-                                  ) : (
-                                    <BusIcon size={32} className="text-slate-400 opacity-45" />
-                                  )}
+                                  {(() => {
+                                    const primaryImg = bus.images?.find(img => img.is_primary) || bus.images?.[0];
+                                    return primaryImg ? (
+                                      <img
+                                        src={primaryImg.url}
+                                        alt={bus.name}
+                                        className="h-full w-full object-cover"
+                                      />
+                                    ) : (
+                                      <BusIcon size={32} className="text-slate-400 opacity-45" />
+                                    );
+                                  })()}
                                   <div className="absolute bottom-2 left-2 bg-gray-900/70 backdrop-blur-[2px] px-2 py-0.5 rounded text-[10px] font-bold text-white uppercase tracking-wide">
                                     {bus.plat_number}
                                   </div>

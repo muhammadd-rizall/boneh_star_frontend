@@ -55,9 +55,10 @@ export default function FleetDetailModal({ bus, onClose }: FleetDetailModalProps
   const { profile } = usePublicCompanyProfile();
   const navigate = useNavigate();
   const isCustomerAuthenticated = useCustomerAuthStore((state) => state.isAuthenticated);
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
-
   const images = bus.images ?? [];
+  const primaryIndex = images.findIndex((img) => img.is_primary);
+  const [activeImageIndex, setActiveImageIndex] = useState(primaryIndex !== -1 ? primaryIndex : 0);
+
   const activeImage = images[activeImageIndex] || images[0];
   const activeImageUrl = resolveMediaUrl(activeImage?.url);
   const facilities = bus.facilities ?? [];

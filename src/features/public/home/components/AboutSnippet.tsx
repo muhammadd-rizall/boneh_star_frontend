@@ -7,6 +7,11 @@ export default function AboutSnippet() {
   const { ref, inView } = useInView(0.1);
   const { profile } = usePublicCompanyProfile();
 
+  const rawDescription = profile.description || `${profile.company_name || "Boneh Star"} hadir untuk memberikan solusi transportasi pariwisata terbaik dengan armada modern, fasilitas lengkap, serta pelayanan profesional. Kami berkomitmen untuk menghadirkan pengalaman perjalanan yang aman, nyaman dan berkesan.`;
+  const shortDescription = rawDescription.length > 200 
+    ? rawDescription.substring(0, 200).trim() + "..."
+    : rawDescription;
+
   return (
     <section ref={ref} className="py-24 bg-white scroll-mt-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -16,7 +21,7 @@ export default function AboutSnippet() {
           <div className={`relative reveal ${inView ? "in-view" : ""}`}>
             <div className="relative rounded-[24px] overflow-hidden shadow-[0_12px_40px_rgba(0,0,0,0.04)] border border-slate-100/50">
               <img
-                src="https://images.unsplash.com/photo-1570125909232-eb263c188f7e?q=80&w=1200&auto=format&fit=crop"
+                src="/images/image3.jpeg"
                 alt={`${profile.company_name || "Boneh Star"} Premium Fleet`}
                 className="w-full h-[380px] object-cover transition-transform duration-700 hover:scale-102"
                 loading="lazy"
@@ -43,9 +48,7 @@ export default function AboutSnippet() {
             </div>
 
             <p className="text-[14.5px] font-medium leading-relaxed text-slate-blue/80 max-w-xl">
-              {profile.description || (
-                `${profile.company_name || "Boneh Star"} hadir untuk memberikan solusi transportasi pariwisata terbaik dengan armada modern, fasilitas lengkap, serta pelayanan profesional. Kami berkomitmen untuk menghadirkan pengalaman perjalanan yang aman, nyaman dan berkesan.`
-              )}
+              {shortDescription}
             </p>
 
             {/* CTA Text Link */}

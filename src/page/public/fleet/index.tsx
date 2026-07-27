@@ -1,12 +1,12 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import PublicLayout from "@/layouts/public/PublicLayout";
 import { useFleetData } from "@/features/public/fleet/hooks/useFleetData";
-import { 
-  Bus as BusIcon, 
-  X, 
-  ChevronDown, 
-  ShieldCheck, 
-  Users, 
+import {
+  Bus as BusIcon,
+  X,
+  ChevronDown,
+  ShieldCheck,
+  Users,
   Phone,
   Sparkles,
   Search as SearchIcon
@@ -29,7 +29,7 @@ const sortOptions = [
 export default function FleetPage() {
   const { buses, categories, loading } = useFleetData();
   const { profile } = usePublicCompanyProfile();
-  
+
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedBus, setSelectedBus] = useState<Bus | null>(null);
@@ -40,7 +40,7 @@ export default function FleetPage() {
 
   const filtered = useMemo(() => {
     let result = [...buses];
-    
+
     // Search filter
     if (search) {
       const q = search.toLowerCase();
@@ -51,12 +51,12 @@ export default function FleetPage() {
           b.plat_number?.toLowerCase().includes(q)
       );
     }
-    
+
     // Category filter
     if (selectedCategory) {
       result = result.filter((b) => b.category?.name === selectedCategory);
     }
-    
+
     // Sorting
     if (sortBy === "latest") {
       result.sort((a, b) => (b.id || '').localeCompare(a.id || ''));
@@ -65,7 +65,7 @@ export default function FleetPage() {
     } else if (sortBy === "seats-desc") {
       result.sort((a, b) => b.seat_count - a.seat_count);
     }
-    
+
     return result;
   }, [buses, search, selectedCategory, sortBy]);
 
@@ -90,7 +90,7 @@ export default function FleetPage() {
   const hasMore = remaining > 0;
 
   const hasFilters = !!(search || selectedCategory);
-  
+
   const clearFilters = () => {
     setSearch("");
     setSelectedCategory("");
@@ -168,7 +168,7 @@ export default function FleetPage() {
                 <div className="absolute inset-0 bg-action-blue/5 rounded-[36px] blur-3xl pointer-events-none -z-10" />
                 <div className="rounded-[32px] overflow-hidden border border-slate-100 shadow-xl aspect-[16/10] bg-cloud-mist">
                   <img
-                    src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=1200&auto=format&fit=crop"
+                    src="public/images/image4.jpeg"
                     alt="Boneh Star Fleet Pariwisata"
                     className="w-full h-full object-cover"
                   />
@@ -181,19 +181,18 @@ export default function FleetPage() {
         {/* Filter and Content section */}
         <section className="bg-slate-50/50 py-16 border-t border-slate-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            
+
             {/* Filter Bar (Card) */}
             <div className="bg-white rounded-3xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] p-4 mb-10 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-              
+
               {/* Category tabs */}
               <div className="flex flex-wrap items-center gap-1.5">
                 <button
                   onClick={() => setSelectedCategory("")}
-                  className={`px-5 py-2.5 rounded-2xl text-xs font-bold transition-all ${
-                    selectedCategory === ""
+                  className={`px-5 py-2.5 rounded-2xl text-xs font-bold transition-all ${selectedCategory === ""
                       ? "bg-action-blue text-white shadow-md shadow-action-blue/15"
                       : "text-slate-blue hover:text-action-blue bg-slate-50 hover:bg-slate-100"
-                  }`}
+                    }`}
                 >
                   Semua Armada
                 </button>
@@ -201,11 +200,10 @@ export default function FleetPage() {
                   <button
                     key={cat.id}
                     onClick={() => setSelectedCategory(cat.name)}
-                    className={`px-5 py-2.5 rounded-2xl text-xs font-bold transition-all ${
-                      selectedCategory === cat.name
+                    className={`px-5 py-2.5 rounded-2xl text-xs font-bold transition-all ${selectedCategory === cat.name
                         ? "bg-action-blue text-white shadow-md shadow-action-blue/15"
                         : "text-slate-blue hover:text-action-blue bg-slate-50 hover:bg-slate-100"
-                    }`}
+                      }`}
                   >
                     {cat.name}
                   </button>
@@ -257,11 +255,10 @@ export default function FleetPage() {
                             setSortBy(opt.value);
                             setIsSortOpen(false);
                           }}
-                          className={`w-full text-left px-4 py-2.5 text-xs font-bold transition-colors flex items-center justify-between ${
-                            sortBy === opt.value
+                          className={`w-full text-left px-4 py-2.5 text-xs font-bold transition-colors flex items-center justify-between ${sortBy === opt.value
                               ? "bg-action-blue/10 text-action-blue"
                               : "text-slate-blue hover:bg-slate-50 hover:text-midnight-indigo"
-                          }`}
+                            }`}
                         >
                           <span>{opt.label}</span>
                           {sortBy === opt.value && (
@@ -335,7 +332,7 @@ export default function FleetPage() {
                 <div className="flex h-[50px] w-[50px] shrink-0 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/15 shadow-inner">
                   <Phone size={26} className="text-white" strokeWidth={1.8} />
                 </div>
-                
+
                 {/* Text Content */}
                 <div className="space-y-1.5">
                   <h4 className="text-xl md:text-2xl font-bold text-white tracking-tight">

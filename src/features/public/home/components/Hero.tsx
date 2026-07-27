@@ -14,7 +14,7 @@ interface HeroProps {
 }
 
 // Cinematic hero background image showing scenic road
-const HERO_BACKGROUND_IMAGE = "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=2000&auto=format&fit=crop";
+const HERO_BACKGROUND_IMAGE = "/images/image1.jpeg";
 
 export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
   const { profile } = usePublicCompanyProfile();
@@ -96,9 +96,9 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
     <section className='relative min-h-[92vh] w-full flex flex-col justify-center bg-midnight-indigo pt-32 pb-24'>
       {/* Background Image & Overlay */}
       <div className='absolute inset-0 z-0'>
-        <img 
-          src={HERO_BACKGROUND_IMAGE} 
-          alt="Boneh Star Premium Bus Background" 
+        <img
+          src={HERO_BACKGROUND_IMAGE}
+          alt="Boneh Star Premium Bus Background"
           className="w-full h-full object-cover"
           style={{ objectPosition: '80% 50%' }}
         />
@@ -111,16 +111,16 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
           <h1 className='text-4xl sm:text-5xl lg:text-[56px] font-extrabold tracking-tight text-white leading-[1.15] mb-6 animate-in fade-in slide-in-from-bottom-6 duration-750'>
             Perjalanan Nyaman,<br />Kenangan Terbaik
           </h1>
-          
+
           <p className='text-base sm:text-lg font-medium leading-relaxed text-white/85 mb-9 animate-in fade-in slide-in-from-bottom-8 duration-750 delay-100 max-w-2xl mx-auto'>
-            {profile.description || 'Armada modern, fasilitas lengkap, dan pelayanan profesional untuk pengalaman perjalanan yang berkesan.'}
+            Armada modern, fasilitas lengkap, dan pelayanan profesional untuk pengalaman perjalanan yang berkesan
           </p>
-          
+
           {/* Action Buttons (System Colors: Blue & Outline, No Yellow) */}
           <div className='flex flex-wrap items-center justify-center gap-4 animate-in fade-in slide-in-from-bottom-10 duration-750 delay-200'>
-            <Button 
-              size='lg' 
-              className='rounded-xl px-8 py-3.5 h-auto text-sm font-bold bg-[#006bff] hover:bg-[#0056cc] text-white shadow-lg shadow-blue-500/20 transition-all hover:scale-[1.02] active:scale-95' 
+            <Button
+              size='lg'
+              className='rounded-xl px-8 py-3.5 h-auto text-sm font-bold bg-[#006bff] hover:bg-[#0056cc] text-white shadow-lg shadow-blue-500/20 transition-all hover:scale-[1.02] active:scale-95'
               onClick={() => {
                 const el = document.getElementById('inquiry-bar');
                 if (el) {
@@ -132,9 +132,9 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
             >
               Cek Ketersediaan
             </Button>
-            
-            <a 
-              href='#armada' 
+
+            <a
+              href='#armada'
               className='inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-white/35 bg-transparent px-8 text-sm font-bold text-white transition-all hover:bg-white/10 hover:border-white/50 active:scale-95'
             >
               <BusIcon size={16} />
@@ -163,9 +163,9 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
         <div className='mt-14 w-full max-w-[1100px] animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500 relative z-30 px-2 sm:px-0'>
           <div className='bg-white rounded-3xl lg:rounded-[24px] shadow-[0_16px_48px_rgba(0,0,0,0.08)] border border-slate-100 p-3'>
             <form id='inquiry-bar' onSubmit={handleCheckAvailability} className='grid grid-cols-1 lg:grid-cols-[1fr_1fr_1fr_1fr_auto] gap-2 lg:gap-0 items-center w-full'>
-              
+
               {/* Dropdown 1: Jenis Bus */}
-              <div 
+              <div
                 ref={busDropdownRef}
                 className='relative flex items-center gap-3.5 px-6 py-4 hover:bg-slate-50/60 transition-colors cursor-pointer rounded-2xl lg:rounded-none lg:border-r lg:border-slate-100 w-full text-left group'
                 onClick={() => {
@@ -186,11 +186,11 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
                 {isBusDropdownOpen && (
                   <div className='absolute top-[105%] left-0 w-full min-w-[200px] bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.12)] border border-slate-100 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200'>
                     <div className='py-1.5 max-h-[220px] overflow-y-auto'>
-                      <div 
+                      <div
                         className={cn('px-4 py-2.5 text-[13px] font-bold transition-colors hover:bg-slate-50 cursor-pointer flex items-center justify-between', !formData.jenisBus ? 'text-[#006bff] bg-blue-50/40' : 'text-slate-blue')}
                         onClick={(e) => {
                           e.stopPropagation();
-                          setFormData({...formData, jenisBus: ''});
+                          setFormData({ ...formData, jenisBus: '' });
                           setIsBusDropdownOpen(false);
                         }}
                       >
@@ -198,12 +198,12 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
                         {!formData.jenisBus && <CheckCircle2 size={14} className="text-[#006bff]" />}
                       </div>
                       {categories.map(cat => (
-                        <div 
-                          key={cat.id} 
+                        <div
+                          key={cat.id}
                           className={cn('px-4 py-2.5 text-[13px] font-bold transition-colors hover:bg-slate-50 cursor-pointer flex items-center justify-between', formData.jenisBus === cat.name ? 'text-[#006bff] bg-blue-50/40' : 'text-slate-blue')}
                           onClick={(e) => {
                             e.stopPropagation();
-                            setFormData({...formData, jenisBus: cat.name});
+                            setFormData({ ...formData, jenisBus: cat.name });
                             setIsBusDropdownOpen(false);
                           }}
                         >
@@ -215,15 +215,15 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
                   </div>
                 )}
               </div>
-              
+
               {/* Date Input 2: Tanggal Berangkat */}
               <div className="relative flex items-center gap-3.5 px-6 py-4 hover:bg-slate-50/60 transition-colors lg:border-r lg:border-slate-100 w-full text-left group min-h-[80px]">
-                <input 
-                  type="date" 
+                <input
+                  type="date"
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 peer"
                   value={formData.departureDate}
-                  onChange={e => setFormData({...formData, departureDate: e.target.value})}
-                  onClick={e => { try { e.currentTarget.showPicker(); } catch (err) {} }}
+                  onChange={e => setFormData({ ...formData, departureDate: e.target.value })}
+                  onClick={e => { try { e.currentTarget.showPicker(); } catch (err) { } }}
                 />
                 <Calendar size={20} className='text-[#006bff] shrink-0 group-hover:scale-110 transition-transform duration-300' />
                 <div className='flex flex-col flex-1 min-w-0 pointer-events-none'>
@@ -236,12 +236,12 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
 
               {/* Date Input 3: Tanggal Pulang */}
               <div className="relative flex items-center gap-3.5 px-6 py-4 hover:bg-slate-50/60 transition-colors lg:border-r lg:border-slate-100 w-full text-left group min-h-[80px]">
-                <input 
-                  type="date" 
+                <input
+                  type="date"
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 peer"
                   value={formData.returnDate}
-                  onChange={e => setFormData({...formData, returnDate: e.target.value})}
-                  onClick={e => { try { e.currentTarget.showPicker(); } catch (err) {} }}
+                  onChange={e => setFormData({ ...formData, returnDate: e.target.value })}
+                  onClick={e => { try { e.currentTarget.showPicker(); } catch (err) { } }}
                 />
                 <Calendar size={20} className='text-[#006bff] shrink-0 group-hover:scale-110 transition-transform duration-300' />
                 <div className='flex flex-col flex-1 min-w-0 pointer-events-none'>
@@ -251,9 +251,9 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
                   </span>
                 </div>
               </div>
-              
+
               {/* Input 4: Jumlah Peserta */}
-              <label 
+              <label
                 className='flex items-center gap-3.5 px-6 py-4 hover:bg-slate-50/60 transition-colors cursor-pointer w-full text-left group'
                 onClick={(e) => {
                   const input = e.currentTarget.querySelector('input');
@@ -265,25 +265,25 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
                 <Users size={20} className='text-[#006bff] shrink-0 group-hover:scale-110 transition-transform duration-300' />
                 <div className='flex flex-col flex-1 min-w-0'>
                   <span className='text-[10px] font-bold uppercase tracking-wider text-slate-blue/60 mb-0.5'>Jumlah Peserta</span>
-                  <input 
-                    type='number' 
+                  <input
+                    type='number'
                     min='1'
                     placeholder='Masukkan jumlah'
-                    className='bg-transparent text-[14px] font-bold text-midnight-indigo focus:outline-none w-full cursor-pointer placeholder:font-bold placeholder:text-midnight-indigo [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none' 
-                    value={formData.penumpang} 
+                    className='bg-transparent text-[14px] font-bold text-midnight-indigo focus:outline-none w-full cursor-pointer placeholder:font-bold placeholder:text-midnight-indigo [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+                    value={formData.penumpang}
                     onChange={e => {
                       const val = e.target.value.replace(/\D/g, '');
-                      setFormData({...formData, penumpang: val});
-                    }} 
+                      setFormData({ ...formData, penumpang: val });
+                    }}
                   />
                 </div>
               </label>
-              
+
               {/* Submit Button */}
               <div className='w-full lg:w-auto px-4 lg:pl-6 lg:pr-4 lg:shrink-0 flex justify-center py-2 lg:py-0'>
-                <Button 
-                  type='submit' 
-                  loading={checking} 
+                <Button
+                  type='submit'
+                  loading={checking}
                   icon={Search}
                   className='h-12 w-full lg:w-[170px] justify-center rounded-xl bg-[#0038a8] hover:bg-[#002d87] text-white font-bold shadow-button text-[14px] transition-all hover:scale-[1.02] active:scale-[0.98]'
                 >
@@ -291,7 +291,7 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
                 </Button>
               </div>
             </form>
-            
+
             {result && (
               <div className={cn('mt-5 mx-3 mb-3 flex items-center gap-6 rounded-2xl px-8 py-5 border animate-in slide-in-from-top-4 duration-300 shadow-sm', result.isSuggestion ? 'bg-sunset-gold/5 border-sunset-gold/20 text-sunset-gold' : (result.available.length > 0 ? 'bg-action-blue/5 border-action-blue/20 text-action-blue' : 'bg-red-500/5 border-red-500/20 text-red-600'))}>
                 <div className={cn('flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl shadow-sm', result.isSuggestion ? 'bg-sunset-gold/10' : (result.available.length > 0 ? 'bg-action-blue/10' : 'bg-red-500/10'))}>

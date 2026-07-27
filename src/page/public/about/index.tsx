@@ -13,10 +13,11 @@ export default function AboutPage() {
   const { profile } = usePublicCompanyProfile();
   const [galleries, setGalleries] = useState<Gallery[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedImage, setSelectedImage] = useState<{url: string, title: string} | null>(null);
+  const [selectedImage, setSelectedImage] = useState<{ url: string, title: string } | null>(null);
   const [activeCategory, setActiveCategory] = useState("Semua");
   const [limit, setLimit] = useState(8);
-  
+  const [isExpanded, setIsExpanded] = useState(false);
+
   // Hook for scroll animations
   const { ref: heroRef, inView: heroInView } = useInView(0.1);
   const { ref: descRef, inView: descInView } = useInView(0.1);
@@ -52,15 +53,15 @@ export default function AboutPage() {
   // Helper to categorize images dynamically
   const getCategoryForImage = (_url: string, title: string, desc: string): string => {
     const t = `${title} ${desc}`.toLowerCase();
-    
+
     if (t.includes("gathering") || t.includes("kegiatan") || t.includes("acara") || t.includes("petrokimia")) {
       return "Kegiatan";
     }
-    
+
     if (t.includes("bali") || t.includes("ziarah") || t.includes("study tour") || t.includes("perjalanan") || t.includes("wisata") || t.includes("tour")) {
       return "Perjalanan";
     }
-    
+
     return "Lainnya";
   };
 
@@ -75,72 +76,7 @@ export default function AboutPage() {
     }))
   );
 
-  // Default fallback images matching the ones shown in the design image
-  const defaultFallbackImages = [
-    {
-      url: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800",
-      title: "Armada Eksterior Bus HDD",
-      description: "Unit Executive Bus HDD Boneh Star Pariwisata",
-      date: "2026-03-01",
-      category: "Lainnya",
-    },
-    {
-      url: "https://images.unsplash.com/photo-1570125909232-eb263c188f7e?q=80&w=800",
-      title: "Desain Interior Mewah",
-      description: "Kenyamanan kursi premium dengan konfigurasi terbaik",
-      date: "2026-03-02",
-      category: "Lainnya",
-    },
-    {
-      url: "https://images.unsplash.com/photo-1494515843206-f3117d3f51b7?q=80&w=800",
-      title: "Study Tour Yogyakarta",
-      description: "Kunjungan wisata budaya rombongan sekolah di Yogyakarta",
-      date: "2026-04-15",
-      category: "Perjalanan",
-    },
-    {
-      url: "https://images.unsplash.com/photo-1557223562-6c77ff16210f?q=80&w=800",
-      title: "Gathering PT Petrokimia Gresik",
-      description: "Kegiatan gathering tahunan PT Petrokimia Gresik",
-      date: "2026-05-10",
-      category: "Kegiatan",
-    },
-    {
-      url: "https://images.unsplash.com/photo-1562620644-66ba47685044?q=80&w=800",
-      title: "Wisata Alam Pegunungan",
-      description: "Rombongan menikmati wisata alam pegunungan di Batu",
-      date: "2026-06-01",
-      category: "Perjalanan",
-    },
-    {
-      url: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=800",
-      title: "Perjalanan Wisata Mandiri",
-      description: "Rombongan Bank Mandiri tiba dengan selamat di Bali",
-      date: "2026-06-15",
-      category: "Perjalanan",
-    },
-    {
-      url: "https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?q=80&w=800",
-      title: "Kegiatan Outbound Rombongan",
-      description: "Keseruan outbound di area camping",
-      date: "2026-07-01",
-      category: "Kegiatan",
-    },
-    {
-      url: "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=800",
-      title: "Kemah Bersama & Kegiatan Outdoor",
-      description: "Kegiatan malam kebersamaan di alam bebas",
-      date: "2026-07-02",
-      category: "Lainnya",
-    }
-  ];
-
   const combinedImages = [...allImages];
-  defaultFallbackImages.forEach(fallback => {
-    if (!combinedImages.some(img => img.url === fallback.url)) {
-      combinedImages.push(fallback);
-    }
-  });
 
   const categories = ["Semua", "Kegiatan", "Perjalanan", "Lainnya"];
 
@@ -154,13 +90,13 @@ export default function AboutPage() {
   return (
     <PublicLayout>
       <div className="bg-white min-h-screen pt-24 pb-20 overflow-hidden">
-        
+
         {/* Editorial Hero Header */}
         <section ref={heroRef} className="relative py-20 border-b border-slate-50/50">
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-action-blue/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
-              
+
               {/* Left Column: Title & Copy */}
               <div className={`lg:col-span-6 flex flex-col gap-5 text-left reveal ${heroInView ? "in-view" : ""}`}>
                 <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-blue/60 mb-2">
@@ -168,7 +104,7 @@ export default function AboutPage() {
                   <ChevronRight size={12} />
                   <span className="text-slate-blue">Tentang Kami</span>
                 </div>
-                
+
                 <div>
                   <span className="text-xs font-bold uppercase tracking-[0.2em] text-action-blue block mb-3">
                     TENTANG KAMI
@@ -189,19 +125,10 @@ export default function AboutPage() {
               <div className={`lg:col-span-6 relative flex justify-center items-center reveal ${heroInView ? "in-view" : ""}`} style={{ "--delay": "150ms" } as CSSProperties}>
                 <div className="relative w-full aspect-[4/3] sm:aspect-[16/11] rounded-[24px] overflow-hidden shadow-lg border border-slate-100">
                   <img
-                    src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=1000&auto=format&fit=crop"
+                    src="/images/image1.jpeg"
                     alt={`${profile.company_name || "Boneh Star"} Bus Exterior`}
                     className="w-full h-full object-cover"
                   />
-                  {logoUrl && (
-                    <div className="absolute top-6 left-6 bg-white/90 backdrop-blur-md px-4 py-2 rounded-2xl shadow-lg border border-slate-100/50 flex items-center justify-center">
-                      <img
-                        src={logoUrl}
-                        alt={profile.company_name || "Logo"}
-                        className="h-8 w-auto object-contain"
-                      />
-                    </div>
-                  )}
                 </div>
               </div>
 
@@ -213,15 +140,34 @@ export default function AboutPage() {
         <section ref={descRef} className="py-24 bg-slate-50/30 border-b border-slate-50/50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid gap-12 lg:grid-cols-12 lg:items-start">
-              
+
               {/* Left Column: Title & Description */}
-              <div className={`lg:col-span-6 text-left flex flex-col gap-6 reveal ${descInView ? "in-view" : ""}`}>
+              <div className={`lg:col-span-6 text-left flex flex-col gap-5 reveal ${descInView ? "in-view" : ""}`}>
                 <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 leading-snug">
                   Tentang {profile.company_name || "Boneh Star"} Pariwisata
                 </h2>
-                <p className="text-sm sm:text-base font-semibold text-slate-600 leading-relaxed opacity-95 whitespace-pre-line">
-                  {profile.description || "Sejak berdiri, Boneh Star Pariwisata terus berkomitmen memberikan layanan transportasi pariwisata yang aman, nyaman, dan terpercaya. Kami melayani berbagai kebutuhan perjalanan seperti wisata, ziarah, studi tour, perjalanan dinas, hingga event perusahaan.\n\nDengan dukungan armada yang terawat dan tim yang berpengalaman, kami siap menjadi mitra perjalanan terbaik untuk setiap momen berharga Anda."}
-                </p>
+                {(() => {
+                  const descText = profile.description || "Sejak berdiri, Boneh Star Pariwisata terus berkomitmen memberikan layanan transportasi pariwisata yang aman, nyaman, dan terpercaya. Kami melayani berbagai kebutuhan perjalanan seperti wisata, ziarah, studi tour, perjalanan dinas, hingga event perusahaan.\n\nDengan dukungan armada yang terawat dan tim yang berpengalaman, kami siap menjadi mitra perjalanan terbaik untuk setiap momen berharga Anda.";
+                  const isLongText = descText.length > 300;
+                  const displayedText = isLongText && !isExpanded ? descText.substring(0, 300) + "..." : descText;
+                  
+                  return (
+                    <div className="flex flex-col gap-3">
+                      <p className="text-sm sm:text-base font-semibold text-slate-600 leading-relaxed opacity-95 whitespace-pre-line">
+                        {displayedText}
+                      </p>
+                      {isLongText && (
+                        <button
+                          type="button"
+                          onClick={() => setIsExpanded(!isExpanded)}
+                          className="text-xs font-extrabold text-action-blue hover:text-[#0052cc] transition-colors cursor-pointer self-start border border-action-blue/10 bg-action-blue/5 hover:bg-action-blue/10 px-3.5 py-2 rounded-full"
+                        >
+                          {isExpanded ? "Sembunyikan" : "Baca Selengkapnya"}
+                        </button>
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* Right Column: Grid 2x2 of pillars */}
@@ -286,7 +232,7 @@ export default function AboutPage() {
         {/* Galeri Dokumentasi */}
         <section ref={galleryRef} className="py-24 border-b border-slate-50/50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            
+
             {/* Header */}
             <div className={`text-center max-w-3xl mx-auto mb-12 flex flex-col items-center reveal ${galleryInView ? "in-view" : ""}`}>
               <span className="text-xs font-bold uppercase tracking-[0.2em] text-action-blue block mb-3">
@@ -304,11 +250,10 @@ export default function AboutPage() {
                 <button
                   key={category}
                   onClick={() => handleCategoryChange(category)}
-                  className={`px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 border shadow-sm ${
-                    activeCategory === category
+                  className={`px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 border shadow-sm ${activeCategory === category
                       ? "bg-action-blue border-action-blue text-white"
                       : "bg-white border-slate-200 text-slate-650 hover:text-action-blue hover:border-action-blue hover:bg-slate-50/50"
-                  }`}
+                    }`}
                 >
                   {category}
                 </button>
@@ -332,14 +277,14 @@ export default function AboutPage() {
               <div className="space-y-12">
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
                   {displayedImages.map((img, idx) => (
-                    <div 
-                      key={idx} 
+                    <div
+                      key={idx}
                       className="relative overflow-hidden rounded-2xl cursor-pointer group bg-slate-50 border border-slate-100 aspect-[4/3] shadow-sm transition-all duration-300 hover:shadow-md"
                       onClick={() => setSelectedImage({ url: img.url, title: img.title })}
                     >
-                      <img 
-                        src={img.url} 
-                        alt={`${img.title} - Foto ${idx + 1}`} 
+                      <img
+                        src={img.url}
+                        alt={`${img.title} - Foto ${idx + 1}`}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                         loading="lazy"
                       />
@@ -356,7 +301,7 @@ export default function AboutPage() {
                 {/* Lihat Semua Galeri Button */}
                 {filteredImages.length > limit && (
                   <div className="flex justify-center mt-12">
-                    <button 
+                    <button
                       onClick={() => setLimit(filteredImages.length)}
                       className="flex items-center gap-2 px-6 py-3 rounded-full border border-slate-200 bg-white text-xs font-bold uppercase tracking-wider text-slate-700 hover:border-action-blue hover:text-action-blue hover:bg-slate-50/50 transition-colors shadow-sm"
                     >
@@ -373,7 +318,7 @@ export default function AboutPage() {
 
         {/* CTA Banner */}
         <section ref={ctaRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
-          <div 
+          <div
             className={`rounded-[28px] bg-white border border-slate-100 shadow-[0_8px_40px_rgba(0,0,0,0.07)] overflow-hidden flex flex-col lg:flex-row relative reveal ${ctaInView ? "in-view" : ""}`}
           >
             {/* Left Side: Copy and Stats */}
@@ -482,24 +427,24 @@ export default function AboutPage() {
 
         {/* Luxury Lightbox Modal */}
         {selectedImage && (
-          <div 
+          <div
             className="fixed inset-0 z-[100] bg-slate-950/95 backdrop-blur-xl flex flex-col items-center justify-center p-4 sm:p-8 animate-in fade-in duration-300"
             onClick={() => setSelectedImage(null)}
           >
-            <button 
+            <button
               className="absolute top-6 right-6 h-12 w-12 flex items-center justify-center rounded-full bg-white/10 text-white/70 hover:bg-white/20 hover:text-white hover:scale-105 transition-all duration-300"
               onClick={() => setSelectedImage(null)}
             >
               <span className="sr-only">Tutup</span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
             </button>
-            
+
             <div className="relative max-w-6xl w-full h-full flex flex-col items-center justify-center">
-              <img 
-                src={selectedImage.url} 
-                alt={selectedImage.title} 
+              <img
+                src={selectedImage.url}
+                alt={selectedImage.title}
                 className="max-w-full max-h-[80vh] object-contain rounded-sm shadow-2xl animate-in zoom-in-95 duration-500"
-                onClick={(e) => e.stopPropagation()} 
+                onClick={(e) => e.stopPropagation()}
               />
               <div className="mt-8 text-white text-sm font-bold tracking-widest uppercase opacity-80 animate-in slide-in-from-bottom-4 duration-500 delay-150">
                 {selectedImage.title}
@@ -507,7 +452,7 @@ export default function AboutPage() {
             </div>
           </div>
         )}
-        
+
       </div>
     </PublicLayout>
   );
