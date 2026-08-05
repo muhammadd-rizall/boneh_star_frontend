@@ -17,6 +17,17 @@ import type { Bus } from "@/features/admin/buses/types/Bus";
 import { Button } from "@/components/ui/Button";
 import { usePublicCompanyProfile } from "@/features/admin/company-profile/hooks/usePublicCompanyProfile";
 import { buildWhatsAppHref } from "@/features/admin/company-profile/utils/companyProfileUtils";
+import { motion } from "motion/react";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+    }
+  }
+};
 
 const PER_PAGE = 9;
 
@@ -304,11 +315,16 @@ export default function FleetPage() {
               </div>
             ) : (
               <>
-                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
-                  {visibleBuses.map((bus, i) => (
-                    <FleetCard key={bus.id} bus={bus} index={i} inView onViewDetail={setSelectedBus} />
+                <motion.div 
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="show"
+                  className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8"
+                >
+                  {visibleBuses.map((bus) => (
+                    <FleetCard key={bus.id} bus={bus} onViewDetail={setSelectedBus} />
                   ))}
-                </div>
+                </motion.div>
 
                 {hasMore && (
                   <div className="mt-12 flex justify-center">

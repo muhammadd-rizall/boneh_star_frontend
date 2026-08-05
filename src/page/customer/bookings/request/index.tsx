@@ -569,7 +569,7 @@ export default function BookingRequestPage() {
                             <input
                               type="text"
                               className={`${inputClass} pl-9`}
-                              placeholder="Contoh: Surabaya, Malang, Jakarta"
+                              placeholder="Contoh: Padang, Bukittinggi, Payakumbuh"
                               value={formData.origin}
                               onChange={e => setFormData({ ...formData, origin: e.target.value })}
                               required
@@ -577,7 +577,7 @@ export default function BookingRequestPage() {
                           </div>
                           <p className="text-xs text-slate-500 font-medium flex items-center gap-1 mt-0.5">
                             <InfoIcon size={11} className="text-slate-400 shrink-0" />
-                            Tulis nama kota atau titik penjemputan utama rombongan Anda.
+                            Tulis nama kota asal atau titik penjemputan utama rombongan Anda di Sumatera Barat.
                           </p>
                         </FormGroup>
                       </div>
@@ -591,7 +591,7 @@ export default function BookingRequestPage() {
                             <input
                               type="text"
                               className={`${inputClass} pl-9`}
-                              placeholder="Contoh: Yogyakarta → Borobudur → Malioboro"
+                              placeholder="Contoh: Padang → Bukittinggi → Jam Gadang"
                               value={formData.full_route}
                               onChange={e => setFormData({ ...formData, full_route: e.target.value })}
                               required
@@ -603,8 +603,8 @@ export default function BookingRequestPage() {
                               Panduan Pengisian:
                             </p>
                             <ul className="text-xs text-slate-600 space-y-0.5 font-medium">
-                              <li>• <strong>Kota saja:</strong> "Bali" atau "Malang"</li>
-                              <li>• <strong>Beberapa lokasi:</strong> "Bromo → Malang → Batu"</li>
+                              <li>• <strong>Kota saja:</strong> "Bukittinggi" atau "Solok"</li>
+                              <li>• <strong>Beberapa lokasi:</strong> "Padang → Mandeh → Pariaman"</li>
                               <li>• <strong>Belum pasti:</strong> tulis tujuan utamanya, detail bisa dibahas dengan admin</li>
                             </ul>
                           </div>
@@ -1374,7 +1374,6 @@ export default function BookingRequestPage() {
 
 // ── Shared styles ─────────────────────────────────────────────────────────────
 const inputClass = "w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-medium text-gray-800 placeholder:text-slate-400 focus:border-action-blue focus:bg-white focus:ring-2 focus:ring-action-blue/10 outline-none transition-all";
-const selectClass = "w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-medium text-gray-800 focus:border-action-blue focus:bg-white focus:ring-2 focus:ring-action-blue/10 outline-none transition-all appearance-none cursor-pointer";
 
 // ── FormGroup ─────────────────────────────────────────────────────────────────
 function FormGroup({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {

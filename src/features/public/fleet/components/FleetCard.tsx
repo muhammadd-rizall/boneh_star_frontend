@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { getCapacityLabel } from "../utils/fleetCardUtils";
 import { usePublicCompanyProfile } from "@/features/admin/company-profile/hooks/usePublicCompanyProfile";
 import { formatCurrency } from "@/utils/formatter";
+import { motion } from "motion/react";
 
 export interface FleetCardProps {
   bus: Bus;
@@ -39,10 +40,22 @@ const getFacilityIcon = (name: string) => {
   return Sparkles;
 };
 
+const cardVariants = {
+  hidden: { opacity: 0, y: 24 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: [0.16, 1, 0.3, 1] as const
+    }
+  }
+};
+
 export default function FleetCard({
   bus,
-  index = 0,
-  inView = true,
+  index: _index = 0,
+  inView: _inView = true,
   className,
   onViewDetail,
 }: FleetCardProps) {
@@ -76,14 +89,13 @@ export default function FleetCard({
   };
 
   return (
-    <article
+    <motion.article
+      variants={cardVariants}
       className={cn(
-        "group flex h-full flex-col overflow-hidden rounded-[24px] border border-platinum-tint bg-white reveal",
+        "group flex h-full flex-col overflow-hidden rounded-[24px] border border-platinum-tint bg-white",
         "transition-all duration-300 hover:border-action-blue/25 hover:shadow-card hover:-translate-y-1.5",
-        inView && "in-view",
         className
       )}
-      style={{ "--delay": `${index * 80}ms` } as React.CSSProperties}
     >
       {/* Image Area with Badge */}
       <div className="relative h-[220px] w-full shrink-0 overflow-hidden bg-cloud-mist">
@@ -195,6 +207,6 @@ export default function FleetCard({
           </a>
         </div>
       </div>
-    </article>
+    </motion.article>
   );
 }

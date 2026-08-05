@@ -1,10 +1,9 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import { useInView } from "@/hooks/useAnimations";
 import { usePublicCompanyProfile } from "@/features/admin/company-profile/hooks/usePublicCompanyProfile";
+import { motion } from "motion/react";
 
 export default function AboutSnippet() {
-  const { ref, inView } = useInView(0.1);
   const { profile } = usePublicCompanyProfile();
 
   const rawDescription = profile.description || `${profile.company_name || "Boneh Star"} hadir untuk memberikan solusi transportasi pariwisata terbaik dengan armada modern, fasilitas lengkap, serta pelayanan profesional. Kami berkomitmen untuk menghadirkan pengalaman perjalanan yang aman, nyaman dan berkesan.`;
@@ -13,12 +12,18 @@ export default function AboutSnippet() {
     : rawDescription;
 
   return (
-    <section ref={ref} className="py-24 bg-white scroll-mt-24">
+    <section className="py-24 bg-white scroll-mt-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid gap-12 lg:grid-cols-2 lg:items-center lg:gap-16">
 
           {/* Left: Image Card */}
-          <div className={`relative reveal ${inView ? "in-view" : ""}`}>
+          <motion.div 
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.15 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="relative"
+          >
             <div className="relative rounded-[24px] overflow-hidden shadow-[0_12px_40px_rgba(0,0,0,0.04)] border border-slate-100/50">
               <img
                 src="/images/image3.jpeg"
@@ -28,12 +33,15 @@ export default function AboutSnippet() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent" />
             </div>
-          </div>
+          </motion.div>
 
           {/* Right: Content */}
-          <div
-            className={`flex flex-col gap-6 text-left reveal ${inView ? "in-view" : ""}`}
-            style={{ "--delay": "100ms" } as React.CSSProperties}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.15 }}
+            transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+            className="flex flex-col gap-6 text-left"
           >
             {/* Section Header */}
             <div className="space-y-3">
@@ -61,7 +69,7 @@ export default function AboutSnippet() {
                 <ArrowRight size={16} className="group-hover:translate-x-1.5 transition-transform duration-300" />
               </Link>
             </div>
-          </div>
+          </motion.div>
 
         </div>
       </div>

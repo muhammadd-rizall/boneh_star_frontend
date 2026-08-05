@@ -7,7 +7,7 @@ import { ChevronRight, ArrowRight, Image as ImageIcon, ShieldCheck, Bus, Users, 
 import { Link } from "react-router-dom";
 import { useInView } from "@/hooks/useAnimations";
 import type { CSSProperties } from "react";
-import { resolveMediaUrl, buildWhatsAppHref } from "@/features/admin/company-profile/utils/companyProfileUtils";
+import { buildWhatsAppHref } from "@/features/admin/company-profile/utils/companyProfileUtils";
 
 export default function AboutPage() {
   const { profile } = usePublicCompanyProfile();
@@ -23,8 +23,6 @@ export default function AboutPage() {
   const { ref: descRef, inView: descInView } = useInView(0.1);
   const { ref: galleryRef, inView: galleryInView } = useInView(0.1);
   const { ref: ctaRef, inView: ctaInView } = useInView(0.1);
-
-  const logoUrl = profile.logo ? resolveMediaUrl(profile.logo) : null;
 
   const whatsappHref = profile.whatsapp?.[0]
     ? buildWhatsAppHref(profile.whatsapp[0])

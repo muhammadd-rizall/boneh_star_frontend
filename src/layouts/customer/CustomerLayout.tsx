@@ -9,6 +9,7 @@ import { resolveMediaUrl } from "@/features/admin/company-profile/utils/companyP
 import WhatsAppFloating from "../public/WhatsAppFloating";
 import { cn } from "@/lib/utils";
 import ToastContainer from "@/components/feedback/ToastContainer";
+import { motion, AnimatePresence } from "motion/react";
 import {
   Home, CalendarCheck, CalendarPlus, MessageSquare, Bell,
   User, LogOut, Headphones, ChevronDown, Bus
@@ -155,46 +156,56 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                   </button>
 
                   {/* Submenu */}
-                  {isPemesananOpen && (
-                    <div className="pl-4 ml-6 border-l border-pale-gray/80 mt-1 flex flex-col gap-1.5 py-1">
-                      <Link
-                        to="/customer/bookings?tab=stats"
-                        className={cn(
-                          "block py-1.5 text-xs font-bold transition-all",
-                          isSubActive('stats') ? "text-action-blue" : "text-slate-blue hover:text-gray-900"
-                        )}
+                  <AnimatePresence initial={false}>
+                    {isPemesananOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] as const }}
+                        className="overflow-hidden"
                       >
-                        Statistik
-                      </Link>
-                      <Link
-                        to="/customer/bookings?tab=pending"
-                        className={cn(
-                          "block py-1.5 text-xs font-bold transition-all",
-                          isSubActive('pending') ? "text-action-blue" : "text-slate-blue hover:text-gray-900"
-                        )}
-                      >
-                        Pengajuan
-                      </Link>
-                      <Link
-                        to="/customer/bookings?tab=offers"
-                        className={cn(
-                          "block py-1.5 text-xs font-bold transition-all",
-                          isSubActive('offers') ? "text-action-blue" : "text-slate-blue hover:text-gray-900"
-                        )}
-                      >
-                        Penawaran
-                      </Link>
-                      <Link
-                        to="/customer/bookings?tab=history"
-                        className={cn(
-                          "block py-1.5 text-xs font-bold transition-all",
-                          isSubActive('history') ? "text-action-blue" : "text-slate-blue hover:text-gray-900"
-                        )}
-                      >
-                        Riwayat
-                      </Link>
-                    </div>
-                  )}
+                        <div className="pl-4 ml-6 border-l border-pale-gray/80 mt-1 flex flex-col gap-1.5 py-1">
+                          <Link
+                            to="/customer/bookings?tab=stats"
+                            className={cn(
+                              "block py-1.5 text-xs font-bold transition-all",
+                              isSubActive('stats') ? "text-action-blue" : "text-slate-blue hover:text-gray-900"
+                            )}
+                          >
+                            Statistik
+                          </Link>
+                          <Link
+                            to="/customer/bookings?tab=pending"
+                            className={cn(
+                              "block py-1.5 text-xs font-bold transition-all",
+                              isSubActive('pending') ? "text-action-blue" : "text-slate-blue hover:text-gray-900"
+                            )}
+                          >
+                            Pengajuan
+                          </Link>
+                          <Link
+                            to="/customer/bookings?tab=offers"
+                            className={cn(
+                              "block py-1.5 text-xs font-bold transition-all",
+                              isSubActive('offers') ? "text-action-blue" : "text-slate-blue hover:text-gray-900"
+                            )}
+                          >
+                            Penawaran
+                          </Link>
+                          <Link
+                            to="/customer/bookings?tab=history"
+                            className={cn(
+                              "block py-1.5 text-xs font-bold transition-all",
+                              isSubActive('history') ? "text-action-blue" : "text-slate-blue hover:text-gray-900"
+                            )}
+                          >
+                            Riwayat
+                          </Link>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 {/* Buat Pemesanan */}
@@ -307,9 +318,14 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
         {/* ── Main Content Area ── */}
         <main className="flex-1 lg:ml-[260px] min-h-[calc(100vh-72px)] bg-[#F5F7FA] overflow-x-hidden">
           <div className="px-4 sm:px-6 lg:px-8 py-6 pb-20 max-w-7xl mx-auto">
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] as const }}
+            >
               {children}
-            </div>
+            </motion.div>
           </div>
         </main>
       </div>

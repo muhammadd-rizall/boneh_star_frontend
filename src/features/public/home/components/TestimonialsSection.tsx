@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Star, Quote, ChevronLeft, ChevronRight, User } from "lucide-react";
-import { useInView } from "@/hooks/useAnimations";
 import { resolveMediaUrl } from "@/features/admin/company-profile/utils/companyProfileUtils";
 import type { Review } from "@/features/admin/reviews/types/Review";
+import { motion } from "motion/react";
 
 interface TestimonialsSectionProps {
   reviews?: Review[];
@@ -76,7 +76,6 @@ function TestimonialAvatar({ src, name }: { src?: string | null; name: string })
 }
 
 export default function TestimonialsSection({ reviews }: TestimonialsSectionProps) {
-  const { ref, inView } = useInView(0.1);
 
   // Normalize base reviews list from backend database
   const displayReviews = (reviews && reviews.length > 0)
@@ -192,11 +191,17 @@ export default function TestimonialsSection({ reviews }: TestimonialsSectionProp
   const totalDots = maxIndex + 1;
 
   return (
-    <div ref={ref} className="py-24 bg-gradient-to-b from-white via-slate-50/50 to-white scroll-mt-24 select-none overflow-hidden">
+    <div className="py-24 bg-gradient-to-b from-white via-slate-50/50 to-white scroll-mt-24 select-none overflow-hidden">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         
         {/* Header section centered */}
-        <div className={`mb-16 text-center flex flex-col items-center reveal ${inView ? "in-view" : ""}`}>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.15 }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          className="mb-16 text-center flex flex-col items-center"
+        >
           <span className="text-[11px] font-extrabold uppercase tracking-[0.25em] text-[#006bff] mb-3 block">
             APA KATA PELANGGAN KAMI?
           </span>
@@ -204,10 +209,14 @@ export default function TestimonialsSection({ reviews }: TestimonialsSectionProp
             Testimoni Pelanggan
           </h2>
           <div className="mt-4 h-[3px] w-12 rounded-full bg-[#006bff]" />
-        </div>
+        </motion.div>
 
         {/* Carousel Slider Container */}
-        <div 
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.15 }}
+          transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
           className="relative group overflow-hidden py-4 cursor-grab active:cursor-grabbing touch-pan-y"
           onMouseEnter={() => setIsAutoPlaying(false)}
           onMouseLeave={() => setIsAutoPlaying(true)}
@@ -292,7 +301,7 @@ export default function TestimonialsSection({ reviews }: TestimonialsSectionProp
               </div>
             ))}
           </div>
-        </div>
+        </motion.div>
 
         {/* Interactive Indicator Dots */}
         {totalDots > 1 && (

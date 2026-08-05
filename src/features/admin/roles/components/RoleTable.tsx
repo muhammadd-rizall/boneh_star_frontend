@@ -2,7 +2,7 @@ import { DataTable } from "@/components/ui/DataTable"
 import type { Column } from "@/components/ui/DataTable"
 import { Button } from "@/components/ui/Button"
 import type { Role } from "../types/Role"
-import { Edit, Trash2, ShieldCheck, Users, RotateCcw } from "lucide-react"
+import { Edit, Trash2, ShieldCheck, Users } from "lucide-react"
 import { useModulePermission } from "@/hooks/useModulePermission"
 
 interface RoleTableProps {
@@ -14,7 +14,7 @@ interface RoleTableProps {
   isTrash?: boolean
 }
 
-export default function RoleTable({ data, onDelete, onEdit, onRestore, loading, isTrash = false }: RoleTableProps) {
+export default function RoleTable({ data, onDelete, onEdit, onRestore: _onRestore, loading, isTrash: _isTrash = false }: RoleTableProps) {
   const { canUpdate, canDelete } = useModulePermission("roles")
 
   const columns: Column<Role>[] = [

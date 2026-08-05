@@ -11,7 +11,7 @@ import {
   UsersRound,
   ClipboardCheck,
 } from "lucide-react";
-import { useInView } from "@/hooks/useAnimations";
+import { motion } from "motion/react";
 
 interface ActivityTypesSectionProps {
   activityTypes: ActivityType[];
@@ -50,9 +50,29 @@ const highlights = [
   },
 ];
 
-export default function ActivityTypesSection({ activityTypes }: ActivityTypesSectionProps) {
-  const { ref: sectionRef, inView } = useInView(0.1);
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+    }
+  }
+};
 
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { 
+    opacity: 1, 
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: [0.16, 1, 0.3, 1] as const
+    }
+  }
+};
+
+export default function ActivityTypesSection({ activityTypes }: ActivityTypesSectionProps) {
   // Filter out soft-deleted items and only take the first 5 items
   const displayActivities = activityTypes
     .filter((item) => !item.deleted_at)
@@ -61,13 +81,18 @@ export default function ActivityTypesSection({ activityTypes }: ActivityTypesSec
   return (
     <section 
       id="services" 
-      ref={sectionRef} 
       className="bg-white py-24 scroll-mt-24"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         
         {/* Highlights Row */}
-        <div className={"mb-24 rounded-3xl bg-cloud-mist border border-slate-100 p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-0 lg:divide-x divide-slate-200/60 reveal " + (inView ? "in-view" : "")}>
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.15 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="mb-24 rounded-3xl bg-cloud-mist border border-slate-100 p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-0 lg:divide-x divide-slate-200/60"
+        >
           {highlights.map((item, i) => {
             const Icon = item.icon;
             return (
@@ -89,10 +114,16 @@ export default function ActivityTypesSection({ activityTypes }: ActivityTypesSec
               </div>
             );
           })}
-        </div>
+        </motion.div>
 
         {/* Header */}
-        <div className={"mb-16 text-center flex flex-col items-center reveal " + (inView ? "in-view" : "")}>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.15 }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          className="mb-16 text-center flex flex-col items-center"
+        >
           <span className="text-action-blue text-[11px] font-bold uppercase tracking-[0.2em] mb-3">
             LAYANAN KAMI
           </span>
@@ -100,20 +131,24 @@ export default function ActivityTypesSection({ activityTypes }: ActivityTypesSec
             Melayani Berbagai Kebutuhan Perjalanan Anda
           </h2>
           <div className="mt-4 h-[3px] w-12 rounded-full bg-action-blue" />
-        </div>
+        </motion.div>
 
         {/* Services Grid (Horizontal on Desktop, wraps responsively) */}
-        <div className="flex flex-wrap gap-6 justify-center">
-          {displayActivities.map((item, i) => {
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.15 }}
+          className="flex flex-wrap gap-6 justify-center"
+        >
+          {displayActivities.map((item) => {
             const Icon = getServiceIcon(item.name);
 
             return (
-              <article
+              <motion.article
                 key={item.id}
-                className={`group relative flex w-[220px] flex-col rounded-[24px] border border-slate-100 bg-white p-8 text-center transition-all duration-300 hover:border-action-blue/30 hover:shadow-card hover:-translate-y-1.5 reveal ${
-                  inView ? "in-view" : ""
-                }`}
-                style={{ "--delay": (i * 80) + "ms" } as React.CSSProperties}
+                variants={cardVariants}
+                className="group relative flex w-[220px] flex-col rounded-[24px] border border-slate-100 bg-white p-8 text-center transition-all duration-300 hover:border-action-blue/30 hover:shadow-card hover:-translate-y-1.5"
               >
                 {/* Icon / Image Container */}
                 <div className="mb-6 flex justify-center transition-transform duration-300 group-hover:scale-110">
@@ -141,10 +176,10 @@ export default function ActivityTypesSection({ activityTypes }: ActivityTypesSec
                 <p className="text-[13px] leading-relaxed text-slate-blue/80 line-clamp-3">
                   {item.description || "Layanan transportasi prima untuk kenyamanan perjalanan Anda."}
                 </p>
-              </article>
+              </motion.article>
             );
           })}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

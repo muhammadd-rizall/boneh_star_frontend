@@ -31,6 +31,17 @@ export default function QuotationForm({ quotation, onSuccess, onCancel }: Quotat
   const [loading, setLoading] = useState(false);
   const [fetchingData, setFetchingData] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const formatDateIndo = (dateStr?: string) => {
+    if (!dateStr) return "";
+    try {
+      const parts = dateStr.split(' ')[0].split('-');
+      if (parts.length === 3) {
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+      }
+    } catch (e) {}
+    return dateStr;
+  };
   
   const getFutureDateStr = (daysAhead: number, departureDateStr?: string) => {
     const targetDate = new Date();
@@ -302,9 +313,11 @@ export default function QuotationForm({ quotation, onSuccess, onCancel }: Quotat
               )}
             </div>
             {selectedBooking?.departure_date && (
-              <p className="text-[11px] font-semibold text-action-blue flex items-center gap-1 mt-1 bg-action-blue/5 p-2 rounded-lg border border-action-blue/10">
-                <Info size={13} className="shrink-0" />
-                Maksimal tanggal berlaku otomatis dibatasi H-1 sebelum Keberangkatan ({selectedBooking.departure_date.split(' ')[0]}).
+              <p className="text-[11px] font-semibold text-action-blue flex items-start gap-1.5 mt-1 bg-action-blue/5 p-2.5 rounded-lg border border-action-blue/10">
+                <Info size={13} className="shrink-0 mt-0.5" />
+                <span>
+                  Batas akhir persetujuan penawaran adalah H-1 sebelum keberangkatan. (Batas Maksimal: <strong>{formatDateIndo(getHMinus1DateStr(selectedBooking.departure_date))}</strong>, Tanggal Berangkat: <strong>{formatDateIndo(selectedBooking.departure_date)}</strong>).
+                </span>
               </p>
             )}
           </div>

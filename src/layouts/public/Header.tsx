@@ -5,6 +5,7 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { resolveMediaUrl } from "@/features/admin/company-profile/utils/companyProfileUtils";
 import { useCustomerAuthStore } from "@/features/auth/public";
 import { Button } from "@/components/ui/Button";
+import { motion, AnimatePresence } from "motion/react";
 
 const navigation = [
   { label: "Home", href: "/" },
@@ -258,85 +259,93 @@ export default function Header({ companyProfile }: HeaderProps) {
         </button>
       </div>
 
-      {isOpen && (
-        <div className="absolute inset-x-0 top-full border-t border-platinum-tint bg-white p-4 shadow-xl md:hidden animate-in fade-in slide-in-from-top-2 duration-200">
-          <div className="flex flex-col gap-1">
-            {navigation.map((item) => (
-              <NavLink
-                key={item.label}
-                to={item.href}
-                onClick={(e) => handleNavClick(e, item.href)}
-                className={({ isActive }) =>
-                  "rounded-lg px-4 py-3 text-sm font-semibold transition-colors " + (
-                    !item.href.startsWith("/#") && isActive
-                      ? "bg-cloud-mist text-action-blue"
-                      : "text-midnight-indigo hover:bg-cloud-mist hover:text-action-blue"
-                  )
-                }
-              >
-                {item.label}
-              </NavLink>
-            ))}
-            {isAuthenticated && (
-              <>
-                <div className="my-2 h-px bg-platinum-tint mx-4" />
-                {customerNavigation.map((item) => (
-                  <NavLink
-                    key={item.label}
-                    to={item.to}
-                    onClick={() => setIsOpen(false)}
-                    className={({ isActive }) =>
-                      "rounded-lg px-4 py-3 text-sm font-semibold transition-colors " + (
-                        isActive
-                          ? "bg-cloud-mist text-action-blue"
-                          : "text-midnight-indigo hover:bg-cloud-mist hover:text-action-blue"
-                      )
-                    }
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute inset-x-0 top-full border-t border-platinum-tint bg-white p-4 shadow-xl md:hidden overflow-hidden"
+          >
+            <div className="flex flex-col gap-1">
+              {navigation.map((item) => (
+                <NavLink
+                  key={item.label}
+                  to={item.href}
+                  onClick={(e) => handleNavClick(e, item.href)}
+                  className={({ isActive }) =>
+                    "rounded-lg px-4 py-3 text-sm font-semibold transition-colors " + (
+                      !item.href.startsWith("/#") && isActive
+                        ? "bg-cloud-mist text-action-blue"
+                        : "text-midnight-indigo hover:bg-cloud-mist hover:text-action-blue"
+                    )
+                  }
+                >
+                  {item.label}
+                </NavLink>
+              ))}
+              {isAuthenticated && (
+                <>
+                  <div className="my-2 h-px bg-platinum-tint mx-4" />
+                  {customerNavigation.map((item) => (
+                    <NavLink
+                      key={item.label}
+                      to={item.to}
+                      onClick={() => setIsOpen(false)}
+                      className={({ isActive }) =>
+                        "rounded-lg px-4 py-3 text-sm font-semibold transition-colors " + (
+                          isActive
+                            ? "bg-cloud-mist text-action-blue"
+                            : "text-midnight-indigo hover:bg-cloud-mist hover:text-action-blue"
+                        )
+                      }
+                    >
+                      {item.label}
+                    </NavLink>
+                  ))}
+                </>
+              )}
+              <div className="my-2 h-px bg-platinum-tint mx-4" />
+              {!isAuthenticated ? (
+                <div className="grid grid-cols-2 gap-3 p-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="font-bold"
+                    onClick={() => {
+                      setIsOpen(false);
+                      navigate("/auth/login");
+                    }}
                   >
-                    {item.label}
-                  </NavLink>
-                ))}
-              </>
-            )}
-            <div className="my-2 h-px bg-platinum-tint mx-4" />
-            {!isAuthenticated ? (
-              <div className="grid grid-cols-2 gap-3 p-2">
+                    Masuk
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="font-bold"
+                    onClick={() => {
+                      setIsOpen(false);
+                      navigate("/auth/register");
+                    }}
+                  >
+                    Daftar
+                  </Button>
+                </div>
+              ) : (
                 <Button
-                  variant="ghost"
+                  variant="destructive"
                   size="sm"
-                  className="font-bold"
-                  onClick={() => {
-                    setIsOpen(false);
-                    navigate("/auth/login");
-                  }}
+                  onClick={handleCustomerLogout}
+                  icon={LogOut}
+                  className="mx-2 font-bold"
                 >
-                  Masuk
+                  Keluar
                 </Button>
-                <Button
-                  size="sm"
-                  className="font-bold"
-                  onClick={() => {
-                    setIsOpen(false);
-                    navigate("/auth/register");
-                  }}
-                >
-                  Daftar
-                </Button>
-              </div>
-            ) : (
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={handleCustomerLogout}
-                icon={LogOut}
-                className="mx-2 font-bold"
-              >
-                Keluar
-              </Button>
-            )}
-          </div>
-        </div>
-      )}
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

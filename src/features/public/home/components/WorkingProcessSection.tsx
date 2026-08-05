@@ -1,5 +1,5 @@
 import { Calendar, Bus, ClipboardCheck, ShieldCheck } from "lucide-react";
-import { useInView } from "@/hooks/useAnimations";
+import { motion } from "motion/react";
 
 const steps = [
   {
@@ -28,35 +28,77 @@ const steps = [
   }
 ];
 
-export default function WorkingProcessSection() {
-  const { ref, inView } = useInView(0.1);
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.12,
+    }
+  }
+};
 
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { 
+    opacity: 1, 
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: [0.16, 1, 0.3, 1] as const
+    }
+  }
+};
+
+export default function WorkingProcessSection() {
   return (
-    <section ref={ref} className="py-24 bg-white scroll-mt-24" id="cara-pemesanan">
+    <section className="py-24 bg-white scroll-mt-24" id="cara-pemesanan">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
-        <div className={`text-center flex flex-col items-center mb-20 reveal ${inView ? "in-view" : ""}`}>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.15 }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          className="text-center flex flex-col items-center mb-20"
+        >
           <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#006bff] mb-3 block">
             CARA PEMESANAN
           </span>
           <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-midnight-indigo leading-tight">
             Mudah, Cepat & Praktis
           </h2>
-        </div>
+        </motion.div>
 
         {/* Timeline container */}
-        <div className={`relative reveal ${inView ? "in-view" : ""}`}>
+        <div className="relative">
           
           {/* Connecting Dashed Line on Desktop */}
-          <div className="hidden lg:block absolute top-10 left-[15%] right-[15%] border-t-2 border-dashed border-slate-200/80 z-0" />
+          <motion.div 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, amount: 0.15 }}
+            transition={{ duration: 1.0, delay: 0.2 }}
+            className="hidden lg:block absolute top-10 left-[15%] right-[15%] border-t-2 border-dashed border-slate-200/80 z-0" 
+          />
 
           {/* Steps Grid */}
-          <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4 relative z-10">
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.15 }}
+            className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4 relative z-10"
+          >
             {steps.map((step, i) => {
               const Icon = step.icon;
               return (
-                <div key={i} className="flex flex-col items-center text-center group px-4">
+                <motion.div 
+                  key={i} 
+                  variants={itemVariants}
+                  className="flex flex-col items-center text-center group px-4"
+                >
                   
                   {/* Icon Container with Badge */}
                   <div className="relative mb-6">
@@ -78,10 +120,10 @@ export default function WorkingProcessSection() {
                   <p className="text-[13px] font-medium leading-relaxed text-slate-blue/70 max-w-[220px]">
                     {step.desc}
                   </p>
-                </div>
+                </motion.div>
               );
             })}
-          </div>
+          </motion.div>
 
         </div>
 

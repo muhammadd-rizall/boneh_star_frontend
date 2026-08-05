@@ -2,7 +2,7 @@ import { DataTable } from "@/components/ui/DataTable"
 import type { Column } from "@/components/ui/DataTable"
 import { Button } from "@/components/ui/Button"
 import type { Transaction } from "@/features/admin/transactions/types/Transaction"
-import { Edit, Trash2, FileText, Banknote, User, Eye, Receipt, RotateCcw } from "lucide-react"
+import { Edit, Trash2, FileText, Banknote, User, Receipt, RotateCcw } from "lucide-react"
 import { useModulePermission } from "@/hooks/useModulePermission"
 
 interface TransactionTableProps {
@@ -21,7 +21,7 @@ export default function TransactionTable({
   data, 
   onDelete, 
   onEdit, 
-  onViewDetail,
+  onViewDetail: _onViewDetail,
   onRestore,
   onForceDelete,
   loading,

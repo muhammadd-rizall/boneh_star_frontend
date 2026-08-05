@@ -4,6 +4,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import api from "@/api/Axios";
 import { useNotifications, NotificationDrawer } from "@/features/admin/notifications";
 import ToastContainer from "@/components/feedback/ToastContainer";
+import { motion } from "motion/react";
 import {
   LayoutDashboard,
   Users,
@@ -317,7 +318,14 @@ export default function DahsbordLayout() {
 
         <main className="flex-1 overflow-y-auto bg-cloud-mist/50 p-4 sm:p-6 xl:p-8 scrollbar-thin">
           <div className="mx-auto max-w-[1440px]">
-            <Outlet />
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] as const }}
+            >
+              <Outlet />
+            </motion.div>
           </div>
         </main>
       </div>

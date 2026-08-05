@@ -334,7 +334,7 @@ export default function BookingForm({ booking, onSuccess, onCancel }: BookingFor
 
           <Input
             label="Titik Penjemputan"
-            placeholder="Contoh: Jakarta"
+            placeholder="Contoh: Padang"
             icon={MapPin}
             value={formData.origin}
             onChange={(e) => setFormData({ ...formData, origin: e.target.value })}
@@ -343,7 +343,7 @@ export default function BookingForm({ booking, onSuccess, onCancel }: BookingFor
 
           <Input
             label="Rute Lengkap"
-            placeholder="Contoh: Jakarta - Bandung - Jakarta"
+            placeholder="Contoh: Padang - Bukittinggi - Padang"
             icon={MapPin}
             value={formData.full_route || ""}
             onChange={(e) => setFormData({ ...formData, full_route: e.target.value })}

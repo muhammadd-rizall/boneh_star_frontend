@@ -2,7 +2,7 @@ import { DataTable } from "@/components/ui/DataTable"
 import type { Column } from "@/components/ui/DataTable"
 import { Button } from "@/components/ui/Button"
 import type { Quotation } from "@/features/admin/quotations/types/Quotation"
-import { Edit, Trash2, Calendar, FileText, Banknote, User, Eye } from "lucide-react"
+import { Edit, Trash2, Calendar, FileText, Banknote, User } from "lucide-react"
 import { useModulePermission } from "@/hooks/useModulePermission"
 
 interface QuotationTableProps {
@@ -13,7 +13,7 @@ interface QuotationTableProps {
   loading?: boolean
 }
 
-export default function QuotationTable({ data, onDelete, onEdit, onViewDetail, loading }: QuotationTableProps) {
+export default function QuotationTable({ data, onDelete, onEdit, onViewDetail: _onViewDetail, loading }: QuotationTableProps) {
   const { canUpdate, canDelete } = useModulePermission("quotations")
 
   const formatDate = (dateString: string) => {

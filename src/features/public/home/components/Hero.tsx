@@ -1,4 +1,3 @@
-import { usePublicCompanyProfile } from '@/features/admin/company-profile/hooks/usePublicCompanyProfile';
 import { Bus as BusIcon, Calendar, Users, ShieldCheck, User, Search, ChevronDown, CheckCircle2, AlertCircle, XCircle } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
@@ -6,6 +5,7 @@ import type { Bus } from '@/features/admin/buses/types/Bus';
 import type { BusCategory } from '@/features/admin/bus-categories/types/BusCategory';
 import { cn } from '@/lib/utils';
 import { formatDateDMY } from '@/utils/formatter';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface HeroProps {
   categories: BusCategory[];
@@ -17,7 +17,6 @@ interface HeroProps {
 const HERO_BACKGROUND_IMAGE = "/images/image1.jpeg";
 
 export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
-  const { profile } = usePublicCompanyProfile();
   const [checking, setChecking] = useState(false);
   const [result, setResult] = useState<{ available: Bus[]; message: string; isSuggestion?: boolean } | null>(null);
   const resultTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -108,16 +107,31 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
       <div className='relative z-20 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col items-center mt-6 lg:mt-10'>
         {/* Center Content */}
         <div className='text-center max-w-3xl flex flex-col items-center'>
-          <h1 className='text-4xl sm:text-5xl lg:text-[56px] font-extrabold tracking-tight text-white leading-[1.15] mb-6 animate-in fade-in slide-in-from-bottom-6 duration-750'>
+          <motion.h1 
+            initial={{ opacity: 0, y: 25 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className='text-4xl sm:text-5xl lg:text-[56px] font-extrabold tracking-tight text-white leading-[1.15] mb-6'
+          >
             Perjalanan Nyaman,<br />Kenangan Terbaik
-          </h1>
+          </motion.h1>
 
-          <p className='text-base sm:text-lg font-medium leading-relaxed text-white/85 mb-9 animate-in fade-in slide-in-from-bottom-8 duration-750 delay-100 max-w-2xl mx-auto'>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+            className='text-base sm:text-lg font-medium leading-relaxed text-white/85 mb-9 max-w-2xl mx-auto'
+          >
             Armada modern, fasilitas lengkap, dan pelayanan profesional untuk pengalaman perjalanan yang berkesan
-          </p>
+          </motion.p>
 
           {/* Action Buttons (System Colors: Blue & Outline, No Yellow) */}
-          <div className='flex flex-wrap items-center justify-center gap-4 animate-in fade-in slide-in-from-bottom-10 duration-750 delay-200'>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className='flex flex-wrap items-center justify-center gap-4'
+          >
             <Button
               size='lg'
               className='rounded-xl px-8 py-3.5 h-auto text-sm font-bold bg-[#006bff] hover:bg-[#0056cc] text-white shadow-lg shadow-blue-500/20 transition-all hover:scale-[1.02] active:scale-95'
@@ -140,10 +154,15 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
               <BusIcon size={16} />
               Lihat Armada
             </a>
-          </div>
+          </motion.div>
 
           {/* Badges / Features list below buttons */}
-          <div className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-white/90 text-[13px] font-bold animate-in fade-in slide-in-from-bottom-11 duration-750 delay-300">
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-white/90 text-[13px] font-bold"
+          >
             <div className="flex items-center gap-2">
               <ShieldCheck size={16} className="text-[#006bff]" />
               <span>Aman & Terpercaya</span>
@@ -156,11 +175,16 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
               <User size={16} className="text-[#006bff]" />
               <span>Driver Profesional</span>
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* Availability Bar / Search Card */}
-        <div className='mt-14 w-full max-w-[1100px] animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500 relative z-30 px-2 sm:px-0'>
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.0, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
+          className='mt-14 w-full max-w-[1100px] relative z-30 px-2 sm:px-0'
+        >
           <div className='bg-white rounded-3xl lg:rounded-[24px] shadow-[0_16px_48px_rgba(0,0,0,0.08)] border border-slate-100 p-3'>
             <form id='inquiry-bar' onSubmit={handleCheckAvailability} className='grid grid-cols-1 lg:grid-cols-[1fr_1fr_1fr_1fr_auto] gap-2 lg:gap-0 items-center w-full'>
 
@@ -183,37 +207,45 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
                   </div>
                 </div>
 
-                {isBusDropdownOpen && (
-                  <div className='absolute top-[105%] left-0 w-full min-w-[200px] bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.12)] border border-slate-100 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200'>
-                    <div className='py-1.5 max-h-[220px] overflow-y-auto'>
-                      <div
-                        className={cn('px-4 py-2.5 text-[13px] font-bold transition-colors hover:bg-slate-50 cursor-pointer flex items-center justify-between', !formData.jenisBus ? 'text-[#006bff] bg-blue-50/40' : 'text-slate-blue')}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setFormData({ ...formData, jenisBus: '' });
-                          setIsBusDropdownOpen(false);
-                        }}
-                      >
-                        Semua Jenis
-                        {!formData.jenisBus && <CheckCircle2 size={14} className="text-[#006bff]" />}
-                      </div>
-                      {categories.map(cat => (
+                <AnimatePresence>
+                  {isBusDropdownOpen && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: -8, scale: 0.98 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                      transition={{ duration: 0.2, ease: "easeOut" }}
+                      className='absolute top-[105%] left-0 w-full min-w-[200px] bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.12)] border border-slate-100 overflow-hidden z-50'
+                    >
+                      <div className='py-1.5 max-h-[220px] overflow-y-auto'>
                         <div
-                          key={cat.id}
-                          className={cn('px-4 py-2.5 text-[13px] font-bold transition-colors hover:bg-slate-50 cursor-pointer flex items-center justify-between', formData.jenisBus === cat.name ? 'text-[#006bff] bg-blue-50/40' : 'text-slate-blue')}
+                          className={cn('px-4 py-2.5 text-[13px] font-bold transition-colors hover:bg-slate-50 cursor-pointer flex items-center justify-between', !formData.jenisBus ? 'text-[#006bff] bg-blue-50/40' : 'text-slate-blue')}
                           onClick={(e) => {
                             e.stopPropagation();
-                            setFormData({ ...formData, jenisBus: cat.name });
+                            setFormData({ ...formData, jenisBus: '' });
                             setIsBusDropdownOpen(false);
                           }}
                         >
-                          {cat.name}
-                          {formData.jenisBus === cat.name && <CheckCircle2 size={14} className="text-[#006bff]" />}
+                          Semua Jenis
+                          {!formData.jenisBus && <CheckCircle2 size={14} className="text-[#006bff]" />}
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                        {categories.map(cat => (
+                          <div
+                            key={cat.id}
+                            className={cn('px-4 py-2.5 text-[13px] font-bold transition-colors hover:bg-slate-50 cursor-pointer flex items-center justify-between', formData.jenisBus === cat.name ? 'text-[#006bff] bg-blue-50/40' : 'text-slate-blue')}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setFormData({ ...formData, jenisBus: cat.name });
+                              setIsBusDropdownOpen(false);
+                            }}
+                          >
+                            {cat.name}
+                            {formData.jenisBus === cat.name && <CheckCircle2 size={14} className="text-[#006bff]" />}
+                          </div>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
               {/* Date Input 2: Tanggal Berangkat */}
@@ -292,19 +324,29 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
               </div>
             </form>
 
-            {result && (
-              <div className={cn('mt-5 mx-3 mb-3 flex items-center gap-6 rounded-2xl px-8 py-5 border animate-in slide-in-from-top-4 duration-300 shadow-sm', result.isSuggestion ? 'bg-sunset-gold/5 border-sunset-gold/20 text-sunset-gold' : (result.available.length > 0 ? 'bg-action-blue/5 border-action-blue/20 text-action-blue' : 'bg-red-500/5 border-red-500/20 text-red-600'))}>
-                <div className={cn('flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl shadow-sm', result.isSuggestion ? 'bg-sunset-gold/10' : (result.available.length > 0 ? 'bg-action-blue/10' : 'bg-red-500/10'))}>
-                  {result.isSuggestion ? <AlertCircle size={28} /> : (result.available.length > 0 ? <CheckCircle2 size={28} /> : <XCircle size={28} />)}
-                </div>
-                <div className='text-left flex-1'>
-                  <h4 className='font-bold text-lg mb-1'>{result.isSuggestion ? 'Saran Armada' : (result.available.length > 0 ? 'Armada Tersedia' : 'Pencarian Gagal')}</h4>
-                  <p className='text-base font-medium opacity-90'>{result.message}</p>
-                </div>
-              </div>
-            )}
+            <AnimatePresence>
+              {result && (
+                <motion.div 
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                  className="overflow-hidden"
+                >
+                  <div className={cn('mt-5 mx-3 mb-3 flex items-center gap-6 rounded-2xl px-8 py-5 border shadow-sm', result.isSuggestion ? 'bg-sunset-gold/5 border-sunset-gold/20 text-sunset-gold' : (result.available.length > 0 ? 'bg-action-blue/5 border-action-blue/20 text-action-blue' : 'bg-red-500/5 border-red-500/20 text-red-600'))}>
+                    <div className={cn('flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl shadow-sm', result.isSuggestion ? 'bg-sunset-gold/10' : (result.available.length > 0 ? 'bg-action-blue/10' : 'bg-red-500/10'))}>
+                      {result.isSuggestion ? <AlertCircle size={28} /> : (result.available.length > 0 ? <CheckCircle2 size={28} /> : <XCircle size={28} />)}
+                    </div>
+                    <div className='text-left flex-1'>
+                      <h4 className='font-bold text-lg mb-1'>{result.isSuggestion ? 'Saran Armada' : (result.available.length > 0 ? 'Armada Tersedia' : 'Pencarian Gagal')}</h4>
+                      <p className='text-base font-medium opacity-90'>{result.message}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
