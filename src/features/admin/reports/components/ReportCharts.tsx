@@ -82,12 +82,18 @@ export default function ReportCharts({ statistics }: ReportChartsProps) {
     negotiation: 'text-teal-500 bg-teal-50/70',
   };
 
-  let accumulatedPercent = 0;
-  const donutSlices = statistics.status_chart.map((item) => {
+  const accumulatedPercents: number[] = [];
+  let sum = 0;
+  for (const item of statistics.status_chart) {
+    accumulatedPercents.push(sum);
+    const percent = statusTotal > 0 ? item.count / statusTotal : 0;
+    sum += percent;
+  }
+
+  const donutSlices = statistics.status_chart.map((item, idx) => {
     const percent = statusTotal > 0 ? item.count / statusTotal : 0;
     const strokeLength = percent * 314.159;
-    const strokeOffset = -accumulatedPercent * 314.159;
-    accumulatedPercent += percent;
+    const strokeOffset = -accumulatedPercents[idx] * 314.159;
 
     return {
       ...item,

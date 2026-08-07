@@ -271,8 +271,8 @@ function BookingRow({ booking, onView }: { booking: CustomerBooking; onView: () 
   return (
     <div className="flex items-center gap-4 px-5 py-4 hover:bg-cloud-mist transition-colors cursor-pointer group" onClick={onView}>
       {/* Placeholder thumbnail */}
-      <div className="h-12 w-16 shrink-0 rounded-xl bg-pale-gray overflow-hidden flex items-center justify-center">
-        <Bus size={18} className="text-steel-gray" strokeWidth={1.5} />
+      <div className="h-12 w-12 shrink-0 rounded-full bg-pale-gray flex items-center justify-center">
+        <Bus size={22} className="text-steel-gray" strokeWidth={1.5} />
       </div>
 
       <div className="flex-1 min-w-0">

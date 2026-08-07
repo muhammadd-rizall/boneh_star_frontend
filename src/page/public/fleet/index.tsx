@@ -81,10 +81,6 @@ export default function FleetPage() {
   }, [buses, search, selectedCategory, sortBy]);
 
   useEffect(() => {
-    setVisibleCount(PER_PAGE);
-  }, [search, selectedCategory, sortBy]);
-
-  useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (sortRef.current && !sortRef.current.contains(event.target as Node)) {
         setIsSortOpen(false);
@@ -106,6 +102,7 @@ export default function FleetPage() {
     setSearch("");
     setSelectedCategory("");
     setSortBy("latest");
+    setVisibleCount(PER_PAGE);
   };
 
   const whatsappHref = profile.whatsapp?.[0]
@@ -199,7 +196,10 @@ export default function FleetPage() {
               {/* Category tabs */}
               <div className="flex flex-wrap items-center gap-1.5">
                 <button
-                  onClick={() => setSelectedCategory("")}
+                  onClick={() => {
+                    setSelectedCategory("");
+                    setVisibleCount(PER_PAGE);
+                  }}
                   className={`px-5 py-2.5 rounded-2xl text-xs font-bold transition-all ${selectedCategory === ""
                       ? "bg-action-blue text-white shadow-md shadow-action-blue/15"
                       : "text-slate-blue hover:text-action-blue bg-slate-50 hover:bg-slate-100"
@@ -210,7 +210,10 @@ export default function FleetPage() {
                 {categories.map((cat) => (
                   <button
                     key={cat.id}
-                    onClick={() => setSelectedCategory(cat.name)}
+                    onClick={() => {
+                      setSelectedCategory(cat.name);
+                      setVisibleCount(PER_PAGE);
+                    }}
                     className={`px-5 py-2.5 rounded-2xl text-xs font-bold transition-all ${selectedCategory === cat.name
                         ? "bg-action-blue text-white shadow-md shadow-action-blue/15"
                         : "text-slate-blue hover:text-action-blue bg-slate-50 hover:bg-slate-100"
@@ -229,12 +232,21 @@ export default function FleetPage() {
                   <input
                     type="text"
                     value={search}
-                    onChange={(e) => setSearch(e.target.value)}
+                    onChange={(e) => {
+                      setSearch(e.target.value);
+                      setVisibleCount(PER_PAGE);
+                    }}
                     placeholder="Cari armada..."
                     className="bg-transparent text-xs font-bold text-midnight-indigo placeholder:text-slate-blue/45 focus:outline-none w-full"
                   />
                   {search && (
-                    <button onClick={() => setSearch("")} className="text-slate-blue hover:text-action-blue">
+                    <button
+                      onClick={() => {
+                        setSearch("");
+                        setVisibleCount(PER_PAGE);
+                      }}
+                      className="text-slate-blue hover:text-action-blue"
+                    >
                       <X size={13} />
                     </button>
                   )}
@@ -265,6 +277,7 @@ export default function FleetPage() {
                           onClick={() => {
                             setSortBy(opt.value);
                             setIsSortOpen(false);
+                            setVisibleCount(PER_PAGE);
                           }}
                           className={`w-full text-left px-4 py-2.5 text-xs font-bold transition-colors flex items-center justify-between ${sortBy === opt.value
                               ? "bg-action-blue/10 text-action-blue"

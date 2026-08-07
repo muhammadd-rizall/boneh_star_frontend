@@ -39,7 +39,7 @@ export default function ProfileInfo({ profile, onUpload }: Props) {
           {/* Avatar */}
           <div className="relative shrink-0">
             <div className="h-28 w-28 overflow-hidden rounded-2xl border-4 border-pale-gray bg-pale-gray shadow-lg">
-              {profile.profile_picture ? (
+              {profile.profile_picture && resolveMediaUrl(profile.profile_picture) ? (
                 <img
                   src={resolveMediaUrl(profile.profile_picture)}
                   alt={profile.name}

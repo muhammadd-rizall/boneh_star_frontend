@@ -121,19 +121,15 @@ export default function TestimonialsSection({ reviews }: TestimonialsSectionProp
   const maxIndex = Math.max(0, totalReviews - visibleCount);
 
   // Ensure index stays in valid range when window resizes
-  useEffect(() => {
-    if (currentIndex > maxIndex) {
-      setCurrentIndex(maxIndex);
-    }
-  }, [maxIndex, currentIndex]);
+  const clampedIndex = Math.min(currentIndex, maxIndex);
 
   const handleNext = useCallback(() => {
     setCurrentIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
-  }, [maxIndex]);
+  }, [maxIndex, setCurrentIndex]);
 
   const handlePrev = useCallback(() => {
     setCurrentIndex((prev) => (prev <= 0 ? maxIndex : prev - 1));
-  }, [maxIndex]);
+  }, [maxIndex, setCurrentIndex]);
 
   // Auto-play timer
   useEffect(() => {
@@ -261,7 +257,7 @@ export default function TestimonialsSection({ reviews }: TestimonialsSectionProp
           <div 
             className="flex -mx-3 transition-transform duration-500 ease-out"
             style={{
-              transform: `translateX(-${currentIndex * (100 / visibleCount)}%)`
+              transform: `translateX(-${clampedIndex * (100 / visibleCount)}%)`
             }}
           >
             {displayReviews.map((review, idx) => (
@@ -314,7 +310,7 @@ export default function TestimonialsSection({ reviews }: TestimonialsSectionProp
                   setCurrentIndex(idx);
                 }}
                 className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
-                  currentIndex === idx 
+                  clampedIndex === idx 
                     ? "w-8 bg-[#006bff]" 
                     : "w-2.5 bg-slate-200 hover:bg-slate-300"
                 }`}

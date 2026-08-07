@@ -76,7 +76,7 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
           {/* User Card */}
           <div className="px-5 py-4 flex items-center gap-3 border-b border-pale-gray/40 shrink-0">
             <div className="h-10 w-10 rounded-full overflow-hidden border border-pale-gray/50 bg-cloud-mist shrink-0">
-              {activeUser?.profile_picture ? (
+              {activeUser?.profile_picture && resolveMediaUrl(activeUser.profile_picture) ? (
                 <img
                   src={resolveMediaUrl(activeUser.profile_picture)}
                   alt={activeUser.name}

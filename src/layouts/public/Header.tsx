@@ -209,7 +209,7 @@ export default function Header({ companyProfile }: HeaderProps) {
                   to="/customer/profile"
                   className="flex h-9 w-9 items-center justify-center rounded-xl bg-cloud-mist border border-platinum-tint overflow-hidden hover:border-action-blue transition-colors"
                 >
-                  {user?.profile_picture ? (
+                  {user?.profile_picture && resolveMediaUrl(user.profile_picture) ? (
                     <img src={resolveMediaUrl(user.profile_picture)} className="h-full w-full object-cover" alt="" />
                   ) : (
                     <User size={16} className="text-slate-blue" />

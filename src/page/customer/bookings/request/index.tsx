@@ -12,6 +12,7 @@ import {
 import type { ActivityType, RouteType, BusCategory, Bus } from '@/types/Database';
 import { useToastStore } from '@/store/useToastStore';
 import { formatDateDMY, formatCurrency } from '@/utils/formatter';
+import { resolveMediaUrl } from '@/features/admin/company-profile/utils/companyProfileUtils';
 
 // ── Step config ───────────────────────────────────────────────────────────────
 const STEPS = [
@@ -267,14 +268,11 @@ export default function BookingRequestPage() {
   const toggleBusSelection = (busId: string) => {
     setSelectedBusIds(prev => {
       const exists = prev.includes(busId);
-      const next = exists ? prev.filter(id => id !== busId) : [...prev, busId];
-      
-      // Sinkronkan bus_count_requested HANYA saat ada bus yang dipilih
-      // Jika semua bus di-deselect, pertahankan nilai yang sudah diisi user
-      if (next.length > 0) {
-        setFormData(f => ({ ...f, bus_count_requested: next.length }));
+      if (!exists && prev.length >= formData.bus_count_requested) {
+        showError(`Anda hanya meminta ${formData.bus_count_requested} unit bus. Tambahkan kebutuhan unit jika ingin memilih lebih banyak.`);
+        return prev;
       }
-      return next;
+      return exists ? prev.filter(id => id !== busId) : [...prev, busId];
     });
   };
 
@@ -330,82 +328,97 @@ export default function BookingRequestPage() {
     return `${year}-${month}-${day}`;
   }, []);
 
-  // Auto-pilih bus dengan kombinasi optimal & proteksi browser freeze
+  // Auto-pilih bus dengan kombinasi optimal berdasarkan jumlah bus yang diminta & jumlah penumpang
   const autoSelectBuses = () => {
-    if (buses.length === 0) return;
+    if (filteredBuses.length === 0) {
+      showError('Tidak ada armada yang tersedia pada filter kategori ini untuk dipilih secara otomatis.');
+      return;
+    }
 
+    const N = Math.max(1, Math.min(formData.bus_count_requested || 1, filteredBuses.length));
     const target = formData.passenger_count;
-    const sortedBuses = [...buses].sort((a, b) => (b.seat_count || 0) - (a.seat_count || 0));
+    const sortedBuses = [...filteredBuses].sort((a, b) => (b.seat_count || 0) - (a.seat_count || 0));
 
-    // Jika jumlah armada tersedia sedikit (<= 12), gunakan backtracking untuk alokasi 100% optimal
-    // Jika jumlah armada banyak (> 12), gunakan Greedy algorithm untuk mencegah browser tab membeku (freeze)
-    if (sortedBuses.length <= 12) {
-      let bestSubset: Bus[] = [];
-      let bestCost = Infinity;
-      const BUS_OVERHEAD_PENALTY = 15;
+    let bestSubset: Bus[] = [];
+    let bestSeats = Infinity; // Untuk subset yang memenuhi target (minimalkan kelebihan kursi)
+    let bestUnderSeats = -Infinity; // Untuk subset yang tidak memenuhi target (maksimalkan kapasitas)
 
-      const backtrack = (index: number, currentSubset: Bus[], currentSeats: number) => {
-        if (currentSeats >= target) {
-          const cost = currentSeats + (currentSubset.length * BUS_OVERHEAD_PENALTY);
-          if (cost < bestCost) {
-            bestCost = cost;
-            bestSubset = [...currentSubset];
-          } else if (cost === bestCost) {
-            if (currentSubset.length < bestSubset.length) {
-              bestSubset = [...currentSubset];
+    // Helper untuk menghitung jumlah kombinasi C(n, r)
+    const nCr = (n: number, r: number): number => {
+      if (r < 0 || r > n) return 0;
+      if (r === 0 || r === n) return 1;
+      let res = 1;
+      for (let i = 1; i <= r; i++) {
+        res = res * (n - r + i) / i;
+      }
+      return res;
+    };
+
+    const combinationCount = nCr(sortedBuses.length, N);
+
+    if (combinationCount > 15000) {
+      // Pendekatan Greedy jika kombinasi terlalu banyak (menghindari freeze browser)
+      const pool = [...sortedBuses];
+      const selected: Bus[] = [];
+      let remaining = target;
+      
+      for (let i = 0; i < N; i++) {
+        if (pool.length === 0) break;
+        const targetPerBus = remaining / (N - i);
+        let bestIdx = 0;
+        let bestDiff = Infinity;
+        for (let j = 0; j < pool.length; j++) {
+          const diff = Math.abs((pool[j].seat_count || 0) - targetPerBus);
+          if (diff < bestDiff) {
+            bestDiff = diff;
+            bestIdx = j;
+          }
+        }
+        const chosen = pool.splice(bestIdx, 1)[0];
+        selected.push(chosen);
+        remaining -= (chosen.seat_count || 0);
+      }
+      bestSubset = selected;
+    } else {
+      // Pencarian optimal Backtracking untuk kombinasi ukuran N
+      const backtrack = (start: number, current: Bus[], currentSeats: number) => {
+        if (current.length === N) {
+          if (currentSeats >= target) {
+            if (currentSeats < bestSeats) {
+              bestSeats = currentSeats;
+              bestSubset = [...current];
+            }
+          } else {
+            if (bestSeats === Infinity && currentSeats > bestUnderSeats) {
+              bestUnderSeats = currentSeats;
+              bestSubset = [...current];
             }
           }
           return;
         }
 
-        if (index >= sortedBuses.length) return;
-
-        const currentMinCost = currentSeats + (currentSubset.length * BUS_OVERHEAD_PENALTY);
-        if (currentMinCost >= bestCost) return;
-
-        currentSubset.push(sortedBuses[index]);
-        backtrack(index + 1, currentSubset, currentSeats + (sortedBuses[index].seat_count || 0));
-        currentSubset.pop();
-
-        backtrack(index + 1, currentSubset, currentSeats);
+        for (let i = start; i < sortedBuses.length; i++) {
+          current.push(sortedBuses[i]);
+          backtrack(i + 1, current, currentSeats + (sortedBuses[i].seat_count || 0));
+          current.pop();
+        }
       };
 
       backtrack(0, [], 0);
-
-      if (bestSubset.length > 0) {
-        const selectedIds = bestSubset.map(b => b.id);
-        setSelectedBusIds(selectedIds);
-        setFormData(f => ({ ...f, bus_count_requested: selectedIds.length }));
-        return;
-      }
     }
 
-    // Pendekatan Greedy (Safeguard untuk data besar > 12 bus)
-    let remaining = target;
-    const selectedIds: string[] = [];
-    const pool = [...sortedBuses];
-
-    while (remaining > 0 && pool.length > 0) {
-      pool.sort((a, b) => (a.seat_count || 0) - (b.seat_count || 0));
-      const fitIndex = pool.findIndex(bus => (bus.seat_count || 0) >= remaining);
-      
-      if (fitIndex !== -1) {
-        const chosen = pool.splice(fitIndex, 1)[0];
-        selectedIds.push(chosen.id);
-        break;
-      } else {
-        const chosen = pool.pop()!;
-        selectedIds.push(chosen.id);
-        remaining -= (chosen.seat_count || 0);
-      }
-    }
-
-    if (selectedIds.length === 0) {
-      setSelectedBusIds([sortedBuses[0].id]);
-      setFormData(f => ({ ...f, bus_count_requested: 1 }));
-    } else {
+    if (bestSubset.length > 0) {
+      const selectedIds = bestSubset.map(b => b.id);
       setSelectedBusIds(selectedIds);
-      setFormData(f => ({ ...f, bus_count_requested: selectedIds.length }));
+      
+      const totalSeats = bestSubset.reduce((sum, b) => sum + (b.seat_count || 0), 0);
+      if (totalSeats < target) {
+        showSuccess(`Dipilih otomatis ${selectedIds.length} armada terbaik. Catatan: Kapasitas total (${totalSeats} kursi) kurang dari jumlah peserta (${target} orang). Anda dapat menambahkan bus lagi.`);
+      } else {
+        showSuccess(`Berhasil memilih otomatis ${selectedIds.length} armada terbaik (Kapasitas: ${totalSeats} kursi).`);
+      }
+    } else {
+      showError('Gagal memilih otomatis armada.');
     }
   };
 
@@ -688,8 +701,20 @@ export default function BookingRequestPage() {
                           type="number"
                           min="1"
                           className={`${inputClass} text-center flex-1`}
-                          value={formData.passenger_count}
-                          onChange={e => setFormData({ ...formData, passenger_count: Math.max(1, Number(e.target.value)) })}
+                          value={formData.passenger_count === 0 ? '' : formData.passenger_count}
+                          onChange={e => {
+                            const val = e.target.value;
+                            setFormData(prev => ({
+                              ...prev,
+                              passenger_count: val === '' ? 0 : Math.max(0, parseInt(val) || 0)
+                            }));
+                          }}
+                          onBlur={e => {
+                            const val = Number(e.target.value);
+                            if (isNaN(val) || val < 1) {
+                              setFormData(prev => ({ ...prev, passenger_count: 1 }));
+                            }
+                          }}
                           required
                         />
                         <button
@@ -729,8 +754,20 @@ export default function BookingRequestPage() {
                           type="number"
                           min="1"
                           className={`${inputClass} text-center flex-1`}
-                          value={formData.bus_count_requested}
-                          onChange={e => setFormData({ ...formData, bus_count_requested: Math.max(1, Number(e.target.value)) })}
+                          value={formData.bus_count_requested === 0 ? '' : formData.bus_count_requested}
+                          onChange={e => {
+                            const val = e.target.value;
+                            setFormData(prev => ({
+                              ...prev,
+                              bus_count_requested: val === '' ? 0 : Math.max(0, parseInt(val) || 0)
+                            }));
+                          }}
+                          onBlur={e => {
+                            const val = Number(e.target.value);
+                            if (isNaN(val) || val < 1) {
+                              setFormData(prev => ({ ...prev, bus_count_requested: 1 }));
+                            }
+                          }}
                           required
                         />
                         <button
@@ -915,38 +952,98 @@ export default function BookingRequestPage() {
                         </p>
                       </div>
 
-                      {/* Capacity Indicator Bar */}
-                      <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col gap-2 shadow-sm">
-                        <div className="flex items-center justify-between text-xs font-bold text-midnight-indigo">
-                          <span>Kapasitas Kursi Terpenuhi</span>
-                          <span className={totalSelectedSeats >= formData.passenger_count ? "text-emerald-600" : "text-amber-500"}>
-                            {totalSelectedSeats} / {formData.passenger_count} Kursi
-                          </span>
-                        </div>
-                        
-                        {/* Progress bar */}
-                        <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-                          <div
-                            className={`h-full transition-all duration-300 ${
-                              totalSelectedSeats >= formData.passenger_count ? 'bg-emerald-500' : 'bg-amber-500'
-                            }`}
-                            style={{ width: `${Math.min(100, (totalSelectedSeats / formData.passenger_count) * 100)}%` }}
-                          />
+                      {/* Capacity Indicator Bar & Unit Bus Indicator & Controller */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Capacity Indicator Bar */}
+                        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col gap-2 shadow-sm justify-between">
+                          <div className="flex items-center justify-between text-xs font-bold text-midnight-indigo">
+                            <span>Kapasitas Kursi Terpenuhi</span>
+                            <span className={totalSelectedSeats >= formData.passenger_count ? "text-emerald-600" : "text-amber-500"}>
+                              {totalSelectedSeats} / {formData.passenger_count} Kursi
+                            </span>
+                          </div>
+                          
+                          {/* Progress bar */}
+                          <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                            <div
+                              className={`h-full transition-all duration-300 ${
+                                totalSelectedSeats >= formData.passenger_count ? 'bg-emerald-500' : 'bg-amber-500'
+                              }`}
+                              style={{ width: `${Math.min(100, (totalSelectedSeats / formData.passenger_count) * 100)}%` }}
+                            />
+                          </div>
+
+                          {/* Capacity helpers */}
+                          <p className="text-xs font-medium text-slate-600 flex items-center gap-1.5">
+                            <InfoIcon size={12} className="shrink-0 text-slate-400" />
+                            <span>
+                              {totalSelectedSeats === 0 ? (
+                                'Silakan pilih bus di bawah ini.'
+                              ) : totalSelectedSeats < formData.passenger_count ? (
+                                `Kapasitas masih kurang ${formData.passenger_count - totalSelectedSeats} kursi.`
+                              ) : (
+                                'Kapasitas sudah terpenuhi secara ideal! ✅'
+                              )}
+                            </span>
+                          </p>
                         </div>
 
-                        {/* Capacity helpers */}
-                        <p className="text-xs font-medium text-slate-600 flex items-center gap-1.5">
-                          <InfoIcon size={12} className="shrink-0 text-slate-400" />
-                          <span>
-                            {totalSelectedSeats === 0 ? (
-                              'Silakan pilih bus di bawah ini.'
-                            ) : totalSelectedSeats < formData.passenger_count ? (
-                              `Kapasitas masih kurang ${formData.passenger_count - totalSelectedSeats} kursi. Pilih unit tambahan.`
-                            ) : (
-                              'Kapasitas sudah terpenuhi secara ideal! ✅'
-                            )}
-                          </span>
-                        </p>
+                        {/* Unit Bus Indicator & Controller */}
+                        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col gap-2 shadow-sm justify-between">
+                          <div className="flex items-center justify-between text-xs font-bold text-midnight-indigo">
+                            <span>Kebutuhan Unit Bus</span>
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => adjustCount('bus_count_requested', -1)}
+                                className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition-colors cursor-pointer"
+                              >
+                                <Minus size={12} className="text-slate-600" />
+                              </button>
+                              <span className="w-6 text-center text-xs font-bold text-gray-800">
+                                {formData.bus_count_requested}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => adjustCount('bus_count_requested', 1)}
+                                className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition-colors cursor-pointer"
+                              >
+                                <Plus size={12} className="text-slate-600" />
+                              </button>
+                              <span className="text-slate-500 font-medium">Unit</span>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center justify-between text-xs font-semibold text-slate-600 mt-1">
+                            <span>Armada Terpilih:</span>
+                            <span className={selectedBusIds.length === formData.bus_count_requested ? "text-emerald-600 font-bold" : "text-amber-500 font-bold"}>
+                              {selectedBusIds.length} / {formData.bus_count_requested} Unit
+                            </span>
+                          </div>
+
+                          {/* Progress bar unit */}
+                          <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                            <div
+                              className={`h-full transition-all duration-300 ${
+                                selectedBusIds.length === formData.bus_count_requested ? 'bg-emerald-500' : 'bg-amber-500'
+                              }`}
+                              style={{ width: `${Math.min(100, (selectedBusIds.length / formData.bus_count_requested) * 100)}%` }}
+                            />
+                          </div>
+
+                          <p className="text-xs font-medium text-slate-600 flex items-center gap-1.5 mt-0.5">
+                            <InfoIcon size={12} className="shrink-0 text-slate-400" />
+                            <span>
+                              {selectedBusIds.length < formData.bus_count_requested ? (
+                                `Pilih ${formData.bus_count_requested - selectedBusIds.length} unit bus lagi.`
+                              ) : selectedBusIds.length > formData.bus_count_requested ? (
+                                `Kelebihan ${selectedBusIds.length - formData.bus_count_requested} unit. Sesuaikan kebutuhan unit di atas.`
+                              ) : (
+                                'Jumlah unit terpilih sudah pas! ✅'
+                              )}
+                            </span>
+                          </p>
+                        </div>
                       </div>
 
                       {/* Category Filter Tabs */}
@@ -1009,12 +1106,13 @@ export default function BookingRequestPage() {
                                 )}
 
                                 {/* Bus Thumbnail */}
-                                <div className="h-36 w-full bg-slate-50 border-b border-slate-200/50 relative overflow-hidden flex items-center justify-center">
+                                <div className="h-[220px] w-full shrink-0 bg-slate-50 border-b border-slate-200/50 relative overflow-hidden flex items-center justify-center">
                                   {(() => {
                                     const primaryImg = bus.images?.find(img => img.is_primary) || bus.images?.[0];
-                                    return primaryImg ? (
+                                    const resolvedUrl = primaryImg ? resolveMediaUrl(primaryImg.url) : null;
+                                    return resolvedUrl ? (
                                       <img
-                                        src={primaryImg.url}
+                                        src={resolvedUrl}
                                         alt={bus.name}
                                         className="h-full w-full object-cover"
                                       />
@@ -1022,7 +1120,7 @@ export default function BookingRequestPage() {
                                       <BusIcon size={32} className="text-slate-400 opacity-45" />
                                     );
                                   })()}
-                                  <div className="absolute bottom-2 left-2 bg-gray-900/70 backdrop-blur-[2px] px-2 py-0.5 rounded text-[10px] font-bold text-white uppercase tracking-wide">
+                                  <div className="absolute bottom-2 left-2 z-20 bg-gray-900/70 backdrop-blur-[2px] px-2 py-0.5 rounded text-[10px] font-bold text-white uppercase tracking-wide">
                                     {bus.plat_number}
                                   </div>
                                 </div>
@@ -1060,7 +1158,7 @@ export default function BookingRequestPage() {
                                   {/* Facilities */}
                                   {bus.facilities && bus.facilities.length > 0 && (
                                     <div className="flex flex-wrap gap-1 mt-2 pt-2 border-t border-slate-200">
-                                      {bus.facilities.slice(0, 3).map(fac => (
+                                      {bus.facilities.map(fac => (
                                         <span
                                           key={fac.id}
                                           className="bg-slate-50 border border-slate-200 text-slate-600 text-[10px] font-medium px-1.5 py-0.5 rounded-md"
@@ -1068,11 +1166,6 @@ export default function BookingRequestPage() {
                                           {fac.name}
                                         </span>
                                       ))}
-                                      {bus.facilities.length > 3 && (
-                                        <span className="text-[10px] font-medium text-slate-500 px-1 py-0.5">
-                                          +{bus.facilities.length - 3} lainnya
-                                        </span>
-                                      )}
                                     </div>
                                   )}
 

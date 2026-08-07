@@ -407,7 +407,7 @@ export default function ProfilePage() {
               {/* Avatar circle */}
               <div className="relative mb-4">
                 <div className="h-28 w-28 overflow-hidden rounded-full border-4 border-cloud-mist bg-cloud-mist shadow-md relative">
-                  {profile.profile_picture ? (
+                  {profile.profile_picture && resolveMediaUrl(profile.profile_picture) ? (
                     <img
                       src={resolveMediaUrl(profile.profile_picture)}
                       alt={profile.name}

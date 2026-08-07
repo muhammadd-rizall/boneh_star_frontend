@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { 
-  X, 
-  Users, 
-  Hash, 
-  Wind, 
-  Shield, 
-  Armchair, 
-  Briefcase, 
-  Wifi, 
-  Tv, 
-  Usb, 
-  Music, 
+import {
+  X,
+  Users,
+  Hash,
+  Wind,
+  Shield,
+  Armchair,
+  Briefcase,
+  Wifi,
+  Tv,
+  Usb,
+  Music,
   Sparkles,
   ShieldCheck,
   ChevronLeft,
@@ -21,10 +21,10 @@ import {
   Calendar
 } from "lucide-react";
 import { Whatsapp } from "@thesvg/react";
-import { 
-  resolveMediaUrl, 
-  buildWhatsAppHref, 
-  normalizeWhatsApp 
+import {
+  resolveMediaUrl,
+  buildWhatsAppHref,
+  normalizeWhatsApp
 } from "@/features/admin/company-profile/utils/companyProfileUtils";
 import type { Bus as BusType } from "@/features/admin/buses/types/Bus";
 import { getCapacityLabel } from "../utils/fleetCardUtils";
@@ -94,12 +94,12 @@ export default function FleetDetailModal({ bus, onClose }: FleetDetailModalProps
   };
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300 cursor-pointer"
       onClick={onClose}
     >
       {/* Modal Dialog container with general padding */}
-      <div 
+      <div
         className="relative w-full max-w-5xl bg-white rounded-[32px] shadow-2xl border border-slate-100 p-6 md:p-8 flex flex-col md:flex-row gap-6 md:gap-8 max-h-[90vh] md:max-h-[85vh] overflow-y-auto md:overflow-hidden animate-in slide-in-from-bottom-8 duration-300 cursor-default"
         onClick={(e) => e.stopPropagation()}
       >
@@ -115,11 +115,20 @@ export default function FleetDetailModal({ bus, onClose }: FleetDetailModalProps
         {/* Left Side: Image Gallery Card */}
         <div className="w-full md:w-[52%] relative min-h-[320px] md:min-h-0 bg-slate-950 rounded-[24px] overflow-hidden flex items-center justify-center shrink-0">
           {activeImageUrl ? (
-            <img
-              src={activeImageUrl}
-              alt={`${bus.name} view`}
-              className="w-full h-full object-cover"
-            />
+            <>
+              {/* Blurred background to fill aspect ratio gaps beautifully */}
+              <img
+                src={activeImageUrl}
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover blur-md opacity-30 scale-105 pointer-events-none"
+              />
+              {/* Sharp main image */}
+              <img
+                src={activeImageUrl}
+                alt={`${bus.name} view`}
+                className="relative z-10 w-full h-full object-contain"
+              />
+            </>
           ) : (
             <div className="flex h-full w-full items-center justify-center text-slate-500">
               <Bus size={48} strokeWidth={1.2} />
@@ -165,11 +174,10 @@ export default function FleetDetailModal({ bus, onClose }: FleetDetailModalProps
                   <button
                     key={img.id || idx}
                     onClick={() => setActiveImageIndex(idx)}
-                    className={`relative h-14 w-20 shrink-0 rounded-lg overflow-hidden border-2 transition-all cursor-pointer shadow-md bg-white ${
-                      activeImageIndex === idx
+                    className={`relative h-14 w-20 shrink-0 rounded-lg overflow-hidden border-2 transition-all cursor-pointer shadow-md bg-white ${activeImageIndex === idx
                         ? "border-[#006bff] scale-102"
                         : "border-white/50 hover:border-white"
-                    }`}
+                      }`}
                   >
                     <img
                       src={thumbUrl}
@@ -249,14 +257,14 @@ export default function FleetDetailModal({ bus, onClose }: FleetDetailModalProps
             {/* Full Facilities List */}
             <div className="mb-6 text-left">
               <h3 className="text-xs font-extrabold uppercase tracking-widest text-slate-400 mb-3">Fasilitas Armada</h3>
-              
+
               {facilities.length > 0 ? (
                 <div className="grid grid-cols-2 gap-3">
                   {facilities.map((fac) => {
                     const Icon = getFacilityIcon(fac.name);
                     return (
-                      <div 
-                        key={fac.id} 
+                      <div
+                        key={fac.id}
                         className="flex items-center gap-2.5 px-4 py-3.5 rounded-xl border border-slate-100 bg-[#f8fafc]/50 text-xs font-bold text-slate-700 shadow-sm hover:border-[#006bff]/20 hover:bg-slate-50/20 transition-all"
                       >
                         <Icon size={16} className="text-[#006bff] shrink-0" strokeWidth={1.8} />
@@ -276,8 +284,8 @@ export default function FleetDetailModal({ bus, onClose }: FleetDetailModalProps
                     { name: "Bagasi Luas", icon: Briefcase },
                     { name: "Lampu LED", icon: Lightbulb }
                   ].map((fac, idx) => (
-                    <div 
-                      key={idx} 
+                    <div
+                      key={idx}
                       className="flex items-center gap-2.5 px-4 py-3.5 rounded-xl border border-slate-100 bg-[#f8fafc]/50 text-xs font-bold text-slate-700 shadow-sm hover:border-[#006bff]/20 hover:bg-slate-50/20 transition-all"
                     >
                       <fac.icon size={16} className="text-[#006bff] shrink-0" strokeWidth={1.8} />

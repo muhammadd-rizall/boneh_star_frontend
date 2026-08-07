@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { profileService } from '../services/ProfileService';
 import type { CustomerProfile, UpdateProfileData, BookingStatistics } from '../types/Profile';
+import { useCustomerAuthStore } from '@/features/auth/public';
 
 export function useProfile() {
   const [profile, setProfile] = useState<CustomerProfile | null>(null);
@@ -12,6 +13,8 @@ export function useProfile() {
     try {
       const data = await profileService.getProfile();
       setProfile(data);
+      // Sync fresh profile to the customer auth store
+      useCustomerAuthStore.setState({ user: data });
     } catch (err: any) {
       setError(err.message || 'Failed to fetch profile');
     }
@@ -30,6 +33,8 @@ export function useProfile() {
     try {
       const updated = await profileService.updateProfile(data);
       setProfile(updated);
+      // Sync updated profile to the customer auth store
+      useCustomerAuthStore.setState({ user: updated });
       return updated;
     } catch (err: any) {
       throw err;
@@ -40,6 +45,8 @@ export function useProfile() {
     try {
       const updated = await profileService.uploadPicture(file);
       setProfile(updated);
+      // Sync updated profile (including new profile_picture URL) to the customer auth store
+      useCustomerAuthStore.setState({ user: updated });
       return updated;
     } catch (err: any) {
       throw err;
