@@ -1,5 +1,6 @@
 import axios from '@/api/Axios';
 import type { Transaction, TransactionFormData, TransactionApiResponse, TransactionStatistics } from '@/features/admin/transactions/types/Transaction';
+import { dashboardService } from '@/features/admin/dashboard/services/DashboardService';
 
 const ENDPOINTS = {
   BASE: '/admin/transactions',
@@ -9,8 +10,18 @@ const ENDPOINTS = {
   FORCE_DELETE: (id: string) => `/admin/transactions/${id}/force-delete`,
 };
 
+// In-memory cache for admin transactions
+const cache: Record<string, any> = {};
+
+const clearCache = () => {
+  Object.keys(cache).forEach(key => delete cache[key]);
+  dashboardService.clearCache?.();
+};
+
 export const transactionService = {
   getAll: async (search?: string): Promise<{ transactions: Transaction[], statistics: TransactionStatistics | null }> => {
+    const cacheKey = `all_${search || ''}`;
+    if (cache[cacheKey]) return cache[cacheKey];
     try {
       const response = await axios.get<TransactionApiResponse>(ENDPOINTS.BASE, {
         params: { search }
@@ -24,10 +35,12 @@ export const transactionService = {
         transactions = responseData as Transaction[];
       }
 
-      return {
+      const result = {
         transactions,
         statistics: response.data.statistics || response.data.statistic || null
       };
+      cache[cacheKey] = result;
+      return result;
     } catch (error) {
       console.error('Error fetching transactions:', error);
       throw error;
@@ -35,6 +48,8 @@ export const transactionService = {
   },
 
   getTrashed: async (): Promise<Transaction[]> => {
+    const cacheKey = 'trashed';
+    if (cache[cacheKey]) return cache[cacheKey];
     try {
       const response = await axios.get<TransactionApiResponse>(ENDPOINTS.TRASHED);
       const responseData = response.data.data;
@@ -46,6 +61,7 @@ export const transactionService = {
         transactions = responseData as Transaction[];
       }
       
+      cache[cacheKey] = transactions;
       return transactions;
     } catch (error) {
       console.error('Error fetching trashed transactions:', error);
@@ -54,9 +70,13 @@ export const transactionService = {
   },
 
   getById: async (id: string): Promise<Transaction> => {
+    const cacheKey = `detail_${id}`;
+    if (cache[cacheKey]) return cache[cacheKey];
     try {
       const response = await axios.get<TransactionApiResponse>(ENDPOINTS.DETAIL(id));
-      return response.data.data as Transaction;
+      const result = response.data.data as Transaction;
+      cache[cacheKey] = result;
+      return result;
     } catch (error) {
       console.error(`Error fetching transaction ${id}:`, error);
       throw error;
@@ -64,6 +84,7 @@ export const transactionService = {
   },
 
   create: async (data: TransactionFormData): Promise<Transaction> => {
+    clearCache();
     try {
       const response = await axios.post<TransactionApiResponse>(ENDPOINTS.BASE, data);
       return response.data.data as Transaction;
@@ -74,6 +95,7 @@ export const transactionService = {
   },
 
   update: async (id: string, data: TransactionFormData): Promise<Transaction> => {
+    clearCache();
     try {
       const response = await axios.put<TransactionApiResponse>(ENDPOINTS.DETAIL(id), data);
       return response.data.data as Transaction;
@@ -84,6 +106,7 @@ export const transactionService = {
   },
 
   delete: async (id: string): Promise<void> => {
+    clearCache();
     try {
       await axios.delete(ENDPOINTS.DETAIL(id));
     } catch (error) {
@@ -93,6 +116,7 @@ export const transactionService = {
   },
 
   restore: async (id: string): Promise<void> => {
+    clearCache();
     try {
       await axios.post(ENDPOINTS.RESTORE(id));
     } catch (error) {
@@ -102,6 +126,7 @@ export const transactionService = {
   },
 
   forceDelete: async (id: string): Promise<void> => {
+    clearCache();
     try {
       await axios.delete(ENDPOINTS.FORCE_DELETE(id));
     } catch (error) {

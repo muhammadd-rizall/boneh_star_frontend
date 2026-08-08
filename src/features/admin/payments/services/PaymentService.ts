@@ -6,6 +6,7 @@ import type {
   PaymentVerifyData,
   PaymentStatistics 
 } from '@/features/admin/payments/types/Payment';
+import { dashboardService } from '@/features/admin/dashboard/services/DashboardService';
 
 const ENDPOINTS = {
   BASE: '/admin/payments',
@@ -16,21 +17,33 @@ const ENDPOINTS = {
   FORCE_DELETE: (id: string) => `/admin/payments/${id}/force-delete`,
 };
 
+// In-memory cache for admin payments
+const cache: Record<string, any> = {};
+
+const clearCache = () => {
+  Object.keys(cache).forEach(key => delete cache[key]);
+  dashboardService.clearCache?.();
+};
+
 export const paymentService = {
   getPaginated: async (params?: { page?: number; per_page?: number; search?: string }): Promise<{ 
     payments: Payment[], 
     statistics: PaymentStatistics | null,
     meta: PaymentApiResponse['meta']
   }> => {
+    const cacheKey = `paginated_${JSON.stringify(params || {})}`;
+    if (cache[cacheKey]) return cache[cacheKey];
     try {
       const response = await axios.get<PaymentApiResponse>(ENDPOINTS.BASE, { params });
       const data = response.data.data;
       
-      return {
+      const result = {
         payments: Array.isArray(data) ? data : [],
         statistics: response.data.statistics || null,
         meta: response.data.meta
       };
+      cache[cacheKey] = result;
+      return result;
     } catch (error) {
       console.error('Error fetching payments:', error);
       throw error;
@@ -38,10 +51,14 @@ export const paymentService = {
   },
 
   getTrashed: async (): Promise<Payment[]> => {
+    const cacheKey = 'trashed';
+    if (cache[cacheKey]) return cache[cacheKey];
     try {
       const response = await axios.get<PaymentApiResponse>(ENDPOINTS.TRASHED);
       const data = response.data.data;
-      return Array.isArray(data) ? data : [];
+      const result = Array.isArray(data) ? data : [];
+      cache[cacheKey] = result;
+      return result;
     } catch (error) {
       console.error('Error fetching trashed payments:', error);
       throw error;
@@ -49,9 +66,13 @@ export const paymentService = {
   },
 
   getById: async (id: string): Promise<Payment> => {
+    const cacheKey = `detail_${id}`;
+    if (cache[cacheKey]) return cache[cacheKey];
     try {
       const response = await axios.get<PaymentApiResponse>(ENDPOINTS.DETAIL(id));
-      return response.data.data as Payment;
+      const result = response.data.data as Payment;
+      cache[cacheKey] = result;
+      return result;
     } catch (error) {
       console.error(`Error fetching payment ${id}:`, error);
       throw error;
@@ -59,6 +80,7 @@ export const paymentService = {
   },
 
   create: async (data: PaymentFormData): Promise<Payment> => {
+    clearCache();
     try {
       const formData = new FormData();
       Object.entries(data).forEach(([key, value]) => {
@@ -78,6 +100,7 @@ export const paymentService = {
   },
 
   update: async (id: string, data: Partial<PaymentFormData>): Promise<Payment> => {
+    clearCache();
     try {
       const formData = new FormData();
       // Laravel often requires _method=PUT for multipart updates via POST
@@ -100,6 +123,7 @@ export const paymentService = {
   },
 
   verify: async (id: string, data: PaymentVerifyData): Promise<Payment> => {
+    clearCache();
     try {
       const response = await axios.post<PaymentApiResponse>(ENDPOINTS.VERIFY(id), data);
       return response.data.data as Payment;
@@ -110,6 +134,7 @@ export const paymentService = {
   },
 
   delete: async (id: string): Promise<void> => {
+    clearCache();
     try {
       await axios.delete(ENDPOINTS.DETAIL(id));
     } catch (error) {
@@ -119,6 +144,7 @@ export const paymentService = {
   },
 
   restore: async (id: string): Promise<void> => {
+    clearCache();
     try {
       await axios.post(ENDPOINTS.RESTORE(id));
     } catch (error) {
@@ -128,6 +154,7 @@ export const paymentService = {
   },
 
   forceDelete: async (id: string): Promise<void> => {
+    clearCache();
     try {
       await axios.delete(ENDPOINTS.FORCE_DELETE(id));
     } catch (error) {

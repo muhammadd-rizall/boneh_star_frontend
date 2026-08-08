@@ -21,6 +21,16 @@ const customerNavigation = [
   { label: "Ulasan", to: "/customer/reviews" },
 ];
 
+const customerMobileNavigation = [
+  { label: "Beranda", to: "/" },
+  { label: "Daftar Armada", to: "/armada" },
+  { label: "Pemesanan Saya", to: "/customer/bookings" },
+  { label: "Buat Pemesanan", to: "/customer/bookings/request" },
+  { label: "Notifikasi", to: "/customer/notifications" },
+  { label: "Profil Akun", to: "/customer/profile" },
+  { label: "Ulasan Saya", to: "/customer/reviews" },
+];
+
 interface HeaderProps {
   companyProfile: Pick<CompanyProfile, "company_name" | "logo">;
 }
@@ -103,7 +113,7 @@ export default function Header({ companyProfile }: HeaderProps) {
     [isHome]
   );
 
-  const isTransparentDark = !isScrolled && isHome;
+  const isTransparentDark = !isScrolled && isHome && !isOpen;
 
   const navLinkClass = (href: string, isActive: boolean) => {
     const isHashLink = href.startsWith("/#");
@@ -119,7 +129,7 @@ export default function Header({ companyProfile }: HeaderProps) {
   return (
     <header
       className={"fixed top-0 inset-x-0 z-50 transition-all duration-300 " + (
-        isScrolled || !isHome
+        isScrolled || !isHome || isOpen
           ? "bg-white/95 backdrop-blur-xl border-b border-platinum-tint py-3 shadow-sm"
           : "bg-transparent py-5"
       )}
@@ -128,7 +138,7 @@ export default function Header({ companyProfile }: HeaderProps) {
         <NavLink to="/" className="flex items-center gap-2.5 group">
           <div
             className={"flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl transition-all duration-300 " + (
-              isScrolled
+              isScrolled || isOpen
                 ? "bg-midnight-indigo text-white shadow-sm"
                 : "bg-white/10 backdrop-blur-sm text-white border border-white/20"
             )}
@@ -269,42 +279,40 @@ export default function Header({ companyProfile }: HeaderProps) {
             className="absolute inset-x-0 top-full border-t border-platinum-tint bg-white p-4 shadow-xl md:hidden overflow-hidden"
           >
             <div className="flex flex-col gap-1">
-              {navigation.map((item) => (
-                <NavLink
-                  key={item.label}
-                  to={item.href}
-                  onClick={(e) => handleNavClick(e, item.href)}
-                  className={({ isActive }) =>
-                    "rounded-lg px-4 py-3 text-sm font-semibold transition-colors " + (
-                      !item.href.startsWith("/#") && isActive
-                        ? "bg-cloud-mist text-action-blue"
-                        : "text-midnight-indigo hover:bg-cloud-mist hover:text-action-blue"
-                    )
-                  }
-                >
-                  {item.label}
-                </NavLink>
-              ))}
-              {isAuthenticated && (
-                <>
-                  <div className="my-2 h-px bg-platinum-tint mx-4" />
-                  {customerNavigation.map((item) => (
-                    <NavLink
-                      key={item.label}
-                      to={item.to}
-                      onClick={() => setIsOpen(false)}
-                      className={({ isActive }) =>
-                        "rounded-lg px-4 py-3 text-sm font-semibold transition-colors " + (
-                          isActive
-                            ? "bg-cloud-mist text-action-blue"
-                            : "text-midnight-indigo hover:bg-cloud-mist hover:text-action-blue"
-                        )
-                      }
-                    >
-                      {item.label}
-                    </NavLink>
-                  ))}
-                </>
+              {isAuthenticated ? (
+                customerMobileNavigation.map((item) => (
+                  <NavLink
+                    key={item.label}
+                    to={item.to}
+                    onClick={() => setIsOpen(false)}
+                    className={({ isActive }) =>
+                      "rounded-lg px-4 py-3 text-sm font-semibold transition-colors " + (
+                        isActive
+                          ? "bg-cloud-mist text-action-blue"
+                          : "text-midnight-indigo hover:bg-cloud-mist hover:text-action-blue"
+                      )
+                    }
+                  >
+                    {item.label}
+                  </NavLink>
+                ))
+              ) : (
+                navigation.map((item) => (
+                  <NavLink
+                    key={item.label}
+                    to={item.href}
+                    onClick={(e) => handleNavClick(e, item.href)}
+                    className={({ isActive }) =>
+                      "rounded-lg px-4 py-3 text-sm font-semibold transition-colors " + (
+                        !item.href.startsWith("/#") && isActive
+                          ? "bg-cloud-mist text-action-blue"
+                          : "text-midnight-indigo hover:bg-cloud-mist hover:text-action-blue"
+                      )
+                    }
+                  >
+                    {item.label}
+                  </NavLink>
+                ))
               )}
               <div className="my-2 h-px bg-platinum-tint mx-4" />
               {!isAuthenticated ? (

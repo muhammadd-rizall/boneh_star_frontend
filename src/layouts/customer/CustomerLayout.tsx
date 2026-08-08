@@ -5,7 +5,7 @@ import { usePublicCompanyProfile } from "@/features/admin/company-profile/hooks/
 import { useNotifications } from "@/features/customer/notifications/hooks/useNotifications";
 import { useCustomerAuthStore } from "@/features/auth/public";
 import { useProfile } from "@/features/customer/profile/hooks/useProfile";
-import { resolveMediaUrl } from "@/features/admin/company-profile/utils/companyProfileUtils";
+import { resolveMediaUrl, buildWhatsAppHref } from "@/features/admin/company-profile/utils/companyProfileUtils";
 import WhatsAppFloating from "../public/WhatsAppFloating";
 import { cn } from "@/lib/utils";
 import ToastContainer from "@/components/feedback/ToastContainer";
@@ -302,7 +302,7 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
               <button
                 onClick={() => {
                   if (profile?.whatsapp?.[0]) {
-                    window.open(`https://wa.me/${profile.whatsapp[0].replace(/\D/g, "")}`, "_blank");
+                    window.open(buildWhatsAppHref(profile.whatsapp[0], "Halo Admin Boneh Star, saya ingin tanya ketersediaan sewa armada."), "_blank");
                   }
                 }}
                 className="flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-600/30 text-emerald-700 bg-white hover:bg-emerald-50/50 py-2.5 text-xs font-bold transition-colors cursor-pointer"
@@ -317,7 +317,7 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
 
         {/* ── Main Content Area ── */}
         <main className="flex-1 lg:ml-[260px] min-h-[calc(100vh-72px)] bg-[#F5F7FA] overflow-x-hidden">
-          <div className="px-4 sm:px-6 lg:px-8 py-6 pb-20 max-w-7xl mx-auto">
+          <div className="px-4 sm:px-6 lg:px-8 py-6 pb-28 lg:pb-20 max-w-7xl mx-auto">
             <motion.div
               key={location.pathname}
               initial={{ opacity: 0, y: 15 }}
@@ -330,7 +330,50 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
         </main>
       </div>
 
-      <WhatsAppFloating whatsapp={profile?.whatsapp || []} />
+      {/* ── Mobile Bottom Navigation Bar (lg:hidden) ── */}
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-pale-gray/80 px-2 py-2 flex items-center justify-around lg:hidden shadow-lg select-none">
+        <BottomTabLink to="/" icon={Home} label="Beranda" active={location.pathname === '/'} />
+        <BottomTabLink to="/customer/bookings" icon={CalendarCheck} label="Pemesanan" active={isBookingsRoute} />
+        <BottomTabLink to="/customer/bookings/request" icon={CalendarPlus} label="Pesan Bus" active={location.pathname === '/customer/bookings/request'} />
+        <BottomTabLink to="/customer/notifications" icon={Bell} label="Notifikasi" active={location.pathname === '/customer/notifications'} badge={unreadCount} />
+        <BottomTabLink to="/customer/profile" icon={User} label="Profil" active={location.pathname === '/customer/profile'} />
+      </nav>
+
+      <WhatsAppFloating whatsapp={profile?.whatsapp || []} isBottomNavOffset />
     </div>
+  );
+}
+
+function BottomTabLink({
+  to,
+  icon: Icon,
+  label,
+  active,
+  badge
+}: {
+  to: string;
+  icon: React.ElementType;
+  label: string;
+  active: boolean;
+  badge?: number;
+}) {
+  return (
+    <Link
+      to={to}
+      className={cn(
+        "relative flex flex-col items-center justify-center flex-1 py-1 px-2 rounded-xl transition-all duration-200",
+        active ? "text-action-blue font-bold" : "text-slate-blue hover:text-gray-900"
+      )}
+    >
+      <div className="relative">
+        <Icon size={20} className={active ? "text-action-blue stroke-[2.2]" : "text-steel-gray"} />
+        {badge !== undefined && badge > 0 && (
+          <span className="absolute -top-1 -right-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-600 px-1 text-[8px] font-black text-white">
+            {badge}
+          </span>
+        )}
+      </div>
+      <span className="text-[10px] mt-1 tracking-tight truncate max-w-full">{label}</span>
+    </Link>
   );
 }

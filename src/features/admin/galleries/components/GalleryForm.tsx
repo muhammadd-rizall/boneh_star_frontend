@@ -273,8 +273,8 @@ export default function GalleryForm({ gallery, onSuccess, onCancel }: GalleryFor
       </div>
 
       <DialogFooter className="mt-4 border-t border-slate-200 pt-6">
-        <Button type="button" variant="ghost" onClick={onCancel} className="px-8 font-bold">Batal</Button>
-        <Button type="submit" variant="primary" className="flex-1 font-bold rounded-xl" loading={loading} icon={Save}>
+        <Button type="button" variant="outline" onClick={onCancel} className="px-8 font-bold h-14">Batal</Button>
+        <Button type="submit" variant="primary" className="sm:flex-1 font-bold rounded-xl h-14 shadow-button" loading={loading} icon={Save}>
           {isEdit ? "Simpan Perubahan" : "Tambah Galeri"}
         </Button>
       </DialogFooter>

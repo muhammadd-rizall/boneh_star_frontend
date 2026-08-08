@@ -9,7 +9,10 @@ export const formatCurrency = (amount: number | string) => {
 };
 
 export const formatDate = (date: string) => {
-  return new Date(date).toLocaleDateString('id-ID', {
+  if (!date) return '';
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return '';
+  return d.toLocaleDateString('id-ID', {
     day: 'numeric',
     month: 'long',
     year: 'numeric'

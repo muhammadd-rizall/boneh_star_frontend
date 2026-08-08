@@ -44,7 +44,7 @@ export default function IncomeReportCharts({ statistics }: IncomeReportChartsPro
             </div>
 
             {/* Grid & Bars Container */}
-            <div className="relative flex-1 flex items-end justify-between gap-3 sm:gap-4 h-full">
+            <div className="relative flex-1 flex items-end justify-between gap-1 min-[480px]:gap-2 sm:gap-4 h-full">
               {/* Gridlines */}
               <div className="absolute inset-0 flex flex-col justify-between pointer-events-none z-0">
                 {Array.from({ length: 4 }).map((_, i) => (
@@ -61,7 +61,7 @@ export default function IncomeReportCharts({ statistics }: IncomeReportChartsPro
               {/* Bars */}
               {statistics.monthly_chart.map((month) => (
                 <div key={month.month} className="group relative flex-1 flex flex-col items-center h-full justify-end z-10">
-                  <div className="relative w-full flex items-end justify-center gap-1.5 h-full rounded-t-xl hover:bg-slate-50/50 transition-all duration-300 cursor-pointer px-1 py-1">
+                  <div className="relative w-full flex items-end justify-center gap-0.5 sm:gap-1.5 h-full rounded-t-xl hover:bg-slate-50/50 transition-all duration-300 cursor-pointer px-0.5 sm:px-1 py-1">
                     {/* DP Bar */}
                     <div 
                       className="flex-1 rounded-t-lg bg-gradient-to-t from-blue-500/80 to-blue-400 transition-all duration-500 ease-out group-hover:from-blue-600 group-hover:to-blue-500 group-hover:shadow-[0_0_12px_rgba(59,130,246,0.3)]"

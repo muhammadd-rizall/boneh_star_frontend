@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import type { CompanyProfile } from "@/features/admin/company-profile/types/CompanyProfile";
 import {
   BusFront,
@@ -22,6 +23,7 @@ import {
   Whatsapp,
   Linkedin,
 } from "@thesvg/react";
+import { publicService } from "@/features/public/shared/services/publicService";
 
 interface FooterProps {
   companyProfile: Pick<
@@ -104,16 +106,34 @@ export default function Footer({ companyProfile }: FooterProps) {
     { label: "Home", href: "/" },
     { label: "Armada", href: "/armada" },
     { label: "Tentang Kami", href: "/tentang-kami" },
-    { label: "Kontak", href: "/kontak" },
+    { label: "Kontak", href: "/contact" },
   ];
 
-  const servicesMenu = [
+  const [servicesMenu, setServicesMenu] = useState([
     { label: "Wisata", href: "/armada" },
     { label: "Studi Tour", href: "/armada" },
     { label: "Family Gathering", href: "/armada" },
     { label: "Ziarah & Religi", href: "/armada" },
     { label: "Acara Pernikahan", href: "/armada" },
-  ];
+  ]);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const activityTypes = await publicService.getActivityTypes();
+        const activeTypes = activityTypes.filter(a => !a.deleted_at);
+        if (activeTypes.length > 0) {
+          setServicesMenu(activeTypes.slice(0, 5).map(item => ({
+            label: item.name,
+            href: "/armada"
+          })));
+        }
+      } catch (err) {
+        console.error("Gagal memuat layanan untuk footer:", err);
+      }
+    };
+    fetchServices();
+  }, []);
 
   return (
     <footer

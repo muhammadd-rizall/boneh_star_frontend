@@ -191,7 +191,7 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
               {/* Dropdown 1: Jenis Bus */}
               <div
                 ref={busDropdownRef}
-                className='relative flex items-center gap-3.5 px-6 py-4 hover:bg-slate-50/60 transition-colors cursor-pointer rounded-2xl lg:rounded-none lg:border-r lg:border-slate-100 w-full text-left group'
+                className='relative flex items-center gap-3.5 px-6 py-4 hover:bg-slate-50/60 transition-colors cursor-pointer border-b border-slate-100 lg:border-b-0 lg:border-r lg:border-slate-100 w-full text-left group rounded-t-2xl lg:rounded-none'
                 onClick={() => {
                   setIsBusDropdownOpen(!isBusDropdownOpen);
                 }}
@@ -249,7 +249,7 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
               </div>
 
               {/* Date Input 2: Tanggal Berangkat */}
-              <div className="relative flex items-center gap-3.5 px-6 py-4 hover:bg-slate-50/60 transition-colors lg:border-r lg:border-slate-100 w-full text-left group min-h-[80px]">
+              <div className="relative flex items-center gap-3.5 px-6 py-4 hover:bg-slate-50/60 transition-colors border-b border-slate-100 lg:border-b-0 lg:border-r lg:border-slate-100 w-full text-left group min-h-[80px]">
                 <input
                   type="date"
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 peer"
@@ -267,7 +267,7 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
               </div>
 
               {/* Date Input 3: Tanggal Pulang */}
-              <div className="relative flex items-center gap-3.5 px-6 py-4 hover:bg-slate-50/60 transition-colors lg:border-r lg:border-slate-100 w-full text-left group min-h-[80px]">
+              <div className="relative flex items-center gap-3.5 px-6 py-4 hover:bg-slate-50/60 transition-colors border-b border-slate-100 lg:border-b-0 lg:border-r lg:border-slate-100 w-full text-left group min-h-[80px]">
                 <input
                   type="date"
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 peer"
@@ -286,7 +286,7 @@ export default function Hero({ categories, allBuses, onSearch }: HeroProps) {
 
               {/* Input 4: Jumlah Peserta */}
               <label
-                className='flex items-center gap-3.5 px-6 py-4 hover:bg-slate-50/60 transition-colors cursor-pointer w-full text-left group'
+                className='flex items-center gap-3.5 px-6 py-4 hover:bg-slate-50/60 transition-colors border-b border-slate-100 lg:border-b-0 cursor-pointer w-full text-left group'
                 onClick={(e) => {
                   const input = e.currentTarget.querySelector('input');
                   if (input) {

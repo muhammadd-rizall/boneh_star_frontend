@@ -5,15 +5,19 @@ import {
   buildWhatsAppHref,
   normalizeWhatsApp,
 } from "@/features/admin/company-profile/utils/companyProfileUtils";
+import { useCustomerAuthStore } from "@/features/auth/public";
 
 export default function CTABanner() {
   const { profile } = usePublicCompanyProfile();
+  const { isAuthenticated } = useCustomerAuthStore();
 
   const whatsappNumbers = normalizeWhatsApp(profile?.whatsapp);
   const primaryWhatsApp = whatsappNumbers[0];
   const whatsappHref = primaryWhatsApp
-    ? buildWhatsAppHref(primaryWhatsApp)
-    : "https://wa.me/6281234567890"; // fallback
+    ? buildWhatsAppHref(primaryWhatsApp, "Halo Admin Boneh Star, saya ingin tanya informasi sewa bus pariwisata.")
+    : "https://wa.me/6281234567890?text=Halo%20Admin%20Boneh%20Star,%20saya%20ingin%20tanya%20informasi%20sewa%20bus%20pariwisata.";
+
+  const bookingLink = isAuthenticated ? "/customer/bookings/request" : "/auth/login";
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 pb-16">
@@ -47,7 +51,7 @@ export default function CTABanner() {
             Hubungi Kami
           </a>
           <Link
-            to="/login"
+            to={bookingLink}
             className="inline-flex h-12 items-center justify-center gap-2 rounded-[12px] bg-white px-8 text-sm font-bold text-[#006bff] transition-all hover:bg-white/95 hover:shadow-lg active:scale-95"
           >
             Buat Reservasi

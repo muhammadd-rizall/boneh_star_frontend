@@ -372,10 +372,10 @@ export default function BusForm({ bus, onSuccess, onCancel }: BusFormProps) {
         </div>
 
         <DialogFooter className="mt-4 border-t border-platinum-tint/40 pt-8">
-          <Button type="button" variant="ghost" className="px-10 font-bold text-slate-blue hover:text-midnight-indigo" onClick={onCancel}>
+          <Button type="button" variant="outline" className="px-10 font-bold text-slate-blue hover:text-midnight-indigo h-14" onClick={onCancel}>
             Batal
           </Button>
-          <Button type="submit" variant="primary" className="flex-1" loading={loading} icon={Save}>
+          <Button type="submit" variant="primary" className="sm:flex-1 h-14 rounded-xl shadow-button font-bold" loading={loading} icon={Save}>
             {isEdit ? "Simpan Perubahan" : "Daftarkan Armada"}
           </Button>
         </DialogFooter>

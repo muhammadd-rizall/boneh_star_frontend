@@ -3,12 +3,14 @@ import { MessageCircle, X } from "lucide-react";
 import Whatsapp from "@thesvg/react/whatsapp";
 import { buildWhatsAppHref } from "@/features/admin/company-profile/utils/companyProfileUtils";
 import { motion, AnimatePresence } from "motion/react";
+import { cn } from "@/lib/utils";
 
 interface WhatsAppFloatingProps {
   whatsapp: string[];
+  isBottomNavOffset?: boolean;
 }
 
-export default function WhatsAppFloating({ whatsapp }: WhatsAppFloatingProps) {
+export default function WhatsAppFloating({ whatsapp, isBottomNavOffset = false }: WhatsAppFloatingProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   if (!whatsapp || whatsapp.length === 0) return null;
@@ -18,7 +20,12 @@ export default function WhatsAppFloating({ whatsapp }: WhatsAppFloatingProps) {
   if (numbers.length === 0) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex max-w-[calc(100vw-2rem)] flex-col items-end gap-3 sm:bottom-6 sm:right-6">
+    <div className={cn(
+      "fixed right-4 z-50 flex max-w-[calc(100vw-2rem)] flex-col items-end gap-3",
+      isBottomNavOffset 
+        ? "bottom-20 sm:bottom-20 sm:right-6 lg:bottom-6 lg:right-6" 
+        : "bottom-4 sm:bottom-6 sm:right-6"
+    )}>
       <AnimatePresence>
         {isOpen && (
           <motion.div 
@@ -56,7 +63,7 @@ export default function WhatsAppFloating({ whatsapp }: WhatsAppFloatingProps) {
               {numbers.map((num, i) => (
                 <a
                   key={i}
-                  href={buildWhatsAppHref(num)}
+                  href={buildWhatsAppHref(num, "Halo Admin Boneh Star, saya ingin tanya informasi sewa bus pariwisata.")}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group flex items-center gap-3 rounded-xl border border-transparent p-3 transition-all duration-200 hover:border-[#25D366]/30 hover:bg-[#25D366]/10 focus:outline-none focus:ring-2 focus:ring-[#25D366]/30"

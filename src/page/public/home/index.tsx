@@ -68,6 +68,7 @@ export default function HomePage() {
                 : undefined
             }
             onViewDetail={setSelectedBus}
+            isFiltered={isFiltered}
           />
         </section>
 

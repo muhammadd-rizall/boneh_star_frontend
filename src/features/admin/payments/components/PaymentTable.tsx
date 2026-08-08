@@ -56,6 +56,7 @@ export default function PaymentTable({
     },
     {
       header: "Metode Pembayaran",
+      className: "hidden md:table-cell",
       accessor: (row) => (
         <div className="flex flex-col">
           <span className="text-sm font-medium text-slate-700">{row.payment_method?.bank_name}</span>

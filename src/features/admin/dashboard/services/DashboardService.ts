@@ -23,10 +23,18 @@ export interface DashboardData {
   }[];
 }
 
+let cachedDashboard: DashboardData | null = null;
+
 export const dashboardService = {
   getDashboardData: async (): Promise<DashboardData> => {
+    if (cachedDashboard) return cachedDashboard;
     const response = await axios.get('/admin/dashboard');
+    cachedDashboard = response.data.data;
     return response.data.data;
+  },
+
+  clearCache: () => {
+    cachedDashboard = null;
   }
 };
 

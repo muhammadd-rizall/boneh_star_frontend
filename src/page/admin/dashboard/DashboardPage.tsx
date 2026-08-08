@@ -235,7 +235,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 min-[480px]:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+      <div className="grid grid-cols-1 gap-4 min-[480px]:grid-cols-2 md:grid-cols-3 xl:grid-cols-6">
         {loading ? (
           defaultStats.map((s) => (
             <StatCard key={s.label} label={s.label} value="..." sub="memuat..." icon={s.icon} color={s.color} loading />

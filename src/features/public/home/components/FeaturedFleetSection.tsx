@@ -2,32 +2,22 @@ import type { Bus } from "@/features/admin/buses/types/Bus";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import FleetCard from "@/features/public/fleet/components/FleetCard";
-import { motion } from "motion/react";
-
 interface FeaturedFleetSectionProps {
   buses: Bus[];
   title?: string;
   subtitle?: string;
   onViewDetail?: (bus: Bus) => void;
+  isFiltered?: boolean;
 }
 
 const MAX_PREVIEW = 3;
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    }
-  }
-};
 
 export default function FeaturedFleetSection({
   buses,
   title,
   subtitle,
   onViewDetail,
+  isFiltered = false,
 }: FeaturedFleetSectionProps) {
   if (buses.length === 0) {
     return (
@@ -39,18 +29,14 @@ export default function FeaturedFleetSection({
     );
   }
 
-  const preview = buses.slice(0, MAX_PREVIEW);
+  const preview = isFiltered ? buses : buses.slice(0, MAX_PREVIEW);
 
   return (
     <div className="bg-transparent">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
         {/* ── Header row ── */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.15 }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        <div 
           className="mb-10 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between"
         >
           <div>
@@ -73,20 +59,16 @@ export default function FeaturedFleetSection({
             Lihat Semua Armada
             <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
           </Link>
-        </motion.div>
+        </div>
 
         {/* ── Fleet cards grid ── */}
-        <motion.div 
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.15 }}
+        <div 
           className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-7"
         >
           {preview.map((bus) => (
             <FleetCard key={bus.id} bus={bus} onViewDetail={onViewDetail} />
           ))}
-        </motion.div>
+        </div>
       </div>
     </div>
   );

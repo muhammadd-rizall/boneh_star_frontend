@@ -78,7 +78,7 @@ export default function BookingIndexPage() {
       </div>
 
       {/* ── Tab Navigation ── */}
-      <div className="flex items-center gap-1 border-b border-pale-gray mb-6">
+      <div className="flex items-center gap-1 border-b border-pale-gray mb-6 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
         {TABS.map((tab) => {
           if (tab.id === 'new') return (
             <button
@@ -269,41 +269,52 @@ function StatCard({ value, label, sub, color, icon: Icon }: {
 // ── BookingRow ────────────────────────────────────────────────────────────────
 function BookingRow({ booking, onView }: { booking: CustomerBooking; onView: () => void }) {
   return (
-    <div className="flex items-center gap-4 px-5 py-4 hover:bg-cloud-mist transition-colors cursor-pointer group" onClick={onView}>
-      {/* Placeholder thumbnail */}
-      <div className="h-12 w-12 shrink-0 rounded-full bg-pale-gray flex items-center justify-center">
-        <Bus size={22} className="text-steel-gray" strokeWidth={1.5} />
-      </div>
-
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-bold text-gray-900 truncate">
-          {booking.activity?.name ?? booking.origin ?? 'Pemesanan Bus'}
-        </p>
-        <p className="text-xs text-slate-blue mt-0.5">
-          {formatDate(booking.departure_date)}
-          {booking.passenger_count && ` · ${booking.passenger_count} Kursi`}
-          {booking.bus_count_requested && ` · ${booking.bus_count_requested > 1 ? 'Big Bus' : 'Medium Bus'}`}
-        </p>
-      </div>
-
-      <div className="shrink-0">
-        <BookingStatusBadge status={booking.status} />
-      </div>
-
-      {booking.transaction && (
-        <div className="hidden sm:block shrink-0 text-right">
-          <p className="text-sm font-bold text-gray-900">
-            {formatCurrency(booking.transaction.total_amount)}
-          </p>
+    <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 p-4 sm:px-5 sm:py-4 hover:bg-cloud-mist/50 transition-colors cursor-pointer group" onClick={onView}>
+      
+      {/* Top row / Left section: Image and details */}
+      <div className="flex items-center gap-3.5 flex-1 min-w-0">
+        {/* Placeholder thumbnail */}
+        <div className="h-11 w-11 shrink-0 rounded-xl bg-pale-gray flex items-center justify-center">
+          <Bus size={20} className="text-slate-500" strokeWidth={1.5} />
         </div>
-      )}
 
-      <button
-        className="shrink-0 px-3 py-1.5 rounded-lg border border-pale-gray text-xs font-semibold text-slate-blue hover:border-action-blue hover:text-action-blue transition-colors cursor-pointer"
-        onClick={(e) => { e.stopPropagation(); onView(); }}
-      >
-        Lihat Detail
-      </button>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-bold text-gray-900 truncate">
+            {booking.activity?.name ?? booking.origin ?? 'Pemesanan Bus'}
+          </p>
+          <p className="text-xs text-slate-blue mt-0.5">
+            {formatDate(booking.departure_date)}
+            {booking.passenger_count && ` · ${booking.passenger_count} Kursi`}
+            {booking.bus_count_requested && ` · ${booking.bus_count_requested > 1 ? 'Big Bus' : 'Medium Bus'}`}
+          </p>
+          {booking.transaction && (
+            <p className="text-xs font-black text-[#006bff] mt-1 sm:hidden">
+              {formatCurrency(booking.transaction.total_amount)}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Bottom row / Right section: Status badge, Price & Actions */}
+      <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto pt-2.5 sm:pt-0 border-t border-dashed border-pale-gray sm:border-none">
+        <div className="flex items-center gap-3">
+          <BookingStatusBadge status={booking.status} />
+          {booking.transaction && (
+            <div className="hidden sm:block text-right shrink-0">
+              <p className="text-sm font-black text-gray-900">
+                {formatCurrency(booking.transaction.total_amount)}
+              </p>
+            </div>
+          )}
+        </div>
+
+        <button
+          className="px-3.5 py-1.5 rounded-lg border border-pale-gray text-xs font-semibold text-slate-blue hover:border-action-blue hover:text-action-blue transition-colors cursor-pointer bg-white shadow-sm"
+          onClick={(e) => { e.stopPropagation(); onView(); }}
+        >
+          Lihat Detail
+        </button>
+      </div>
     </div>
   );
 }

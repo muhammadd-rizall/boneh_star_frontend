@@ -50,7 +50,7 @@ function PaginationBar({ page, totalPages, onPageChange }: PaginationBarProps) {
   }
 
   return (
-    <div className="flex items-center justify-center gap-2 border-t border-platinum-tint/50 bg-cloud-mist/20 px-6 py-4">
+    <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 border-t border-platinum-tint/50 bg-cloud-mist/20 px-4 sm:px-6 py-4">
       {/* First */}
       <button
         onClick={() => onPageChange(1)}
@@ -72,7 +72,7 @@ function PaginationBar({ page, totalPages, onPageChange }: PaginationBarProps) {
       </button>
 
       {/* Page numbers */}
-      <div className="flex items-center gap-1.5 mx-2">
+      <div className="flex items-center gap-1 sm:gap-1.5 mx-1 sm:mx-2">
         {getPageNumbers().map((p) => (
           <button
             key={p}
@@ -202,7 +202,7 @@ export function DataTable<T>({
                   {columns.map((col, colIndex) => (
                     <TableCell
                       key={colIndex}
-                      className="px-6 py-4 text-slate-blue text-sm font-medium h-auto"
+                      className={cn("px-6 py-4 text-slate-blue text-sm font-medium h-auto", col.className)}
                     >
                       {typeof col.accessor === "function"
                         ? col.accessor(row)

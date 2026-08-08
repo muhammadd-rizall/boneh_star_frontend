@@ -1,5 +1,5 @@
-import React, { useRef } from "react";
-import { Calendar, List } from "lucide-react";
+import { useRef } from "react";
+import { Calendar, List, ChevronDown } from "lucide-react";
 import type { BusAvailabilityReportFilters } from "../types/BusAvailabilityReport";
 
 interface BusAvailabilityFiltersProps {
@@ -29,34 +29,21 @@ export default function BusAvailabilityFilters({
     return `${date.getDate().toString().padStart(2, '0')} ${months[date.getMonth()]} ${date.getFullYear()}`;
   };
 
-  const handleOpenPicker = (ref: React.RefObject<HTMLInputElement | null>) => {
-    if (ref.current) {
-      try {
-        ref.current.showPicker();
-      } catch (err) {
-        ref.current.click();
-      }
-    }
-  };
-
   return (
     <div className="grid grid-cols-1 gap-6 rounded-[24px] border border-slate-200/80 bg-white p-6 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.05)] md:grid-cols-3">
       {/* Tanggal Mulai */}
       <div className="flex flex-col gap-2">
         <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Tanggal Mulai</label>
-        <div 
-          onClick={() => handleOpenPicker(startRef)}
-          className="relative flex h-[52px] cursor-pointer items-center justify-between rounded-xl border border-slate-200 bg-white px-4 transition-all focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-100"
-        >
-          <Calendar className="h-5 w-5 text-slate-400 shrink-0" />
-          <span className="text-sm font-semibold text-slate-700">{formatDateIndo(filters.start_date)}</span>
-          <Calendar className="h-5 w-5 text-slate-400 shrink-0" />
+        <div className="relative flex h-[52px] items-center justify-between rounded-xl border border-slate-200 bg-white px-4 transition-all focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-100">
+          <Calendar className="h-5 w-5 text-slate-400 shrink-0 pointer-events-none" />
+          <span className="text-sm font-semibold text-slate-700 pointer-events-none">{formatDateIndo(filters.start_date)}</span>
+          <ChevronDown className="h-5 w-5 text-slate-400 shrink-0 pointer-events-none" />
           <input
             ref={startRef}
             type="date"
             value={filters.start_date}
             onChange={(e) => onFilterChange({ start_date: e.target.value })}
-            className="absolute inset-0 h-full w-full pointer-events-none opacity-0"
+            className="absolute inset-0 h-full w-full opacity-0 cursor-pointer z-10"
           />
         </div>
       </div>
@@ -64,19 +51,16 @@ export default function BusAvailabilityFilters({
       {/* Tanggal Selesai */}
       <div className="flex flex-col gap-2">
         <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Tanggal Selesai</label>
-        <div 
-          onClick={() => handleOpenPicker(endRef)}
-          className="relative flex h-[52px] cursor-pointer items-center justify-between rounded-xl border border-slate-200 bg-white px-4 transition-all focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-100"
-        >
-          <Calendar className="h-5 w-5 text-slate-400 shrink-0" />
-          <span className="text-sm font-semibold text-slate-700">{formatDateIndo(filters.end_date)}</span>
-          <Calendar className="h-5 w-5 text-slate-400 shrink-0" />
+        <div className="relative flex h-[52px] items-center justify-between rounded-xl border border-slate-200 bg-white px-4 transition-all focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-100">
+          <Calendar className="h-5 w-5 text-slate-400 shrink-0 pointer-events-none" />
+          <span className="text-sm font-semibold text-slate-700 pointer-events-none">{formatDateIndo(filters.end_date)}</span>
+          <ChevronDown className="h-5 w-5 text-slate-400 shrink-0 pointer-events-none" />
           <input
             ref={endRef}
             type="date"
             value={filters.end_date}
             onChange={(e) => onFilterChange({ end_date: e.target.value })}
-            className="absolute inset-0 h-full w-full pointer-events-none opacity-0"
+            className="absolute inset-0 h-full w-full opacity-0 cursor-pointer z-10"
           />
         </div>
       </div>

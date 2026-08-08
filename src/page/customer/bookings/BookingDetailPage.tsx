@@ -20,10 +20,12 @@ import {
   Calendar, MapPin, Users, Bus, Info,
   FileText, XCircle, FileDown, Star,
   CheckCircle2, Clock, Compass, CircleDollarSign,
-  MessageCircle, ClipboardList, Check, Quote, Paperclip
+  ClipboardList, Check, Quote, Paperclip
 } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/utils/formatter';
 import { useToastStore } from '@/store/useToastStore';
+import { buildWhatsAppHref } from '@/features/admin/company-profile/utils/companyProfileUtils';
+import Whatsapp from '@thesvg/react/whatsapp';
 
 function Section({ title, icon: Icon, children }: { title: string; icon: React.ElementType; children: React.ReactNode }) {
   return (
@@ -101,7 +103,7 @@ export default function BookingDetailPage() {
   const handleWhatsApp = () => {
     if (!companyProfile?.whatsapp?.[0] || !booking) return;
     const msg = `Halo Admin Boneh Star, saya ingin menanyakan mengenai detail pemesanan #${booking.booking_code}.`;
-    window.open(`https://wa.me/${companyProfile.whatsapp[0].replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
+    window.open(buildWhatsAppHref(companyProfile.whatsapp[0], msg), '_blank');
   };
 
   if (detailLoading || profileLoading) return (
@@ -730,7 +732,7 @@ export default function BookingDetailPage() {
                 onClick={handleWhatsApp}
                 className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-emerald-200 bg-emerald-50 text-xs font-bold text-emerald-600 hover:bg-emerald-100 transition-all cursor-pointer shadow-sm"
               >
-                <MessageCircle size={14} />
+                <Whatsapp width={14} height={14} />
                 Hubungi Admin
               </button>
             </div>

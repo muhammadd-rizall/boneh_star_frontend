@@ -195,7 +195,7 @@ export default function BusAvailabilityTimeline({
         <table className="w-full border-collapse">
           <thead>
             <tr className="bg-slate-50/50">
-              <th className="sticky left-0 z-20 min-w-[280px] max-w-[280px] border-b border-r border-slate-100 bg-slate-50 p-4 text-left text-xs font-bold uppercase tracking-wider text-slate-400">
+              <th className="sticky left-0 z-20 min-w-[140px] max-w-[140px] sm:min-w-[280px] sm:max-w-[280px] border-b border-r border-slate-100 bg-slate-50 p-3 sm:p-4 text-left text-xs font-bold uppercase tracking-wider text-slate-400">
                 Armada / Unit
               </th>
               {dates.map((date, i) => {
@@ -224,19 +224,19 @@ export default function BusAvailabilityTimeline({
             {paginatedBuses.map((bus) => (
               <tr key={bus.id} className="hover:bg-slate-50/30 transition-colors">
                 {/* Bus Info Sticky Column */}
-                <td className="sticky left-0 z-10 border-b border-r border-slate-100 bg-white p-4">
-                  <div className="flex items-center gap-3">
+                <td className="sticky left-0 z-10 min-w-[140px] max-w-[140px] sm:min-w-[280px] sm:max-w-[280px] border-b border-r border-slate-100 bg-white p-3 sm:p-4">
+                  <div className="flex items-center gap-2 sm:gap-3">
                     <img 
                       src={bus.primary_image || fallbackBusImage} 
                       alt={bus.name}
-                      className="w-12 h-10 object-cover rounded-lg border border-slate-100 shrink-0" 
+                      className="hidden sm:block w-12 h-10 object-cover rounded-lg border border-slate-100 shrink-0" 
                       onError={(e) => {
                         (e.target as HTMLImageElement).src = fallbackBusImage;
                       }}
                     />
                     <div className="flex flex-col min-w-0">
-                      <span className="text-sm font-bold text-slate-800 truncate leading-tight">{bus.name}</span>
-                      <span className="text-[10px] font-semibold text-slate-400 leading-normal truncate mt-0.5">
+                      <span className="text-xs sm:text-sm font-bold text-slate-800 truncate leading-tight">{bus.name}</span>
+                      <span className="hidden sm:block text-[10px] font-semibold text-slate-400 leading-normal truncate mt-0.5">
                         {bus.category_name || "Premium Bus"} | {bus.seat_count || 47} Seat
                       </span>
                       <div className="mt-1">
@@ -342,7 +342,7 @@ export default function BusAvailabilityTimeline({
         </span>
         
         {totalPages > 1 && (
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
             {/* First Page button << */}
             <button
               onClick={() => setCurrentPage(1)}
@@ -361,24 +361,31 @@ export default function BusAvailabilityTimeline({
               <ChevronLeft className="h-4 w-4 shrink-0" />
             </button>
             
-            {/* Page number buttons */}
-            {Array.from({ length: totalPages }, (_, idx) => {
-              const pageNum = idx + 1;
-              const isActive = currentPage === pageNum;
-              return (
-                <button
-                  key={pageNum}
-                  onClick={() => setCurrentPage(pageNum)}
-                  className={`flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-[12px] border text-xs font-bold transition-all ${
-                    isActive
-                      ? "bg-[#0066FF] border-[#0066FF] text-white font-bold"
-                      : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold"
-                  }`}
-                >
-                  {pageNum}
-                </button>
-              );
-            })}
+            {/* Page number buttons (sliding window max 5) */}
+            {(() => {
+              const getVisiblePages = () => {
+                if (totalPages <= 5) return Array.from({ length: totalPages }, (_, i) => i + 1);
+                if (currentPage <= 3) return [1, 2, 3, 4, 5];
+                if (currentPage >= totalPages - 2) return [totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+                return [currentPage - 2, currentPage - 1, currentPage, currentPage + 1, currentPage + 2];
+              };
+              return getVisiblePages().map((pageNum) => {
+                const isActive = currentPage === pageNum;
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => setCurrentPage(pageNum)}
+                    className={`flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-[12px] border text-xs font-bold transition-all ${
+                      isActive
+                        ? "bg-[#0066FF] border-[#0066FF] text-white font-bold"
+                        : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold"
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              });
+            })()}
             
             {/* Next Page button > */}
             <button

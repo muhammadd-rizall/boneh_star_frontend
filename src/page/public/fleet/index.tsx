@@ -176,7 +176,7 @@ export default function FleetPage() {
                 <div className="absolute inset-0 bg-action-blue/5 rounded-[36px] blur-3xl pointer-events-none -z-10" />
                 <div className="rounded-[32px] overflow-hidden border border-slate-100 shadow-xl aspect-[16/10] bg-cloud-mist">
                   <img
-                    src="public/images/image4.jpeg"
+                    src="/images/image4.jpeg"
                     alt="Boneh Star Fleet Pariwisata"
                     className="w-full h-full object-cover"
                   />

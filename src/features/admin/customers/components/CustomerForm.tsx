@@ -143,8 +143,8 @@ export default function CustomerForm({ customer, onSuccess, onCancel }: Customer
       </div>
 
       <DialogFooter className="mt-4 border-t border-platinum-tint/40 pt-8">
-        <Button type="button" variant="ghost" onClick={onCancel} className="px-10 font-bold text-slate-blue hover:text-midnight-indigo">Batal</Button>
-        <Button type="submit" variant="primary" className="flex-1 font-bold h-14 rounded-xl shadow-button" loading={loading} icon={Save}>
+        <Button type="button" variant="outline" onClick={onCancel} className="px-10 font-bold text-slate-blue hover:text-midnight-indigo h-14">Batal</Button>
+        <Button type="submit" variant="primary" className="sm:flex-1 font-bold h-14 rounded-xl shadow-button" loading={loading} icon={Save}>
           {isEdit ? "Perbarui Pelanggan" : "Daftarkan Pelanggan"}
         </Button>
       </DialogFooter>

@@ -557,16 +557,16 @@ export default function BookingForm({ booking, onSuccess, onCancel }: BookingFor
       <DialogFooter className="mt-6 border-t border-platinum-tint/40 pt-8">
         <Button 
           type="button" 
-          variant="ghost" 
+          variant="outline" 
           onClick={onCancel} 
-          className="px-10 font-semibold text-slate-blue hover:text-midnight-indigo transition-all"
+          className="px-10 font-semibold text-slate-blue hover:text-midnight-indigo transition-all h-14"
         >
           Batal
         </Button>
         <Button 
           type="submit" 
           variant="primary" 
-          className="flex-1 font-semibold h-14 rounded-xl shadow-button" 
+          className="sm:flex-1 font-semibold h-14 rounded-xl shadow-button" 
           loading={loading} 
           icon={Save}
         >

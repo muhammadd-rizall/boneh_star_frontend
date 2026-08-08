@@ -5,6 +5,7 @@ import {
   CheckCircle2, MessageSquareText, MessageCircle,
   Clock, Calendar, Info, XCircle, Send
 } from 'lucide-react';
+import { buildWhatsAppHref } from '@/features/admin/company-profile/utils/companyProfileUtils';
 
 interface Props {
   quotation: CustomerQuotation;
@@ -75,7 +76,7 @@ export default function QuotationSection({
   const handleWhatsApp = () => {
     if (!whatsappNumber) return;
     const msg = `Halo Admin Boneh Star, saya ingin bernegosiasi mengenai penawaran harga untuk Booking #${bookingCode}.`;
-    window.open(`https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
+    window.open(buildWhatsAppHref(whatsappNumber, msg), '_blank');
   };
 
   // ── Tampilan harga (selalu tampil) ──────────────────────────────────────────

@@ -47,60 +47,102 @@ function extractCollection<T>(payload: unknown): T[] {
   return [];
 }
 
+// In-memory cache variables for public endpoints
+const cache: Record<string, any> = {};
+
 export const publicService = {
   getCompanyProfile: async () => {
+    const cacheKey = 'profile';
+    if (cache[cacheKey]) return cache[cacheKey];
     const response = await api.get(ENDPOINTS.PROFILE);
+    cache[cacheKey] = response.data.data;
     return response.data.data;
   },
   
   getBuses: async (params?: { per_page?: number; search?: string }): Promise<Bus[]> => {
+    const cacheKey = `buses_${JSON.stringify(params || {})}`;
+    if (cache[cacheKey]) return cache[cacheKey];
     const response = await api.get(ENDPOINTS.BUSES, { params });
     const data = response.data.data;
-    return extractCollection<Bus>(data);
+    const result = extractCollection<Bus>(data);
+    cache[cacheKey] = result;
+    return result;
   },
 
   getBusesPaginated: async (params?: { per_page?: number; search?: string }): Promise<PaginatedResponse<Bus>> => {
+    const cacheKey = `buses_paginated_${JSON.stringify(params || {})}`;
+    if (cache[cacheKey]) return cache[cacheKey];
     const response = await api.get(ENDPOINTS.BUSES, { params });
+    cache[cacheKey] = response.data.data;
     return response.data.data;
   },
   
   getBusDetail: async (id: string) => {
+    const cacheKey = `bus_detail_${id}`;
+    if (cache[cacheKey]) return cache[cacheKey];
     const response = await api.get(ENDPOINTS.BUS_DETAIL(id));
+    cache[cacheKey] = response.data.data;
     return response.data.data;
   },
 
   getFacilities: async (): Promise<BusFacility[]> => {
+    const cacheKey = 'facilities';
+    if (cache[cacheKey]) return cache[cacheKey];
     const response = await api.get(ENDPOINTS.FACILITIES);
-    return extractCollection<BusFacility>(response.data.data);
+    const result = extractCollection<BusFacility>(response.data.data);
+    cache[cacheKey] = result;
+    return result;
   },
 
   getReviews: async (params?: { per_page?: number }): Promise<Review[]> => {
+    const cacheKey = `reviews_${JSON.stringify(params || {})}`;
+    if (cache[cacheKey]) return cache[cacheKey];
     const response = await api.get(ENDPOINTS.REVIEWS, { params });
-    return extractCollection<Review>(response.data.data);
+    const result = extractCollection<Review>(response.data.data);
+    cache[cacheKey] = result;
+    return result;
   },
 
   getReviewsPaginated: async (params?: { per_page?: number }): Promise<PaginatedResponse<Review>> => {
+    const cacheKey = `reviews_paginated_${JSON.stringify(params || {})}`;
+    if (cache[cacheKey]) return cache[cacheKey];
     const response = await api.get(ENDPOINTS.REVIEWS, { params });
+    cache[cacheKey] = response.data.data;
     return response.data.data;
   },
 
   getActivityTypes: async (): Promise<ActivityType[]> => {
+    const cacheKey = 'activity_types';
+    if (cache[cacheKey]) return cache[cacheKey];
     const response = await api.get(ENDPOINTS.ACTIVITY_TYPES);
-    return extractCollection<ActivityType>(response.data.data);
+    const result = extractCollection<ActivityType>(response.data.data);
+    cache[cacheKey] = result;
+    return result;
   },
 
   getRouteTypes: async (): Promise<RouteType[]> => {
+    const cacheKey = 'route_types';
+    if (cache[cacheKey]) return cache[cacheKey];
     const response = await api.get(ENDPOINTS.ROUTE_TYPES);
-    return extractCollection<RouteType>(response.data.data);
+    const result = extractCollection<RouteType>(response.data.data);
+    cache[cacheKey] = result;
+    return result;
   },
 
   getRouteTypesPaginated: async (): Promise<PaginatedResponse<RouteType>> => {
+    const cacheKey = 'route_types_paginated';
+    if (cache[cacheKey]) return cache[cacheKey];
     const response = await api.get(ENDPOINTS.ROUTE_TYPES, { params: { per_page: 1 } });
+    cache[cacheKey] = response.data.data;
     return response.data.data;
   },
 
   getBusCategories: async (): Promise<BusCategory[]> => {
+    const cacheKey = 'bus_categories';
+    if (cache[cacheKey]) return cache[cacheKey];
     const response = await api.get(ENDPOINTS.BUS_CATEGORIES);
-    return extractCollection<BusCategory>(response.data.data);
+    const result = extractCollection<BusCategory>(response.data.data);
+    cache[cacheKey] = result;
+    return result;
   },
 };

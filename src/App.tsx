@@ -22,6 +22,7 @@ import IncomeReportPage from "@/page/admin/reports/IncomeReportPage";
 import BusAvailabilityReportPage from "@/page/admin/reports/BusAvailabilityReportPage";
 import CompanyProfilePage from "@/page/admin/company-profile/CompanyProfilePage";
 import GalleryPage from "@/features/admin/galleries/pages/GalleryPage";
+import NotificationPage from "@/page/admin/notifications/NotificationPage";
 import "./App.css";
 import BusPage from "./page/admin/buses/BusPage";
 import Home from "@/page/public/home";
@@ -181,6 +182,7 @@ function App() {
         <Route path="transactions" element={<AdminPermissionGuard permission="transactions.view"><TransactionPage /></AdminPermissionGuard>} />
         <Route path="payments" element={<AdminPermissionGuard permission="payments.view"><PaymentPage /></AdminPermissionGuard>} />
         <Route path="payment-methods" element={<AdminPermissionGuard permission="payment_methods.view"><PaymentMethodPage /></AdminPermissionGuard>} />
+        <Route path="notifications" element={<NotificationPage />} />
         <Route path="reviews" element={<AdminPermissionGuard permission="reviews.view"><ReviewPage /></AdminPermissionGuard>} />
         <Route path="reports/bookings" element={<AdminPermissionGuard permission="reports.bookings"><BookingReportPage /></AdminPermissionGuard>} />
         <Route path="reports/income" element={<AdminPermissionGuard permission="reports.income"><IncomeReportPage /></AdminPermissionGuard>} />

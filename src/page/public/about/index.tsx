@@ -341,9 +341,9 @@ export default function AboutPage() {
               </div>
 
               {/* STATS / FEATURES LIST (3 Items) */}
-              <div className="grid grid-cols-3 gap-0 divide-x divide-slate-100 text-left pt-8 mt-8 border-t border-slate-100">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-0 divide-y sm:divide-y-0 sm:divide-x divide-slate-100 text-left pt-8 mt-8 border-t border-slate-100">
                 {/* Feature 1 */}
-                <div className="flex flex-col gap-3 pr-6">
+                <div className="flex flex-col gap-3 pr-0 pb-6 sm:pr-6 sm:pb-0">
                   <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-action-blue">
                     <ShieldCheck size={18} strokeWidth={2} />
                   </div>
@@ -354,7 +354,7 @@ export default function AboutPage() {
                 </div>
 
                 {/* Feature 2 */}
-                <div className="flex flex-col gap-3 px-6">
+                <div className="flex flex-col gap-3 px-0 py-6 sm:px-6 sm:py-0">
                   <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-action-blue">
                     <Clock size={18} strokeWidth={2} />
                   </div>
@@ -365,7 +365,7 @@ export default function AboutPage() {
                 </div>
 
                 {/* Feature 3 */}
-                <div className="flex flex-col gap-3 pl-6">
+                <div className="flex flex-col gap-3 pl-0 pt-6 sm:pl-6 sm:pt-0">
                   <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-action-blue">
                     <Headphones size={18} strokeWidth={2} />
                   </div>

@@ -6,6 +6,7 @@ import type {
   BookingStatistics,
   PaginatedData
 } from '@/features/admin/bookings/types/Booking';
+import { dashboardService } from '@/features/admin/dashboard/services/DashboardService';
 
 const ENDPOINTS = {
   BASE: '/admin/bookings',
@@ -15,8 +16,18 @@ const ENDPOINTS = {
   FORCE_DELETE: (id: string) => `/admin/bookings/${id}/force-delete`,
 };
 
+// In-memory cache for admin bookings
+const cache: Record<string, any> = {};
+
+const clearCache = () => {
+  Object.keys(cache).forEach(key => delete cache[key]);
+  dashboardService.clearCache?.();
+};
+
 export const bookingService = {
   getAll: async (search?: string): Promise<{ bookings: Booking[], statistics: BookingStatistics | null }> => {
+    const cacheKey = `all_${search || ''}`;
+    if (cache[cacheKey]) return cache[cacheKey];
     try {
       const response = await axios.get<BookingApiResponse>(ENDPOINTS.BASE, {
         params: { search }
@@ -30,10 +41,12 @@ export const bookingService = {
         bookings = data as Booking[];
       }
 
-      return {
+      const result = {
         bookings,
         statistics: response.data.statistics || response.data.statistic || null
       };
+      cache[cacheKey] = result;
+      return result;
     } catch (error) {
       console.error('Error fetching bookings:', error);
       throw error;
@@ -41,10 +54,14 @@ export const bookingService = {
   },
 
   getTrashed: async (): Promise<Booking[]> => {
+    const cacheKey = 'trashed';
+    if (cache[cacheKey]) return cache[cacheKey];
     try {
       const response = await axios.get<BookingApiResponse>(ENDPOINTS.TRASHED);
       const data = response.data.data;
-      return Array.isArray(data) ? data : [];
+      const result = Array.isArray(data) ? data : [];
+      cache[cacheKey] = result;
+      return result;
     } catch (error) {
       console.error('Error fetching trashed bookings:', error);
       throw error;
@@ -52,9 +69,13 @@ export const bookingService = {
   },
 
   getById: async (id: string): Promise<Booking> => {
+    const cacheKey = `detail_${id}`;
+    if (cache[cacheKey]) return cache[cacheKey];
     try {
       const response = await axios.get<BookingApiResponse>(ENDPOINTS.DETAIL(id));
-      return response.data.data as Booking;
+      const result = response.data.data as Booking;
+      cache[cacheKey] = result;
+      return result;
     } catch (error) {
       console.error(`Error fetching booking ${id}:`, error);
       throw error;
@@ -62,6 +83,7 @@ export const bookingService = {
   },
 
   create: async (data: BookingFormData): Promise<Booking> => {
+    clearCache();
     try {
       const response = await axios.post<BookingApiResponse>(ENDPOINTS.BASE, data);
       return response.data.data as Booking;
@@ -72,6 +94,7 @@ export const bookingService = {
   },
 
   update: async (id: string, data: BookingFormData): Promise<Booking> => {
+    clearCache();
     try {
       const response = await axios.put<BookingApiResponse>(ENDPOINTS.DETAIL(id), data);
       return response.data.data as Booking;
@@ -82,6 +105,7 @@ export const bookingService = {
   },
 
   delete: async (id: string): Promise<void> => {
+    clearCache();
     try {
       await axios.delete(ENDPOINTS.DETAIL(id));
     } catch (error) {
@@ -91,6 +115,7 @@ export const bookingService = {
   },
 
   restore: async (id: string): Promise<void> => {
+    clearCache();
     try {
       await axios.post(ENDPOINTS.RESTORE(id));
     } catch (error) {
@@ -100,6 +125,7 @@ export const bookingService = {
   },
 
   forceDelete: async (id: string): Promise<void> => {
+    clearCache();
     try {
       await axios.delete(ENDPOINTS.FORCE_DELETE(id));
     } catch (error) {

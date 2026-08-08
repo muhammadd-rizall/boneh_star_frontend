@@ -273,7 +273,11 @@ export default function PaymentSection({ transaction, paymentMethods, departureD
               </div>
             </div>
 
-            <Button type="submit" loading={loading} className="w-full shadow-xl shadow-orange-600/20" size="lg">
+            <Button 
+              type="submit" 
+              loading={loading} 
+              className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold h-14 rounded-xl shadow-xl shadow-orange-600/20 text-xs sm:text-sm whitespace-normal px-4 sm:px-8"
+            >
               Kirim Konfirmasi Pembayaran
             </Button>
           </form>

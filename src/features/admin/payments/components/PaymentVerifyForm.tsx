@@ -55,7 +55,7 @@ export default function PaymentVerifyForm({ payment, onSuccess, onCancel }: Paym
             <Info size={16} className="text-action-blue" />
             <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-steel-gray">Rincian Pembayaran</span>
           </div>
-          <div className="grid grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8">
             <div>
               <div className="text-[10px] font-semibold uppercase tracking-widest text-slate-blue opacity-60 mb-1">Nomor Invoice</div>
               <div className="text-base font-semibold text-midnight-indigo">{payment.transaction?.invoice_number}</div>
@@ -71,11 +71,11 @@ export default function PaymentVerifyForm({ payment, onSuccess, onCancel }: Paym
 
         <div className="flex flex-col gap-4">
           <label className="text-[13px] font-semibold text-midnight-indigo ml-1 uppercase tracking-wider opacity-90">Keputusan Verifikasi</label>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
             <button
               type="button"
               onClick={() => setStatus('verified')}
-              className={`flex flex-1 items-center justify-center gap-3 rounded-xl border-2 py-4 text-sm font-semibold transition-all ${
+              className={`flex w-full sm:flex-1 items-center justify-center gap-3 rounded-xl border-2 py-4 text-sm font-semibold transition-all ${
                 status === 'verified' 
                   ? "border-emerald-500 bg-emerald-50 text-emerald-700 shadow-sm scale-[1.02]" 
                   : "border-platinum-tint/50 bg-white text-slate-blue hover:border-action-blue/30"
@@ -87,7 +87,7 @@ export default function PaymentVerifyForm({ payment, onSuccess, onCancel }: Paym
             <button
               type="button"
               onClick={() => setStatus('rejected')}
-              className={`flex flex-1 items-center justify-center gap-3 rounded-xl border-2 py-4 text-sm font-semibold transition-all ${
+              className={`flex w-full sm:flex-1 items-center justify-center gap-3 rounded-xl border-2 py-4 text-sm font-semibold transition-all ${
                 status === 'rejected' 
                   ? "border-red-500 bg-red-50 text-red-700 shadow-sm scale-[1.02]" 
                   : "border-platinum-tint/50 bg-white text-slate-blue hover:border-action-blue/30"
@@ -115,8 +115,8 @@ export default function PaymentVerifyForm({ payment, onSuccess, onCancel }: Paym
       </div>
 
       <DialogFooter className="mt-4 border-t border-platinum-tint/40 pt-8">
-        <Button type="button" variant="ghost" onClick={onCancel} className="px-10 font-semibold text-slate-blue hover:text-midnight-indigo">Batal</Button>
-        <Button type="submit" variant="primary" className="flex-1 font-semibold h-14 rounded-xl shadow-button" loading={loading} icon={Save}>
+        <Button type="button" variant="outline" onClick={onCancel} className="px-10 font-semibold text-slate-blue hover:text-midnight-indigo h-14">Batal</Button>
+        <Button type="submit" variant="primary" className="sm:flex-1 font-semibold h-14 rounded-xl shadow-button" loading={loading} icon={Save}>
           Konfirmasi Keputusan
         </Button>
       </DialogFooter>

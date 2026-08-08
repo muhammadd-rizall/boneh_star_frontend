@@ -205,8 +205,8 @@ export default function RoleForm({ role, availablePermissions, onSuccess, onCanc
       </div>
 
       <DialogFooter className="mt-4 border-t border-platinum-tint/40 pt-8">
-        <Button type="button" variant="ghost" onClick={onCancel} className="px-10 font-semibold text-slate-blue hover:text-midnight-indigo">Batal</Button>
-        <Button type="submit" variant="primary" className="flex-1 font-semibold h-14 rounded-xl shadow-button" loading={loading} icon={Save}>
+        <Button type="button" variant="outline" onClick={onCancel} className="px-10 font-semibold text-slate-blue hover:text-midnight-indigo h-14">Batal</Button>
+        <Button type="submit" variant="primary" className="sm:flex-1 font-semibold h-14 rounded-xl shadow-button" loading={loading} icon={Save}>
           {isEdit ? "Simpan Perubahan" : "Buat Role Baru"}
         </Button>
       </DialogFooter>
