@@ -14,41 +14,63 @@ interface BusImageGalleryProps {
 export default function BusImageGallery({ busId, images, onRefresh }: BusImageGalleryProps) {
   const [uploading, setUploading] = useState(false);
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
 
+    setError(null);
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+    const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/jpg", "image/gif", "image/svg+xml", "image/webp"];
+
+    for (const file of files) {
+      if (!ALLOWED_TYPES.includes(file.type)) {
+        setError(`Format file "${file.name}" tidak didukung. Harap pilih gambar JPG, PNG, WEBP, GIF, atau SVG.`);
+        return;
+      }
+      if (file.size > MAX_FILE_SIZE) {
+        setError(`Ukuran file "${file.name}" melebihi batas maksimal 5MB.`);
+        return;
+      }
+    }
+
     setUploading(true);
     try {
       await busImageService.upload(busId, files);
       onRefresh();
-    } catch (error) {
-      console.error("Upload failed", error);
+    } catch (err: any) {
+      console.error("Upload failed", err);
+      const msg = err.response?.data?.message || err.message || "Gagal mengunggah foto armada.";
+      setError(msg);
     } finally {
       setUploading(false);
     }
   };
 
   const handleDelete = async (id: string) => {
+    setError(null);
     setProcessingId(id);
     try {
       await busImageService.delete(id);
       onRefresh();
-    } catch (error) {
-      console.error("Delete failed", error);
+    } catch (err: any) {
+      console.error("Delete failed", err);
+      setError("Gagal menghapus foto.");
     } finally {
       setProcessingId(null);
     }
   };
 
   const handleSetPrimary = async (id: string) => {
+    setError(null);
     setProcessingId(id);
     try {
       await busImageService.setPrimary(id);
       onRefresh();
-    } catch (error) {
-      console.error("Set primary failed", error);
+    } catch (err: any) {
+      console.error("Set primary failed", err);
+      setError("Gagal menyetel foto utama.");
     } finally {
       setProcessingId(null);
     }
@@ -56,6 +78,11 @@ export default function BusImageGallery({ busId, images, onRefresh }: BusImageGa
 
   return (
     <div className="flex flex-col gap-10">
+      {error && (
+        <div className="rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-bold text-red-700 shadow-sm">
+          {error}
+        </div>
+      )}
       <div className="flex items-center justify-between border-b border-platinum-tint/50 pb-3">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cloud-mist text-action-blue shadow-sm">

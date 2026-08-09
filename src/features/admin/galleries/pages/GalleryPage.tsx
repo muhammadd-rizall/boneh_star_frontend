@@ -7,15 +7,19 @@ import { galleryService } from "../services/GalleryService"
 import GalleryTable from "../components/GalleryTable"
 import GalleryForm from "../components/GalleryForm"
 import { useModulePermission } from "@/hooks/useModulePermission"
+import Confirmation from "@/components/feedback/Confirmation"
 
 export default function GalleryPage() {
-  const { canUpdate, canDelete } = useModulePermission("galleries")
+  const { canDelete, canUpdate } = useModulePermission("galleries")
   const [galleries, setGalleries] = useState<Gallery[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
   
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [selectedGallery, setSelectedGallery] = useState<Gallery | null>(null)
+
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false)
+  const [galleryToDelete, setGalleryToDelete] = useState<Gallery | null>(null)
 
   const fetchGalleries = async (searchQuery: string = "") => {
     try {
@@ -44,14 +48,20 @@ export default function GalleryPage() {
     setIsFormOpen(true)
   }
 
-  const handleDelete = async (gallery: Gallery) => {
-    if (window.confirm(`Are you sure you want to delete "${gallery.title}"? This cannot be undone.`)) {
-      try {
-        await galleryService.delete(gallery.id)
-        fetchGalleries(search)
-      } catch (error) {
-        console.error("Failed to delete gallery:", error)
-      }
+  const handleDelete = (gallery: Gallery) => {
+    setGalleryToDelete(gallery)
+    setIsDeleteConfirmOpen(true)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!galleryToDelete) return
+    try {
+      await galleryService.delete(galleryToDelete.id)
+      setIsDeleteConfirmOpen(false)
+      setGalleryToDelete(null)
+      fetchGalleries(search)
+    } catch (error) {
+      console.error("Failed to delete gallery:", error)
     }
   }
 
@@ -122,6 +132,19 @@ export default function GalleryPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <Confirmation
+        open={isDeleteConfirmOpen}
+        onClose={() => {
+          setIsDeleteConfirmOpen(false)
+          setGalleryToDelete(null)
+        }}
+        onConfirm={handleConfirmDelete}
+        title="Hapus Galeri?"
+        message={`Galeri "${galleryToDelete?.title}" akan dihapus secara permanen.`}
+        variant="danger"
+        confirmText="Ya, Hapus"
+      />
     </div>
   )
 }

@@ -153,7 +153,7 @@ export default function GalleryForm({ gallery, onSuccess, onCancel }: GalleryFor
 
   // Helper to get full URL for existing image
   const getFullImageUrl = (path: string) => {
-    return path.startsWith('http') ? path : `${import.meta.env.VITE_API_BASE_URL?.replace('/api', '')}/storage/${path}`;
+    return path.startsWith('http') ? path : `${import.meta.env.VITE_API_BASE_URL?.replace(/\/api$/, '')}/storage/${path}`;
   };
 
   return (

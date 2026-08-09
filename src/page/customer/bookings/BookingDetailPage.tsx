@@ -120,7 +120,12 @@ export default function BookingDetailPage() {
     </CustomerLayout>
   );
 
-  const canCancel = ['pending', 'quoted'].includes(booking.status);
+  const hasUploadedPayments = !!(
+    booking.transaction?.payments &&
+    booking.transaction.payments.some((p: any) => ['pending', 'verified'].includes(p.status))
+  );
+
+  const canCancel = ['pending', 'quoted'].includes(booking.status) && !hasUploadedPayments;
 
   const showCompleteButton = ['confirmed', 'ongoing'].includes(booking.status);
   
