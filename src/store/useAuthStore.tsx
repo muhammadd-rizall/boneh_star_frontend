@@ -56,7 +56,7 @@ export const useAuthStore = create<AuthState>()(
           token: null,
           isAuthenticated: false,
         });
-        localStorage.removeItem("auth-storage");
+        sessionStorage.removeItem("auth-storage");
       },
 
       updateUser: (user: User) => {
@@ -87,6 +87,21 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: "auth-storage",
+      // Gunakan sessionStorage agar sesi admin terisolasi per-tab.
+      // Ini mencegah tab customer "bocor" ke halaman admin karena
+      // admin sudah login di tab lain dalam browser yang sama.
+      storage: {
+        getItem: (key) => {
+          const value = sessionStorage.getItem(key);
+          return value ? JSON.parse(value) : null;
+        },
+        setItem: (key, value) => {
+          sessionStorage.setItem(key, JSON.stringify(value));
+        },
+        removeItem: (key) => {
+          sessionStorage.removeItem(key);
+        },
+      },
     },
   ),
 );

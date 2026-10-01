@@ -30,7 +30,7 @@ export default function GoogleCallbackPage() {
           hasHydrated: true,
         });
         showSuccess('Berhasil masuk dengan Google!');
-        navigate('/customer/bookings', { replace: true });
+        navigate('/customer/bookings/request', { replace: true });
       } catch (err) {
         console.error('Failed to parse Google user payload:', err);
         showError('Gagal memproses sesi login Google.');

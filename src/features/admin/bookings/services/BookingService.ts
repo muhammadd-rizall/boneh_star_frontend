@@ -19,10 +19,12 @@ const ENDPOINTS = {
 // In-memory cache for admin bookings
 const cache: Record<string, any> = {};
 
-const clearCache = () => {
+export const clearBookingCache = () => {
   Object.keys(cache).forEach(key => delete cache[key]);
   dashboardService.clearCache?.();
 };
+
+const clearCache = clearBookingCache;
 
 export const bookingService = {
   getAll: async (search?: string): Promise<{ bookings: Booking[], statistics: BookingStatistics | null }> => {
@@ -30,7 +32,7 @@ export const bookingService = {
     if (cache[cacheKey]) return cache[cacheKey];
     try {
       const response = await axios.get<BookingApiResponse>(ENDPOINTS.BASE, {
-        params: { search }
+        params: { search, all: 'true' }
       });
       const data = response.data.data;
       

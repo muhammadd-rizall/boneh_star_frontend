@@ -2,7 +2,7 @@ import { DataTable } from "@/components/ui/DataTable"
 import type { Column } from "@/components/ui/DataTable"
 import { Button } from "@/components/ui/Button"
 import type { Quotation } from "@/features/admin/quotations/types/Quotation"
-import { Edit, Trash2, Calendar, FileText, Banknote, User } from "lucide-react"
+import { Edit, Trash2, Calendar, Banknote, Phone } from "lucide-react"
 import { useModulePermission } from "@/hooks/useModulePermission"
 
 interface QuotationTableProps {
@@ -51,17 +51,22 @@ export default function QuotationTable({ data, onDelete, onEdit, onViewDetail: _
 
   const columns: Column<Quotation>[] = [
     {
-      header: "Detail Pemesanan",
+      header: "Pelanggan & Booking",
       accessor: (row) => (
-        <div className="flex flex-col gap-1 text-left">
-          <div className="flex items-center gap-1.5 font-bold text-slate-900 tracking-tight">
-            <FileText size={14} className="text-slate-400" />
-            <span>{row.booking?.booking_code || 'Tanpa Kode'}</span>
+        <div className="flex flex-col gap-1 text-left py-1">
+          <span className="font-bold text-sm text-slate-900 tracking-tight">
+            {row.booking?.customer?.name || 'Pelanggan Tidak Diketahui'}
+          </span>
+          <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-slate-400">
+            <span>Kode:</span>
+            <span className="text-action-blue font-bold">{row.booking?.booking_code || 'Tanpa Kode'}</span>
           </div>
-          <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500">
-            <User size={12} />
-            <span>{row.booking?.customer?.name || 'Pelanggan Tidak Diketahui'}</span>
-          </div>
+          {row.booking?.customer?.phone && (
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 mt-0.5">
+              <Phone size={12} className="text-emerald-500 shrink-0" />
+              <span>{row.booking.customer.phone}</span>
+            </div>
+          )}
         </div>
       )
     },

@@ -144,7 +144,7 @@ export default function PaymentPage() {
         </div>
       )}
 
-      <Modal open={isVerifyModalOpen} onClose={() => setIsVerifyModalOpen(false)} title="Verifikasi Pembayaran" subtitle="Tinjau dan ubah status pengajuan pembayaran">
+      <Modal open={isVerifyModalOpen} onClose={() => setIsVerifyModalOpen(false)} title="Verifikasi Pembayaran" subtitle="Tinjau dan ubah status pengajuan pembayaran" size="lg">
         {selectedPayment && (
           <PaymentVerifyForm payment={selectedPayment} onSuccess={() => { setIsVerifyModalOpen(false); refetch(); showSuccess("Pembayaran berhasil diverifikasi!"); }} onCancel={() => setIsVerifyModalOpen(false)} />
         )}

@@ -57,6 +57,20 @@ export default function BookingDetailPage() {
   const [showCancelModal, setShowCancelModal] = React.useState(false);
   const [cancelReason, setCancelReason] = React.useState('');
   const [cancelLoading, setCancelLoading] = React.useState(false);
+
+  const [showCompleteModal, setShowCompleteModal] = React.useState(false);
+  const [completeLoading, setCompleteLoading] = React.useState(false);
+
+  const handleComplete = async () => {
+    setCompleteLoading(true);
+    try {
+      await completeBooking();
+      setShowCompleteModal(false);
+    } finally {
+      setCompleteLoading(false);
+    }
+  };
+
   const [timeline, setTimeline] = React.useState<any[]>([]);
   const [loadingTimeline, setLoadingTimeline] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState<'info' | 'fleet' | 'quotation' | 'history' | 'document' | 'review'>('info');
@@ -131,10 +145,10 @@ export default function BookingDetailPage() {
   
   const returnDateReached = (() => {
     const today = new Date();
-    today.setHours(0,0,0,0);
-    const targetDateStr = booking.return_date || booking.departure_date;
-    const returnDate = new Date(targetDateStr);
-    returnDate.setHours(0,0,0,0);
+    today.setHours(0, 0, 0, 0);
+    const targetDateStr = (booking.return_date || booking.departure_date).slice(0, 10);
+    const [y, m, d] = targetDateStr.split('-').map(Number);
+    const returnDate = new Date(y, m - 1, d); // local midnight, no UTC shift
     return today >= returnDate;
   })();
 
@@ -155,7 +169,13 @@ export default function BookingDetailPage() {
 
   // Helper date/time formatting for submitted date
   const formatDateTime = (dateStr: string) => {
-    const date = new Date(dateStr);
+    if (!dateStr) return '';
+    // Backend mengembalikan "2026-08-19 02:02:00" (UTC tanpa marker)
+    // Tambahkan 'Z' agar browser parse sebagai UTC → otomatis konversi ke WIB (UTC+7)
+    const utcStr = dateStr.endsWith('Z') || dateStr.includes('+')
+      ? dateStr
+      : dateStr.replace(' ', 'T') + 'Z';
+    const date = new Date(utcStr);
     const datePart = date.toLocaleDateString('id-ID', {
       day: 'numeric',
       month: 'long',
@@ -463,6 +483,7 @@ export default function BookingDetailPage() {
                         transaction={booking.transaction as any}
                         paymentMethods={paymentMethods}
                         departureDate={booking.departure_date}
+                        requiredDp={booking.quotation?.dp_amount}
                         onUpload={(data) => 
                           bookingService.uploadPayment(booking.id, data)
                             .then(() => {
@@ -470,7 +491,7 @@ export default function BookingDetailPage() {
                               refresh();
                             })
                             .catch((err: any) => {
-                              showError(err.message || 'Gagal mengunggah bukti pembayaran');
+                              throw err; // rethrow agar PaymentSection bisa handle & tampilkan error di form
                             })
                         }
                       />
@@ -692,11 +713,7 @@ export default function BookingDetailPage() {
                 <div className="flex flex-col gap-2">
                   <button
                     disabled={!completeEnabled}
-                    onClick={async () => {
-                      if (window.confirm('Apakah Anda yakin perjalanan ini telah selesai? Setelah diselesaikan, Anda dapat memberikan ulasan.')) {
-                        await completeBooking();
-                      }
-                    }}
+                    onClick={() => setShowCompleteModal(true)}
                     className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl border text-xs font-bold transition-all cursor-pointer shadow-sm ${
                       completeEnabled 
                         ? 'border-indigo-200 bg-indigo-50 text-indigo-600 hover:bg-indigo-100' 
@@ -775,6 +792,55 @@ export default function BookingDetailPage() {
                 disabled={cancelLoading}
               >
                 Kembali
+              </Button>
+            </div>
+          </div>
+        </Modal>
+
+        {/* ── Complete Trip Modal ── */}
+        <Modal 
+          open={showCompleteModal} 
+          onClose={() => setShowCompleteModal(false)} 
+          size="md"
+        >
+          <div className="flex flex-col gap-6 text-center pt-5 sm:pt-3">
+            {/* Centered Title */}
+            <div className="border-b border-platinum-tint/40 pb-4">
+              <h3 className="text-xl sm:text-2xl font-bold text-midnight-indigo">
+                Selesaikan Perjalanan
+              </h3>
+            </div>
+
+            <div className="flex flex-col items-center text-center gap-4 py-2">
+              <div className="h-16 w-16 rounded-full bg-action-blue/10 text-action-blue flex items-center justify-center shadow-inner">
+                <CheckCircle2 size={32} className="stroke-[2.5]" />
+              </div>
+              <div className="flex flex-col gap-2">
+                <p className="text-sm font-bold text-midnight-indigo px-2 leading-relaxed">
+                  Apakah Anda yakin perjalanan ini telah selesai?
+                </p>
+                <p className="text-xs font-semibold text-slate-blue/80 px-4 leading-relaxed">
+                  Setelah diselesaikan, status pemesanan akan diperbarui dan Anda dapat memberikan ulasan serta rating untuk armada bus ini.
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                className="flex-1 font-bold h-11 rounded-xl cursor-pointer"
+                onClick={() => setShowCompleteModal(false)}
+                disabled={completeLoading}
+              >
+                Kembali
+              </Button>
+              <Button
+                variant="primary"
+                className="flex-1 font-bold h-11 rounded-xl cursor-pointer shadow-md shadow-blue-500/10"
+                loading={completeLoading}
+                onClick={handleComplete}
+              >
+                Ya, Selesai
               </Button>
             </div>
           </div>

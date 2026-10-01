@@ -4,6 +4,7 @@ import { CustomSelect as Select } from "@/components/ui/CustomSelect";
 import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Textarea";
 import { DialogFooter } from "@/components/ui/Dialog";
+import { formatNumberWithDots, parseDotsToNumber } from "@/utils/formatter";
 import { quotationService } from "../services/QuotationService";
 import type { Quotation, QuotationFormData, QuotationStatus } from "../types/Quotation";
 import { bookingService } from "@/features/admin/bookings/services/BookingService";
@@ -17,16 +18,18 @@ import {
   Save,
   MessageSquare,
   XCircle,
-  ClipboardList
+  ClipboardList,
+  Sparkles
 } from "lucide-react";
 
 interface QuotationFormProps {
   quotation?: Quotation | null;
+  bookingId?: string | null;
   onSuccess: () => void;
   onCancel: () => void;
 }
 
-export default function QuotationForm({ quotation, onSuccess, onCancel }: QuotationFormProps) {
+export default function QuotationForm({ quotation, bookingId, onSuccess, onCancel }: QuotationFormProps) {
   const isEdit = !!quotation;
   const [loading, setLoading] = useState(false);
   const [fetchingData, setFetchingData] = useState(true);
@@ -103,6 +106,21 @@ export default function QuotationForm({ quotation, onSuccess, onCancel }: Quotat
           label: `${b.booking_code} - ${b.customer?.name} (${b.origin})`, 
           value: b.id 
         })));
+
+        // Pre-select booking if bookingId is passed
+        if (bookingId && !isEdit) {
+          const matchedBooking = rawList.find(b => b.id === bookingId);
+          if (matchedBooking) {
+            const calculatedPrice = calculateEstimatedPrice(matchedBooking);
+            const calculatedDp = Math.round(calculatedPrice * 0.3);
+            setFormData(prev => ({
+              ...prev,
+              booking_id: bookingId,
+              proposed_price: calculatedPrice,
+              dp_amount: calculatedDp
+            }));
+          }
+        }
       } catch (err: any) {
         setError("Gagal mengambil data pesanan.");
       } finally {
@@ -111,7 +129,7 @@ export default function QuotationForm({ quotation, onSuccess, onCancel }: Quotat
     };
 
     fetchBookings();
-  }, []);
+  }, [bookingId]);
 
   useEffect(() => {
     if (quotation) {
@@ -141,6 +159,82 @@ export default function QuotationForm({ quotation, onSuccess, onCancel }: Quotat
   });
 
   const selectedBooking = rawBookings.find(b => b.id === formData.booking_id);
+  
+  const getPriceRecommendation = (booking: any) => {
+    if (!booking) return null;
+
+    const depStr = booking.departure_date;
+    const retStr = booking.return_date;
+    let duration = 1;
+    if (depStr) {
+      try {
+        const dep = new Date(depStr.split(' ')[0] || depStr.split('T')[0]);
+        dep.setHours(0, 0, 0, 0);
+        if (retStr) {
+          const ret = new Date(retStr.split(' ')[0] || retStr.split('T')[0]);
+          ret.setHours(0, 0, 0, 0);
+          const diffTime = Math.abs(ret.getTime() - dep.getTime());
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+          duration = diffDays || 1;
+        }
+      } catch (e) {}
+    }
+
+    const scope = booking.route_type?.scope; // 'inside' or 'outside'
+    let minPerDay = 0;
+    let maxPerDay = 0;
+    let hasRange = false;
+
+    if (booking.booking_buses && booking.booking_buses.length > 0) {
+      booking.booking_buses.forEach((bb: any) => {
+        const bus = bb.bus;
+        if (bus && bus.category) {
+          const category = bus.category;
+          if (scope === 'outside') {
+            const p = Number(category.price_outside) || 0;
+            minPerDay += p;
+            maxPerDay += p;
+          } else {
+            const lo = Number(category.price_inside_min) || 0;
+            const hi = Number(category.price_inside_max) || 0;
+            minPerDay += lo;
+            maxPerDay += hi;
+            if (lo !== hi) hasRange = true;
+          }
+        }
+      });
+    }
+
+    const categoryCounts: { [key: string]: number } = {};
+    if (booking.booking_buses && booking.booking_buses.length > 0) {
+      booking.booking_buses.forEach((bb: any) => {
+        const bus = bb.bus;
+        if (bus && bus.category) {
+          categoryCounts[bus.category.name] = (categoryCounts[bus.category.name] || 0) + 1;
+        }
+      });
+    }
+    const categoriesFormatted = Object.entries(categoryCounts)
+      .map(([name, count]) => `${count}x ${name}`)
+      .join(', ');
+
+    const minTotal = minPerDay * duration;
+    const maxTotal = maxPerDay * duration;
+
+    return { 
+      minPerDay, 
+      maxPerDay, 
+      minTotal, 
+      maxTotal, 
+      hasRange, 
+      scope, 
+      duration, 
+      busCount: booking.booking_buses?.length || 0,
+      categoriesFormatted
+    };
+  };
+
+  const priceRecommendation = getPriceRecommendation(selectedBooking);
 
   // Otomatis batasi valid_until agar tidak melebihi H-1 keberangkatan pesanan yang dipilih
   useEffect(() => {
@@ -151,6 +245,68 @@ export default function QuotationForm({ quotation, onSuccess, onCancel }: Quotat
       }
     }
   }, [formData.booking_id, selectedBooking?.departure_date]);
+
+  const calculateEstimatedPrice = (booking: any) => {
+    if (!booking) return 0;
+    
+    const depStr = booking.departure_date;
+    const retStr = booking.return_date;
+    let duration = 1;
+    if (depStr) {
+      try {
+        const dep = new Date(depStr.split(' ')[0] || depStr.split('T')[0]);
+        dep.setHours(0, 0, 0, 0);
+        if (retStr) {
+          const ret = new Date(retStr.split(' ')[0] || retStr.split('T')[0]);
+          ret.setHours(0, 0, 0, 0);
+          const diffTime = Math.abs(ret.getTime() - dep.getTime());
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+          duration = diffDays || 1;
+        }
+      } catch (e) {
+        console.error("Error calculating duration:", e);
+      }
+    }
+    
+    const scope = booking.route_type?.scope; // 'inside' or 'outside'
+    let total = 0;
+    
+    if (booking.booking_buses && booking.booking_buses.length > 0) {
+      booking.booking_buses.forEach((bb: any) => {
+        const bus = bb.bus;
+        if (bus && bus.category) {
+          const category = bus.category;
+          let dailyRate = 0;
+          if (scope === 'outside') {
+            dailyRate = Number(category.price_outside) || 0;
+          } else {
+            dailyRate = Number(category.price_inside_max) || Number(category.price_inside_min) || 0;
+          }
+          total += dailyRate * duration;
+        }
+      });
+    }
+    
+    return total;
+  };
+
+  const handleBookingChange = (value: string) => {
+    const booking = rawBookings.find(b => b.id === value);
+    let calculatedPrice = 0;
+    let calculatedDp = 0;
+
+    if (booking) {
+      calculatedPrice = calculateEstimatedPrice(booking);
+      calculatedDp = Math.round(calculatedPrice * 0.3);
+    }
+
+    setFormData(prev => ({
+      ...prev,
+      booking_id: value,
+      proposed_price: calculatedPrice > 0 ? calculatedPrice : prev.proposed_price,
+      dp_amount: calculatedPrice > 0 ? calculatedDp : prev.dp_amount,
+    }));
+  };
 
   const parsedRevision = (() => {
     if (!formData.revision_note) return null;
@@ -222,12 +378,13 @@ export default function QuotationForm({ quotation, onSuccess, onCancel }: Quotat
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
+          {/* Baris 1: Pilihan Pesanan & Status */}
           <Select
             label="Pesanan (Booking)"
             options={bookings}
             icon={FileText}
             value={formData.booking_id}
-            onChange={(value) => setFormData({ ...formData, booking_id: value })}
+            onChange={handleBookingChange}
             placeholder={fetchingData ? "Memuat data pesanan..." : "Pilih pesanan"}
             required
           />
@@ -249,27 +406,147 @@ export default function QuotationForm({ quotation, onSuccess, onCancel }: Quotat
             )}
           </div>
 
+          {/* Baris 2: Rekomendasi Tarif (Full-width agar tidak merusak keselarasan grid kolom input) */}
+          {priceRecommendation && (
+            <div className="col-span-1 md:col-span-2">
+              <div className="rounded-2xl border border-indigo-100 bg-indigo-50/30 p-4 text-xs font-semibold text-slate-600 flex flex-col gap-3.5 animate-in fade-in duration-300">
+                <div className="flex items-center justify-between border-b border-indigo-100/50 pb-2">
+                  <span className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-indigo-500">
+                    <Sparkles size={13} className="animate-pulse" />
+                    Rekomendasi Tarif Panduan
+                  </span>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-100/50 text-indigo-700">
+                    {priceRecommendation.scope === 'inside' ? 'Dalam Kota' : 'Luar Kota'}
+                  </span>
+                </div>
+                
+                <div className="flex flex-col gap-1.5">
+                  <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Estimasi Harga Berdasarkan Unit</p>
+                  <p className="text-sm font-black text-midnight-indigo">
+                    {priceRecommendation.scope === 'inside' ? (
+                      <>
+                        Rp{" "}
+                        <span className="text-indigo-600 font-black">
+                          {priceRecommendation.hasRange
+                            ? `${formatNumberWithDots(priceRecommendation.minTotal)} - Rp ${formatNumberWithDots(priceRecommendation.maxTotal)}`
+                            : formatNumberWithDots(priceRecommendation.minTotal)}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        Rp <span className="text-indigo-600 font-black">{formatNumberWithDots(priceRecommendation.minTotal)}</span>
+                      </>
+                    )}
+                  </p>
+                  
+                  {/* Perhitungan Detail / Breakdown */}
+                  <div className="rounded-2xl bg-slate-100/60 p-3.5 border border-slate-200/40 text-[11px] text-slate-500 font-semibold mt-2.5 flex flex-col gap-2 shadow-sm shadow-slate-100/50">
+                    <span className="text-[9px] font-black uppercase text-indigo-400 tracking-widest pb-1 border-b border-slate-200/50">Rincian Perhitungan Tarif</span>
+                    
+                    <div className="flex justify-between items-start gap-4 py-0.5">
+                      <span className="text-slate-400">Daftar Armada:</span>
+                      <span className="font-bold text-slate-700 text-right">
+                        {priceRecommendation.busCount} unit {priceRecommendation.categoriesFormatted && `(${priceRecommendation.categoriesFormatted})`}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between items-center py-0.5 border-t border-dashed border-slate-200/50 pt-1.5">
+                      <span className="text-slate-400">Tarif Harian Total:</span>
+                      <span className="font-bold text-slate-700">
+                        {priceRecommendation.scope === 'inside' ? (
+                          priceRecommendation.hasRange
+                            ? `Rp ${formatNumberWithDots(priceRecommendation.minPerDay)} - Rp ${formatNumberWithDots(priceRecommendation.maxPerDay)}`
+                            : `Rp ${formatNumberWithDots(priceRecommendation.minPerDay)}`
+                        ) : (
+                          `Rp ${formatNumberWithDots(priceRecommendation.minPerDay)}`
+                        )}
+                        {" / hari"}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between items-center py-0.5 border-t border-dashed border-slate-200/50 pt-1.5">
+                      <span className="text-slate-400">Durasi Sewa:</span>
+                      <span className="font-bold text-slate-700">{priceRecommendation.duration} hari</span>
+                    </div>
+
+                    <div className="flex justify-between items-center pt-2 border-t border-slate-200 font-bold text-slate-600">
+                      <span>Total Estimasi:</span>
+                      <span className="text-right text-indigo-600 font-black">
+                        {priceRecommendation.scope === 'inside' && priceRecommendation.hasRange
+                          ? `(Rp ${formatNumberWithDots(priceRecommendation.minPerDay)} - Rp ${formatNumberWithDots(priceRecommendation.maxPerDay)}) × ${priceRecommendation.duration} hari`
+                          : `Rp ${formatNumberWithDots(priceRecommendation.minPerDay)} × ${priceRecommendation.duration} hari`}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 pt-2 border-t border-slate-200/50">
+                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Terapkan Langsung:</span>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFormData(prev => ({
+                          ...prev,
+                          proposed_price: priceRecommendation.minTotal,
+                          dp_amount: Math.round(priceRecommendation.minTotal * 0.3)
+                        }));
+                      }}
+                      className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-black uppercase tracking-wider transition-all shadow-sm cursor-pointer"
+                    >
+                      Batas Min
+                    </button>
+                    {priceRecommendation.hasRange && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormData(prev => ({
+                            ...prev,
+                            proposed_price: priceRecommendation.maxTotal,
+                            dp_amount: Math.round(priceRecommendation.maxTotal * 0.3)
+                          }));
+                        }}
+                        className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-black uppercase tracking-wider transition-all shadow-sm cursor-pointer"
+                      >
+                        Batas Max
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Baris 3: Input Nominal Sewa & Uang Muka */}
           <Input
             label="Harga Penawaran (Rp)"
-            type="number"
-            min="0"
+            type="text"
             icon={Banknote}
-            value={formData.proposed_price.toString()}
-            onChange={(e) => setFormData({ ...formData, proposed_price: parseFloat(e.target.value) })}
+            value={formatNumberWithDots(formData.proposed_price)}
+            onChange={(e) => {
+              const price = parseDotsToNumber(e.target.value);
+              setFormData({ 
+                ...formData, 
+                proposed_price: price,
+                dp_amount: Math.round(price * 0.3)
+              });
+            }}
+            placeholder="Contoh: 1.000.000"
             required
           />
 
           <Input
             label="Jumlah DP (Rp)"
-            type="number"
-            min="0"
+            type="text"
             icon={Banknote}
-            value={formData.dp_amount.toString()}
-            onChange={(e) => setFormData({ ...formData, dp_amount: parseFloat(e.target.value) })}
+            value={formatNumberWithDots(formData.dp_amount)}
+            onChange={(e) => setFormData({ ...formData, dp_amount: parseDotsToNumber(e.target.value) })}
+            placeholder="Contoh: 300.000"
             required
           />
 
-          <div className="flex flex-col gap-2">
+          {/* Baris 4: Masa Berlaku Penawaran (Full-width agar simetris) */}
+          <div className="col-span-1 md:col-span-2 flex flex-col gap-2">
             <Input
               label="Masa Berlaku Penawaran (Berlaku Hingga)"
               type="date"

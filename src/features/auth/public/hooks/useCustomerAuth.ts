@@ -65,6 +65,21 @@ export const useCustomerAuthStore = create<AuthState>()(
     }),
     {
       name: 'customer-auth-storage',
+      // Gunakan sessionStorage agar sesi customer terisolasi per-tab,
+      // sama seperti admin. Proteksi lintas-role jadi simetris sempurna:
+      // tab customer tidak bisa akses admin, tab admin tidak bisa akses customer.
+      storage: {
+        getItem: (key) => {
+          const value = sessionStorage.getItem(key);
+          return value ? JSON.parse(value) : null;
+        },
+        setItem: (key, value) => {
+          sessionStorage.setItem(key, JSON.stringify(value));
+        },
+        removeItem: (key) => {
+          sessionStorage.removeItem(key);
+        },
+      },
       onRehydrateStorage: () => (state, error) => {
         if (error) {
           console.error('Failed to hydrate customer auth store.', error);

@@ -13,7 +13,7 @@ export const routeTypeService = {
   getAll: async (search?: string): Promise<{ routeTypes: RouteType[], statistics: RouteTypeStatistics | null }> => {
     try {
       const response = await axios.get<RouteTypeApiResponse>(ENDPOINTS.BASE, {
-        params: { search }
+        params: { search, all: 'true' }
       });
       const responseData = response.data.data;
       

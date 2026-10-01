@@ -47,6 +47,19 @@ export default function PaymentTable({
       )
     },
     {
+      header: "Penyewa",
+      accessor: (row) => (
+        <div className="flex flex-col text-left">
+          <span className="text-sm font-bold text-slate-800">
+            {row.transaction?.booking?.customer?.name || "N/A"}
+          </span>
+          <span className="text-[11px] font-semibold text-slate-400 mt-0.5">
+            Booking: {row.transaction?.booking?.booking_code || "N/A"}
+          </span>
+        </div>
+      )
+    },
+    {
       header: "Nominal",
       accessor: (row) => (
         <span className="text-sm font-bold text-slate-800">

@@ -26,7 +26,7 @@ export default function IncomeReportSummary({ summary }: IncomeReportSummaryProp
       />
       <StatCard
         label="Total Potensi"
-        value={formatCurrency(summary.total_verified_income + summary.total_outstanding)}
+        value={formatCurrency(Number(summary.total_verified_income || 0) + Number(summary.total_outstanding || 0))}
         note="Akumulasi pendapatan & piutang"
         icon={Wallet}
         color="violet"

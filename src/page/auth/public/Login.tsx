@@ -6,6 +6,8 @@ import { useCustomerAuthStore } from "@/features/auth/public";
 import { useCompanyProfile } from "@/features/admin/company-profile";
 import { resolveMediaUrl } from "@/features/admin/company-profile/utils/companyProfileUtils";
 
+import { useToastStore } from "@/store/useToastStore";
+
 type ApiError = {
   response?: {
     data?: {
@@ -47,6 +49,7 @@ export default function LoginPage() {
   const redirect = searchParams.get("redirect");
   const login = useCustomerAuthStore((state) => state.login);
   const { profile: companyProfile } = useCompanyProfile();
+  const showSuccess = useToastStore((state) => state.showSuccess);
 
   const logoUrl = companyProfile ? resolveMediaUrl(companyProfile.logo) : null;
 
@@ -67,7 +70,8 @@ export default function LoginPage() {
 
     try {
       await login({ email, password });
-      navigate(redirect || "/customer/bookings");
+      showSuccess("Login berhasil! Selamat datang kembali.");
+      navigate(redirect || "/customer/bookings/request");
     } catch (err: unknown) {
       const apiError = err as ApiError;
       setError(apiError.response?.data?.message || "Email atau password salah.");
@@ -169,7 +173,7 @@ export default function LoginPage() {
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
-                <div className="flex items-start gap-3 rounded-2xl border border-red-100 bg-red-50/50 px-4 py-3 text-xs font-semibold text-red-650 animate-in shake duration-500">
+                <div className="flex items-start gap-3 rounded-2xl border border-red-100 bg-red-50/50 px-4 py-3 text-xs font-semibold text-red-600 animate-in shake duration-500">
                   <AlertCircle className="mt-0.5 size-4 shrink-0" />
                   <span>{error}</span>
                 </div>

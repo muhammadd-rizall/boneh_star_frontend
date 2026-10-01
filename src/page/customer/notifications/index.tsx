@@ -192,11 +192,18 @@ function NotificationCard({
   dimmed?: boolean;
 }) {
   return (
-    <div className={`relative flex items-start gap-4 p-5 rounded-2xl border transition-all duration-200 group ${
-      !dimmed
-        ? 'bg-white border-platinum-tint shadow-[0_2px_12px_-4px_rgba(11,53,88,0.08)] hover:shadow-[0_4px_20px_-6px_rgba(11,53,88,0.12)]'
-        : 'bg-cloud-mist border-pale-gray hover:bg-white hover:border-platinum-tint'
-    }`}>
+    <div 
+      onClick={(e) => {
+        const target = e.target as HTMLElement;
+        if (target.closest('button')) return;
+        onAction(notif);
+      }}
+      className={`relative flex items-start gap-4 p-5 rounded-2xl border transition-all duration-200 group cursor-pointer ${
+        !dimmed
+          ? 'bg-white border-platinum-tint shadow-[0_2px_12px_-4px_rgba(11,53,88,0.08)] hover:shadow-[0_4px_20px_-6px_rgba(11,53,88,0.12)]'
+          : 'bg-cloud-mist border-pale-gray hover:bg-white hover:border-platinum-tint'
+      }`}
+    >
       {/* Left accent */}
       {!dimmed && accentColor && (
         <div className={`absolute left-0 top-3 bottom-3 w-[3px] rounded-full bg-gradient-to-b ${accentColor} to-transparent`} />

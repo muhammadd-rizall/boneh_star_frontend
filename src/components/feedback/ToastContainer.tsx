@@ -21,11 +21,11 @@ export default function ToastContainer() {
   if (toasts.length === 0) return null;
 
   return (
-    <div className="fixed right-5 top-20 z-[9999] flex flex-col gap-3 max-w-sm w-full pointer-events-none">
+    <div className="fixed z-[9999] flex flex-col gap-3 pointer-events-none top-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-sm md:top-20 md:right-5 md:left-auto md:translate-x-0 md:w-full md:max-w-sm">
       {toasts.map((toast) => (
         <div
           key={toast.id}
-          className={`pointer-events-auto flex items-start gap-3 rounded-2xl border backdrop-blur-md p-4 shadow-xl transition-all duration-300 animate-in slide-in-from-right-5 fade-in ${bgColors[toast.type]}`}
+          className={`pointer-events-auto flex items-start gap-3 rounded-2xl border backdrop-blur-md p-4 shadow-xl transition-all duration-300 animate-in slide-in-from-top-2 md:slide-in-from-right-5 fade-in ${bgColors[toast.type]}`}
         >
           {icons[toast.type]}
           <div className="flex-1 min-w-0">

@@ -165,23 +165,28 @@ export default function BookingForm({ booking, onSuccess, onCancel }: BookingFor
   const handleAssignPreferredBuses = () => {
     if (!preferredBusesText) return;
 
-    // Ambil plat nomor di dalam tanda kurung ()
-    const matches = [...preferredBusesText.matchAll(/\((.*?)\)/g)].map(m => m[1].trim().toLowerCase());
+    // Split by comma to get each selected bus
+    const parts = preferredBusesText.split(',').map(p => p.trim());
     const matchedBuses: typeof availableBuses = [];
 
-    if (matches.length > 0) {
-      matches.forEach(plat => {
+    parts.forEach(part => {
+      // Find the last occurrence of ( ... ) containing the plate number
+      const lastOpenParen = part.lastIndexOf('(');
+      const lastCloseParen = part.lastIndexOf(')');
+      if (lastOpenParen !== -1 && lastCloseParen > lastOpenParen) {
+        const plat = part.substring(lastOpenParen + 1, lastCloseParen).trim().toLowerCase();
         const found = availableBuses.find(b => b.label.toLowerCase().includes(plat));
-        if (found) matchedBuses.push(found);
-      });
-    } else {
-      // Fallback mencocokkan nama
-      const parts = preferredBusesText.split(',').map(p => p.trim().toLowerCase());
-      parts.forEach(part => {
-        const found = availableBuses.find(b => b.label.toLowerCase().includes(part));
-        if (found) matchedBuses.push(found);
-      });
-    }
+        if (found && !matchedBuses.some(mb => mb.value === found.value)) {
+          matchedBuses.push(found);
+        }
+      } else {
+        // Fallback: match by whole string
+        const found = availableBuses.find(b => b.label.toLowerCase().includes(part.toLowerCase()));
+        if (found && !matchedBuses.some(mb => mb.value === found.value)) {
+          matchedBuses.push(found);
+        }
+      }
+    });
 
     if (matchedBuses.length > 0) {
       const newBuses = matchedBuses.map(b => ({

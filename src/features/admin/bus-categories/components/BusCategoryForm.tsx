@@ -6,6 +6,7 @@ import { Layout, Users, FileText, Save, XCircle, Banknote } from "lucide-react";
 import type { BusCategory, BusCategoryFormData } from "../types/BusCategory";
 import { busCategoryService } from "../services/BusCategoryService";
 import { Textarea } from "@/components/ui/Textarea";
+import { formatNumberWithDots, parseDotsToNumber } from "@/utils/formatter";
 
 interface BusCategoryFormProps {
   category?: BusCategory | null;
@@ -124,33 +125,30 @@ export default function BusCategoryForm({ category, onSuccess, onCancel }: BusCa
         <div className="grid gap-6 md:grid-cols-2">
           <Input
             label="Estimasi Dalam Kota (Min) (Rp)"
-            type="number"
-            placeholder="Contoh: 2000000"
+            type="text"
+            placeholder="Contoh: 2.000.000"
             icon={Banknote}
-            value={formData.price_inside_min?.toString() || ""}
-            onChange={(e) => setFormData({ ...formData, price_inside_min: e.target.value ? Number(e.target.value) : null })}
-            min={0}
+            value={formData.price_inside_min !== null && formData.price_inside_min !== undefined ? formatNumberWithDots(formData.price_inside_min) : ""}
+            onChange={(e) => setFormData({ ...formData, price_inside_min: e.target.value ? parseDotsToNumber(e.target.value) : null })}
           />
 
           <Input
             label="Estimasi Dalam Kota (Max) (Rp)"
-            type="number"
-            placeholder="Contoh: 2800000"
+            type="text"
+            placeholder="Contoh: 2.800.000"
             icon={Banknote}
-            value={formData.price_inside_max?.toString() || ""}
-            onChange={(e) => setFormData({ ...formData, price_inside_max: e.target.value ? Number(e.target.value) : null })}
-            min={0}
+            value={formData.price_inside_max !== null && formData.price_inside_max !== undefined ? formatNumberWithDots(formData.price_inside_max) : ""}
+            onChange={(e) => setFormData({ ...formData, price_inside_max: e.target.value ? parseDotsToNumber(e.target.value) : null })}
           />
         </div>
 
         <Input
           label="Estimasi Luar Kota / Hari (Rp)"
-          type="number"
-          placeholder="Contoh: 3000000"
+          type="text"
+          placeholder="Contoh: 3.000.000"
           icon={Banknote}
-          value={formData.price_outside?.toString() || ""}
-          onChange={(e) => setFormData({ ...formData, price_outside: e.target.value ? Number(e.target.value) : null })}
-          min={0}
+          value={formData.price_outside !== null && formData.price_outside !== undefined ? formatNumberWithDots(formData.price_outside) : ""}
+          onChange={(e) => setFormData({ ...formData, price_outside: e.target.value ? parseDotsToNumber(e.target.value) : null })}
         />
 
         <Textarea

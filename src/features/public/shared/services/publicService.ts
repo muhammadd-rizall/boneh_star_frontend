@@ -59,7 +59,7 @@ export const publicService = {
     return response.data.data;
   },
   
-  getBuses: async (params?: { per_page?: number; search?: string }): Promise<Bus[]> => {
+  getBuses: async (params?: { per_page?: number; search?: string; start_date?: string; end_date?: string }): Promise<Bus[]> => {
     const cacheKey = `buses_${JSON.stringify(params || {})}`;
     if (cache[cacheKey]) return cache[cacheKey];
     const response = await api.get(ENDPOINTS.BUSES, { params });
@@ -69,7 +69,7 @@ export const publicService = {
     return result;
   },
 
-  getBusesPaginated: async (params?: { per_page?: number; search?: string }): Promise<PaginatedResponse<Bus>> => {
+  getBusesPaginated: async (params?: { per_page?: number; search?: string; start_date?: string; end_date?: string }): Promise<PaginatedResponse<Bus>> => {
     const cacheKey = `buses_paginated_${JSON.stringify(params || {})}`;
     if (cache[cacheKey]) return cache[cacheKey];
     const response = await api.get(ENDPOINTS.BUSES, { params });

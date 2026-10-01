@@ -49,7 +49,7 @@ export const driverService = {
   getAll: async (search?: string): Promise<{ drivers: Driver[], statistics: DriverStatistics | null }> => {
     try {
       const response = await axios.get<DriverApiResponse>(ENDPOINTS.BASE, {
-        params: { search }
+        params: { search, all: 'true' }
       });
       const responseData = response.data.data;
       

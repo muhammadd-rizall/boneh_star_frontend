@@ -47,6 +47,12 @@ import Loader from "@/components/feedback/Loader";
 function CustomerProtectedRoute({ children }: { children: React.ReactNode }) {
   const isCustomerAuthenticated = useCustomerAuthStore((state) => state.isAuthenticated);
   const hasHydrated = useCustomerAuthStore((state) => state.hasHydrated);
+  const isAdminAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
+  // Admin yang iseng buka URL customer → kembalikan ke dashboard admin
+  if (isAdminAuthenticated) {
+    return <Navigate to="/admin/dashboard" replace />;
+  }
 
   if (!hasHydrated) {
     return <Loader text="Memuat sesi pelanggan..." />;
@@ -65,6 +71,27 @@ function AdminPermissionGuard({ permission, children }: { permission: string; ch
     return <Navigate to="/admin/dashboard" replace />;
   }
   return <>{children}</>;
+}
+
+// Guard untuk semua route admin:
+// - Admin sudah login → tampilkan konten admin
+// - Customer sedang login (tapi bukan admin) → redirect ke homepage, jangan tampilkan login admin
+// - Tidak ada yang login → redirect ke login admin
+function AdminProtectedRoute({ children }: { children: React.ReactNode }) {
+  const isAdminAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const isCustomerAuthenticated = useCustomerAuthStore((state) => state.isAuthenticated);
+
+  if (isAdminAuthenticated) {
+    return <>{children}</>;
+  }
+
+  if (isCustomerAuthenticated) {
+    // Customer yang iseng buka URL admin → arahkan ke halaman bookings customer
+    return <Navigate to="/customer/bookings" replace />;
+  }
+
+  // Tidak ada sesi aktif → boleh tampilkan login admin
+  return <Navigate to="/admin/login" replace />;
 }
 
 function App() {
@@ -137,19 +164,43 @@ function App() {
       />
       <Route
         path="/auth/login"
-        element={hasCustomerHydrated ? (isCustomerAuthenticated ? <Navigate to="/" /> : <LoginPage />) : <Loader text="Memuat sesi pelanggan..." />}
+        element={
+          isAuthenticated
+            ? <Navigate to="/admin/dashboard" replace />
+            : hasCustomerHydrated
+              ? (isCustomerAuthenticated ? <Navigate to="/customer/bookings/request" /> : <LoginPage />)
+              : <Loader text="Memuat sesi pelanggan..." />
+        }
       />
       <Route
         path="/auth/register"
-        element={hasCustomerHydrated ? (isCustomerAuthenticated ? <Navigate to="/" /> : <RegisterPage />) : <Loader text="Memuat sesi pelanggan..." />}
+        element={
+          isAuthenticated
+            ? <Navigate to="/admin/dashboard" replace />
+            : hasCustomerHydrated
+              ? (isCustomerAuthenticated ? <Navigate to="/customer/bookings/request" /> : <RegisterPage />)
+              : <Loader text="Memuat sesi pelanggan..." />
+        }
       />
       <Route
         path="/auth/forgot-password"
-        element={hasCustomerHydrated ? (isCustomerAuthenticated ? <Navigate to="/" /> : <ForgotPasswordPage />) : <Loader text="Memuat sesi pelanggan..." />}
+        element={
+          isAuthenticated
+            ? <Navigate to="/admin/dashboard" replace />
+            : hasCustomerHydrated
+              ? (isCustomerAuthenticated ? <Navigate to="/customer/bookings/request" /> : <ForgotPasswordPage />)
+              : <Loader text="Memuat sesi pelanggan..." />
+        }
       />
       <Route
         path="/auth/reset-password"
-        element={hasCustomerHydrated ? (isCustomerAuthenticated ? <Navigate to="/" /> : <ResetPasswordPage />) : <Loader text="Memuat sesi pelanggan..." />}
+        element={
+          isAuthenticated
+            ? <Navigate to="/admin/dashboard" replace />
+            : hasCustomerHydrated
+              ? (isCustomerAuthenticated ? <Navigate to="/customer/bookings/request" /> : <ResetPasswordPage />)
+              : <Loader text="Memuat sesi pelanggan..." />
+        }
       />
       <Route
         path="/auth/callback"
@@ -158,15 +209,20 @@ function App() {
       <Route
         path="/admin/login"
         element={
-          isAuthenticated ? <Navigate to="/admin/dashboard" /> : <AdminLogin />
+          // Admin sudah login → ke dashboard
+          isAuthenticated
+            ? <Navigate to="/admin/dashboard" replace />
+            // Customer sedang login di tab ini → tidak perlu lihat login admin
+            : isCustomerAuthenticated
+              ? <Navigate to="/customer/bookings" replace />
+              // Tidak ada sesi aktif → tampilkan login admin
+              : <AdminLogin />
         }
       />
 
       <Route
         path="/admin"
-        element={
-          isAuthenticated ? <DahsbordLayout /> : <Navigate to="/admin/login" />
-        }
+        element={<AdminProtectedRoute><DahsbordLayout /></AdminProtectedRoute>}
       >
         <Route index element={<Navigate to="/admin/dashboard" />} />
         <Route path="dashboard" element={<DashboardPage />} />

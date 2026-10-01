@@ -47,10 +47,10 @@ export default function BookingIndexPage() {
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     .slice(0, 5);
 
-  const bookingsWithTransaction = bookings.filter(b => b.transaction);
+  const bookingsWithTransaction = bookings.filter(b => b.transaction && b.transaction.total_amount);
 
   const totalSpent = bookingsWithTransaction
-    .reduce((sum, b) => sum + (b.transaction?.total_amount ?? 0), 0);
+    .reduce((sum, b) => sum + Number(b.transaction?.total_amount || 0), 0);
 
   const avgPerBooking = bookingsWithTransaction.length > 0
     ? totalSpent / bookingsWithTransaction.length

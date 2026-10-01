@@ -13,7 +13,7 @@ export const busService = {
   getAll: async (search?: string): Promise<{ buses: Bus[], statistics: BusStatistics | null }> => {
     try {
       const response = await axios.get<BusApiResponse>(ENDPOINTS.BASE, {
-        params: { search }
+        params: { search, all: 'true' }
       });
       const responseData = response.data.data;
       

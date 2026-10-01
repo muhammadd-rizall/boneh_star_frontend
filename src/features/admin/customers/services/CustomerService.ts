@@ -19,7 +19,7 @@ export const customerService = {
   getAll: async (search?: string): Promise<{ customers: Customer[], statistics: CustomerStatistics | null }> => {
     try {
       const response = await axios.get<CustomerApiResponse>(ENDPOINTS.BASE, {
-        params: { search }
+        params: { search, all: 'true' }
       });
       // Backend returns { success, statistic, data: { data: [], links, meta }, message }
       const responseData = response.data.data;

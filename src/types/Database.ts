@@ -112,6 +112,7 @@ export interface Bus extends TimestampedEntity {
   category?: BusCategory;
   facilities?: BusFacility[];
   images?: BusImage[];
+  is_available_on_dates?: boolean | null;
 }
 
 /**

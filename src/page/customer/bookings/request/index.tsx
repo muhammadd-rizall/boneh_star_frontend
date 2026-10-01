@@ -7,7 +7,7 @@ import {
   ArrowLeft, ArrowRight, Compass, Bus as BusIcon, Users, FileText,
   Calendar, MapPin, AlertCircle, Shield, CheckCircle2,
   CircleDollarSign, Minus, Plus, Check, Info as InfoIcon,
-  Sparkles, Activity, X
+  Sparkles, Activity, X, XCircle
 } from 'lucide-react';
 import type { ActivityType, RouteType, BusCategory, Bus } from '@/types/Database';
 import { useToastStore } from '@/store/useToastStore';
@@ -82,12 +82,29 @@ export default function BookingRequestPage() {
       setActivities(actData.filter(a => !a.deleted_at));
       setRouteTypes(routeData.filter(r => !r.deleted_at));
       setBusCategories(catData.filter(c => !c.deleted_at));
-      // Only show available buses
-      setBuses(busData.filter(b => !b.deleted_at && b.status === 'available'));
+      // Fetch all non-inactive buses (keep booked and maintenance so we can show them as unavailable)
+      setBuses(busData.filter(b => !b.deleted_at && b.status !== 'inactive'));
     }).catch(err => {
       console.error("Error fetching request page metadata: ", err);
     });
   }, []);
+
+  // Fetch available buses reactively when entering Step 2 or changing dates
+  React.useEffect(() => {
+    if (currentStep === 2 && formData.departure_date) {
+      setLoading(true);
+      publicService.getBuses({
+        start_date: formData.departure_date,
+        end_date: formData.return_date || formData.departure_date
+      }).then(busData => {
+        setBuses(busData.filter(b => !b.deleted_at && b.status !== 'inactive'));
+      }).catch(err => {
+        console.error("Error updating bus availability: ", err);
+      }).finally(() => {
+        setLoading(false);
+      });
+    }
+  }, [currentStep, formData.departure_date, formData.return_date]);
 
   // Form Validation per step
   const validateStep = (step: number): boolean => {
@@ -242,8 +259,8 @@ export default function BookingRequestPage() {
     let minTotal = 0, maxTotal = 0, hasRange = false;
     categories.forEach(cat => {
       if (isInside) {
-        const lo = cat.price_inside_min ?? 0;
-        const hi = cat.price_inside_max ?? 0;
+        const lo = (cat.price_inside_min ?? 0) * days;
+        const hi = (cat.price_inside_max ?? 0) * days;
         minTotal += lo;
         maxTotal += hi;
         if (lo !== hi) hasRange = true;
@@ -330,14 +347,15 @@ export default function BookingRequestPage() {
 
   // Auto-pilih bus dengan kombinasi optimal berdasarkan jumlah bus yang diminta & jumlah penumpang
   const autoSelectBuses = () => {
-    if (filteredBuses.length === 0) {
-      showError('Tidak ada armada yang tersedia pada filter kategori ini untuk dipilih secara otomatis.');
+    const availableFilteredBuses = filteredBuses.filter(b => b.status === 'available');
+    if (availableFilteredBuses.length === 0) {
+      showError('Tidak ada armada aktif (Tersedia) pada filter kategori ini untuk dipilih secara otomatis.');
       return;
     }
 
-    const N = Math.max(1, Math.min(formData.bus_count_requested || 1, filteredBuses.length));
+    const N = Math.max(1, Math.min(formData.bus_count_requested || 1, availableFilteredBuses.length));
     const target = formData.passenger_count;
-    const sortedBuses = [...filteredBuses].sort((a, b) => (b.seat_count || 0) - (a.seat_count || 0));
+    const sortedBuses = [...availableFilteredBuses].sort((a, b) => (b.seat_count || 0) - (a.seat_count || 0));
 
     let bestSubset: Bus[] = [];
     let bestSeats = Infinity; // Untuk subset yang memenuhi target (minimalkan kelebihan kursi)
@@ -1085,17 +1103,26 @@ export default function BookingRequestPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           {filteredBuses.map(bus => {
                             const isSelected = selectedBusIds.includes(bus.id);
+                            const isBusAvailable = bus.is_available_on_dates !== false && bus.status === 'available';
                             // Cek kecocokan kapasitas
                             const fitsPerfect = bus.seat_count >= formData.passenger_count && bus.seat_count - formData.passenger_count <= 15;
                             
                             return (
                               <div
                                 key={bus.id}
-                                onClick={() => toggleBusSelection(bus.id)}
-                                className={`relative border rounded-2xl overflow-hidden cursor-pointer transition-all flex flex-col justify-between ${
-                                  isSelected
-                                    ? 'border-action-blue bg-action-blue/[0.02] ring-1 ring-action-blue shadow-sm'
-                                    : 'border-slate-200 hover:border-slate-300 bg-white shadow-sm'
+                                onClick={() => {
+                                  if (isBusAvailable) {
+                                    toggleBusSelection(bus.id);
+                                  } else {
+                                    showError(`Armada ${bus.name} sedang tidak tersedia (${bus.status === 'booked' || bus.is_available_on_dates === false ? 'Dipesan' : 'Perawatan'}).`);
+                                  }
+                                }}
+                                className={`relative border rounded-2xl overflow-hidden transition-all flex flex-col justify-between ${
+                                  !isBusAvailable
+                                    ? 'border-slate-200 bg-slate-50/70 opacity-60 cursor-not-allowed shadow-sm'
+                                    : isSelected
+                                      ? 'border-action-blue bg-action-blue/[0.02] ring-1 ring-action-blue shadow-sm cursor-pointer'
+                                      : 'border-slate-200 hover:border-slate-300 bg-white shadow-sm cursor-pointer'
                                 }`}
                               >
                                 {/* Selected Badge */}
@@ -1120,6 +1147,14 @@ export default function BookingRequestPage() {
                                       <BusIcon size={32} className="text-slate-400 opacity-45" />
                                     );
                                   })()}
+                                  {!isBusAvailable && (
+                                    <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[1px] flex items-center justify-center z-10">
+                                      <span className="bg-white/95 text-slate-800 text-[11px] font-bold px-3 py-1.5 rounded-xl shadow-md border border-slate-200 flex items-center gap-1">
+                                        <XCircle size={12} className="text-red-500" />
+                                        {bus.status === 'booked' || bus.is_available_on_dates === false ? 'Sedang Dipesan' : 'Dalam Perawatan'}
+                                      </span>
+                                    </div>
+                                  )}
                                   <div className="absolute bottom-2 left-2 z-20 bg-gray-900/70 backdrop-blur-[2px] px-2 py-0.5 rounded text-[10px] font-bold text-white uppercase tracking-wide">
                                     {bus.plat_number}
                                   </div>
@@ -1134,12 +1169,27 @@ export default function BookingRequestPage() {
                                       </span>
                                       <h3 className="font-bold text-gray-900 text-xs mt-0.5">{bus.name}</h3>
                                     </div>
-                                    {fitsPerfect && (
-                                      <span className="bg-emerald-50 border border-emerald-100 text-emerald-700 text-[10px] font-bold px-1.5 py-0.5 rounded-md flex items-center gap-0.5 shrink-0">
-                                        <Sparkles size={8} />
-                                        Muat Pas
-                                      </span>
-                                    )}
+                                    <div className="flex flex-col items-end gap-1.5 shrink-0">
+                                      {isBusAvailable ? (
+                                        <span className="bg-emerald-50 border border-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-md">
+                                          Tersedia
+                                        </span>
+                                      ) : (
+                                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${
+                                          bus.status === 'booked' || bus.is_available_on_dates === false
+                                            ? 'bg-rose-50 border border-rose-100 text-rose-700'
+                                            : 'bg-amber-50 border border-amber-100 text-amber-700'
+                                        }`}>
+                                          {bus.status === 'booked' || bus.is_available_on_dates === false ? 'Dipesan' : 'Perawatan'}
+                                        </span>
+                                      )}
+                                      {fitsPerfect && isBusAvailable && (
+                                        <span className="bg-sky-50 border border-sky-100 text-sky-700 text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-0.5">
+                                          <Sparkles size={8} />
+                                          Muat Pas
+                                        </span>
+                                      )}
+                                    </div>
                                   </div>
 
                                   <div className="grid grid-cols-2 gap-2 text-xs font-semibold text-slate-600 mt-1">
@@ -1175,16 +1225,28 @@ export default function BookingRequestPage() {
                                     if (!cat) return null;
                                     const isInside = selectedRoute?.scope === 'inside';
                                     if (isInside && cat.price_inside_min) {
-                                      const lo = cat.price_inside_min;
-                                      const hi = cat.price_inside_max;
+                                      const lo = cat.price_inside_min * tripDays;
+                                      const maxVal = cat.price_inside_max ?? cat.price_inside_min;
+                                      const hi = maxVal * tripDays;
                                       return (
                                         <div className="mt-2 pt-2 border-t border-slate-200">
-                                          <p className="text-[10px] text-slate-500 font-medium">Harga Sewa</p>
+                                          <p className="text-[10px] text-slate-500 font-medium">
+                                            {tripDays > 1
+                                              ? `Harga Sewa (${tripDays} hari)`
+                                              : 'Harga Sewa / Hari'}
+                                          </p>
                                           <p className="text-xs font-bold text-action-blue mt-0.5">
                                             {hi && hi !== lo
                                               ? `${formatCurrency(lo)} - ${formatCurrency(hi)}`
                                               : formatCurrency(lo)}
                                           </p>
+                                          {tripDays > 1 && (
+                                            <p className="text-[10px] text-slate-500 mt-0.5">
+                                              {hi && hi !== lo
+                                                ? `${formatCurrency(cat.price_inside_min)} - ${formatCurrency(maxVal)} × ${tripDays} hari`
+                                                : `${formatCurrency(cat.price_inside_min)} × ${tripDays} hari`}
+                                            </p>
+                                          )}
                                         </div>
                                       );
                                     }

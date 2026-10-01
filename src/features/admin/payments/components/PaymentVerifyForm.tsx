@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Textarea";
 import { DialogFooter } from "@/components/ui/Dialog";
-import { CheckCircle, XCircle, Save, AlignLeft, Info } from "lucide-react";
+import { CheckCircle, XCircle, Save, AlignLeft, ShieldCheck } from "lucide-react";
 import type { Payment, PaymentVerifyData } from "../types/Payment";
 import { paymentService } from "../services/PaymentService";
 
@@ -39,85 +39,107 @@ export default function PaymentVerifyForm({ payment, onSuccess, onCancel }: Paym
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-10">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
       {error && (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-semibold text-red-700 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
-          <div className="flex items-center gap-3">
-            <XCircle size={18} className="text-red-500" />
-            {error}
-          </div>
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-xs font-semibold text-red-700 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300 flex items-center gap-2">
+          <XCircle size={16} className="text-red-500 shrink-0" />
+          <span>{error}</span>
         </div>
       )}
 
-      <div className="flex flex-col gap-8">
-        <div className="rounded-[24px] border border-platinum-tint bg-cloud-mist/30 p-8 shadow-sm">
-          <div className="flex items-center gap-2 mb-6 border-b border-platinum-tint/50 pb-3">
-            <Info size={16} className="text-action-blue" />
-            <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-steel-gray">Rincian Pembayaran</span>
+      <div className="flex flex-col gap-6">
+        {/* Rincian Pembayaran Card */}
+        <div className="rounded-2xl border border-slate-200 bg-slate-50/40 p-5 flex flex-col gap-4">
+          <div className="flex items-center gap-2 border-b border-slate-200/60 pb-3">
+            <ShieldCheck size={16} className="text-action-blue shrink-0" />
+            <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Rincian Verifikasi Transaksi</span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8">
-            <div>
-              <div className="text-[10px] font-semibold uppercase tracking-widest text-slate-blue opacity-60 mb-1">Nomor Invoice</div>
-              <div className="text-base font-semibold text-midnight-indigo">{payment.transaction?.invoice_number}</div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="flex flex-col">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Nama Penyewa</span>
+              <span className="text-sm font-black text-midnight-indigo mt-0.5">{payment.transaction?.booking?.customer?.name || "N/A"}</span>
             </div>
-            <div>
-              <div className="text-[10px] font-semibold uppercase tracking-widest text-slate-blue opacity-60 mb-1">Jumlah Bayar</div>
-              <div className="text-lg font-bold text-midnight-indigo">
+            
+            <div className="flex flex-col">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Nomor Invoice</span>
+              <span className="text-sm font-semibold text-midnight-indigo mt-0.5">{payment.transaction?.invoice_number || "N/A"}</span>
+            </div>
+            
+            <div className="flex flex-col">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Jumlah Bayar</span>
+              <span className="text-sm font-black text-emerald-600 mt-0.5">
                 Rp {new Intl.NumberFormat('id-ID').format(payment.amount)}
-              </div>
+              </span>
             </div>
           </div>
         </div>
 
-        <div className="flex flex-col gap-4">
-          <label className="text-[13px] font-semibold text-midnight-indigo ml-1 uppercase tracking-wider opacity-90">Keputusan Verifikasi</label>
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+        {/* Keputusan Verifikasi */}
+        <div className="flex flex-col gap-3">
+          <label className="text-[11px] font-black uppercase tracking-wider text-slate-400 ml-1">Keputusan Verifikasi</label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <button
               type="button"
               onClick={() => setStatus('verified')}
-              className={`flex w-full sm:flex-1 items-center justify-center gap-3 rounded-xl border-2 py-4 text-sm font-semibold transition-all ${
+              className={`flex items-center justify-center gap-2.5 rounded-xl border-2 py-3.5 text-sm font-bold transition-all cursor-pointer ${
                 status === 'verified' 
-                  ? "border-emerald-500 bg-emerald-50 text-emerald-700 shadow-sm scale-[1.02]" 
-                  : "border-platinum-tint/50 bg-white text-slate-blue hover:border-action-blue/30"
+                  ? "border-emerald-500 bg-emerald-50 text-emerald-700 shadow-sm scale-[1.01]" 
+                  : "border-slate-200 bg-white text-slate-600 hover:border-emerald-300 hover:bg-emerald-50/20"
               }`}
             >
-              <CheckCircle size={20} strokeWidth={2.5} />
-              Verifikasi
+              <CheckCircle size={18} strokeWidth={2.5} />
+              Setujui & Verifikasi
             </button>
             <button
               type="button"
               onClick={() => setStatus('rejected')}
-              className={`flex w-full sm:flex-1 items-center justify-center gap-3 rounded-xl border-2 py-4 text-sm font-semibold transition-all ${
+              className={`flex items-center justify-center gap-2.5 rounded-xl border-2 py-3.5 text-sm font-bold transition-all cursor-pointer ${
                 status === 'rejected' 
-                  ? "border-red-500 bg-red-50 text-red-700 shadow-sm scale-[1.02]" 
-                  : "border-platinum-tint/50 bg-white text-slate-blue hover:border-action-blue/30"
+                  ? "border-red-500 bg-red-50 text-red-700 shadow-sm scale-[1.01]" 
+                  : "border-slate-200 bg-white text-slate-600 hover:border-red-300 hover:bg-red-50/20"
               }`}
             >
-              <XCircle size={20} strokeWidth={2.5} />
-              Tolak
+              <XCircle size={18} strokeWidth={2.5} />
+              Tolak Pembayaran
             </button>
           </div>
         </div>
 
         {status === 'rejected' && (
-          <div className="animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="animate-in fade-in slide-in-from-top-3 duration-300">
             <Textarea
               label="Alasan Penolakan"
-              placeholder="Jelaskan mengapa pembayaran ini ditolak..."
+              placeholder="Jelaskan alasan pembayaran ini ditolak (misal: nominal tidak sesuai, bukti tidak terbaca)..."
               icon={AlignLeft}
               value={rejectionReason}
               onChange={(e) => setRejectionReason(e.target.value)}
               required
-              rows={4}
+              rows={3}
             />
           </div>
         )}
       </div>
 
-      <DialogFooter className="mt-4 border-t border-platinum-tint/40 pt-8">
-        <Button type="button" variant="outline" onClick={onCancel} className="px-10 font-semibold text-slate-blue hover:text-midnight-indigo h-14">Batal</Button>
-        <Button type="submit" variant="primary" className="sm:flex-1 font-semibold h-14 rounded-xl shadow-button" loading={loading} icon={Save}>
-          Konfirmasi Keputusan
+      <DialogFooter className="mt-4 border-t border-slate-200 pt-4">
+        <Button 
+          type="button" 
+          variant="outline" 
+          onClick={onCancel} 
+          disabled={loading}
+          className="rounded-xl font-bold"
+        >
+          Batal
+        </Button>
+        <Button 
+          type="submit" 
+          variant="primary" 
+          loading={loading} 
+          disabled={loading}
+          icon={Save}
+          className="rounded-xl font-bold shadow-button"
+        >
+          Simpan Keputusan
         </Button>
       </DialogFooter>
     </form>

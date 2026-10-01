@@ -6,6 +6,8 @@ import { AlertCircle, BusFront, Lock, Mail, ShieldCheck, ArrowRight } from "luci
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { useToastStore } from "@/store/useToastStore";
+
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -14,6 +16,7 @@ export default function Login() {
   
   const navigate = useNavigate();
   const login = useAuthStore((state) => state.login);
+  const showSuccess = useToastStore((state) => state.showSuccess);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,6 +34,7 @@ export default function Login() {
       }
       
       login(user, token);
+      showSuccess("Login admin berhasil! Selamat datang di dashboard.");
       
       navigate("/admin/dashboard");
     } catch (err: any) {

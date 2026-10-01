@@ -1,7 +1,7 @@
 import type { CompanyProfile } from "@/features/admin/company-profile/types/CompanyProfile";
-import { BusFront, LogOut, Menu, User, X, Bell } from "lucide-react";
+import { BusFront, LogOut, Menu, User, X, Bell, CalendarCheck } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { resolveMediaUrl } from "@/features/admin/company-profile/utils/companyProfileUtils";
 import { useCustomerAuthStore } from "@/features/auth/public";
 import { Button } from "@/components/ui/Button";
@@ -38,6 +38,7 @@ interface HeaderProps {
 export default function Header({ companyProfile }: HeaderProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const isHome = location.pathname === "/";
@@ -203,28 +204,67 @@ export default function Header({ companyProfile }: HeaderProps) {
                 </div>
               </NavLink>
               <div className={"h-4 w-px " + (isTransparentDark ? "bg-white/20" : "bg-platinum-tint")} />
-              <div className="flex items-center gap-3">
-                <div className="flex flex-col items-end">
-                  <span className={"text-xs font-bold " + (isTransparentDark ? "text-white" : "text-midnight-indigo")}>
-                    {user?.name?.split(" ")[0] || "User"}
-                  </span>
-                  <button
-                    onClick={handleCustomerLogout}
-                    className="text-[10px] font-medium text-slate-blue hover:text-red-500 transition-colors"
-                  >
-                    Keluar
-                  </button>
-                </div>
-                <NavLink
-                  to="/customer/profile"
-                  className="flex h-9 w-9 items-center justify-center rounded-xl bg-cloud-mist border border-platinum-tint overflow-hidden hover:border-action-blue transition-colors"
+              <div className="relative">
+                <button
+                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                  className="flex items-center gap-2.5 p-1 rounded-xl hover:bg-slate-50 transition-all cursor-pointer focus:outline-none"
                 >
-                  {user?.profile_picture && resolveMediaUrl(user.profile_picture) ? (
-                    <img src={resolveMediaUrl(user.profile_picture)} className="h-full w-full object-cover" alt="" />
-                  ) : (
-                    <User size={16} className="text-slate-blue" />
-                  )}
-                </NavLink>
+                  <div className="hidden lg:flex flex-col items-end">
+                    <span className={"text-xs font-bold " + (isTransparentDark ? "text-white" : "text-midnight-indigo")}>
+                      {user?.name?.split(" ")[0] || "User"}
+                    </span>
+                    <span className="text-[10px] text-slate-blue/75 font-semibold mt-0.5">Pelanggan</span>
+                  </div>
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-cloud-mist border border-platinum-tint overflow-hidden hover:border-action-blue transition-colors">
+                    {user?.profile_picture && resolveMediaUrl(user.profile_picture) ? (
+                      <img src={resolveMediaUrl(user.profile_picture)} className="h-full w-full object-cover" alt="" />
+                    ) : (
+                      <User size={16} className="text-slate-blue" />
+                    )}
+                  </div>
+                </button>
+
+                {/* Dropdown User Menu */}
+                {isProfileOpen && (
+                  <>
+                    {/* Click outside backdrop */}
+                    <div className="fixed inset-0 z-40" onClick={() => setIsProfileOpen(false)} />
+                    
+                    <div className="absolute right-0 mt-2.5 w-[240px] rounded-[20px] border border-platinum-tint/60 bg-white p-2 shadow-2xl z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                      <div className="px-3.5 py-3 border-b border-pale-gray/30 mb-1.5">
+                        <p className="text-sm font-bold text-midnight-indigo truncate">{user?.name || "Customer"}</p>
+                        <p className="text-xs font-semibold text-slate-400 truncate mt-0.5">{user?.email || ""}</p>
+                      </div>
+                      <Link
+                        to="/customer/profile"
+                        onClick={() => setIsProfileOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-blue hover:text-midnight-indigo hover:bg-slate-50 transition-all"
+                      >
+                        <User size={14} />
+                        Profil Akun
+                      </Link>
+                      <Link
+                        to="/customer/bookings"
+                        onClick={() => setIsProfileOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-blue hover:text-midnight-indigo hover:bg-slate-50 transition-all"
+                      >
+                        <CalendarCheck size={14} />
+                        Pemesanan Saya
+                      </Link>
+                      <div className="h-px bg-pale-gray/30 my-1.5" />
+                      <button
+                        onClick={() => {
+                          setIsProfileOpen(false);
+                          handleCustomerLogout();
+                        }}
+                        className="flex w-full items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50/50 hover:text-rose-700 transition-all cursor-pointer"
+                      >
+                        <LogOut size={14} />
+                        Keluar
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             </>
           ) : (

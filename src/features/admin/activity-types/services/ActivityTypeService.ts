@@ -13,7 +13,7 @@ export const activityTypeService = {
   getAll: async (search?: string): Promise<{ activityTypes: ActivityType[], statistics: ActivityTypeStatistics | null }> => {
     try {
       const response = await axios.get<ActivityTypeApiResponse>(ENDPOINTS.BASE, {
-        params: { search }
+        params: { search, all: 'true' }
       });
       const responseData = response.data.data;
       

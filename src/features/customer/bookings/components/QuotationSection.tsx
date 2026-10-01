@@ -1,11 +1,12 @@
 import React from 'react';
 import type { CustomerQuotation } from '../types/Booking';
-import { formatCurrency, formatDate } from '@/utils/formatter';
+import { formatCurrency, formatDate, formatNumberWithDots, parseDotsToNumber } from '@/utils/formatter';
 import {
-  CheckCircle2, MessageSquareText, MessageCircle,
+  CheckCircle2, MessageSquareText,
   Clock, Calendar, Info, XCircle, Send
 } from 'lucide-react';
 import { buildWhatsAppHref } from '@/features/admin/company-profile/utils/companyProfileUtils';
+import Whatsapp from '@thesvg/react/whatsapp';
 
 interface Props {
   quotation: CustomerQuotation;
@@ -204,7 +205,7 @@ export default function QuotationSection({
             onClick={handleWhatsApp}
             className="flex items-center justify-center gap-2.5 w-full px-4 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-bold transition-colors cursor-pointer shadow-sm"
           >
-            <MessageCircle size={16} />
+            <Whatsapp width={16} height={16} className="whatsapp-floating-icon text-white" />
             Hubungi Admin via WhatsApp
           </button>
         )}
@@ -241,11 +242,11 @@ export default function QuotationSection({
             <div className="relative">
               <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-blue">Rp</span>
               <input
-                type="number"
+                type="text"
                 className="w-full rounded-xl border border-pale-gray bg-cloud-mist py-2.5 pl-9 pr-4 text-xs font-bold text-midnight-indigo focus:border-action-blue focus:bg-white focus:ring-2 focus:ring-action-blue/10 outline-none transition-all"
-                placeholder="Contoh: 5500000"
-                value={proposedPrice}
-                onChange={(e) => setProposedPrice(e.target.value)}
+                placeholder="Contoh: 5.500.000"
+                value={formatNumberWithDots(proposedPrice)}
+                onChange={(e) => setProposedPrice(parseDotsToNumber(e.target.value).toString())}
               />
             </div>
           </div>
@@ -302,7 +303,10 @@ export default function QuotationSection({
           <div className="flex gap-2">
             {/* Minta Revisi */}
             <button
-              onClick={() => setIsRevising(true)}
+              onClick={() => {
+                setProposedPrice(Math.round(Number(quotation.proposed_price)).toString());
+                setIsRevising(true);
+              }}
               className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-platinum-tint bg-white hover:border-steel-gray hover:bg-cloud-mist text-sm font-semibold text-slate-blue hover:text-midnight-indigo transition-all cursor-pointer"
             >
               <MessageSquareText size={15} />
@@ -315,7 +319,7 @@ export default function QuotationSection({
                 onClick={handleWhatsApp}
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-sm font-semibold text-emerald-700 transition-all cursor-pointer"
               >
-                <MessageCircle size={15} />
+                <Whatsapp width={15} height={15} className="whatsapp-floating-icon text-emerald-600" />
                 WhatsApp
               </button>
             )}

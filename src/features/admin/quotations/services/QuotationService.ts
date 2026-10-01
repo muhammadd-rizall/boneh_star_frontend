@@ -1,5 +1,6 @@
 import axios from '@/api/Axios';
 import type { Quotation, QuotationFormData, QuotationApiResponse, QuotationStatistics } from '@/features/admin/quotations/types/Quotation';
+import { clearBookingCache } from '@/features/admin/bookings/services/BookingService';
 
 const ENDPOINTS = {
   BASE: '/admin/quotations',
@@ -58,6 +59,7 @@ export const quotationService = {
   create: async (data: QuotationFormData): Promise<Quotation> => {
     try {
       const response = await axios.post<QuotationApiResponse>(ENDPOINTS.BASE, data);
+      clearBookingCache();
       return response.data.data as Quotation;
     } catch (error) {
       console.error('Error creating quotation:', error);
@@ -68,6 +70,7 @@ export const quotationService = {
   update: async (id: string, data: QuotationFormData): Promise<Quotation> => {
     try {
       const response = await axios.put<QuotationApiResponse>(ENDPOINTS.DETAIL(id), data);
+      clearBookingCache();
       return response.data.data as Quotation;
     } catch (error) {
       console.error(`Error updating quotation ${id}:`, error);
@@ -78,6 +81,7 @@ export const quotationService = {
   delete: async (id: string): Promise<void> => {
     try {
       await axios.delete(ENDPOINTS.DETAIL(id));
+      clearBookingCache();
     } catch (error) {
       console.error(`Error deleting quotation ${id}:`, error);
       throw error;
@@ -87,6 +91,7 @@ export const quotationService = {
   restore: async (id: string): Promise<void> => {
     try {
       await axios.post(ENDPOINTS.RESTORE(id));
+      clearBookingCache();
     } catch (error) {
       console.error(`Error restoring quotation ${id}:`, error);
       throw error;
@@ -96,6 +101,7 @@ export const quotationService = {
   forceDelete: async (id: string): Promise<void> => {
     try {
       await axios.delete(ENDPOINTS.FORCE_DELETE(id));
+      clearBookingCache();
     } catch (error) {
       console.error(`Error force deleting quotation ${id}:`, error);
       throw error;

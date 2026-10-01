@@ -6,6 +6,8 @@ import { useCustomerAuthStore } from "@/features/auth/public";
 import { useCompanyProfile } from "@/features/admin/company-profile";
 import { resolveMediaUrl } from "@/features/admin/company-profile/utils/companyProfileUtils";
 
+import { useToastStore } from "@/store/useToastStore";
+
 type ApiError = {
   response?: {
     data?: {
@@ -33,6 +35,7 @@ export default function RegisterPage() {
   const navigate = useNavigate();
   const register = useCustomerAuthStore((state) => state.register);
   const { profile: companyProfile } = useCompanyProfile();
+  const showSuccess = useToastStore((state) => state.showSuccess);
 
   const logoUrl = companyProfile ? resolveMediaUrl(companyProfile.logo) : null;
 
@@ -50,6 +53,7 @@ export default function RegisterPage() {
     try {
       const { name, email, phone, password } = formData;
       await register({ name, email, phone, password });
+      showSuccess("Registrasi berhasil! Akun Anda telah terdaftar.");
       navigate("/customer/bookings");
     } catch (err: unknown) {
       const apiError = err as ApiError;
@@ -146,7 +150,7 @@ export default function RegisterPage() {
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
-                <div className="flex items-start gap-3 rounded-2xl border border-red-100 bg-red-50/50 px-4 py-3 text-xs font-semibold text-red-650 animate-in shake duration-500">
+                <div className="flex items-start gap-3 rounded-2xl border border-red-100 bg-red-50/50 px-4 py-3 text-xs font-semibold text-red-600 animate-in shake duration-500">
                   <AlertCircle className="mt-0.5 size-4 shrink-0" />
                   <span>{error}</span>
                 </div>

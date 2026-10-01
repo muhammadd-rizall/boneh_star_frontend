@@ -2,7 +2,7 @@ import { DataTable } from "@/components/ui/DataTable"
 import type { Column } from "@/components/ui/DataTable"
 import { Button } from "@/components/ui/Button"
 import type { Booking } from "@/features/admin/bookings/types/Booking"
-import { Edit, Trash2, Calendar, MapPin, Users, Bus, RotateCcw, Phone } from "lucide-react"
+import { Edit, Trash2, Calendar, MapPin, Users, Bus, RotateCcw, Phone, Banknote } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useModulePermission } from "@/hooks/useModulePermission"
 
@@ -10,6 +10,8 @@ interface BookingTableProps {
   data: Booking[]
   onDelete: (booking: Booking) => void
   onEdit: (booking: Booking) => void
+  onAssignBus?: (booking: Booking) => void
+  onCreateQuotation?: (booking: Booking) => void
   onViewDetail?: (booking: Booking) => void
   onRestore?: (booking: Booking) => void
   onForceDelete?: (booking: Booking) => void
@@ -22,6 +24,8 @@ export default function BookingTable({
   data, 
   onDelete, 
   onEdit, 
+  onAssignBus,
+  onCreateQuotation,
   onViewDetail: _onViewDetail,
   onRestore, 
   onForceDelete, 
@@ -59,17 +63,19 @@ export default function BookingTable({
 
   const columns: Column<Booking>[] = [
     {
-      header: "Info Pesanan",
+      header: "Pelanggan & Booking",
       accessor: (row) => (
         <div className="flex flex-col gap-1 text-left py-1">
-          <span className="font-bold text-midnight-indigo tracking-tight">{row.booking_code}</span>
-          <div className="flex items-center gap-1.5 text-[11px] font-medium text-slate-blue opacity-70">
-            <Users size={12} className="text-action-blue" />
-            <span className="truncate max-w-[120px]">{row.customer?.name || 'Pelanggan'}</span>
+          <span className="font-bold text-sm text-midnight-indigo tracking-tight">
+            {row.customer?.name || 'Pelanggan'}
+          </span>
+          <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-slate-400">
+            <span>Kode:</span>
+            <span className="text-action-blue font-bold">{row.booking_code}</span>
           </div>
           {row.customer?.phone && (
-            <div className="flex items-center gap-1.5 text-[10px] font-semibold text-slate-blue/70">
-              <Phone size={10} className="text-emerald-500" />
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 mt-0.5">
+              <Phone size={12} className="text-emerald-500 shrink-0" />
               <span>{row.customer.phone}</span>
             </div>
           )}
@@ -95,19 +101,40 @@ export default function BookingTable({
     },
     {
       header: "Jadwal",
-      accessor: (row) => (
-        <div className="flex flex-col gap-1 text-left">
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-midnight-indigo opacity-85">
-            <Calendar size={12} className="text-action-blue" />
-            <span>{formatDate(row.departure_date)}</span>
-          </div>
-          {row.return_date && (
-            <div className="text-[10px] font-medium text-slate-blue opacity-60 ml-4">
-              sampai {formatDate(row.return_date)}
+      accessor: (row) => {
+        const calculateDuration = (start: string, end?: string | null) => {
+          if (!end) return '1 Hari';
+          try {
+            const s = new Date(start.split(' ')[0]);
+            const e = new Date(end.split(' ')[0]);
+            const diffTime = Math.abs(e.getTime() - s.getTime());
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+            return `${diffDays} Hari`;
+          } catch {
+            return '1 Hari';
+          }
+        };
+
+        const duration = calculateDuration(row.departure_date, row.return_date);
+
+        return (
+          <div className="flex flex-col gap-1 text-left">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-midnight-indigo">
+              <Calendar size={13} className="text-action-blue shrink-0" />
+              <span>{formatDate(row.departure_date)}</span>
             </div>
-          )}
-        </div>
-      )
+            {row.return_date && (
+              <div className="text-xs font-bold text-slate-700 ml-4 flex items-center gap-1">
+                <span className="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">s/d</span>
+                <span>{formatDate(row.return_date)}</span>
+              </div>
+            )}
+            <span className="text-[10px] font-bold text-action-blue ml-4">
+              ({duration})
+            </span>
+          </div>
+        );
+      }
     },
     {
       header: "Kapasitas",
@@ -174,14 +201,34 @@ export default function BookingTable({
           ) : (
             <>
               {canUpdate && (
-                <Button 
-                  size="icon-sm" 
-                  variant="outline" 
-                  icon={Edit} 
-                  className="h-9 w-9 rounded-xl shadow-sm hover:border-action-blue hover:text-action-blue" 
-                  onClick={() => onEdit(row)}
-                  title="Edit Pesanan" 
-                />
+                <>
+                  {row.status === 'pending' && (
+                    <Button 
+                      size="icon-sm" 
+                      variant="outline" 
+                      icon={Banknote} 
+                      className="h-9 w-9 rounded-xl shadow-sm hover:border-amber-500 hover:text-amber-500" 
+                      onClick={() => onCreateQuotation?.(row)}
+                      title="Buat Penawaran Harga" 
+                    />
+                  )}
+                  <Button 
+                    size="icon-sm" 
+                    variant="outline" 
+                    icon={Bus} 
+                    className="h-9 w-9 rounded-xl shadow-sm hover:border-emerald-500 hover:text-emerald-500" 
+                    onClick={() => onAssignBus?.(row)}
+                    title="Tugaskan Armada & Supir" 
+                  />
+                  <Button 
+                    size="icon-sm" 
+                    variant="outline" 
+                    icon={Edit} 
+                    className="h-9 w-9 rounded-xl shadow-sm hover:border-action-blue hover:text-action-blue" 
+                    onClick={() => onEdit(row)}
+                    title="Edit Pesanan" 
+                  />
+                </>
               )}
               {canDelete && (
                 <Button 

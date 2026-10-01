@@ -11,9 +11,11 @@ import {
 import {
     BookingForm,
     BookingTable,
+    QuickAssignForm,
     useBookings,
     type Booking,
 } from "@/features/admin/bookings"
+import { QuotationForm } from "@/features/admin/quotations"
 import { useToastStore } from "@/store/useToastStore"
 import {
     Bus,
@@ -44,6 +46,10 @@ export default function BookingPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [view, setView] = useState<"active" | "trash">("active")
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false)
+  const [bookingToAssign, setBookingToAssign] = useState<Booking | null>(null)
+  const [isQuotationModalOpen, setIsQuotationModalOpen] = useState(false)
+  const [bookingForQuotation, setBookingForQuotation] = useState<Booking | null>(null)
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null)
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
   const [isRestoreConfirmOpen, setIsRestoreConfirmOpen] = useState(false)
@@ -178,6 +184,8 @@ export default function BookingPage() {
           data={currentData}
           onDelete={handleDeleteClick}
           onEdit={handleEdit}
+          onAssignBus={(b) => { setBookingToAssign(b); setIsAssignModalOpen(true); }}
+          onCreateQuotation={(b) => { setBookingForQuotation(b); setIsQuotationModalOpen(true); }}
           onRestore={handleRestoreClick}
           onForceDelete={handleForceDeleteClick}
           loading={loading}
@@ -194,6 +202,48 @@ export default function BookingPage() {
         size="xl"
       >
         <BookingForm booking={selectedBooking} onSuccess={handleSuccess} onCancel={() => setIsModalOpen(false)} />
+      </Modal>
+
+      {/* ── Quick Assign Modal ── */}
+      <Modal
+        open={isAssignModalOpen}
+        onClose={() => setIsAssignModalOpen(false)}
+        title="Penugasan Cepat Armada & Supir"
+        subtitle={bookingToAssign ? `Tugaskan bus untuk booking ${bookingToAssign.booking_code} (${bookingToAssign.customer?.name})` : "Tugaskan bus"}
+        size="xl"
+      >
+        {bookingToAssign && (
+          <QuickAssignForm 
+            booking={bookingToAssign} 
+            onSuccess={() => {
+              setIsAssignModalOpen(false);
+              refetch();
+              showSuccess("Penugasan armada berhasil diperbarui!");
+            }} 
+            onCancel={() => setIsAssignModalOpen(false)} 
+          />
+        )}
+      </Modal>
+
+      {/* ── Create Quotation Modal ── */}
+      <Modal
+        open={isQuotationModalOpen}
+        onClose={() => setIsQuotationModalOpen(false)}
+        title="Buat Penawaran Harga"
+        subtitle={bookingForQuotation ? `Buat penawaran harga untuk booking ${bookingForQuotation.booking_code} (${bookingForQuotation.customer?.name})` : "Buat penawaran baru"}
+        size="xl"
+      >
+        {bookingForQuotation && (
+          <QuotationForm 
+            bookingId={bookingForQuotation.id}
+            onSuccess={() => {
+              setIsQuotationModalOpen(false);
+              refetch();
+              showSuccess("Penawaran harga berhasil dibuat dan dikirim ke customer!");
+            }}
+            onCancel={() => setIsQuotationModalOpen(false)}
+          />
+        )}
       </Modal>
 
       <Confirmation open={isConfirmOpen} onClose={() => setIsConfirmOpen(false)} onConfirm={handleConfirmDelete} loading={actionLoading} title="Pindahkan ke Tempat Sampah?" message={`Booking ${bookingToManage?.booking_code} akan dipindahkan ke tempat sampah.`} variant="warning" confirmText="Ya, Pindahkan" />

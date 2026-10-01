@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/Input";
 import { CustomSelect as Select } from "@/components/ui/CustomSelect";
 import { Button } from "@/components/ui/Button";
 import { DialogFooter } from "@/components/ui/Dialog";
+import { formatNumberWithDots, parseDotsToNumber } from "@/utils/formatter";
 import { transactionService } from "../services/TransactionService";
 import type { Transaction, TransactionFormData, TransactionStatus } from "../types/Transaction";
 import { bookingService } from "@/features/admin/bookings/services/BookingService";
@@ -197,30 +198,30 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
 
           <Input
             label="Total Tagihan (Rp)"
-            type="number"
-            min="0"
+            type="text"
             icon={Banknote}
-            value={formData.total_amount.toString()}
-            onChange={(e) => setFormData({ ...formData, total_amount: parseFloat(e.target.value) })}
+            value={formatNumberWithDots(formData.total_amount)}
+            onChange={(e) => setFormData({ ...formData, total_amount: parseDotsToNumber(e.target.value) })}
+            placeholder="Contoh: 1.000.000"
             required
           />
 
           <Input
             label="DP Dibayarkan (Rp)"
-            type="number"
-            min="0"
+            type="text"
             icon={Banknote}
-            value={formData.dp_paid.toString()}
-            onChange={(e) => setFormData({ ...formData, dp_paid: parseFloat(e.target.value) })}
+            value={formatNumberWithDots(formData.dp_paid)}
+            onChange={(e) => setFormData({ ...formData, dp_paid: parseDotsToNumber(e.target.value) })}
+            placeholder="Contoh: 300.000"
             required
           />
 
           <div className="md:col-span-2">
             <Input
               label="Sisa Tagihan (Rp)"
-              type="number"
+              type="text"
               icon={Banknote}
-              value={formData.remaining_amount.toString()}
+              value={formatNumberWithDots(formData.remaining_amount)}
               disabled
               className="bg-cloud-mist/50 font-bold text-midnight-indigo"
             />
